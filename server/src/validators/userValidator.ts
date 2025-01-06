@@ -3,7 +3,6 @@ import { celebrate, Joi, Segments } from 'celebrate';
 export const signupValidation = celebrate({
     [Segments.BODY]: Joi.object().keys({
         email: Joi.string().email().required(),
-        password: Joi.string().min(6).required(),
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
         phone: Joi.string()
@@ -21,7 +20,7 @@ export const signupValidation = celebrate({
             street: Joi.string().required(),
         }).optional(),
         bloodGroup: Joi.string().required(),
-        profileImage: Joi.string().optional()
+        profileImage: Joi.string().optional() 
     }),
 });
 

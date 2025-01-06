@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { OtpService } from '../services/OtpService';
-import { UserService } from '../services/UserService';
+import  OtpService  from '../services/OptService';
+import UserService  from '../services/UserService';
 
 export class AuthController {
     private otpService: OtpService;

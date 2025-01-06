@@ -18,7 +18,7 @@ interface GoogleCallbackRequest extends Request {
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login', failureMessage: 'Authentication failed' }),
+    passport.authenticate('google', { failureRedirect: '/signin', failureMessage: 'Authentication failed' }),
     async (req: GoogleCallbackRequest, res: Response): Promise<void> => {
         try {
             if (!req.user) {
@@ -29,8 +29,9 @@ router.get('/google/callback',
             const googleUser = req.user as Partial<IUser>;
 
             if (!googleUser._id) {
-                // Partial user: send back details and request additional information
-                req.session.partialUser = googleUser; // Store in session
+
+                req.session.partialUser = googleUser;
+
                 res.status(202).json({
                     partialUser: googleUser,
                     message: 'Additional information required to complete registration',
@@ -38,9 +39,10 @@ router.get('/google/callback',
                 return;
             }
 
-            // Full user: Generate JWT and log them in
             const token = signToken(googleUser._id.toString());
+
             res.status(200).json({ token });
+            
         } catch (error) {
             console.error('Error during Google authentication:', error);
             res.status(500).json({ error: 'Server error' });

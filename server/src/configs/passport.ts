@@ -29,11 +29,9 @@ passport.use(
                 const existingUser = await userRepository.findUserByEmail(email);
 
                 if (existingUser) {
-                    // Full user exists, proceed with login
                     return done(null, existingUser);
                 }
 
-                // Partial user flow
                 const partialUser: Partial<IUser> = {
                     email,
                     firstName: profile.name?.givenName || '',
@@ -41,7 +39,6 @@ passport.use(
                     profileImage: profile.photos?.[0]?.value,
                 };
 
-                // Return partial user
                 return done(null, partialUser);
             } catch (error) {
                 console.error('Error during GoogleStrategy:', error);
@@ -56,22 +53,19 @@ passport.serializeUser((user: Express.User, done) => {
     const partialUser = user as Partial<IUser>;
 
     if (partialUser._id) {
-        // Fully registered user
         done(null, partialUser._id.toString());
     } else {
-        // Partial user, serialize with a temporary identifier (e.g., email)
-        done(null, partialUser.email); // Assuming email is always present
+        done(null, partialUser.email); 
     }
 });
 
 passport.deserializeUser(async (idOrEmail: string, done) => {
     try {
-        if (idOrEmail.includes('@')) {
-            // This is a partial user identified by email
+        if (idOrEmail.includes('@')) {  
+
             const partialUser = await userRepository.findUserByEmail(idOrEmail);
             done(null, partialUser);
         } else {
-            // Fully registered user identified by ID
             const user = await userRepository.findUserById(idOrEmail);
             done(null, user);
         }
