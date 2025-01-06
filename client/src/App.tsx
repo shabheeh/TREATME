@@ -1,34 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ThemeProvider } from "@mui/material/styles";
+import { theme } from "./utils/theme";
+import CssBaseline from '@mui/material/CssBaseline';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import LandingPage from "./pages/user/LandingPage"
+import SigninPage from "./pages/user/SigninPage";
+import SignupPage from "./pages/user/SignupPage";
+import ForgotPasswordPage from './pages/user/ForgotPasswordPage'
+import OtpPage from "./pages/user/OtpPage";
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <ThemeProvider theme={theme}>
+     <CssBaseline />
+     <Router>
+      <Routes>
+        <Route path="/" element={ <LandingPage />} />
+        <Route path="/signin" element={ <SigninPage />} />
+        <Route path="/signup" element={ <SignupPage /> } />
+        <Route path="/verify-email" element={ <OtpPage isVerifyEmail={true}  /> } />
+        <Route path="/forgot-password" element={ <ForgotPasswordPage /> } />
+        <Route path="/otp" element={ <OtpPage isVerifyEmail={false} /> } />
+      </Routes>
+     </Router>
+    </ThemeProvider>
   )
 }
 
