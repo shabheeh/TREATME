@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { Box, Container, Typography, Link, Button } from "@mui/material";
 import PinInput from "react-pin-input";
-import Navbar from "../../components/basics/Navbar";
-import SignupPath from "../../components/basics/SignupPath";
+import SignupPath from "./SignupPath";
 
 interface OtpPageProps {
     isVerifyEmail: boolean
 }
 
-const OtpPage: React.FC<OtpPageProps> = ({ isVerifyEmail }) => {
+const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail }) => {
   const [pin, setPin] = useState("");
   const [seconds, setSeconds] = useState(30); 
   const [isTimerActive, setIsTimerActive] = useState(true); 
@@ -29,10 +28,8 @@ const OtpPage: React.FC<OtpPageProps> = ({ isVerifyEmail }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
-      <Navbar />
 
-      <Box sx={{ py: 10, bgcolor: "whitesmoke" }}>
+      <Box sx={{ py: 10 }}>
         <Container
           maxWidth="sm"
           sx={{
@@ -138,8 +135,7 @@ const OtpPage: React.FC<OtpPageProps> = ({ isVerifyEmail }) => {
           </Container>
         </Container>
       </Box>
-    </Box>
   );
 };
 
-export default OtpPage;
+export default Otp;

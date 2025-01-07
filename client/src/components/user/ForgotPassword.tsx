@@ -7,15 +7,25 @@ import {
     Button,
     Divider,
    } from "@mui/material"
-  import Navbar from "../../components/basics/Navbar"
+
+   import { useForm } from "react-hook-form";
   
-  
-  const ForgotPasswordPage = () => {
+  const ForgotPassword = () => {
+
+    const { register, handleSubmit, formState: { errors } } = useForm<{ email: string }>({ defaultValues: {
+          email: '',
+        }
+      });
+    
+      const onSubmit = ({ email }: { email: string }) => {
+        console.log(email);
+        
+      };
+
+
     return (
-        <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
-    <Navbar />
   
-  <Box sx={{ py: 10, bgcolor: "whitesmoke" }}>
+  <Box sx={{ py: 10 }}>
     <Container
       maxWidth="sm"
       sx={{
@@ -54,6 +64,8 @@ import {
         Enter the reagisterd email to sent an otp to reset password
       </Typography>
       <Container
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -62,13 +74,28 @@ import {
         }}
       >
         <TextField
-          id="outlined-basic"
-          label="Email"
-          variant="outlined"
+        {...register("email", { 
+          required: "Email is required",
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: "Invalid email address"
+          }
+        })}
+        label="Email"
+        variant="outlined"
+        error={!!errors.email}
+        helperText={errors.email?.message}
           sx={{ width: "80%", margin: "20px auto" }}
         />
-        <Button variant="contained"  sx={{ py: 1, width: '80%',  fontSize: '1rem'  }}>Continue</Button>
-        <Divider sx={{ mt: 5, color: 'gray'}}>OR</Divider>
+        <Button 
+        variant="contained" 
+        type="submit"  
+        sx={{ py: 1, width: '80%',  fontSize: '1rem'  }}
+        >
+          Continue
+        </Button>
+        <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
+
         <Link
           href="#"
           underline="hover"
@@ -90,11 +117,9 @@ import {
       </Typography>
       </Container>
     </Container>
-  </Box>
-  </Box>
-  
+  </Box>  
   
     )
   }
   
-  export default ForgotPasswordPage
+  export default ForgotPassword

@@ -3,10 +3,12 @@ import { theme } from "./utils/theme";
 import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import LandingPage from "./pages/user/LandingPage"
-import SigninPage from "./pages/user/SigninPage";
-import SignupPage from "./pages/user/SignupPage";
-import ForgotPasswordPage from './pages/user/ForgotPasswordPage'
-import OtpPage from "./pages/user/OtpPage";
+import SigninPage from "./components/user/SignIn";
+import SignupPage from "./components/user/SignUp";
+import ForgotPasswordPage from './components/user/ForgotPassword'
+import OtpPage from "./components/user/Otp";
+import CompleteProfile from "./components/user/CompleteProfile";
+import Authentication from "./pages/user/Authentication";
 
 function App() {
 
@@ -17,11 +19,13 @@ function App() {
      <Router>
       <Routes>
         <Route path="/" element={ <LandingPage />} />
-        <Route path="/signin" element={ <SigninPage />} />
-        <Route path="/signup" element={ <SignupPage /> } />
-        <Route path="/verify-email" element={ <OtpPage isVerifyEmail={true}  /> } />
-        <Route path="/forgot-password" element={ <ForgotPasswordPage /> } />
-        <Route path="/otp" element={ <OtpPage isVerifyEmail={false} /> } />
+        <Route path="/signin" element={ <Authentication />} />
+        <Route path="/signup"element={ <Authentication />} />
+        <Route path="/verify-email" element={ <Authentication />} />
+        <Route path="/forgot-password" element={ <Authentication />} />
+        <Route path="/otp" element={ <Authentication />} />
+        <Route path="/complete-profile" element={ <Authentication />} />
+        <Route path="/reset-password" element={ <Authentication />} />
       </Routes>
      </Router>
     </ThemeProvider>

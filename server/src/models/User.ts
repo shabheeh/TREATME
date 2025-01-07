@@ -23,7 +23,6 @@ const userSchema = new Schema(
     profileImage: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
     phone: { type: String, required: true, trim: true },
-    bloodGroup: { type: String, trim: true },
   },
   {
     timestamps: true,

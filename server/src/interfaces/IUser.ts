@@ -20,5 +20,4 @@ export default interface IUser extends Document {
   profileImage?: string;
   isActive: boolean;
   phone: string;
-  bloodGroup: string;
 }

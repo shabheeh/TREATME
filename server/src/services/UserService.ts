@@ -95,7 +95,7 @@ class UserService {
         return { newUser }
     }
 
-    async signin(email: string, password: string): Promise<{ token?: string; message?: string, googleUser?: boolean }> {
+    async signin(email: string, password: string): Promise<{ token?: string; message?: string, googleUser?: boolean, user?: IUser }> {
 
         const user = await this.userRepository.findUserByEmail(email);
 
@@ -117,7 +117,8 @@ class UserService {
         }
 
         const token = signToken(user._id.toString())
-        return { token }
+
+        return { token, user }
     }
 
 

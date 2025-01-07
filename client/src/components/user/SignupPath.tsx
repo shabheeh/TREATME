@@ -10,11 +10,11 @@ interface SignupPathProps {
 
 const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 3 }}>
+    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 5 }}>
       <Stack direction="row" alignItems="center" spacing={2}>
 
         <Stack alignItems="center">
-            <PersonAddAltIcon fontSize="medium" color='secondary' />
+            <PersonAddAltIcon fontSize="medium" color='primary' />
             <Typography
         sx={{ mt: 1, mb: 1, textAlign: "center", fontSize: '0.7rem', color: "gray" }}
       >
@@ -46,7 +46,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
         </Box>
         
         <Stack alignItems="center">
-            <MarkEmailReadOutlinedIcon fontSize="medium" color={ step <= 2 ? 'primary' : 'secondary' } />
+            <MarkEmailReadOutlinedIcon fontSize="medium" color={ step >= 2 ? 'primary' : 'secondary' } />
             <Typography
         
         sx={{ mt: 1, mb: 1, textAlign: "center", fontSize: '0.7rem', color: "gray" }}
@@ -79,7 +79,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
         </Box>
         
         <Stack alignItems="center">
-            <FeedOutlinedIcon fontSize="medium" color={ step <= 3 ? 'primary' : 'secondary' } />
+            <FeedOutlinedIcon fontSize="medium" color={ step >= 3 ? 'primary' : 'secondary' } />
             <Typography
         sx={{ mt: 1, mb: 1, textAlign: "center", fontSize: '0.7rem', color: "gray" }}
       >
