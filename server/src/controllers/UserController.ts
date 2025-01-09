@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import UserService from "../services/UserService";
 // import IUser from "../interfaces/IUser";
-import OtpService from "../services/OptService";
+import OtpService from "../services/OtpService";
+import logger from "../configs/logger";
+import IUser from "src/interfaces/IUser";
 
 
 
@@ -21,7 +23,7 @@ class UserController {
 
             await this.userService.sendOtp(email, password)
             
-            const otp = await this.otpService.getOTP(email);
+            const otp = await this.otpService.getOTP(email, 'signup');
     
             res.status(200).json({
                 message: `A verification OTP has been sent to ${email}`,
@@ -46,6 +48,8 @@ class UserController {
     
         } catch (error) {
             res.status(500).json({ error: error.message });
+            logger.error(error.message)
+
         }
     }
     
@@ -62,6 +66,8 @@ class UserController {
     
         } catch (error) {
             res.status(500).json({ error: error.message });
+            logger.error(error.message)
+
         }
     }
 
@@ -71,14 +77,105 @@ class UserController {
 
             const result = await this.userService.signin(email, password)
 
-            if(result.googleUser) {
+            if("googleUser" in result) {
                 res.status(202).json(result.message);
+                return
             }
 
-            res.status(200).json(result);
+            const { accessToken, refreshToken, user } = result;
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000, 
+            })
+
+            res.status(200).json({
+                accessToken, 
+                user
+            });
 
         } catch (error) {
             res.status(401).json({ error: error.message });
+            logger.error(error.message)
+
+        }
+    }
+
+    sendOtpForgotPassowrd = async (req: Request, res: Response): Promise<void> => {
+        try {
+
+            const { email } = req.body;
+
+            await this.userService.sendOtpForgotPassword(email);
+
+            res.status(200).json({
+                message: 'An otp sent to your registered email',
+            })
+            
+            
+        } catch (error) {
+            res.status(401).json({ error: error.message });
+            logger.error(error.message)
+        }
+    }
+
+    verifyOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email, otp } = req.body;
+
+            await this.userService.verifyOtpForgotPassword(email, otp);
+
+            res.status(200).json({
+                messge: "OTP verified successfully"
+            })
+
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+            logger.error(error.message)
+        }
+    }
+
+    googleCallback = async (req: Request, res: Response): Promise<void> => {
+        try {
+            if(!req.user) {
+                res.status(401).json({
+                    message: 'Authentication falied'
+                })
+                return
+            }
+
+            const gooleUser = req.user as Partial<IUser>
+
+            const result = await this.userService.googleCallback(gooleUser);
+
+            if ("partialUser" in result) { 
+                const { partialUser } = result;
+                res.status(202).json({
+                    partialUser,
+                    message: "Complete your profile"
+                })
+                return
+            }
+
+            const { accessToken, refreshToken, user } = result;
+
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000, 
+              });
+            
+              res.status(200).json({
+                accessToken,
+                user
+              })
+
+        } catch (error) {
+            logger.error('Error during Google authentication:', error);
+            res.status(500).json({ error: 'Server error' });
         }
     }
 

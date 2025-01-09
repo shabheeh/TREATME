@@ -21,4 +21,5 @@ export interface IUser {
 export interface authState {
     isAuthenticated: boolean;
     user: IUser | null;
+    isSignUp: boolean;
 }

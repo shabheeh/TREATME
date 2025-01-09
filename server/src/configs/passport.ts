@@ -3,6 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import UserRepository from "../repositories/UserRepository";
 import IUserRepository from "../repositories/interfaces/IUserRepository";
 import IUser from "../interfaces/IUser";
+import logger from "./logger";
 
 const userRepository: IUserRepository = new UserRepository();
 
@@ -41,7 +42,7 @@ passport.use(
 
                 return done(null, partialUser);
             } catch (error) {
-                console.error('Error during GoogleStrategy:', error);
+                logger.error('Error during GoogleStrategy:', error);
                 done(error as Error);
             }
         }
@@ -70,7 +71,7 @@ passport.deserializeUser(async (idOrEmail: string, done) => {
             done(null, user);
         }
     } catch (error) {
-        console.error('Error during deserializeUser:', error);
+        logger.error('Error during deserializeUser:', error);
         done(error);
     }
 });

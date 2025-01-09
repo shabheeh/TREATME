@@ -3,7 +3,8 @@ import { authState, IUser } from "../../../types/user/authTypes";
 
 const initialState: authState = {
     isAuthenticated: false,
-    user: null
+    user: null,
+    isSignUp: false
 }
 
 interface SignInActionPayload {
@@ -19,6 +20,10 @@ const authSlice = createSlice({
         signIn: (state, action: PayloadAction<SignInActionPayload>) => {
             state.isAuthenticated = true;
             state.user = action.payload.user
+        },
+
+        signUp: (state, action: PayloadAction<{ isSignUp: boolean }>) => {
+            state.isSignUp = action.payload.isSignUp
         }
     }
 })

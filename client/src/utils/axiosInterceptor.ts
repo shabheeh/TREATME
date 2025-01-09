@@ -1,5 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosError} from 'axios';
 import TokenManager, { TOKEN_KEYS } from './TokenMangager';
+import log from 'loglevel'
 
 const tokenManager = new TokenManager()
 
@@ -22,17 +23,18 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
     const refreshAuthToken = async () => {
         try {
             
-            const refreshToken = tokenManager.getRefreshToken(role);
-            const response = await axios.post(`${API_URLS[role]}/auth/refresh-token`, {
-                refreshToken
-            })
+            
+            const response = await axios.post(`${API_URLS[role]}/auth/refresh-token`)
     
-            const { accessToken, newRefreshToken } = response.data;
-            tokenManager.setTokens(role, accessToken, newRefreshToken);
+            const { accessToken } = response.data;
+            tokenManager.setToken(role, accessToken);
     
             return accessToken;
-        } catch (error) {
-            tokenManager.clearTokens(role);
+        } catch (error: unknown) {
+            if(error instanceof AxiosError ) {
+                log.error(error.message)
+            }
+            tokenManager.clearToken(role);
             window.location.href = `${role}/signin`;
             return null;
         }
@@ -67,6 +69,7 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
               return instance(originalRequest);
             }
           } catch (refreshError) {
+
             return Promise.reject(refreshError);
           }
         }

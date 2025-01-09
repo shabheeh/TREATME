@@ -6,27 +6,65 @@ import {
   Link,
   Button,
   Divider,
+  CircularProgress 
 } from "@mui/material"
 import { useForm } from "react-hook-form"
-
+import authServiceUser from "../../services/user/authService";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { IUser } from "../../types/user/authTypes";
 
 interface SignInFormInputs {
   email: string;
   password: string;
 }
 
+interface SignInProps {
+  onForgotPassword: () => void;
+  onCompleteProfile: (user: Partial<IUser>) => void;
+  
+}
 
-const SignIn = () => {
+
+const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) => {
   const { register, handleSubmit, formState: { errors } } = useForm<SignInFormInputs>({ defaultValues: {
       email: '',
       password: ''
     }
   });
 
-  const onSubmit = (data: SignInFormInputs) => {
-    console.log(data);
-    
+  const [loading ,setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const onSubmit = async(data: SignInFormInputs) => {
+    setLoading(true)
+    await authServiceUser.signInUser(data)
+    setLoading(false)
+    navigate('/patient')
+
   };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await authServiceUser.googleSignIn(); 
+  
+      if ("error" in result) { 
+        console.error(result.error);
+        return;
+      }
+  
+      const { isPartialUser, user } = result;
+  
+      if (isPartialUser) {
+        onCompleteProfile(user); 
+      }else {
+        navigate('/patient')
+      }
+    } catch (error) {
+      console.log((error as Error).message);
+    }
+  };
+  
 
   return (
 
@@ -91,38 +129,47 @@ const SignIn = () => {
               helperText={errors.password?.message}
               sx={{ width: "80%", margin: "10px auto" }}
             />
-            <Link
-              href="forgot-password"
-              underline="hover"
+            <Typography
               sx={{
                 fontSize: "0.8rem",
                 color: "gray",
-                alignSelf: "flex-start", 
-                marginLeft: "10%", 
+                alignSelf: "flex-start",
+                marginLeft: "10%",
                 mt: 1.5,
-                mb: 2
+                mb: 2,
+                cursor: 'pointer',
+                textDecoration: 'none', 
+                '&:hover': {
+                  textDecoration: 'underline', 
+                },
               }}
+              onClick={onForgotPassword}
             >
               Forgot Password
-            </Link>
+            </Typography>
             <Button 
               type="submit" 
               variant="contained"  
               sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}
-            >
-              Sign In
+            > 
+            { loading ? <CircularProgress /> : "Sign In" }
+              
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
-            <Link
-              href="/auth/google"
-              underline="hover"
+            <Typography color="primary"
               sx={{
                 fontSize: "1rem",
                 m: 1,
+                cursor: 'pointer',
+                textDecoration: 'none', 
+                '&:hover': {
+                  textDecoration: 'underline', 
+                },
               }}
+              onClick={handleGoogleSignIn}
             >
               Sign in with Google
-            </Link>
+            </Typography>
             <Typography
               variant="body2"
               sx={{ mt: 1, mb: 5, textAlign: "center", color: "gray" }}

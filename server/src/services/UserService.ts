@@ -1,9 +1,30 @@
 import bcrypt from 'bcryptjs';
 import IUser from '../interfaces/IUser';
 import IUserRepository from '../repositories/interfaces/IUserRepository';
-import { signToken } from '../utils/jwt';
+import { generateTokens } from '../utils/jwt';
 import CacheService from './CacheService';
-import OtpService from './OptService';
+import OtpService from './OtpService';
+import logger from '../configs/logger';
+
+const mailSubject = {
+    verifyEmail: "Verify Your Email Address",
+    resetPassword: "Reset Your Password"
+}
+
+type SignInResult = {  
+    message: string, 
+    googleUser: boolean } | {
+    user: IUser,
+    accessToken: string,
+    refreshToken: string 
+}
+
+type googleCallbackResult = { 
+    partialUser: Partial<IUser> } | { 
+    accessToken: string,
+    refreshToken: string, 
+    user: IUser
+}
 
 
 class UserService {
@@ -33,9 +54,9 @@ class UserService {
 
         await this.cacheService.store(`signup:${email}`, JSON.stringify({email, password}), 600)
 
-        const otpSent = await this.otpService.sendOTP(email)
+        const otpSent = await this.otpService.sendOTP(email, 'signup', mailSubject.verifyEmail)
 
-        console.log(otpSent)
+        logger.info(otpSent) 
 
         if (!otpSent) {
             throw new Error('Failed to sent otp, please try again later')
@@ -53,7 +74,7 @@ class UserService {
         const parsedUserData = JSON.parse(userData)
     
 
-       const isOtpVerified = await this.otpService.verifyOTP(email, otp) 
+       const isOtpVerified = await this.otpService.verifyOTP(email, otp, 'signup') 
 
        if(!isOtpVerified) {
         throw new Error('Invalid Otp')
@@ -65,7 +86,7 @@ class UserService {
         600
        )
 
-       await this.otpService.deleteOTP(email);
+       await this.otpService.deleteOTP(email, 'signup');
 
     }
 
@@ -95,7 +116,7 @@ class UserService {
         return { newUser }
     }
 
-    async signin(email: string, password: string): Promise<{ token?: string; message?: string, googleUser?: boolean, user?: IUser }> {
+    async signin(email: string, password: string): Promise<SignInResult> {
 
         const user = await this.userRepository.findUserByEmail(email);
 
@@ -116,9 +137,15 @@ class UserService {
             throw new Error('Invalid Email or Password')
         }
 
-        const token = signToken(user._id.toString())
+        const payload = {
+            id: user._id.toString(),
+            email: user.email,
+            role: 'user',
+        }
 
-        return { token, user }
+        const { accessToken, refreshToken } = generateTokens(payload)
+
+        return { accessToken, refreshToken, user }
     }
 
 
@@ -136,6 +163,81 @@ class UserService {
 
         } catch (error) {
             throw new Error(`Error fetching user by email: ${error.message}`);
+        }
+    }
+
+    async sendOtpForgotPassword(email: string): Promise<void> {
+        try {
+            const user = await this.userRepository.findUserByEmail(email);
+
+        if (!user) {
+            throw new Error('No User found with this email')
+        }
+
+        const isOtpSent = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
+
+        if(!isOtpSent) {
+            throw new Error('Failed to sent otp, Please try again later')
+        }
+
+        } catch (error) {
+            logger.error(error.message)
+            throw new Error(`error sending otp ${error.message}`)
+        } 
+    }
+
+    async verifyOtpForgotPassword(email: string, otp: string): Promise<boolean> {
+        try {
+            const isOtpVerified = await this.otpService.verifyOTP(email, otp, 'signin');
+
+            return isOtpVerified;
+
+        } catch (error) {
+            logger.error('error sign in with google', error.message)
+            throw new Error(`Somethig went wrong ${error.message}`)
+        }
+    }
+
+    async googleCallback(googleUser: Partial<IUser>): Promise<googleCallbackResult> {
+        try {
+            if (!googleUser._id) {
+                await this.cacheService.store(`google:${googleUser.email}`, JSON.stringify(googleUser), 300);
+                return {
+                    partialUser: googleUser
+                }
+            }
+
+            
+            if (!googleUser.email) {
+                throw new Error('error sing in with google')
+            }
+
+            const payload = {
+                id: googleUser._id.toString(),
+                email: googleUser.email,
+                role: 'patient'
+            }
+
+            const user = await this.userRepository.findUserByEmail(googleUser.email);
+
+            if (!user) {
+                await this.cacheService.store(`google:${googleUser.email}`, JSON.stringify(googleUser), 300);
+                return {
+                    partialUser: googleUser
+                }
+            }
+
+            const { accessToken, refreshToken } = generateTokens(payload)
+            
+            return {
+                accessToken,
+                refreshToken,
+                user
+            }
+            
+        } catch (error) {
+            logger.error('error sign in with google', error.message)
+            throw new Error(`Somethig went wrong ${error.message}`)
         }
     }
 

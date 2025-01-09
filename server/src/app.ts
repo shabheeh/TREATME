@@ -1,5 +1,5 @@
 
-import express from 'express';
+import express, { Request, Response, NextFunction} from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -8,26 +8,34 @@ dotenv.config()
 import connectDB from './configs/db';
 import logger from './configs/logger';
 import userRouter from "./routes/userRouter";
-import authRouter from "./routes/authRouter";
 import sessionConfig from './configs/sessionConfig.';
 import passport from 'passport';
 import './configs/passport'
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 
+const corsOptions = { 
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,  
+  };
+
 //Middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(morgan('dev'));
-app.use(helmet());
+app.use(helmet()); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionConfig);
+app.use(cookieParser());
 
 app.use(passport.initialize());
 app.use(passport.session())
 
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     logger.error(err.stack);
     res.status(500).send('Something broke!');
 });
@@ -39,12 +47,12 @@ process.on('unhandledRejection', (err: Error) => {
  
 
 //connect db
-connectDB();
+connectDB(); 
 
 
 //routes
-app.use('/api/users', userRouter)
-app.use('/auth', authRouter)
+app.use('/api/user', userRouter)
+
 const PORT: string | undefined = process.env.PORT;
 
 if(!PORT) {

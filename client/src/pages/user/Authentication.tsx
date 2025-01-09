@@ -19,7 +19,7 @@ const Authentication = () => {
         ComponentToRender = <SignUp />;
     } else if (location.pathname === '/otp') {
         ComponentToRender = <Otp  isVerifyEmail={false} />;
-    } else if (location.pathname === '/verify-otp') {
+    } else if (location.pathname === '/verify-email') {
         ComponentToRender = <Otp  isVerifyEmail={true} />;
     } else if (location.pathname === '/complete-profile') {
         ComponentToRender = <CompleteProfile />;

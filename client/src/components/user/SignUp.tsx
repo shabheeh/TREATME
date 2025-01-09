@@ -7,10 +7,12 @@ import {
   Link,
   Button,
   Divider,
-} from "@mui/material"
-import SignupPath from "./SignupPath"
-import React from "react"
-import { useForm } from "react-hook-form"
+  CircularProgress,
+} from "@mui/material";
+import SignupPath from "./SignupPath";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import authServiceUser from "../../services/user/authService";
 
 interface SignupFormInputs {
   email: string;
@@ -18,7 +20,11 @@ interface SignupFormInputs {
   confirmPassword: string;
 }
 
-const SignUp: React.FC = () => {
+interface SignUpProps {
+  onSignUp: () => void;
+}
+
+const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
   const { 
     register, 
     handleSubmit, 
@@ -34,9 +40,19 @@ const SignUp: React.FC = () => {
 
   const password = watch("password");
 
-  const onSubmit = (data: SignupFormInputs) => {
-    console.log(data);
-    // Handle form submission
+  const [loading, setLoading] = useState(false)
+
+  const onSubmit = async(data: SignupFormInputs) => {
+    try {
+      console.log(data);
+      setLoading(true)
+      const response = await authServiceUser.mockSignUpUser({email: data.email, password: data.password})
+      console.log(response)
+      setLoading(false)
+      onSignUp()
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   return (
@@ -103,7 +119,8 @@ const SignUp: React.FC = () => {
                   message: "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character"
                 }
               })}
-              type="password"
+              type="text"
+
               label="Password"
               variant="outlined"
               error={!!errors.password}
@@ -128,7 +145,7 @@ const SignUp: React.FC = () => {
               variant="contained"  
               sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}
             >
-              Sign Up
+              { loading ? <CircularProgress size={30} /> : "Sign In" }
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
             <Link

@@ -12,7 +12,9 @@ import {
   import SignupPath from "./SignupPath"
   import React, { useEffect, useState } from "react"
   import { useForm, Controller } from "react-hook-form"
-  
+  import log from 'loglevel';
+import { IUser } from "../../types/user/authTypes";
+
   interface SignupFormInputs {
     firstName: string;
     lastName: string;
@@ -22,8 +24,11 @@ import {
     birthMonth: string;
     birthYear: string;
   }
+
+  type CompleteProfileProps = { userData: Partial<IUser> | null}
+
   
-  const CompleteProfile: React.FC = () => {
+  const CompleteProfile: React.FC<CompleteProfileProps> = ({ userData }) => {
     const [availableDays, setAvailableDays] = useState<string[]>([]);
     
     const { 
@@ -35,8 +40,8 @@ import {
       formState: { errors } 
     } = useForm<SignupFormInputs>({
       defaultValues: {
-        firstName: '',
-        lastName: '',
+        firstName: userData?.firstName || "",
+        lastName: userData?.lastName || "",
         phone: '',
         gender: '',
         birthDay: '',
@@ -115,7 +120,7 @@ import {
       if (!validateAge(data.birthYear, data.birthMonth, data.birthDay)) {
         return;
       }
-      console.log(data);
+      log.info(data);
 
     };
   

@@ -2,11 +2,12 @@
 import express from "express";
 import UserRepository from "../repositories/UserRepository";
 import UserService from "../services/UserService";
-import OtpService from "../services/OptService";
+import OtpService from "../services/OtpService";
 import CacheService from "../services/CacheService";
 import UserController from "../controllers/UserController";
 import { signupValidation, signinValidation } from "../validators/userValidator";
 import { errors } from 'celebrate';
+import passport from "passport";
 
 const router = express.Router();
 
@@ -17,15 +18,27 @@ const userService = new UserService(userRepository, otpService, cacheService);
 const userController = new UserController(userService, otpService);
 
 
-router.post('/send-otp', signinValidation, userController.sendOtp)
-router.post('/verify-otp', userController.verifyOtp)
+router.post('/auth/send-otp', signinValidation, userController.sendOtp)
+router.post('/auth/verify-otp', userController.verifyOtp)
 
-router.post('/signup', 
+router.post('/auth/signup', 
     signupValidation,
     userController.signup
 );
 
-router.post('/signin', signinValidation, userController.signin)
+router.post('/auth/signin', signinValidation, userController.signin)
+
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.post('/auth/forgot-password/verify-email', userController.sendOtpForgotPassowrd)
+
+router.post("/auth/forgot-password/verify-otp" , userController.verifyOtpForgotPassword)
+
+router.get(
+    '/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/signin', failureMessage: 'Authentication failed' }),
+    userController.googleCallback
+  );
 
 
 

@@ -36,7 +36,7 @@ export default class CacheService {
             const exists = await redisClient.exists(key);
             return exists > 0;
         } catch (error) {
-            console.error(`Error checking existence of key "${key}" in Redis:`, error);
+            logger.error(`Error checking existence of key "${key}" in Redis:`, error);
             throw new Error('Failed to check existence in cache');
         }
     }
@@ -49,7 +49,7 @@ export default class CacheService {
                 throw new Error(`Key "${key}" does not exist or could not update TTL.`);
             }
         } catch (error) {
-            console.error(`Error extending TTL for key "${key}" in Redis:`, error);
+            logger.error(`Error extending TTL for key "${key}" in Redis:`, error);
             throw new Error('Failed to extend TTL in cache');
         }
     }
