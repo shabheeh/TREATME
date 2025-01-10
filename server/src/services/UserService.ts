@@ -166,7 +166,7 @@ class UserService {
         }
     }
 
-    async sendOtpForgotPassword(email: string): Promise<void> {
+    async sendOtpForgotPassword(email: string): Promise<IUser> {
         try {
             const user = await this.userRepository.findUserByEmail(email);
 
@@ -179,6 +179,9 @@ class UserService {
         if(!isOtpSent) {
             throw new Error('Failed to sent otp, Please try again later')
         }
+
+        return user
+        
 
         } catch (error) {
             logger.error(error.message)
@@ -194,6 +197,22 @@ class UserService {
 
         } catch (error) {
             logger.error('error sign in with google', error.message)
+            throw new Error(`Somethig went wrong ${error.message}`)
+        }
+    }
+
+
+    async resetPassword(id: string, password: string): Promise<void> {
+        try {
+            const hashedPassword = await bcrypt.hash(password, 10)
+            const updateData = await this.userRepository.updateUser(id, { password: hashedPassword })
+        
+            if (!updateData) {
+                throw new Error('Error reseting password')
+            }
+
+        } catch (error) {
+            logger.error('error reseting password', error.message)
             throw new Error(`Somethig went wrong ${error.message}`)
         }
     }

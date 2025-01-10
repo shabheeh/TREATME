@@ -7,6 +7,7 @@ import IUser from "src/interfaces/IUser";
 
 
 
+
 class UserController {
 
     private userService: UserService;
@@ -55,10 +56,11 @@ class UserController {
     
     signup = async (req: Request, res: Response): Promise<void> => {
         try {
-            const profileData = req.body; 
+            logger.info('signup called')
+            const userData = req.body; 
 
     
-            await this.userService.signup(profileData)
+            await this.userService.signup(userData)
     
             res.status(201).json({
                 message: "User signed up successfully"
@@ -108,10 +110,10 @@ class UserController {
 
             const { email } = req.body;
 
-            await this.userService.sendOtpForgotPassword(email);
+            const user = await this.userService.sendOtpForgotPassword(email);
 
             res.status(200).json({
-                message: 'An otp sent to your registered email',
+                user
             })
             
             
@@ -127,12 +129,28 @@ class UserController {
 
             await this.userService.verifyOtpForgotPassword(email, otp);
 
+
             res.status(200).json({
                 messge: "OTP verified successfully"
             })
 
         } catch (error) {
             res.status(500).json({ error: error.message });
+            logger.error(error.message)
+        }
+    }
+
+    resetPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id, password } = req.body;
+
+            await this.userService.resetPassword(id, password);
+
+            res.status(200).json({
+                message: 'Password reset successfully'
+            })
+        } catch (error) {
+            res.status(500).json({error: error.message })
             logger.error(error.message)
         }
     }

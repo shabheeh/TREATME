@@ -3,6 +3,10 @@ import { useForm, Controller } from "react-hook-form";
 import { Box, Container, Typography, Link, Button } from "@mui/material";
 import PinInput from "react-pin-input";
 import SignupPath from "./SignupPath";
+// import { IUser } from "../../types/user/authTypes";
+import authServiceUser from "../../services/user/authService";
+import { useSelector } from 'react-redux' 
+import { RootState } from "../../redux/app/store";
 
 interface OtpPageProps {
   isVerifyEmail: boolean;
@@ -18,6 +22,8 @@ interface OtpFormValues {
 const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySignIn }) => {
   const [seconds, setSeconds] = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(true);
+
+  const tempUser = useSelector((state:RootState) => state.tempUser.tempUser)
 
   const {
     handleSubmit,
@@ -46,10 +52,31 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
     // Logic to resend OTP
   };
 
-  const onSubmit = (data: OtpFormValues) => {
-    console.log("Submitted OTP:", data.otp);
+  const onSubmit = async(data: OtpFormValues) => {
+    console.log('otpdata', data)
+    try {
+      if (isVerifyEmail) {
+        if (!tempUser?.email) {
+          throw new Error('somethig went wrong please try again')
+        }
+        await authServiceUser.verifyOtpSignUp(tempUser.email, data.otp)
+        if(onVerifySignUp) {
+          onVerifySignUp()
+        }
+      }else {
+        if (!tempUser?.email) {
+          throw new Error('somethig went wrong please try again')
+        }
+        await authServiceUser.verifyOtpForgotPassword(tempUser.email, data.otp)
+        if(onVerifySignIn) {
+          onVerifySignIn()
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
 
-    onVerify()
+    
   };
 
   return (

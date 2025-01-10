@@ -1,4 +1,4 @@
-// src/routes/userRoutes.ts
+
 import express from "express";
 import UserRepository from "../repositories/UserRepository";
 import UserService from "../services/UserService";
@@ -28,11 +28,19 @@ router.post('/auth/signup',
 
 router.post('/auth/signin', signinValidation, userController.signin)
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
 router.post('/auth/forgot-password/verify-email', userController.sendOtpForgotPassowrd)
 
 router.post("/auth/forgot-password/verify-otp" , userController.verifyOtpForgotPassword)
+
+router.patch("/auth/reset-password", userController.resetPassword)
+
+
+router.get('/auth/google',
+  passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    prompt: 'select_account'
+  })
+);
 
 router.get(
     '/auth/google/callback',

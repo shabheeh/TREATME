@@ -13,8 +13,11 @@ import {
   import React, { useEffect, useState } from "react"
   import { useForm, Controller } from "react-hook-form"
   import log from 'loglevel';
-import { IUser } from "../../types/user/authTypes";
-
+// import { IUser } from "../../types/user/authTypes";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/app/store";
+import authServiceUser from "../../services/user/authService";
+import { useNavigate } from "react-router-dom";
   interface SignupFormInputs {
     firstName: string;
     lastName: string;
@@ -25,11 +28,13 @@ import { IUser } from "../../types/user/authTypes";
     birthYear: string;
   }
 
-  type CompleteProfileProps = { userData: Partial<IUser> | null}
+
 
   
-  const CompleteProfile: React.FC<CompleteProfileProps> = ({ userData }) => {
+  const CompleteProfile: React.FC = () => {
     const [availableDays, setAvailableDays] = useState<string[]>([]);
+    const navigate = useNavigate()
+    const tempUser = useSelector((state: RootState) => state.tempUser.tempUser)
     
     const { 
       register, 
@@ -40,8 +45,8 @@ import { IUser } from "../../types/user/authTypes";
       formState: { errors } 
     } = useForm<SignupFormInputs>({
       defaultValues: {
-        firstName: userData?.firstName || "",
-        lastName: userData?.lastName || "",
+        firstName: tempUser?.firstName || "",
+        lastName: tempUser?.lastName || "",
         phone: '',
         gender: '',
         birthDay: '',
@@ -116,11 +121,39 @@ import { IUser } from "../../types/user/authTypes";
       return age >= 18;
     };
   
-    const onSubmit = (data: SignupFormInputs) => {
+    const onSubmit = async (data: SignupFormInputs) => {
       if (!validateAge(data.birthYear, data.birthMonth, data.birthDay)) {
         return;
       }
       log.info(data);
+      if(!tempUser?.email) {
+        log.error('error signin up user')
+        return
+      }
+
+      if(!data.gender) {
+        log.error('error signin up user')
+        return
+      }
+
+      const userData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: tempUser.email,
+        phone: data.phone,
+        gender: data.gender,
+        dateOfBirth: data.birthDay + "-" +  data.birthMonth + "-" + data.birthYear
+      }
+      
+      console.log(userData)
+
+      try {
+        await authServiceUser.signUpUser(userData)
+        // navigate("/patient")
+        log.info("user singued success")
+      } catch (error) {
+        log.error("error signinup user", error)
+      }
 
     };
   

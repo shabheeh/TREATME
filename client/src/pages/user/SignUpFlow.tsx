@@ -15,8 +15,8 @@ const SignUpFlow: React.FC = () => {
     <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
       <Navbar />
       {step === "signup" && <SignUp onSignUp={goVerifyEmail} />}  
-      {step === "verfy-email" && <Otp isVerifyEmail={true} onVerify={goToCompleteProfile} />}
-      {step === "complete-profile" && <CompleteProfile />}
+      {step === "verfy-email" && <Otp isVerifyEmail={true} onVerifySignUp={goToCompleteProfile} />}
+      {step === "complete-profile" && <CompleteProfile  />}
     </Box>
   );
 };

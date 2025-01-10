@@ -46,7 +46,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
     try {
       console.log(data);
       setLoading(true)
-      const response = await authServiceUser.mockSignUpUser({email: data.email, password: data.password})
+      const response = await authServiceUser.sendOtp({email: data.email, password: data.password})
       console.log(response)
       setLoading(false)
       onSignUp()

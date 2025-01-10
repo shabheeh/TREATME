@@ -13,8 +13,13 @@ class UserRepository implements IUserRepository {
     }
 
     async findUserById(id: string): Promise<IUser | null> {
-        return await UserModel.findOne({ _id: id });
+        return await UserModel.findById(id);
     }
+
+    async updateUser(id: string, userData: Partial<IUser>): Promise<IUser | null> {
+        return await UserModel.findByIdAndUpdate(id, userData, { new: true })
+    }
+
 }
 
 export default UserRepository;

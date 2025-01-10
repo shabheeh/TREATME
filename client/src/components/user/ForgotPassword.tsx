@@ -11,6 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import authServiceUser from "../../services/user/authService";
 import log from "loglevel";
+// import { IUser } from "../../types/user/authTypes";
 
 type ForgotPasswordProps = {
   onVerifyEmail: () => void;
@@ -29,8 +30,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
 
   const onSubmit = async ({ email }: { email: string }) => {
     try {
-      await authServiceUser.verifyEmail(email)
+      const result = await authServiceUser.verifyEmail(email);
+    if ('user' in result) {
       onVerifyEmail()
+      log.error('Error verifying email:', result);
+    }
     } catch (error) {
       log.error('error during verifying email', error)
     }

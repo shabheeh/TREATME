@@ -19,7 +19,7 @@ passport.use(
         {
             clientID: GOOGLE_CLIENT_ID,
             clientSecret: GOOGLE_CLIENT_SECRET,
-            callbackURL: '/auth/google/callback',
+            callbackURL: "http://localhost:5000/api/user/auth/google/callback",
             scope: ['profile', 'email'],
         },
         async (_accessToken, _refreshToken, profile, done) => {
