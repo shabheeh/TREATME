@@ -6,15 +6,23 @@ import {
     TextField, 
     Button,
   } from "@mui/material"
-  import React from "react"
+
   import { useForm } from "react-hook-form"
+import authServiceUser from "../../services/user/authService";
   
   interface ResetPasswordInputs {
     password: string;
     confirmPassword: string;
   }
+
+interface ResetPasswordProps {
+  onResetPassword: () => void
+}
+
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/app/store";
   
-  const ResetPassword: React.FC = () => {
+  const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
     const { 
       register, 
       handleSubmit, 
@@ -26,13 +34,25 @@ import {
         confirmPassword: ''
       }
     });
+
+    const tempUser = useSelector((state: RootState) => state.tempUser.tempUser)
   
     const password = watch("password");
   
-    const onSubmit = (data: ResetPasswordInputs) => {
-      console.log(data);
-    };
-  
+    const onSubmit = async (data: ResetPasswordInputs) => {
+      try {
+        if(!tempUser?._id) {
+          throw new Error('User id not found')
+        }
+        await authServiceUser.resetPassword(tempUser._id, data.password)
+        onResetPassword()
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+
     return (
   
         <Box sx={{ py: 10 }}>
@@ -129,4 +149,4 @@ import {
     )
   }
   
-  export default ResetPassword
+  export default ResetPassword;

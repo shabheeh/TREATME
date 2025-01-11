@@ -32,9 +32,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
     try {
       const result = await authServiceUser.verifyEmail(email);
     if ('user' in result) {
-      onVerifyEmail()
-      log.error('Error verifying email:', result);
+          onVerifyEmail()
     }
+
     } catch (error) {
       log.error('error during verifying email', error)
     }

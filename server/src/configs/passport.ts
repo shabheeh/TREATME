@@ -37,7 +37,7 @@ passport.use(
                     email,
                     firstName: profile.name?.givenName || '',
                     lastName: profile.name?.familyName || '',
-                    profileImage: profile.photos?.[0]?.value,
+                    profilePicture: profile.photos?.[0]?.value,
                 };
 
                 return done(null, partialUser);

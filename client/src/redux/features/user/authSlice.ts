@@ -24,10 +24,14 @@ const authSlice = createSlice({
 
         signUp: (state, action: PayloadAction<{ isSignUp: boolean }>) => {
             state.isSignUp = action.payload.isSignUp
+        },
+
+        setAuthState: (state) => {
+            state.isAuthenticated = true
         }
     }
 })
 
 
-export const { signIn } = authSlice.actions
+export const { signIn, setAuthState } = authSlice.actions
 export default authSlice.reducer

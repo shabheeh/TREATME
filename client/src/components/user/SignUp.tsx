@@ -13,6 +13,9 @@ import SignupPath from "./SignupPath";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import authServiceUser from "../../services/user/authService";
+import { AxiosError } from "axios";
+import { GoogleLogin, CredentialResponse} from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
 interface SignupFormInputs {
   email: string;
@@ -22,9 +25,10 @@ interface SignupFormInputs {
 
 interface SignUpProps {
   onSignUp: () => void;
+  onCompleteProfile: () => void
 }
 
-const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
+const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
   const { 
     register, 
     handleSubmit, 
@@ -38,20 +42,62 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
     }
   });
 
+  const navigate = useNavigate()
+
   const password = watch("password");
 
   const [loading, setLoading] = useState(false)
+
+  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const onSubmit = async(data: SignupFormInputs) => {
     try {
       console.log(data);
       setLoading(true)
       const response = await authServiceUser.sendOtp({email: data.email, password: data.password})
-      console.log(response)
+      
+      if ('error' in response) {
+        setError(true);
+        setErrorMessage(response.error);
+        setLoading(false)
+        return;
+      }
+      
+      
+        onSignUp();
+      
+      
       setLoading(false)
-      onSignUp()
-    } catch (error) {
+    } catch (error: unknown) {
+
+      if(error instanceof AxiosError) {
+        setError(true)
+        setErrorMessage(error.message)
+        console.log('hello', error.message)
+      }
+      
       console.log(error)
+    }
+  };
+
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      if (!credentialResponse.credential) {
+        throw new Error('No credentials received');
+      }
+
+      const credential = credentialResponse.credential
+      const isPartialUser = await authServiceUser.googleSignIn(credential)
+
+      if (isPartialUser) {
+        onCompleteProfile();
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Google sign-in error:', error);
     }
   };
 
@@ -83,6 +129,9 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
             Sign up your account
           </Typography>
           <SignupPath step={1} />
+          { error && <Typography > 
+            {errorMessage}
+            </Typography>}
           <Container
             component="form"
             onSubmit={handleSubmit(onSubmit)}
@@ -148,16 +197,16 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp }) => {
               { loading ? <CircularProgress size={30} /> : "Sign In" }
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
-            <Link
-              href="#"
-              underline="hover"
-              sx={{
-                fontSize: "1rem",
-                m: 1,
-              }}
-            >
-              Sign in with Google
-            </Link>
+            <Box sx={{ display: 'flex', justifyContent: 'center', m: 2 }}>
+              <GoogleLogin
+              
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  console.error('Google sign-in failed');
+                }}
+                useOneTap
+              />
+            </Box>
             <Typography
               variant="body2"
               sx={{ mt: 1, mb: 5, textAlign: "center", color: "gray" }}

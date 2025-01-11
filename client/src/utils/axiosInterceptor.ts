@@ -35,6 +35,10 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
                 log.error(error.message)
             }
             tokenManager.clearToken(role);
+            if(role === 'user') {
+                window.location.href = '/signin'
+                return null
+            }
             window.location.href = `${role}/signin`;
             return null;
         }
@@ -57,7 +61,13 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
           const originalRequest = error.config;
     
           if (error.response?.status !== 401 || originalRequest._retry) {
-            return Promise.reject(error);
+            
+            const errorMessage = error.response?.data?.error 
+              || error.response?.data?.message 
+              || error.message 
+              || 'An unexpected error occurred';
+            
+            return Promise.reject(new Error(errorMessage));
           }
     
           originalRequest._retry = true;

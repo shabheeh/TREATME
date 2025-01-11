@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form"
 import authServiceUser from "../../services/user/authService";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IUser } from "../../types/user/authTypes";
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 interface SignInFormInputs {
   email: string;
@@ -21,49 +21,70 @@ interface SignInFormInputs {
 
 interface SignInProps {
   onForgotPassword: () => void;
-  onCompleteProfile: (user: Partial<IUser>) => void;
-  
+  onCompleteProfile: () => void;
 }
 
-
 const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInFormInputs>({ defaultValues: {
+  const { register, handleSubmit, formState: { errors } } = useForm<SignInFormInputs>({ 
+    defaultValues: {
       email: '',
       password: ''
     }
   });
 
-  const [loading ,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const onSubmit = async(data: SignInFormInputs) => {
-    setLoading(true)
-    await authServiceUser.signInUser(data)
-    setLoading(false)
-    navigate('/patient')
-
-  };
-
-  const handleGoogleSignIn = async () => {
     try {
-      const result = await authServiceUser.googleSignIn(); 
-  
-      if ("error" in result) { 
-        console.error(result.error);
-        return;
-      }
-  
-      const { isPartialUser, user } = result;
-  
-      if (isPartialUser) {
-        onCompleteProfile(user); 
-      }else {
-        navigate('/patient')
-      }
+      setLoading(true)
+      await authServiceUser.signInUser(data)
+      navigate('/patient')
     } catch (error) {
-      console.log((error as Error).message);
+      console.error('Sign in error:', error);
+    } finally {
+      setLoading(false)
     }
   };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      if (!credentialResponse.credential) {
+        throw new Error('No credentials received');
+      }
+
+      const credential = credentialResponse.credential
+      const isPartialUser = await authServiceUser.googleSignIn(credential)
+
+      if (isPartialUser) {
+        onCompleteProfile();
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+    }
+  };
+  // const handleGoogleSignIn = async () => {
+  //   try {
+  //     const result = await authServiceUser.googleSignIn(); 
+  
+  //     if ("error" in result) { 
+  //       console.error(result.error);
+  //       return;
+  //     }
+  
+  //     const { isPartialUser, user } = result;
+  
+  //     if (isPartialUser) {
+  //       onCompleteProfile(user); 
+  //     }else {
+  //       navigate('/patient')
+  //     }
+  //   } catch (error) {
+  //     console.log((error as Error).message);
+  //   }
+  // };
   
 
   return (
@@ -156,20 +177,16 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
               
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
-            <Typography color="primary"
-              sx={{
-                fontSize: "1rem",
-                m: 1,
-                cursor: 'pointer',
-                textDecoration: 'none', 
-                '&:hover': {
-                  textDecoration: 'underline', 
-                },
-              }}
-              onClick={handleGoogleSignIn}
-            >
-              Sign in with Google
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', m: 2 }}>
+              <GoogleLogin
+              
+                onSuccess={handleGoogleSuccess}
+                onError={() => {
+                  console.error('Google sign-in failed');
+                }}
+                useOneTap
+              />
+            </Box>
             <Typography
               variant="body2"
               sx={{ mt: 1, mb: 5, textAlign: "center", color: "gray" }}

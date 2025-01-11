@@ -16,6 +16,7 @@ const SignInFlow: React.FC = () => {
   const gotVerifyOtp = () => setStep('verfy-otp')
   const goToRestPassword = () => setStep("reset-password")
   const goToCompleteProfile = () => setStep("complete-profile")
+  const goToSignIn = () => setStep('signin')
   
 
 
@@ -26,9 +27,8 @@ const SignInFlow: React.FC = () => {
       {step === "signin" && <SignIn onForgotPassword={goToForgotPassword} onCompleteProfile={goToCompleteProfile} />}
       {step === "forgot-password" && <ForgotPassword onVerifyEmail={ gotVerifyOtp} />}
       {step === "verfy-otp" && <Otp isVerifyEmail={false}  onVerifySignIn={goToRestPassword} />}
-      {step === 'reset-password' && <ResetPassword />}
-      {step === 'complete-profile' && <CompleteProfile/>}
-
+      {step === 'reset-password' && <ResetPassword onResetPassword={goToSignIn} />}
+      {step === 'complete-profile' && <CompleteProfile isPartialUser={false}/>}
     </Box>
   );
 };

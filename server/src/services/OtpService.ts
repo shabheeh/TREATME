@@ -27,22 +27,21 @@ export default class OtpService {
     async sendOTP(email: string, type: string, subject: string): Promise<string> {
         try {
             const otp = this.generateOTP();
+            
+            await this.cacheService.store(`otp-${type}:${email}`, otp, 300);
 
+            await this.emailTransporter.sendMail({
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: subject,
+                html: `
+                    <h1>OTP Verification</h1>
+                    <p>Your OTP is: <strong>${otp}</strong></p>
+                    <p>This OTP will expire in 5 minutes.</p>
+                `,
+            });
 
-        await this.cacheService.store(`otp-${type}:${email}`, otp, 300);
-
-        await this.emailTransporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: subject,
-            html: `
-                <h1>OTP Verification</h1>
-                <p>Your OTP is: <strong>${otp}</strong></p>
-                <p>This OTP will expire in 5 minutes.</p>
-            `,
-        });
-
-        return otp;
+            return otp;
 
         } catch (error) {
             logger.error(error.message)

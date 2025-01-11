@@ -5,6 +5,7 @@ import { generateTokens } from '../utils/jwt';
 import CacheService from './CacheService';
 import OtpService from './OtpService';
 import logger from '../configs/logger';
+import { OAuth2Client } from 'google-auth-library';
 
 const mailSubject = {
     verifyEmail: "Verify Your Email Address",
@@ -19,11 +20,19 @@ type SignInResult = {
     refreshToken: string 
 }
 
-type googleCallbackResult = { 
-    partialUser: Partial<IUser> } | { 
+type googleSignInResult = { 
     accessToken: string,
     refreshToken: string, 
-    user: IUser
+    user?: IUser,
+    newUser?: Partial<IUser>,
+    partialUser: boolean
+}
+
+type googleCallbackResult = {
+    accessToken?: string,
+    refreshToken?: string, 
+    user?: IUser,
+    partialUser?: Partial<IUser>
 }
 
 
@@ -138,7 +147,6 @@ class UserService {
         }
 
         const payload = {
-            id: user._id.toString(),
             email: user.email,
             role: 'user',
         }
@@ -173,6 +181,8 @@ class UserService {
         if (!user) {
             throw new Error('No User found with this email')
         }
+
+        
 
         const isOtpSent = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
 
@@ -259,6 +269,78 @@ class UserService {
             throw new Error(`Somethig went wrong ${error.message}`)
         }
     }
+
+    async googleSignIn(credential: string): Promise<googleSignInResult> {
+        try {
+            const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+            const ticket = await client.verifyIdToken({
+                idToken: credential,
+                audience: process.env.GOOGLE_CLIENT_ID
+            });
+
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email || !payload.given_name || !payload.family_name) {
+                throw new Error('invalid token')
+            }
+
+            
+
+            let user = await this.userRepository.findUserByEmail(payload.email)
+            let partialUser = false;
+
+            if(user) {
+                const jwtPayload = {
+                    email: user.email,
+                    role: 'user',
+                }
+
+                const { accessToken, refreshToken } = generateTokens(jwtPayload);
+
+                return { user, accessToken, refreshToken, partialUser }
+            }
+
+            const newUser = {
+                email: payload.email,
+                firstName: payload.given_name,
+                lastName: payload.family_name,
+                profilePicture: payload.picture
+            }
+
+            await this.cacheService.store(`google:${newUser.email}`, JSON.stringify(newUser), 300);
+
+            const jwtPayload = {
+                email: payload.email,
+                role: 'user'  
+            }
+
+            const { accessToken, refreshToken } = generateTokens(jwtPayload)
+
+            return { newUser, accessToken, refreshToken, partialUser: true }
+
+        } catch (error) {
+            logger.error('error google signin', error)
+            throw new Error('error signin with google')
+        }
+    }
+
+    async completeProfileAndSignUp(userData: IUser): Promise<IUser> {
+        try {
+
+            const user = await this.userRepository.createUser(userData)
+            
+            if (!user) {
+                throw new Error('Failed crate new user')
+            }
+
+            return user
+            
+        } catch (error) {
+            logger.error('error creating a new googleUser', error)
+            throw new Error('error crating a new google user')
+        }
+    }
+
 
 }
 

@@ -15,6 +15,7 @@
     "@fontsource/noto-sans": "^5.1.1",
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
+    "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.5.0",
     "axios": "^1.7.9",
     "loglevel": "^1.9.2",

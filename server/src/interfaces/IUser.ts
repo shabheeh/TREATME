@@ -17,7 +17,7 @@ export default interface IUser extends Document {
   gender: 'male' | 'female';
   dateOfBirth: Date;
   address?: Address;
-  profileImage?: string;
+  profilePicture?: string;
   isActive: boolean;
   phone: string;
 }

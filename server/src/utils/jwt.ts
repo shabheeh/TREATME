@@ -11,7 +11,6 @@ if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
 
 // Types
 interface TokenPayload {
-    id: string;
     email: string;
     role: string;
     exp?: number;
@@ -74,10 +73,10 @@ export const refreshAccessToken = (refreshToken: string): string => {
     try {
         const decoded = verifyRefreshToken<TokenPayload>(refreshToken);
 
-        const { id, email, role } = decoded;
+        const {email, role } = decoded;
         
         const accessToken = jwt.sign(
-            { id, email, role },
+            { email, role },
             JWT_ACCESS_SECRET,
             { expiresIn: '1h' }
         );
@@ -90,10 +89,4 @@ export const refreshAccessToken = (refreshToken: string): string => {
 };
 
 
-export const extractTokenFromHeader = (authHeader: string | undefined): string => {
-    if (!authHeader?.startsWith('Bearer ')) {
-        throw new Error('No token provided or invalid format');
-    }
-    return authHeader.split(' ')[1];
-};
 

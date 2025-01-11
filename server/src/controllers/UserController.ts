@@ -6,7 +6,14 @@ import logger from "../configs/logger";
 import IUser from "src/interfaces/IUser";
 
 
-
+interface JwtPayload {
+    email: string;
+    role: string;
+  }
+  
+  interface AuthRequest extends Request {
+      user: JwtPayload;
+    }
 
 class UserController {
 
@@ -196,6 +203,76 @@ class UserController {
             res.status(500).json({ error: 'Server error' });
         }
     }
+
+    googleSignIn = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { credential } = req.body;
+
+            const result = await this.userService.googleSignIn(credential)
+
+            if(!result.partialUser) {
+
+                const { user, accessToken, refreshToken, partialUser } = result
+
+
+                res.cookie("refreshToken", refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "strict",
+                    maxAge: 7 * 24 * 60 * 60 * 1000, 
+                })
+
+            logger.info(user)
+
+
+                res.status(200).json({
+                    user,
+                    accessToken,
+                    partialUser
+                })
+                return
+            }
+
+            const { newUser, accessToken, refreshToken, partialUser } = result;
+
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000, 
+            })
+
+
+            res.status(200).json({
+                user: newUser,
+                accessToken,
+                partialUser
+            })
+
+        } catch (error) {
+            logger.error('Error during Google authentication:', error);
+            res.status(500).json({ error: 'Server error' });
+        }
+    }
+
+    completeProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const { userData } = req.body;
+            const { email } = req.user
+
+            userData.email = email
+
+            const user = await this.userService.completeProfileAndSignUp(userData)
+
+            res.status(200).json({
+                user
+            })
+
+        } catch (error) {
+            logger.error('Error during Google authentication singup:', error);
+            res.status(500).json({ error: 'Server error' });
+        }
+    } 
 
 }
 

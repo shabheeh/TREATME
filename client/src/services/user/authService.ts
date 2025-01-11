@@ -3,17 +3,18 @@ import { IUser } from "../../types/user/authTypes";
 import TokenManager from "../../utils/TokenMangager";
 import log from 'loglevel'
 import { store } from "../../redux/app/store";
-import { signIn } from "../../redux/features/user/authSlice";
+import { setAuthState, signIn } from "../../redux/features/user/authSlice";
 import { setTempUser } from "../../redux/features/user/tempSlice";
+
 
 type SignInResult = { user: IUser } | { error: string };
 type SignOutResult = void | { error: string }
-type MockSignUpResult = { message: string } | { error: string}
-type GoogleSignInResult = { isPartialUser: boolean, user: IUser | Partial<IUser> } | { error: string }
+type MockSignUpResult = { status: number, message: string } | { error: string}
+type GoogleSignInResult = { PartialUser: boolean } | { error: string }
 type VerifyOtpSignUpResult = void | { error: string}
 type verifyEmailResult = { user: IUser } | { error: string }
 type verifyOtpForgotPasswordResult = { email: string } | { error: string }
-// type resetPasswordResult = {}
+// type completeProfileResult = { user: Partial<IUser>} | { error: string }
 
 
 interface IAuthServiceUser {
@@ -21,11 +22,12 @@ interface IAuthServiceUser {
     signInUser(credentials: { email: string; password: string }): Promise<SignInResult>;
     signOutUser(): Promise<SignOutResult>;
     verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult>
-    googleSignIn(): Promise<GoogleSignInResult>
+    googleSignIn(credential: string): Promise<GoogleSignInResult>
     verifyEmail(email: string): Promise<verifyEmailResult>
     verifyOtpForgotPassword(email: string, otp: string): Promise<verifyOtpForgotPasswordResult>
     resetPassword(id: string, password: string): Promise<void | { error: string}>;
-    signUpUser(userData: Partial<IUser>): Promise<void | { error: string}>
+    signUpUser(userData: Partial<IUser>): Promise<void | { error: string}>;
+    completeProfile(userData: Partial<IUser>): Promise<void | { error: string}>;
 }
 
 class AuthServiceUser implements IAuthServiceUser {
@@ -41,9 +43,10 @@ class AuthServiceUser implements IAuthServiceUser {
         const tempUser = {
           email: credentials.email
         }
+        
         store.dispatch(setTempUser({ tempUser }))
-        const { message } = response.data;
-        return message
+        const { message, status } = response.data;
+        return { message, status}
         
     } catch (error: unknown) {
 
@@ -152,30 +155,30 @@ class AuthServiceUser implements IAuthServiceUser {
       }
     }
 
-    async googleSignIn(): Promise<GoogleSignInResult> {
+    async googleSignIn(credential: string): Promise<GoogleSignInResult> {
       try {
-        const response = await api.user.get('/auth/google')
+        const response = await api.user.post('/auth/google', { credential })
 
-        if(response.data.partialUser) {
-          return {
-            isPartialUser: true,
-            user: response.data.partialUser
-          }
-        }
-
-        const { accessToken, googleUser } = response.data;
+        const { user, accessToken, partialUser  } = response.data;
 
         this.tokenManager.setToken("user", accessToken);
 
+        console.log(response.data)
+
+        if(partialUser) {
+          store.dispatch(setAuthState())
+          store.dispatch(setTempUser({
+            tempUser: user
+          }))
+          return partialUser
+        }
+
         store.dispatch(signIn({
-          user: googleUser,
+          user: user,
           isAuthenticated: true
         }))
 
-          return {
-            isPartialUser: false,
-            user: response.data.googleUser
-          }
+        return partialUser
 
 
         } catch (error: unknown) {
@@ -195,7 +198,9 @@ class AuthServiceUser implements IAuthServiceUser {
       async verifyEmail (email: string): Promise<verifyEmailResult> {
         try {
 
-          const response = await api.user.post('/auth/forgot-password/verify-email', email);
+          console.log(email)
+
+          const response = await api.user.post('/auth/forgot-password/verify-email', { email });
           
           store.dispatch(setTempUser({ tempUser: response.data.user }))
 
@@ -251,6 +256,23 @@ class AuthServiceUser implements IAuthServiceUser {
         }
       }
 
+
+      async completeProfile(userData: Partial<IUser>): Promise<void | { error: string; }> {
+        try {
+          const response = api.user.post('/auth/complete-profile', { userData })
+
+          const { user } = (await response).data
+
+          store.dispatch(signIn({
+            user: user,
+            isAuthenticated: true
+          }))
+
+        } catch (error) {
+          console.error(`Unknown error occurred during completing profile`, error);
+          return { error: "An unknown error occurred" };
+        }
+      }
 
 }
 

@@ -7,7 +7,8 @@ import CacheService from "../services/CacheService";
 import UserController from "../controllers/UserController";
 import { signupValidation, signinValidation } from "../validators/userValidator";
 import { errors } from 'celebrate';
-import passport from "passport";
+import { authenticateToken } from "../middlewares/authMiddleware";
+// import passport from "passport";
 
 const router = express.Router();
 
@@ -32,21 +33,25 @@ router.post('/auth/forgot-password/verify-email', userController.sendOtpForgotPa
 
 router.post("/auth/forgot-password/verify-otp" , userController.verifyOtpForgotPassword)
 
-router.patch("/auth/reset-password", userController.resetPassword)
+router.put("/auth/reset-password", userController.resetPassword)
+
+router.post("/auth/google", userController.googleSignIn)
+
+router.post("/auth/complete-profile", authenticateToken, userController.completeProfile)
 
 
-router.get('/auth/google',
-  passport.authenticate('google', { 
-    scope: ['profile', 'email'],
-    prompt: 'select_account'
-  })
-);
+// router.get('/auth/google',
+//   passport.authenticate('google', { 
+//     scope: ['profile', 'email'],
+//     prompt: 'select_account'
+//   })
+// );
 
-router.get(
-    '/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/signin', failureMessage: 'Authentication failed' }),
-    userController.googleCallback
-  );
+// router.get(
+//     '/auth/google/callback',
+//     passport.authenticate('google', { failureRedirect: '/signin', failureMessage: 'Authentication failed' }),
+//     userController.googleCallback
+// );
 
 
 

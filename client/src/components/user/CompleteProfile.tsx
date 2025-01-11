@@ -28,14 +28,17 @@ import { useNavigate } from "react-router-dom";
     birthYear: string;
   }
 
-
+interface CompleteProfileProps {
+  isPartialUser: boolean
+}
 
   
-  const CompleteProfile: React.FC = () => {
+  const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
     const [availableDays, setAvailableDays] = useState<string[]>([]);
-    const navigate = useNavigate()
     const tempUser = useSelector((state: RootState) => state.tempUser.tempUser)
     
+    const navigate = useNavigate()
+
     const { 
       register, 
       handleSubmit,
@@ -148,7 +151,13 @@ import { useNavigate } from "react-router-dom";
       console.log(userData)
 
       try {
-        await authServiceUser.signUpUser(userData)
+        if (!isPartialUser) {
+          await authServiceUser.signUpUser(userData)
+          navigate('/signin')
+        }else {
+          await authServiceUser.completeProfile(userData)
+        }
+        
         // navigate("/patient")
         log.info("user singued success")
       } catch (error) {
