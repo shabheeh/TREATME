@@ -7,12 +7,16 @@ interface JwtPayload {
   role: string;
 }
 
-interface AuthRequest extends Request {
-    user?: JwtPayload;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JwtPayload;
+    }
   }
+}
 
 
-export const authenticateToken = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; 
   
@@ -29,4 +33,4 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
         logger.error('error authenticatng token', error.message)
      res.status(403).json({ message: 'Invalid or expired token' });
     }
-  };
+};

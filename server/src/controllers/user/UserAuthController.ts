@@ -1,27 +1,16 @@
 import { Request, Response } from "express";
-import UserService from "../services/UserService";
-// import IUser from "../interfaces/IUser";
-import OtpService from "../services/OtpService";
-import logger from "../configs/logger";
-import IUser from "src/interfaces/IUser";
+import UserAuthService from "../../services/user/UserAuthService";
+import OtpService from "../../services/OtpService";
+import logger from "../../configs/logger";
 
 
-interface JwtPayload {
-    email: string;
-    role: string;
-  }
-  
-  interface AuthRequest extends Request {
-      user: JwtPayload;
-    }
+class UserAuthController {
 
-class UserController {
-
-    private userService: UserService;
+    private userAuthService: UserAuthService;
     private otpService: OtpService;
 
-    constructor(userService: UserService, otpService: OtpService) {
-        this.userService = userService;
+    constructor(userAuthService: UserAuthService, otpService: OtpService) {
+        this.userAuthService = userAuthService;
         this.otpService = otpService;
     }
 
@@ -29,7 +18,7 @@ class UserController {
         try {
             const { email, password }: { email: string; password: string } = req.body;
 
-            await this.userService.sendOtp(email, password)
+            await this.userAuthService.sendOtp(email, password)
             
             const otp = await this.otpService.getOTP(email, 'signup');
     
@@ -47,7 +36,7 @@ class UserController {
         try {
             const { email, otp }: { email: string; otp: string } = req.body;
             
-            await this.userService.verifyOtp(email, otp)
+            await this.userAuthService.verifyOtp(email, otp)
     
             res.status(200).json({
                 message: 'OTP verified successfully',
@@ -67,7 +56,7 @@ class UserController {
             const userData = req.body; 
 
     
-            await this.userService.signup(userData)
+            await this.userAuthService.signup(userData)
     
             res.status(201).json({
                 message: "User signed up successfully"
@@ -84,7 +73,7 @@ class UserController {
         try {
             const { email, password }: { email: string, password: string } = req.body
 
-            const result = await this.userService.signin(email, password)
+            const result = await this.userAuthService.signin(email, password)
 
             if("googleUser" in result) {
                 res.status(202).json(result.message);
@@ -117,7 +106,7 @@ class UserController {
 
             const { email } = req.body;
 
-            const user = await this.userService.sendOtpForgotPassword(email);
+            const user = await this.userAuthService.sendOtpForgotPassword(email);
 
             res.status(200).json({
                 user
@@ -134,7 +123,7 @@ class UserController {
         try {
             const { email, otp } = req.body;
 
-            await this.userService.verifyOtpForgotPassword(email, otp);
+            await this.userAuthService.verifyOtpForgotPassword(email, otp);
 
 
             res.status(200).json({
@@ -151,7 +140,7 @@ class UserController {
         try {
             const { id, password } = req.body;
 
-            await this.userService.resetPassword(id, password);
+            await this.userAuthService.resetPassword(id, password);
 
             res.status(200).json({
                 message: 'Password reset successfully'
@@ -162,53 +151,11 @@ class UserController {
         }
     }
 
-    googleCallback = async (req: Request, res: Response): Promise<void> => {
-        try {
-            if(!req.user) {
-                res.status(401).json({
-                    message: 'Authentication falied'
-                })
-                return
-            }
-
-            const gooleUser = req.user as Partial<IUser>
-
-            const result = await this.userService.googleCallback(gooleUser);
-
-            if ("partialUser" in result) { 
-                const { partialUser } = result;
-                res.status(202).json({
-                    partialUser,
-                    message: "Complete your profile"
-                })
-                return
-            }
-
-            const { accessToken, refreshToken, user } = result;
-
-            res.cookie('refreshToken', refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
-                maxAge: 7 * 24 * 60 * 60 * 1000, 
-              });
-            
-              res.status(200).json({
-                accessToken,
-                user
-              })
-
-        } catch (error) {
-            logger.error('Error during Google authentication:', error);
-            res.status(500).json({ error: 'Server error' });
-        }
-    }
-
     googleSignIn = async (req: Request, res: Response): Promise<void> => {
         try {
             const { credential } = req.body;
 
-            const result = await this.userService.googleSignIn(credential)
+            const result = await this.userAuthService.googleSignIn(credential)
 
             if(!result.partialUser) {
 
@@ -255,26 +202,32 @@ class UserController {
         }
     }
 
-    completeProfile = async (req: AuthRequest, res: Response): Promise<void> => {
+    completeProfile = async (req: Request, res: Response): Promise<void> => {
         try {
+
+
+            if (!req.user) {
+                res.status(401).json({ message: 'No user information found' });
+                return;
+              }
+
             const { userData } = req.body;
             const { email } = req.user
 
             userData.email = email
 
-            const user = await this.userService.completeProfileAndSignUp(userData)
+            const user = await this.userAuthService.completeProfileAndSignUp(userData)
 
             res.status(200).json({
                 user
             })
 
-        } catch (error) {
+        } catch (error) { 
             logger.error('Error during Google authentication singup:', error);
             res.status(500).json({ error: 'Server error' });
         }
     } 
-
 }
 
  
-export default UserController;
+export default UserAuthController;

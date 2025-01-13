@@ -4,14 +4,13 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 dotenv.config()
 import connectDB from './configs/db';
 import logger from './configs/logger';
-import userRouter from "./routes/userRouter";
-import sessionConfig from './configs/sessionConfig.';
-import passport from 'passport';
-import './configs/passport'
-import cookieParser from 'cookie-parser';
+import sessionConfig from './configs/sessionConfig';
+import userRouter from "./routes/user/userRouter";
+import adminRouter from "./routes/admin/adminRouter";
 
 const app = express();
 
@@ -30,10 +29,8 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionConfig);
-app.use(cookieParser());
-
-app.use(passport.initialize());
-app.use(passport.session())
+app.use(cookieParser()); 
+ 
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     logger.error(err.stack);
@@ -52,6 +49,7 @@ connectDB();
 
 //routes
 app.use('/api/user', userRouter)
+app.use('/api/admin', adminRouter)
 
 const PORT: string | undefined = process.env.PORT;
 

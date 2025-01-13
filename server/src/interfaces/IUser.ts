@@ -1,4 +1,4 @@
-import { Document, ObjectId } from 'mongoose';
+import { Document } from 'mongoose';
 
 export interface Address {
   city: string;
@@ -9,9 +9,8 @@ export interface Address {
 }
 
 export default interface IUser extends Document {
-  _id: ObjectId;
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
   gender: 'male' | 'female';

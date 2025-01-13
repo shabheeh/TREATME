@@ -9,9 +9,9 @@ import {
     MenuItem,
     Grid
   } from "@mui/material"
-  import SignupPath from "./SignupPath"
+  import SignupPath from "./SignupPath";
   import React, { useEffect, useState } from "react"
-  import { useForm, Controller } from "react-hook-form"
+  import { useForm, Controller } from "react-hook-form";
   import log from 'loglevel';
 // import { IUser } from "../../types/user/authTypes";
 import { useSelector } from "react-redux";

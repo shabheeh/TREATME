@@ -24,7 +24,7 @@ const doctorSchema = new Schema(
     phone: { type: String, required: true, trim: true },
     specialization: { type: Schema.Types.ObjectId, ref: 'Specialization', required: true },
     specialties: { type: [String], default: [] },
-    license: { type: String, required: true, unique: true },
+    registerNo: { type: String, required: true, unique: true },
     experience: { type: Number, required: true, min: 0 },
     biography: { type: String, trim: true },
     availability: { type: [availabilitySchema], default: [] },
@@ -34,5 +34,5 @@ const doctorSchema = new Schema(
   }
 );
 
-// Create and export the Doctor model
+
 export const DoctorModel = model<IDoctor>('Doctor', doctorSchema);

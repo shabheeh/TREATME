@@ -1,4 +1,4 @@
-import { ObjectId, Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 
 interface Slot {
@@ -13,16 +13,15 @@ interface Availability {
 }
 
 export default interface IDoctor extends Document {
-    _id: ObjectId;
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     phone: string;
     specializaton: ObjectId;
-    specialties: [string];
+    specialties: string[];
     license: string;
-    experience: Number;
+    experience: number;
     biography: string;
     availability: Availability[];
 }

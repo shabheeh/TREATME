@@ -3,13 +3,13 @@ import { theme } from "./utils/theme";
 import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import LandingPage from "./pages/user/LandingPage"
+import LandingPageDoctor from "./pages/doctor/LandingPage";
 // import Authentication from "./pages/user/Authentication";
-// import SignInFlow from "./pages/user/SignInFlow";
+import SignInFlow from "./pages/user/SignInFlow";
 import SignUpFlow from "./pages/user/SignUpFlow";
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
-import SignInFlow from "./components/user/AuthFlow";
 
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
      <CssBaseline />
-     <GoogleOAuthProvider clientId="800549462493-vcfh7ot3srocm1bsupi8o6joet9m5huc.apps.googleusercontent.com">
+     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
 
      <Router>
       <Routes>
@@ -32,6 +32,7 @@ function App() {
         <Route path="/reset-password" element={ <Authentication />} /> */}
         <Route path="/signin" element={<SignInFlow />} />
         <Route path="/signup" element={<SignUpFlow />} />
+        <Route path="/doctor" element={ <LandingPageDoctor />} />
         
       </Routes>
      </Router>

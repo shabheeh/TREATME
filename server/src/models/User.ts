@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import IUser from '../interfaces/IUser'; // Adjust path if necessary
+import IUser from '../interfaces/IUser';
 
 
 const addressSchema = new Schema({
@@ -18,7 +18,7 @@ const userSchema = new Schema(
     lastName: { type: String, optional: true, trim: true },
     password: { type: String, optional: true },
     gender: { type: String, enum: ['male', 'female'], optional: true },
-    dateOfBirth: { type: Date, optional: true },
+    dateOfBirth: { type: Date, optional: true }, 
     address: addressSchema,
     profilePicture: { type: String, trim: true },
     isActive: { type: Boolean, default: true },

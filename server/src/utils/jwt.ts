@@ -10,9 +10,9 @@ if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
 }
 
 // Types
-interface TokenPayload {
+export interface TokenPayload {
     email: string;
-    role: string;
+    role: 'admin' | 'patient' | 'doctor';
     exp?: number;
     iat?: number;
 }
