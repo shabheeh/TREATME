@@ -1,8 +1,10 @@
 import { Document } from "mongoose";
 
-interface IAdmin extends Document {
+export default interface IAdmin extends Document {
     email: string;
     password: string;
 }
 
-export default IAdmin
+export interface IAdminAuthService {
+    SignUpAdmin(email: string, password: string): Promise<void>
+}

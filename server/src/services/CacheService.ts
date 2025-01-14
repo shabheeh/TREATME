@@ -1,6 +1,10 @@
 import { redisClient } from '../configs/redis';
 import logger from '../configs/logger';
-export default class CacheService {
+import { ICacheService } from '../interfaces/IShared';
+
+
+
+export default class CacheService implements ICacheService {
     
     async store(key: string, value: string, ttl: number): Promise<void> {
         try {
@@ -41,16 +45,4 @@ export default class CacheService {
         }
     }
 
-   
-    async extendTTL(key: string, ttl: number): Promise<void> {
-        try {
-            const result = await redisClient.expire(key, ttl);
-            if (result) {
-                throw new Error(`Key "${key}" does not exist or could not update TTL.`);
-            }
-        } catch (error) {
-            logger.error(`Error extending TTL for key "${key}" in Redis:`, error);
-            throw new Error('Failed to extend TTL in cache');
-        }
-    }
 }

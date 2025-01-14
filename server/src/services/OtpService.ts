@@ -1,10 +1,10 @@
 import nodemailer from 'nodemailer';
 import CacheService from './CacheService';
 import logger from '../configs/logger';
+import { IOtpService } from '../interfaces/IShared';
 
 
-
-export default class OtpService {
+class OtpService implements IOtpService {
     private emailTransporter;
     private cacheService: CacheService;
 
@@ -63,3 +63,6 @@ export default class OtpService {
         await this.cacheService.delete(`otp-${type}:${email}`);
     }
 }
+
+
+export default OtpService

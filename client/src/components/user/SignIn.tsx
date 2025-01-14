@@ -38,7 +38,7 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
   const onSubmit = async(data: SignInFormInputs) => {
     try {
       setLoading(true)
-      await authServiceUser.signInUser(data)
+      await authServiceUser.signIn(data)
       navigate('/patient')
     } catch (error) {
       console.error('Sign in error:', error);
@@ -65,27 +65,6 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
       console.error('Google sign-in error:', error);
     }
   };
-  // const handleGoogleSignIn = async () => {
-  //   try {
-  //     const result = await authServiceUser.googleSignIn(); 
-  
-  //     if ("error" in result) { 
-  //       console.error(result.error);
-  //       return;
-  //     }
-  
-  //     const { isPartialUser, user } = result;
-  
-  //     if (isPartialUser) {
-  //       onCompleteProfile(user); 
-  //     }else {
-  //       navigate('/patient')
-  //     }
-  //   } catch (error) {
-  //     console.log((error as Error).message);
-  //   }
-  // };
-  
 
   return (
 

@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
   }
 
 interface CompleteProfileProps {
-  isPartialUser: boolean
+  isPartialUser?: boolean
 }
 
   
@@ -152,7 +152,7 @@ interface CompleteProfileProps {
 
       try {
         if (!isPartialUser) {
-          await authServiceUser.signUpUser(userData)
+          await authServiceUser.signUp(userData)
           navigate('/signin')
         }else {
           await authServiceUser.completeProfile(userData)

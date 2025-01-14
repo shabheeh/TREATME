@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import UserAuthService from "../../services/user/UserAuthService";
 import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
+import { IUserAuthService, IUserController } from "src/interfaces/IUser";
 
 
-class UserAuthController {
+class UserAuthController implements IUserController {
 
-    private userAuthService: UserAuthService;
+    private userAuthService: IUserAuthService;
     private otpService: OtpService;
 
-    constructor(userAuthService: UserAuthService, otpService: OtpService) {
+    constructor(userAuthService: IUserAuthService, otpService: OtpService) {
         this.userAuthService = userAuthService;
         this.otpService = otpService;
     }

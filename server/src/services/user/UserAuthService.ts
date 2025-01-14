@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import IUser from '../../interfaces/IUser';
+import IUser, { IUserAuthService, SignInResult, googleSignInResult } from '../../interfaces/IUser';
 import IUserRepository from '../../repositories/interfaces/IUserRepository';
 import { generateTokens, TokenPayload } from '../../utils/jwt';
 import CacheService from '../CacheService';
@@ -12,24 +12,8 @@ const mailSubject = {
     resetPassword: "Reset Your Password"
 }
 
-type SignInResult = {  
-    message: string, 
-    googleUser: boolean } | {
-    user: IUser,
-    accessToken: string,
-    refreshToken: string 
-}
 
-type googleSignInResult = { 
-    accessToken: string,
-    refreshToken: string, 
-    user?: IUser,
-    newUser?: Partial<IUser>,
-    partialUser: boolean
-}
-
-
-class UserAuthService {
+class UserAuthService implements IUserAuthService {
 
     private userRepository: IUserRepository;
     private otpService: OtpService;

@@ -19,14 +19,14 @@ type verifyOtpForgotPasswordResult = { email: string } | { error: string }
 
 interface IAuthServiceUser {
     sendOtp(credentials: { email: string, password: string }): Promise<MockSignUpResult>
-    signInUser(credentials: { email: string; password: string }): Promise<SignInResult>;
-    signOutUser(): Promise<SignOutResult>;
+    signIn(credentials: { email: string; password: string }): Promise<SignInResult>;
+    signOut(): Promise<SignOutResult>;
     verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult>
     googleSignIn(credential: string): Promise<GoogleSignInResult>
     verifyEmail(email: string): Promise<verifyEmailResult>
     verifyOtpForgotPassword(email: string, otp: string): Promise<verifyOtpForgotPasswordResult>
     resetPassword(id: string, password: string): Promise<void | { error: string}>;
-    signUpUser(userData: Partial<IUser>): Promise<void | { error: string}>;
+    signUp(userData: Partial<IUser>): Promise<void | { error: string}>;
     completeProfile(userData: Partial<IUser>): Promise<void | { error: string}>;
 }
 
@@ -84,7 +84,7 @@ class AuthServiceUser implements IAuthServiceUser {
     }
   }
 
-  async signUpUser(userData: Partial<IUser>): Promise<void | { error: string}> {
+  async signUp(userData: Partial<IUser>): Promise<void | { error: string}> {
     try {
       await api.user.post('/auth/signup', userData)
 
@@ -102,7 +102,7 @@ class AuthServiceUser implements IAuthServiceUser {
   }
 
 
-  async signInUser(credentials: { email: string; password: string }): Promise<SignInResult> {
+  async signIn(credentials: { email: string; password: string }): Promise<SignInResult> {
     try {
 
       const response = await api.user.post("/auth/signin", credentials);
@@ -132,7 +132,7 @@ class AuthServiceUser implements IAuthServiceUser {
     }
 
 
-  async signOutUser(): Promise<SignOutResult> {
+  async signOut(): Promise<SignOutResult> {
     try {
 
       await api.user.post("/auth/signout");
