@@ -9,7 +9,7 @@ import {
 
   import { useForm } from "react-hook-form"
 import authServiceUser from "../../services/user/authService";
-  
+  import { toast } from "sonner";
   interface ResetPasswordInputs {
     password: string;
     confirmPassword: string;
@@ -48,6 +48,9 @@ import { RootState } from "../../redux/app/store";
         onResetPassword()
         
       } catch (error) {
+        if(error instanceof Error) {
+          toast.error(error.message)
+        }
         console.log(error)
       }
     }

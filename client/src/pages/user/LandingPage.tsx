@@ -111,7 +111,7 @@ const LandingPage = () => {
     {
       question: "How much does a consultation cost?",
       answer:
-        "Consultation fees vary by specialist and service. Most insurance plans are accepted. You can see the exact cost before booking your appointment.",
+        "Consultation fees vary by specialist and service You can see the exact cost before booking your appointment.",
     },
     {
       question: "How long are the appointments?",
@@ -121,7 +121,7 @@ const LandingPage = () => {
     {
       question: "Can I get prescriptions through TreatMe?",
       answer:
-        "Yes, our licensed healthcare providers can prescribe medications when appropriate. Prescriptions are sent directly to your preferred pharmacy.",
+        "Yes, our licensed healthcare providers can prescribe medications when appropriate. Prescriptions are sent directly to your Medication section on the app.",
     },
     {
       question: "Is my information secure?",
@@ -132,10 +132,10 @@ const LandingPage = () => {
 
   return (
     <Box>
-      {/* Header */}
+      
         <Navbar />  
 
-      {/* Hero Banner */}
+    
       <Box sx={{ bgcolor: "white", color: "teal" }}>
         <Container maxWidth="xl" disableGutters>
           <Grid container alignItems="center">
@@ -210,7 +210,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* How It Works */}
+
       <Box sx={{ py: 10, bgcolor: "background.paper" }}>
         <Container maxWidth="xl">
           <Typography
@@ -239,7 +239,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* Services */}
+     
       <Box sx={{ py: 10, bgcolor: "grey.50" }}>
         <Container maxWidth="xl">
           <Typography
@@ -279,7 +279,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* FAQ Section */}
+      
       <Box sx={{ py: 10, bgcolor: "white" }}>
         <Container maxWidth="xl" sx={{ alignItems: "start" }}>
           <Typography
@@ -296,8 +296,8 @@ const LandingPage = () => {
                 key={index}
                 sx={{
                   "&:not(:last-child)": { mb: 2 },
-                  boxShadow: "none", // Remove the shadow (border effect)
-                  border: "none", // Ensure no border
+                  boxShadow: "none", 
+                  border: "none", 
                 }}
               >
                 <AccordionSummary expandIcon={<ExpandMore />}>
@@ -314,13 +314,13 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* Footer */}
+    
       <Box sx={{ bgcolor: "grey.900", color: "white", py: 6 }}>
         <Container maxWidth="xl">
           <Grid container spacing={4}>
             <Grid item xs={12} md={3}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                {/* <AddIcon sx={{ fontSize: 24 }} /> */}
+       
                 <TiPlus size={30} />
                 <Typography variant="h6" sx={{ ml: 1 }}>
                   TreatMe

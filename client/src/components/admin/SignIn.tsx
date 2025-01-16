@@ -11,6 +11,7 @@ import {
   import { useNavigate } from "react-router-dom";
 import authServiceAdmin from "../../services/admin/authService";
   import Navbar from "../basics/Navbar";
+import { toast } from "sonner";
   interface SignInFormInputs {
     email: string;
     password: string;
@@ -33,6 +34,9 @@ import authServiceAdmin from "../../services/admin/authService";
         await authServiceAdmin.signIn(data.email, data.password)
         navigate('/admin')
       } catch (error) {
+        if(error instanceof Error) {
+          toast.error(error.message)
+        }
         console.error('Sign in error:', error);
       } finally {
         setLoading(false)

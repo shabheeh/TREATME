@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import IUser from "../interfaces/IUser";
+import IUser, { IUsersFilter, IUsersFilterResult } from "../interfaces/IUser";
 import IUserRepository from "./interfaces/IUserRepository";
 
 class UserRepository implements IUserRepository {
@@ -55,6 +55,38 @@ class UserRepository implements IUserRepository {
        } catch (error) {
            throw new Error(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`);
        }
+   }
+
+   async getUsers(filter: IUsersFilter): Promise<IUsersFilterResult> {
+        try {
+            const { page, limit, search } = filter;
+            const skip = (page - 1) * limit;
+
+            const query: any = {}
+
+            query.$or = [
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { phone: { $regex: search, $options: 'i' } }
+
+            ]
+
+            const users = await this.model.find(query)
+                .skip(skip)
+                .limit(limit)
+            const total = await this.model.countDocuments(query)
+
+            return {
+                users,
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        } catch (error) {
+            throw new Error(`Failed to fetch patients data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
    }
 }
 

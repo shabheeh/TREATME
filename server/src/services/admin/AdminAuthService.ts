@@ -1,43 +1,23 @@
 import bcrpyt from 'bcryptjs';
 import logger from '../../configs/logger';
-import AdminRespository from '../../repositories/AdminRepository';
+import IAdminRepository from 'src/repositories/interfaces/IAdminRepository';
 import { generateTokens, TokenPayload } from '../../utils/jwt';
-
-interface signInAdminResult {
-    accessToken: string,
-    refreshToken: string
-}
+import { IAdminAuthService, SignInAdminResult } from '../../interfaces/IAdmin';
 
 
 
-class AdminAuthService {
-
-    private readonly adminRepository: AdminRespository;
 
 
-    constructor(adminRepository: AdminRespository) {
+class AdminAuthService implements IAdminAuthService {
+
+    private readonly adminRepository: IAdminRepository;
+
+
+    constructor(adminRepository: IAdminRepository) {
         this.adminRepository = adminRepository
     }
 
-
-    async SignUpAdmin(email: string, password: string): Promise<void> {
-        try {
-            const hashedPassword = await bcrpyt.hash(password, 10);
-
-            const admin = {
-                email,
-                password: hashedPassword
-            }
-
-            await this.adminRepository.createAdmin(admin)
-
-        } catch (error) {
-            logger.error('error creagin new adin', error.message)
-            throw new Error(`Error creating new admn ${error.message}`)
-        }
-    }
-
-    async signInAdmin(email: string, password: string): Promise<signInAdminResult> {
+    async signInAdmin(email: string, password: string): Promise<SignInAdminResult> {
         try {
             
             const admin = await this.adminRepository.findAdminByEmail(email)

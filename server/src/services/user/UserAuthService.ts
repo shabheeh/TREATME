@@ -32,6 +32,7 @@ class UserAuthService implements IUserAuthService {
 
     async sendOtp(email: string, password: string): Promise<void> {
         try {
+
             const existingUser = await this.userRepository.findUserByEmail(email)
 
             if (existingUser) {
@@ -299,6 +300,44 @@ class UserAuthService implements IUserAuthService {
             throw new Error('error crating a new google user')
         }
     }
+
+    async resendOtp(email: string): Promise<void> {
+        try {
+            await this.otpService.deleteOTP(email, 'signup')
+
+            const otp = await this.otpService.sendOTP(email, 'signup', mailSubject.verifyEmail)
+
+            if (!otp) {
+                throw new Error('Failed to resend otp')
+            } 
+
+            logger.info(otp)
+
+        } catch (error) {
+            logger.error('error re-sending otp', error)
+            throw new Error('Failed to resend otp')
+        }
+    }
+
+    async resendOtpForgotPassword(email: string): Promise<void> {
+        try {
+            await this.otpService.deleteOTP(email, 'signin')
+
+            const otp = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
+
+            if (!otp) {
+                throw new Error('Failed to resend otp')
+            } 
+
+            logger.info(otp)
+
+        } catch (error) {
+            logger.error('error re-sending otp', error)
+            throw new Error('Failed to resend otp')
+        }
+    }
+
+    
 
 
 }

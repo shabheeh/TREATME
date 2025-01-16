@@ -1,35 +1,17 @@
 import { Request, Response } from "express";
 import logger from "../../configs/logger";
 import AdminAuthService from "../../services/admin/AdminAuthService";
+import { IAdminAuthController } from "../../interfaces/IAdmin";
 
 
 
 
-class AdminAuthController {
+class AdminAuthController implements IAdminAuthController {
 
     private adminAuthService: AdminAuthService;
 
     constructor(adminAuthService: AdminAuthService) {
         this.adminAuthService = adminAuthService
-    }
-
-
-    signUpAdmin = async(req: Request, res: Response): Promise<void> => {
-        try {
-            const { email, password } = req.body;
-
-            console.log(req.body)
-
-            await this.adminAuthService.SignUpAdmin(email, password)
-
-            res.status(200).json({
-                message: 'admin signed up successfully'
-            })
-
-        } catch (error) {
-            logger.error('error creatin new admin', error.message);
-            throw new Error(`Error creating new admin ${error.message}`)
-        }
     }
 
     signInAdmin = async (req: Request, res: Response): Promise<void> => {

@@ -18,10 +18,44 @@ export default interface IDoctor extends Document {
     firstName: string;
     lastName: string;
     phone: string;
+    gender: 'male' | 'female';
     specializaton: ObjectId;
     specialties: string[];
-    license: string;
+    languages: string[];
+    registerNo: string;
     experience: number;
     biography: string;
     availability: Availability[];
+}
+
+export interface IDoctorsFilter {
+  page: number;
+  limit: number;
+  search: string;
+}
+
+export interface IDoctorsFilterResult {
+  doctors: IDoctor[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number
+}
+
+
+export interface IApplicant extends Document {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  registerNo: string;
+  speciality: string;
+}
+
+export interface IApplicantService {
+  createApplicant(applicant: IApplicant): Promise<void>
+}
+
+export interface IApplicantController {
+  createApplicant(req: Request, res: Response): Promise<void>
 }

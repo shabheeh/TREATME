@@ -56,10 +56,8 @@ const LandingPage = () => {
 
   return (
     <Box>
-      {/* Header */}
-        <Navbar />  
 
-      {/* Hero Banner */}
+        <Navbar />  
       <Box sx={{ bgcolor: "white", color: "teal" }}>
         <Container maxWidth="xl" disableGutters>
           <Grid container alignItems="center">
@@ -134,7 +132,7 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* How It Works */}
+
       <Box sx={{ py: 10, mx: 10, bgcolor: "background.paper" }}>
         <Container maxWidth="xl">
           <Typography variant="body1" 
@@ -191,7 +189,6 @@ const LandingPage = () => {
           </Grid>
           </Grid>
           <Grid container spacing={2}>
-  {/* Form Container - 8 Columns */}
   <Grid item xs={12} md={8}>
     <Container
       component="form"
@@ -203,7 +200,7 @@ const LandingPage = () => {
         justifyContent: "center",
       }}
     >
-      {/* Name Fields */}
+
       <Box sx={{ width: "100%", my: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
@@ -334,7 +331,7 @@ const LandingPage = () => {
       
     >
       <Typography variant="h6" align="center">
-        This is the Box content
+
       </Typography>
     </Box>
   </Grid>

@@ -11,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import authServiceUser from "../../services/user/authService";
 import log from "loglevel";
-// import { IUser } from "../../types/user/authTypes";
+import { toast } from "sonner";
 
 type ForgotPasswordProps = {
   onVerifyEmail: () => void;
@@ -36,6 +36,9 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
     }
 
     } catch (error) {
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }
       log.error('error during verifying email', error)
     }
   };

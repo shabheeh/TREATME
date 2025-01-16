@@ -40,6 +40,11 @@ router.post("/auth/google", userAuthController.googleSignIn)
 
 router.post("/auth/complete-profile", authenticateToken, userAuthController.completeProfile)
 
+router.post('/auth/resend-otp', userAuthController.resendOtp)
+
+router.post('/auth/forgot-password/resend-otp', userAuthController.resendOtpForgotPassword)
+
+router.post('/auth/signout', userAuthController.signOUt)
 
 router.use(errors());
 

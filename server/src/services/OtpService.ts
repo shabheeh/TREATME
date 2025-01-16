@@ -1,7 +1,8 @@
-import nodemailer from 'nodemailer';
+
 import CacheService from './CacheService';
 import logger from '../configs/logger';
 import { IOtpService } from '../interfaces/IShared';
+import { getEmailTransporter } from '../configs/nodemailer';
 
 
 class OtpService implements IOtpService {
@@ -10,14 +11,7 @@ class OtpService implements IOtpService {
 
     constructor(cacheService: CacheService) {
         this.cacheService = cacheService;
-
-        this.emailTransporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
+        this.emailTransporter = getEmailTransporter()
     }
 
     private generateOTP(): string {
@@ -44,7 +38,7 @@ class OtpService implements IOtpService {
             return otp;
 
         } catch (error) {
-            logger.error(error.message)
+            logger.error('otp service',error.message)
             throw new Error('error sending otp')
         }
         

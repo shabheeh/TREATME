@@ -26,6 +26,11 @@ const authSlice = createSlice({
             state.isSignUp = action.payload.isSignUp
         },
 
+        signOut: (state) => {
+            state.isAuthenticated = false;
+            state.user = null;
+        },
+
         setAuthState: (state) => {
             state.isAuthenticated = true
         }
@@ -33,5 +38,5 @@ const authSlice = createSlice({
 })
 
 
-export const { signIn, setAuthState } = authSlice.actions
+export const { signIn, setAuthState, signOut } = authSlice.actions
 export default authSlice.reducer

@@ -48,7 +48,9 @@ export interface IUserAuthService {
   verifyOtpForgotPassword(email: string, otp: string): Promise<boolean>;
   resetPassword(id: string, password: string): Promise<void>;
   googleSignIn(credential: string): Promise<googleSignInResult>;
-  completeProfileAndSignUp(userData: IUser): Promise<IUser>
+  completeProfileAndSignUp(userData: IUser): Promise<IUser>;
+  resendOtp(email: string): Promise<void>;
+  resendOtpForgotPassword(email: string): Promise<void>
 }
 
 export interface IUserController {
@@ -61,4 +63,21 @@ export interface IUserController {
   resetPassword(req: Request, res: Response): Promise<void>;
   googleSignIn(req: Request, res: Response): Promise<void>;
   completeProfile(req: Request, res: Response): Promise<void>;
+  resendOtp(req: Request, res: Response): Promise<void>
+  resendOtpForgotPassword(req: Request, res: Response): Promise<void>
+}
+
+
+export interface IUsersFilter {
+  page: number;
+  limit: number;
+  search: string;
+}
+
+export interface IUsersFilterResult {
+  users: IUser[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number
 }

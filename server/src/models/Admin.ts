@@ -1,15 +1,10 @@
 import { Schema, model } from 'mongoose';
 import IAdmin from '../interfaces/IAdmin';
 
-const adminShema = new Schema(
+const adminSchema = new Schema(
     {
-        email: {
-            type: String, required: true
-        },
-
-        password: {
-            type: String, required: true
-        }
+        email: { type: String, required: true },
+        password: { type: String, required: true }
     },
     {
         timestamps: true,
@@ -17,4 +12,4 @@ const adminShema = new Schema(
 );
 
 
-export const AdminModel = model<IAdmin>('Admin', adminShema);
+export const AdminModel = model<IAdmin>('Admin', adminSchema);

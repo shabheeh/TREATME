@@ -16,6 +16,7 @@ import authServiceUser from "../../services/user/authService";
 import { AxiosError } from "axios";
 import { GoogleLogin, CredentialResponse} from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface SignupFormInputs {
   email: string;
@@ -55,18 +56,9 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
     try {
       console.log(data);
       setLoading(true)
-      const response = await authServiceUser.sendOtp({email: data.email, password: data.password})
-      
-      if ('error' in response) {
-        setError(true);
-        setErrorMessage(response.error);
-        setLoading(false)
-        return;
-      }
-      
-      
+
+      await authServiceUser.sendOtp({email: data.email, password: data.password})
         onSignUp();
-      
       
       setLoading(false)
     } catch (error: unknown) {
@@ -74,6 +66,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
       if(error instanceof AxiosError) {
         setError(true)
         setErrorMessage(error.message)
+        toast.error(error.message)
         console.log('hello', error.message)
       }
       
@@ -97,6 +90,9 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
         navigate('/dashboard');
       }
     } catch (error) {
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }
       console.error('Google sign-in error:', error);
     }
   };
@@ -194,7 +190,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
               variant="contained"  
               sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}
             >
-              { loading ? <CircularProgress size={30} /> : "Sign In" }
+              { loading ? <CircularProgress size={30} /> : "Sign Up" }
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
             <Box sx={{ display: 'flex', justifyContent: 'center', m: 2 }}>

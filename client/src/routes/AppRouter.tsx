@@ -5,6 +5,10 @@ import LandingPageDoctor from "../pages/doctor/LandingPage";
 import SignInFlow from "../pages/user/SignInFlow";
 import SignUpFlow from "../pages/user/SignUpFlow";
 import SignIn from "../components/admin/SignIn";
+import LayoutAdmin from "../Layouts/LayoutAdmin";
+import Patients from "../pages/admin/Patients";
+import Doctors from "../pages/admin/Doctors";
+import Dashboard from "../pages/admin/Dashboard";
 
 
 
@@ -18,8 +22,13 @@ function AppRouter() {
         <Route path="/" element={ <LandingPage />} />
         <Route path="/signin" element={<SignInFlow />} />
         <Route path="/signup" element={<SignUpFlow />} />
-        <Route path="/doctor" element={ <LandingPageDoctor />} />  
+        <Route path="/doctor-recruitement" element={ <LandingPageDoctor />} />  
         <Route path="/admin/signin" element={ <SignIn />} />
+        <Route path="/admin" element={ <LayoutAdmin />} >
+          <Route path="" element={ <Dashboard/>} />
+          <Route path="/admin/patients" element={ <Patients/>} />
+          <Route path="/admin/doctors" element={ <Doctors/> } />
+        </Route>
       </Routes>
      </Router>
   )

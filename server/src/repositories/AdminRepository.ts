@@ -9,14 +9,6 @@ class AdminRepository implements IAdminRepository {
         this.model = model;
     }
 
-    async createAdmin(admin: Partial<IAdmin>): Promise<void> {
-        try {
-            await this.model.create(admin);
-        } catch (error) {
-            throw new Error(`Error creating admin: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-    }
-
     async findAdminById(id: string): Promise<IAdmin | null> {
         try {
             const admin = await this.model.findById(id)
@@ -37,7 +29,7 @@ class AdminRepository implements IAdminRepository {
             throw new Error(`Error finding admin: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-}
+} 
 
 
 export default AdminRepository;

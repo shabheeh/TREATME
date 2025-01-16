@@ -19,7 +19,7 @@ export const signupValidation = celebrate({
             state: Joi.string().required(),
             street: Joi.string().required(),
         }).optional(),
-        profileImage: Joi.string().optional() 
+        profilePicture: Joi.string().optional() 
     }),
 });
 

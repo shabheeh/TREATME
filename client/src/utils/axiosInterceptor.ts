@@ -23,7 +23,6 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
     const refreshAuthToken = async () => {
         try {
             
-            
             const response = await axios.post(`${API_URLS[role]}/auth/refresh-token`)
     
             const { accessToken } = response.data;

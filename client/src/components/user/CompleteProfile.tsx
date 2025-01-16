@@ -18,6 +18,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/app/store";
 import authServiceUser from "../../services/user/authService";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+
   interface SignupFormInputs {
     firstName: string;
     lastName: string;
@@ -156,11 +159,15 @@ interface CompleteProfileProps {
           navigate('/signin')
         }else {
           await authServiceUser.completeProfile(userData)
+          navigate("/patient")
         }
         
-        // navigate("/patient")
+        
         log.info("user singued success")
       } catch (error) {
+        if(error instanceof Error) {
+          toast.error(error.message)
+        }
         log.error("error signinup user", error)
       }
 
@@ -203,7 +210,7 @@ interface CompleteProfileProps {
                 justifyContent: "center",
               }}
             >
-              {/* Name Fields */}
+
               <Box sx={{ width: "90%", my: 2 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
@@ -241,7 +248,7 @@ interface CompleteProfileProps {
                   </Grid>
                 </Grid>
               </Box>
-              {/* Phone Field */}
+ 
               <Box sx={{ width: "90%", my: 2 }}>
               <TextField
                 {...register("phone", { 
@@ -260,7 +267,7 @@ interface CompleteProfileProps {
               />
               </Box>
   
-              {/* Gender Toggle */}
+     
               <Box sx={{ width: "90%", my: 2 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   Gender
@@ -292,7 +299,6 @@ interface CompleteProfileProps {
                 )}
               </Box>
   
-              {/* Date of Birth */}
               <Box sx={{ width: "90%", my: 2 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   Date of Birth

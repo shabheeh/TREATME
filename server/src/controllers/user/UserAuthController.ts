@@ -4,13 +4,13 @@ import logger from "../../configs/logger";
 import { IUserAuthService, IUserController } from "src/interfaces/IUser";
 
 
-class UserAuthController implements IUserController {
+class UserAuthController implements IUserController { 
 
     private userAuthService: IUserAuthService;
     private otpService: OtpService;
 
     constructor(userAuthService: IUserAuthService, otpService: OtpService) {
-        this.userAuthService = userAuthService;
+        this.userAuthService = userAuthService; 
         this.otpService = otpService;
     }
 
@@ -95,7 +95,7 @@ class UserAuthController implements IUserController {
             });
 
         } catch (error) {
-            res.status(401).json({ error: error.message });
+            res.status(400).json({ error: error.message });
             logger.error(error.message)
 
         }
@@ -114,7 +114,7 @@ class UserAuthController implements IUserController {
             
             
         } catch (error) {
-            res.status(401).json({ error: error.message });
+            res.status(400).json({ error: error.message });
             logger.error(error.message)
         }
     }
@@ -207,11 +207,12 @@ class UserAuthController implements IUserController {
 
 
             if (!req.user) {
-                res.status(401).json({ message: 'No user information found' });
+                res.status(400).json({ message: 'No user information found' });
                 return;
               }
 
             const { userData } = req.body;
+
             const { email } = req.user
 
             userData.email = email
@@ -227,6 +228,66 @@ class UserAuthController implements IUserController {
             res.status(500).json({ error: 'Server error' });
         }
     } 
+
+    resendOtp = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email } = req.body
+
+            if (!email) {
+                throw new Error('No email not provided')
+            }
+
+            await this.userAuthService.resendOtp(email)
+
+            res.status(200).json({
+                message: 'otp resent successfully'
+            })
+
+        } catch (error) {
+            logger.error('controller: Error resending otp:', error);
+            res.status(500).json({ error: 'Server error' });
+        }
+    }
+
+    resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email } = req.body
+
+            if (!email) {
+                throw new Error('No email not provided')
+            }
+
+            await this.userAuthService.resendOtpForgotPassword(email)
+
+            res.status(200).json({
+                message: 'otp resent successfully'
+            })
+
+        } catch (error) {
+            logger.error('controller: Error resending otp:', error);
+            res.status(500).json({ error: 'Server error' });
+        }
+    }
+
+    signOUt = async (_req: Request, res: Response): Promise<void> => {
+        try {
+            
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+            });
+
+            res.status(200).json({
+                message: 'user signed out successfully'
+            })
+
+
+        } catch (error) {
+            logger.error('controller: Error resending otp:', error);
+            res.status(500).json({ error: 'Server error' });
+        }
+    }
 }
 
  

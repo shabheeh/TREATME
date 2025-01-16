@@ -13,7 +13,7 @@ import authServiceUser from "../../services/user/authService";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-
+import { toast } from "sonner";
 interface SignInFormInputs {
   email: string;
   password: string;
@@ -41,6 +41,9 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
       await authServiceUser.signIn(data)
       navigate('/patient')
     } catch (error) {
+      if(error instanceof Error) {
+              toast.error(error.message)
+            }
       console.error('Sign in error:', error);
     } finally {
       setLoading(false)
@@ -62,6 +65,9 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
         navigate('/dashboard');
       }
     } catch (error) {
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }
       console.error('Google sign-in error:', error);
     }
   };

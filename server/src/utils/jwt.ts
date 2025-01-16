@@ -51,7 +51,7 @@ export const verifyAccessToken = <T>(token: string): T => {
             logger.warn('Access token expired');
             throw new Error('Token expired');
         }
-        logger.error('Error verifying access token:', error);
+        logger.error('Error verifying accessToken:', error);
         throw new Error('Invalid access token');
     }
 };
@@ -61,10 +61,10 @@ export const verifyRefreshToken = <T>(token: string): T => {
         return jwt.verify(token, JWT_REFRESH_SECRET) as T;
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
-            logger.warn('Refresh token expired');
+            logger.warn('RefreshToken expired');
             throw new Error('Refresh token expired');
         }
-        logger.error('Error verifying refresh token:', error);
+        logger.error('Error verifying refreshToken:', error);
         throw new Error('Invalid refresh token');
     }
 };
@@ -82,9 +82,10 @@ export const refreshAccessToken = (refreshToken: string): string => {
         );
 
         return accessToken;
+
     } catch (error) {
-        logger.error('Error refreshing access token:', error);
-        throw new Error('Failed to refresh access token');
+        logger.error('Error refreshing new accessToken:', error);
+        throw new Error('faild to refersh new accessToken');
     }
 };
 

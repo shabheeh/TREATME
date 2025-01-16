@@ -17,7 +17,7 @@ const userSchema = new Schema(
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, optional: true, trim: true },
     password: { type: String, optional: true },
-    gender: { type: String, enum: ['male', 'female'], optional: true },
+    gender: { type: String, enum: ['male', 'female'], required: true },
     dateOfBirth: { type: Date, optional: true }, 
     address: addressSchema,
     profilePicture: { type: String, trim: true },
@@ -29,5 +29,4 @@ const userSchema = new Schema(
   }
 );
 
-// Create and export the User model
 export const UserModel = model<IUser>('User', userSchema);

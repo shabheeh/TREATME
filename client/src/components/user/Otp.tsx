@@ -22,6 +22,7 @@ interface OtpFormValues {
 const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySignIn }) => {
   const [seconds, setSeconds] = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(true);
+  const [otpError, setOtpError] = useState('')
 
   const tempUser = useSelector((state:RootState) => state.tempUser.tempUser)
 
@@ -46,14 +47,31 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
     }
   }, [isTimerActive, seconds]);
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async() => {
     setSeconds(30);
     setIsTimerActive(true);
-    // Logic to resend OTP
+    try {
+      if(isVerifyEmail) {
+        if (!tempUser?.email) {
+          throw new Error('somethig went wrong please try again')
+        }
+        await authServiceUser.resendOtp(tempUser.email)
+      }else {
+        if (!tempUser?.email) {
+          throw new Error('somethig went wrong please try again')
+        }
+        await authServiceUser.resendOtpForgotPassword(tempUser?.email)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setOtpError(error.message)
+      }
+      console.log(error)
+    }
+
   };
 
   const onSubmit = async(data: OtpFormValues) => {
-    console.log('otpdata', data)
     try {
       if (isVerifyEmail) {
         if (!tempUser?.email) {
@@ -73,6 +91,9 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
         }
       }
     } catch (error) {
+      if (error instanceof Error) {
+        setOtpError(error.message)
+      }
       console.log(error)
     }
 
@@ -132,6 +153,12 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
           {errors.otp && (
               <Typography color="error" sx={{ mt: -5, mb: 2 }}>
                 {errors.otp.message}
+              </Typography>
+            )}
+
+  {otpError && (
+              <Typography color="error" sx={{ mt: 5, mb: 2 }}>
+                {otpError}
               </Typography>
             )}
           
