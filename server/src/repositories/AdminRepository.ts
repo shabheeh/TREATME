@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import IAdmin from "../interfaces/IAdmin";
 import IAdminRepository from "./interfaces/IAdminRepository";
-
+import { AppError } from '../utils/errors';
 class AdminRepository implements IAdminRepository {
     private readonly model: Model<IAdmin>;
 
@@ -16,7 +16,10 @@ class AdminRepository implements IAdminRepository {
                 .lean();
             return admin;
         } catch (error) {
-            throw new Error(`Error finding admin: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -26,7 +29,10 @@ class AdminRepository implements IAdminRepository {
                 .lean();
             return admin;
         } catch (error) {
-            throw new Error(`Error finding admin: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 } 

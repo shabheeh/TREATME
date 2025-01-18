@@ -26,3 +26,12 @@ export default interface IDoctor {
     biography: string;
     availability: Availability[];
 }
+
+export interface IApplicant {
+    firstName: string;
+    lastName: string;
+    email: string;
+    registerNo: string;
+    phone: string;
+    specialty: string;
+}

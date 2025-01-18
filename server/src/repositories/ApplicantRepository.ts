@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import IApplicantRepository from "./interfaces/IApplicantRepository";
 import { IApplicant } from "src/interfaces/IDoctor";
-
+import { AppError } from "../utils/errors";
 
 
 class ApplicantRepository implements IApplicantRepository {
@@ -16,9 +16,24 @@ class ApplicantRepository implements IApplicantRepository {
         try {
             await this.model.create(applicant)
         } catch (error) {
-            throw new Error(`Failed to create applicant: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async findApplicantByEmail(email: String): Promise<IApplicant | null> {
+        try {
+            return this.model.findOne({ email })
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+            
         }
     }
 }
 
-export default ApplicantRepository;
+export default ApplicantRepository; 

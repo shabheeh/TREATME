@@ -1,5 +1,5 @@
 import { Document, ObjectId } from "mongoose";
-
+import { Request, Response, NextFunction } from "express";
 
 interface Slot {
     startTime: string;
@@ -57,5 +57,5 @@ export interface IApplicantService {
 }
 
 export interface IApplicantController {
-  createApplicant(req: Request, res: Response): Promise<void>
+  createApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
 }

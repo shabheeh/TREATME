@@ -2,6 +2,7 @@ import { IAdminPatientsService } from "src/interfaces/IAdmin";
 import { IUsersFilter, IUsersFilterResult } from "src/interfaces/IUser";
 import IUserRepository from "../../repositories/interfaces/IUserRepository";
 import logger from "../../configs/logger";
+import { AppError } from "../../utils/errors";
 
 
 
@@ -26,7 +27,13 @@ class AdminPatientsService implements IAdminPatientsService {
 
         } catch (error) {
             logger.error('error fetching users data', error.message)
-            throw new Error(`Error fetching users data${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 }

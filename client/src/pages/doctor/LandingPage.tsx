@@ -17,6 +17,8 @@ import { TiPlus } from "react-icons/ti";
 import { Link } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form"
+import applicantService from "../../services/doctor/applicantService";
+import { toast } from "sonner";
 
 interface RegisterFormInputs {
     firstName: string;
@@ -24,7 +26,7 @@ interface RegisterFormInputs {
     email: string;
     phone: string;
     registerNo: string;
-    type: string
+    specialty: string
 }
 
 const LandingPage = () => {
@@ -41,15 +43,39 @@ const LandingPage = () => {
         email: "",
         phone: "",
         registerNo: "",
-        type: ""
+        specialty: ""
         }
     });
 
 
     const types = [ "Primary Care", "Dermatology", "Psychiatry", "Therapy"]
 
-    const onSubmit = (data: RegisterFormInputs) => {
-        console.log(data)
+    const onSubmit = async(data: RegisterFormInputs) => {
+
+        try {
+
+          const promise = applicantService.createApplicant(data);
+
+          toast.promise(promise, {
+            loading: 'Submitting application...',
+            success: (result) => {
+              return result.message; 
+            },
+            error: (error) => {
+              return error.message
+            }
+          });
+
+
+        } catch (error) {
+          if(error instanceof Error) {
+            toast.error('Error Sending Application')
+          }else {
+            toast.error('Something Went Wrong')
+            console.log(error)
+          }
+          
+        }
     }
 
 
@@ -86,7 +112,7 @@ const LandingPage = () => {
                   px: 4,
                 }}
               >
-                Book Now
+                Sign in
               </Button>
               </Link>
             </Grid>
@@ -244,7 +270,7 @@ const LandingPage = () => {
               {...register("email", {
                 required: "Email is required",
                 pattern: {
-                  value: /^[A-Z][a-zA-Z' -]*$/,
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                   message: "Please enter a valid Email",
                 },
               })}
@@ -293,7 +319,7 @@ const LandingPage = () => {
           </Grid>
           <Grid item xs={6}>
           <Controller
-                      name="type"
+                      name="specialty"
                       control={control}
                       rules={{ required: "Please Select the type" }}
                       render={({ field }) => (
@@ -302,8 +328,8 @@ const LandingPage = () => {
                           select
                           fullWidth
                           label="Type of Provider"
-                          error={!!errors.type}
-                          helperText={errors.type?.message}
+                          error={!!errors.specialty}
+                          helperText={errors.specialty?.message}
                         >
                           {types.map((type, idx) => (
                             <MenuItem key={idx} value={type}>
@@ -319,7 +345,7 @@ const LandingPage = () => {
       <Button
         type="submit"
         variant="contained"
-        sx={{ py: 2, my: 5, alignSelf: 'start', fontSize: "1rem" }}
+        sx={{ py: 1, px: 4,  my: 4, alignSelf: 'start', fontSize: "1rem" }}
       >
         Submit
       </Button>

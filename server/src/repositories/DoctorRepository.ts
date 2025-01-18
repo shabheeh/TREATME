@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import IDoctorRepository from "./interfaces/IDoctorRepository";
 import IDoctor, { IDoctorsFilter, IDoctorsFilterResult} from "src/interfaces/IDoctor";
-
+import { AppError } from "../utils/errors";
 
 
 class DoctorRepository implements IDoctorRepository {
@@ -17,7 +17,10 @@ class DoctorRepository implements IDoctorRepository {
             const newDoctor = await this.model.create(doctor)
             return newDoctor.toObject()
         } catch (error) {
-            throw new Error(`Failed to create doctor: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -49,7 +52,10 @@ class DoctorRepository implements IDoctorRepository {
                     totalPages: Math.ceil(total / limit)
                 }
             } catch (error) {
-                throw new Error(`Failed to fetch doctors data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+                throw new AppError(
+                    `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                    500
+                );
             }
        }
 }

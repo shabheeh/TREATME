@@ -8,13 +8,12 @@ class MailerService {
       this.emailTransporter = getEmailTransporter(); 
     }
   
-    async sendEmail(to: string, subject: string, text: string, html?: string): Promise<void> {
+    async sendEmail(to: string, subject: string, text: string): Promise<void> {
       await this.emailTransporter.sendMail({
         from: process.env.EMAIL_USER,
         to,
         subject,
         text,
-        html,
       });
     }
   }

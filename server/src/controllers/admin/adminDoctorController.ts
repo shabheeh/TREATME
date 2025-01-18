@@ -1,6 +1,6 @@
 import { IAdminDoctorController, IAdminDoctorService } from "src/interfaces/IAdmin";
 import logger from "../../configs/logger";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 
 
@@ -12,11 +12,9 @@ class AdminDoctorController implements IAdminDoctorController {
         this.adminDoctorService = adminDoctorService
     }
 
-    createDoctor = async (req: Request, res: Response): Promise<void> => {
+    createDoctor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { doctor } = req.body;
-
-            logger.info('body', req.body.doctor)
 
             const newDoctor = await this.adminDoctorService.createDoctor(doctor)
 
@@ -28,11 +26,11 @@ class AdminDoctorController implements IAdminDoctorController {
  
         } catch (error) {
             logger.error('controller:error crating new Doctor ', error.message);
-            throw new Error(`Error sign in admin ${error.message}`)
+            next(error)
         }
     }
 
-    getDoctors = async (req: Request, res: Response): Promise<void> => {
+    getDoctors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const params = {
                 page: parseInt(req.query.page as string),
@@ -46,7 +44,7 @@ class AdminDoctorController implements IAdminDoctorController {
 
         } catch (error) {
             logger.error('controller:error crating new Doctor ', error.message);
-            throw new Error(`Error sign in admin ${error.message}`)
+            next(error)
         }
     }
 

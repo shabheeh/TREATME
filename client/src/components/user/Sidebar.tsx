@@ -12,25 +12,26 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import {
-  Home,
   Message,
-  People,
-  MedicalServices,
-  PersonSearch
+  Medication,
+  EventNote,
+  ContactSupport
 } from '@mui/icons-material';
 
-import { FaUserDoctor } from "react-icons/fa6";
+import { FaHouseMedical } from "react-icons/fa6";
 
 
-const drawerWidth = 240;
+import { RiHealthBookFill } from "react-icons/ri";
+
+const drawerWidth = 250;
 
 const menuItems = [
-  { text: 'Dashboard', icon: <Home />, path: '/admin' },
-  { text: 'Patients', icon: <People />, path: '/admin/patients' },
-  { text: 'Doctors', icon: <FaUserDoctor size={23} />, path: '/admin/doctors' },
-  { text: 'Messages', icon: <Message />, path: '/admin/messages' },
-  { text: 'Specialties', icon: <MedicalServices />, path: '/admin/spcialties' },
-  { text: 'Recruitements', icon: <PersonSearch />, path: '/admin/recruitements' },
+  { text: 'Visit Now', icon: <FaHouseMedical size={23} />, path: '/visitnow' },
+  { text: 'Appointments', icon: <EventNote />, path: '/appointments' },
+  { text: 'Messages', icon: <Message />, path: '/messages' },
+  { text: 'Health Profile', icon: <RiHealthBookFill size={23} />, path: '/health-profile' },
+  { text: 'Medications', icon: <Medication />, path: '/Medications' },
+  { text: 'Help & Support', icon: <ContactSupport />, path: '/help' },
 ];
 
 interface SidebarProps {

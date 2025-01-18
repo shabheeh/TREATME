@@ -3,6 +3,7 @@ import logger from '../../configs/logger';
 import IAdminRepository from 'src/repositories/interfaces/IAdminRepository';
 import { generateTokens, TokenPayload } from '../../utils/jwt';
 import { IAdminAuthService, SignInAdminResult } from '../../interfaces/IAdmin';
+import { AppError, AuthError, AuthErrorCode } from '../../utils/errors';
 
 
 
@@ -23,13 +24,13 @@ class AdminAuthService implements IAdminAuthService {
             const admin = await this.adminRepository.findAdminByEmail(email)
 
             if (!admin) {
-                throw new Error('Error finding admin')
+                throw new AuthError(AuthErrorCode.USER_NOT_FOUND, 'Admin not Found')
             }
 
             const isPasswordMatch = await bcrpyt.compare(password, admin.password)
 
             if (!isPasswordMatch) {
-                throw new Error(" invalid email or password")
+                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
             const payload: TokenPayload = {
@@ -43,7 +44,13 @@ class AdminAuthService implements IAdminAuthService {
 
         } catch (error) {
             logger.error('service: error sign in admin', error.message)
-            throw new Error(`Error sign in admin: ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 }

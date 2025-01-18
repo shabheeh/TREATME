@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Sidebar from '../components/admin/Sidebar';
-import NavbarHome from '../components/basics/NavebarHome';
+import Sidebar from '../../components/admin/Sidebar';
+import NavbarHome from '../../components/basics/NavebarHome';
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 

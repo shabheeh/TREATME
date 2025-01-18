@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
 import { IUserAuthService, IUserController } from "src/interfaces/IUser";
+import { BadRequestError } from "../../utils/errors";
 
 
 class UserAuthController implements IUserController { 
@@ -14,7 +15,7 @@ class UserAuthController implements IUserController {
         this.otpService = otpService;
     }
 
-    sendOtp = async (req: Request, res: Response): Promise<void> => {
+    sendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, password }: { email: string; password: string } = req.body;
 
@@ -28,11 +29,11 @@ class UserAuthController implements IUserController {
             });
     
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            next(error)
         }
     }
     
-    verifyOtp = async (req: Request, res: Response): Promise<void> => {
+    verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, otp }: { email: string; otp: string } = req.body;
             
@@ -44,15 +45,15 @@ class UserAuthController implements IUserController {
             });
     
         } catch (error) {
-            res.status(500).json({ error: error.message });
             logger.error(error.message)
+            next(error)
 
         }
     }
     
-    signup = async (req: Request, res: Response): Promise<void> => {
+    signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            logger.info('signup called')
+
             const userData = req.body; 
 
     
@@ -63,13 +64,13 @@ class UserAuthController implements IUserController {
             });
     
         } catch (error) {
-            res.status(500).json({ error: error.message });
             logger.error(error.message)
+            next(error)
 
         }
     }
 
-    signin = async(req: Request, res: Response): Promise<void> => {
+    signin = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, password }: { email: string, password: string } = req.body
 
@@ -95,13 +96,13 @@ class UserAuthController implements IUserController {
             });
 
         } catch (error) {
-            res.status(400).json({ error: error.message });
             logger.error(error.message)
+            next(error)
 
         }
     }
 
-    sendOtpForgotPassowrd = async (req: Request, res: Response): Promise<void> => {
+    sendOtpForgotPassowrd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
             const { email } = req.body;
@@ -114,12 +115,12 @@ class UserAuthController implements IUserController {
             
             
         } catch (error) {
-            res.status(400).json({ error: error.message });
             logger.error(error.message)
+            next(error)
         }
     }
 
-    verifyOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+    verifyOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, otp } = req.body;
 
@@ -131,12 +132,12 @@ class UserAuthController implements IUserController {
             })
 
         } catch (error) {
-            res.status(500).json({ error: error.message });
             logger.error(error.message)
+            next(error)
         }
     }
 
-    resetPassword = async (req: Request, res: Response): Promise<void> => {
+    resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { id, password } = req.body;
 
@@ -146,12 +147,12 @@ class UserAuthController implements IUserController {
                 message: 'Password reset successfully'
             })
         } catch (error) {
-            res.status(500).json({error: error.message })
             logger.error(error.message)
+            next(error)
         }
     }
 
-    googleSignIn = async (req: Request, res: Response): Promise<void> => {
+    googleSignIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { credential } = req.body;
 
@@ -198,11 +199,11 @@ class UserAuthController implements IUserController {
 
         } catch (error) {
             logger.error('Error during Google authentication:', error);
-            res.status(500).json({ error: 'Server error' });
+            next(error)
         }
     }
 
-    completeProfile = async (req: Request, res: Response): Promise<void> => {
+    completeProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
 
@@ -225,16 +226,16 @@ class UserAuthController implements IUserController {
 
         } catch (error) { 
             logger.error('Error during Google authentication singup:', error);
-            res.status(500).json({ error: 'Server error' });
+            next(error)
         }
     } 
 
-    resendOtp = async (req: Request, res: Response): Promise<void> => {
+    resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email } = req.body
 
             if (!email) {
-                throw new Error('No email not provided')
+                throw new BadRequestError('No email not provided')
             }
 
             await this.userAuthService.resendOtp(email)
@@ -245,16 +246,16 @@ class UserAuthController implements IUserController {
 
         } catch (error) {
             logger.error('controller: Error resending otp:', error);
-            res.status(500).json({ error: 'Server error' });
+            next(error)
         }
     }
 
-    resendOtpForgotPassword = async (req: Request, res: Response): Promise<void> => {
+    resendOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email } = req.body
 
             if (!email) {
-                throw new Error('No email not provided')
+                throw new BadRequestError('No email not provided')
             }
 
             await this.userAuthService.resendOtpForgotPassword(email)
@@ -265,11 +266,11 @@ class UserAuthController implements IUserController {
 
         } catch (error) {
             logger.error('controller: Error resending otp:', error);
-            res.status(500).json({ error: 'Server error' });
+            next(error)
         }
     }
 
-    signOUt = async (_req: Request, res: Response): Promise<void> => {
+    signOUt = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             
             res.clearCookie("refreshToken", {
@@ -285,7 +286,7 @@ class UserAuthController implements IUserController {
 
         } catch (error) {
             logger.error('controller: Error resending otp:', error);
-            res.status(500).json({ error: 'Server error' });
+            next(error)
         }
     }
 }

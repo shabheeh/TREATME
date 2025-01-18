@@ -3,6 +3,7 @@ import IDoctorRepository from "../../repositories/interfaces/IDoctorRepository";
 import bcrypt from 'bcryptjs';
 import logger from "../../configs/logger";
 import { IAdminDoctorService } from "src/interfaces/IAdmin";
+import { AppError } from "../../utils/errors";
 
 class AdminDoctorService implements IAdminDoctorService {
 
@@ -28,7 +29,13 @@ class AdminDoctorService implements IAdminDoctorService {
 
         } catch (error) {
             logger.error('error creating a new doctor', error.message)
-            throw new Error(`Error creating a new doctor ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -46,7 +53,13 @@ class AdminDoctorService implements IAdminDoctorService {
 
         } catch (error) {
             logger.error('error creating a new doctor', error.message)
-            throw new Error(`Error creating a new doctor ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 }

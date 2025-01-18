@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import AdminAuthService from "../../services/admin/AdminAuthService";
 import { IAdminAuthController } from "../../interfaces/IAdmin";
@@ -14,7 +14,7 @@ class AdminAuthController implements IAdminAuthController {
         this.adminAuthService = adminAuthService
     }
 
-    signInAdmin = async (req: Request, res: Response): Promise<void> => {
+    signInAdmin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { email, password } = req.body;
             
@@ -36,7 +36,7 @@ class AdminAuthController implements IAdminAuthController {
             
         } catch (error) {
             logger.error('controller:error sign in admin ', error.message);
-            throw new Error(`Error sign in admin ${error.message}`)
+            next(error)
         }
     }
 }

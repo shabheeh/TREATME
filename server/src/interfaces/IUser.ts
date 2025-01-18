@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 export interface Address {
   city: string;
   landmark: string;
@@ -54,17 +54,17 @@ export interface IUserAuthService {
 }
 
 export interface IUserController {
-  sendOtp(req: Request, res: Response): Promise<void>;
-  verifyOtp(req: Request, res: Response): Promise<void>;
-  signup(req: Request, res: Response): Promise<void>;
-  signin(req: Request, res: Response): Promise<void>;
-  sendOtpForgotPassowrd(req: Request, res: Response): Promise<void>;
-  verifyOtpForgotPassword(req: Request, res: Response): Promise<void>;
-  resetPassword(req: Request, res: Response): Promise<void>;
-  googleSignIn(req: Request, res: Response): Promise<void>;
-  completeProfile(req: Request, res: Response): Promise<void>;
-  resendOtp(req: Request, res: Response): Promise<void>
-  resendOtpForgotPassword(req: Request, res: Response): Promise<void>
+  sendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
+  verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
+  signup(req: Request, res: Response, next: NextFunction): Promise<void>;
+  signin(req: Request, res: Response, next: NextFunction): Promise<void>;
+  sendOtpForgotPassowrd(req: Request, res: Response, next: NextFunction): Promise<void>;
+  verifyOtpForgotPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
+  resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
+  googleSignIn(req: Request, res: Response, next: NextFunction): Promise<void>;
+  completeProfile(req: Request, res: Response, next: NextFunction): Promise<void>;
+  resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>
+  resendOtpForgotPassword(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 

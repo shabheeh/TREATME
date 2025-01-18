@@ -53,6 +53,7 @@ const DoctorsList = () => {
       }, 500);
   
       return () => clearTimeout(timer);
+      
     }, [searchQuery]);
 
   useEffect(() => {

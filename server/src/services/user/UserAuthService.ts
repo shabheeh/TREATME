@@ -6,6 +6,7 @@ import CacheService from '../CacheService';
 import OtpService from '../OtpService';
 import logger from '../../configs/logger';
 import { OAuth2Client } from 'google-auth-library';
+import { AppError, AuthError, AuthErrorCode, BadRequestError, ConflictError } from '../../utils/errors';
 
 const mailSubject = {
     verifyEmail: "Verify Your Email Address",
@@ -36,7 +37,7 @@ class UserAuthService implements IUserAuthService {
             const existingUser = await this.userRepository.findUserByEmail(email)
 
             if (existingUser) {
-                throw new Error('User with this email already exists')
+                throw new ConflictError('User with this email already exists')
             }
 
             await this.cacheService.store(`signup:${email}`, JSON.stringify({email, password}), 600)
@@ -46,11 +47,17 @@ class UserAuthService implements IUserAuthService {
             logger.info(otpSent) 
 
             if (!otpSent) {
-                throw new Error('Failed to sent otp, please try again later')
+                throw new BadRequestError('Error Sending OTP')
             }
         } catch (error) {
             logger.error('errro sending otp', error.message)
-            throw new Error(`error sending otp ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
      
     }
@@ -60,7 +67,7 @@ class UserAuthService implements IUserAuthService {
             const userData = await this.cacheService.retrieve(`signup:${email}`)
 
             if (!userData) {
-                throw new Error('Signup session expired, please try again')
+                throw new AuthError(AuthErrorCode.SESSION_EXPIRED)
             }
 
             const parsedUserData = JSON.parse(userData)
@@ -69,7 +76,7 @@ class UserAuthService implements IUserAuthService {
             const isOtpVerified = await this.otpService.verifyOTP(email, otp, 'signup') 
 
             if(!isOtpVerified) {
-                throw new Error('Invalid Otp')
+                throw new AuthError(AuthErrorCode.INVALID_OTP)
             }
 
             await this.cacheService.store(
@@ -79,9 +86,16 @@ class UserAuthService implements IUserAuthService {
             )
 
             await this.otpService.deleteOTP(email, 'signup');
+
         } catch (error) {
             logger.error('errro verifying otp', error.message)
-            throw new Error(`error verifying otp ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
         
 
@@ -93,13 +107,13 @@ class UserAuthService implements IUserAuthService {
             const cachedUserData = await this.cacheService.retrieve(`signup:${user.email}`)
 
             if (!cachedUserData) {
-                throw new Error('Sign up session is expired')
+                throw new AuthError(AuthErrorCode.SESSION_EXPIRED)
             }
 
             const parsedUserData = JSON.parse(cachedUserData);
 
             if (!parsedUserData.isOtpVerified) {
-                throw new Error('Please verify your email first')
+                throw new BadRequestError('Please verify your email')
             }
 
             const hashedPassword = await bcrypt.hash(parsedUserData.password, 0);
@@ -114,9 +128,16 @@ class UserAuthService implements IUserAuthService {
             const { password, ...userWithoutPassword } = newUser;
 
             return { newUser: userWithoutPassword };
+
         } catch (error) {
             logger.error('error during signup', error.message)
-            throw new Error(`Somethig went wrong ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
         
     }
@@ -126,7 +147,7 @@ class UserAuthService implements IUserAuthService {
             const user = await this.userRepository.findUserByEmail(email);
 
             if (!user) {
-                throw new Error('Invalid email or password')
+                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, 'Invallid Email or Password')
             }
 
             if (!user.password) {
@@ -139,7 +160,7 @@ class UserAuthService implements IUserAuthService {
             const isPasswordMatch = await bcrypt.compare(password, user.password)
 
             if (!isPasswordMatch) {
-                throw new Error('Invalid Email or Password')
+                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
             const payload: TokenPayload = {
@@ -153,7 +174,13 @@ class UserAuthService implements IUserAuthService {
 
         } catch (error) {
             logger.error('errro signin user', error.message)
-            throw new Error(`error signin user ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
         
     }
@@ -165,14 +192,20 @@ class UserAuthService implements IUserAuthService {
             const user = await this.userRepository.findUserByEmail(email);
             
             if (!user) {
-                throw new Error('User not found');
+                throw new AuthError(AuthErrorCode.USER_NOT_FOUND);
             }
 
             return user
 
         } catch (error) {
             logger.error('errro sending otp for forgot password', error.message)
-            throw new Error(`Error fetching user by email: ${error.message}`);
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -181,7 +214,7 @@ class UserAuthService implements IUserAuthService {
             const user = await this.userRepository.findUserByEmail(email);
 
         if (!user) {
-            throw new Error('No User found with this email')
+            throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
         }
 
         
@@ -189,7 +222,7 @@ class UserAuthService implements IUserAuthService {
         const isOtpSent = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
 
         if(!isOtpSent) {
-            throw new Error('Failed to sent otp, Please try again later')
+            throw new BadRequestError('Failed to sent otp, Please try again later')
         }
 
         return user
@@ -197,7 +230,13 @@ class UserAuthService implements IUserAuthService {
 
         } catch (error) {
             logger.error('errro sending otp for forgot password', error.message)
-            throw new Error(`error sending otp ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         } 
     }
 
@@ -209,7 +248,13 @@ class UserAuthService implements IUserAuthService {
 
         } catch (error) {
             logger.error('error sign in with google', error.message)
-            throw new Error(`Somethig went wrong ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -217,15 +262,22 @@ class UserAuthService implements IUserAuthService {
     async resetPassword(id: string, password: string): Promise<void> {
         try {
             const hashedPassword = await bcrypt.hash(password, 10)
+
             const updateData = await this.userRepository.updateUser(id, { password: hashedPassword })
         
             if (!updateData) {
-                throw new Error('Error reseting password')
+                throw new BadRequestError('Error reseting password')
             }
 
         } catch (error) {
             logger.error('error reseting password', error.message)
-            throw new Error(`Somethig went wrong ${error.message}`)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -242,7 +294,7 @@ class UserAuthService implements IUserAuthService {
 
 
             if (!payload || !payload.email || !payload.given_name || !payload.family_name) {
-                throw new Error('invalid token')
+                throw new AuthError(AuthErrorCode.INVALID_TOKEN)
             }
 
 
@@ -280,7 +332,13 @@ class UserAuthService implements IUserAuthService {
 
         } catch (error) {
             logger.error('error google signin', error)
-            throw new Error('error signin with google')
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -290,14 +348,20 @@ class UserAuthService implements IUserAuthService {
             const user = await this.userRepository.createUser(userData)
             
             if (!user) {
-                throw new Error('Failed crate new user')
+                throw new AppError('Failed to create New User')
             }
 
             return user
             
         } catch (error) {
             logger.error('error creating a new googleUser', error)
-            throw new Error('error crating a new google user')
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -308,14 +372,20 @@ class UserAuthService implements IUserAuthService {
             const otp = await this.otpService.sendOTP(email, 'signup', mailSubject.verifyEmail)
 
             if (!otp) {
-                throw new Error('Failed to resend otp')
+                throw new BadRequestError('Failed to Resend OTP')
             } 
 
             logger.info(otp)
 
         } catch (error) {
             logger.error('error re-sending otp', error)
-            throw new Error('Failed to resend otp')
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 
@@ -326,14 +396,20 @@ class UserAuthService implements IUserAuthService {
             const otp = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
 
             if (!otp) {
-                throw new Error('Failed to resend otp')
+                throw new BadRequestError('Failed to resend otp')
             } 
 
             logger.info(otp)
 
         } catch (error) {
             logger.error('error re-sending otp', error)
-            throw new Error('Failed to resend otp')
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 

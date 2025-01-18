@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from "./IDoctor";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IUsersFilter, IUsersFilterResult } from "./IUser";
 export default interface IAdmin extends Document {
     email: string;
@@ -19,7 +19,7 @@ export interface IAdminAuthService {
 }
 
 export interface IAdminAuthController {
-    signInAdmin(req: Request, res: Response): Promise<void>
+    signInAdmin(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export interface IAdminDoctorService {
@@ -28,13 +28,13 @@ export interface IAdminDoctorService {
 }
 
 export interface IAdminDoctorController {
-    createDoctor(req: Request, res: Response): Promise<void>
-    getDoctors(req: Request, res: Response): Promise<void>
+    createDoctor(req: Request, res: Response, next: NextFunction): Promise<void>
+    getDoctors(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 
 export interface IAdminPatientsController {
-    getPatients(req: Request, res: Response): Promise<void>
+    getPatients(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
 export interface IAdminPatientsService {

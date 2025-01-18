@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IAdminPatientsController, IAdminPatientsService } from "../../interfaces/IAdmin";
 import logger from "../../configs/logger";
 
@@ -12,7 +12,7 @@ class AdminPatientsController implements IAdminPatientsController {
         this.adminPatientsService = adminPatientsService;
     }
 
-    getPatients = async (req: Request, res: Response): Promise<void> => {
+    getPatients = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const params = {
                 page: parseInt(req.query.page as string),
@@ -26,7 +26,7 @@ class AdminPatientsController implements IAdminPatientsController {
 
         } catch (error) {
             logger.error('controller:error fetching patients data ', error.message);
-            throw new Error(`Error fetching patients data ${error.message}`)
+            next(error)
         }
     }
 }

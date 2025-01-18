@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
 import IUser, { IUsersFilter, IUsersFilterResult } from "../interfaces/IUser";
 import IUserRepository from "./interfaces/IUserRepository";
-
+import { AppError } from '../utils/errors';
 class UserRepository implements IUserRepository {
    private readonly model: Model<IUser>;
 
@@ -14,7 +14,10 @@ class UserRepository implements IUserRepository {
            const newUser = await this.model.create(user);
            return newUser.toObject();
        } catch (error) {
-           throw new Error(`Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
        }
    }
 
@@ -24,7 +27,10 @@ class UserRepository implements IUserRepository {
                .lean();
            return user;
        } catch (error) {
-           throw new Error(`Failed to find user by email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
        }
    }
 
@@ -35,7 +41,10 @@ class UserRepository implements IUserRepository {
                .lean();
            return user;
        } catch (error) {
-           throw new Error(`Failed to find user by id: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new AppError(
+            `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            500
+        );
        }
    }
 
@@ -53,7 +62,10 @@ class UserRepository implements IUserRepository {
            
            return updatedUser;
        } catch (error) {
-           throw new Error(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
        }
    }
 
@@ -85,7 +97,10 @@ class UserRepository implements IUserRepository {
                 totalPages: Math.ceil(total / limit)
             }
         } catch (error) {
-            throw new Error(`Failed to fetch patients data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
    }
 }

@@ -1,5 +1,5 @@
 
-import express, { Request, Response, NextFunction} from 'express';
+import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -11,6 +11,8 @@ import logger from './configs/logger';
 import sessionConfig from './configs/sessionConfig';
 import userRouter from "./routes/user/userRouter";
 import adminRouter from "./routes/admin/adminRouter";
+import doctorRouter from './routes/doctor/doctorRouter'
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
@@ -32,15 +34,7 @@ app.use(sessionConfig);
 app.use(cookieParser()); 
  
 
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    logger.error(err.stack);
-    res.status(500).send('Something broke!');
-});
 
-process.on('unhandledRejection', (err: Error) => {
-    logger.error('Unhandled Rejection:', err);
-    process.exit(1);
-});
  
 
 //connect db
@@ -50,6 +44,12 @@ connectDB();
 //routes
 app.use('/api/user', userRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/doctor', doctorRouter)
+
+ 
+
+app.use(errorHandler)
+
 
 const PORT: string | undefined = process.env.PORT;
 

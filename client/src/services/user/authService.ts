@@ -106,8 +106,10 @@ class AuthServiceUser implements IAuthServiceUser {
   }
 
 
+
   async signIn(credentials: { email: string; password: string }): Promise<SignInResult> {
     try {
+    
 
       const response = await api.user.post("/auth/signin", credentials);
 
