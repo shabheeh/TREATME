@@ -33,12 +33,11 @@ export interface IAdminDoctorController {
 }
 
 
-export interface IAdminPatientsController {
-    getPatients(req: Request, res: Response, next: NextFunction): Promise<void>
-}
-
 export interface IAdminPatientsService {
     getPatients(params: IUsersFilter): Promise<IUsersFilterResult>
     
 }
 
+export interface IAdminPatientsController {
+    getPatients(req: Request, res: Response, next: NextFunction): Promise<void>
+}

@@ -14,6 +14,7 @@ class AdminDoctorService implements IAdminDoctorService {
     }
 
     async createDoctor(doctor: IDoctor): Promise<Partial<IDoctor>> {
+
         try {
             const notHashedPassword = doctor.password;
 

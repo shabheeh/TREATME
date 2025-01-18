@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IApplicant } from '../interfaces/IDoctor';
+import { IApplicant } from '../interfaces/IApplicant';
 
 const applicantSchema = new Schema(
     {

@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import IDoctor from "../../types/doctor/authTypes";
 import { api } from "../../utils/axiosInterceptor";
 
@@ -19,6 +20,26 @@ export interface ResponseData {
 class DoctorsService {
 
 
+    
+    async addDoctor(doctor: IDoctor): Promise<void> {
+        try {
+             await api.admin.post('/doctor', { doctor })
+
+
+        } catch (error: unknown) {
+        
+            if (error instanceof AxiosError) {
+              console.error(`error creating Doctor: ${error.message}`, error);
+              throw new Error(`Error creating Doctor ${ error.message}`)
+            }
+        
+            console.error(`Unknown error `, error);
+            throw new Error(`Something went error`)
+            
+        }
+    }
+
+
 
     async getDoctors({ page, limit, search }: UrlQuery): Promise<ResponseData> {
         try {
@@ -30,7 +51,7 @@ class DoctorsService {
 
         } catch (error: unknown) {
         
-            if (error instanceof Error) {
+            if (error instanceof AxiosError) {
               console.error(`error fetching patients data: ${error.message}`, error);
               throw new Error(`Error fetching patients data ${ error.message}`)
             }

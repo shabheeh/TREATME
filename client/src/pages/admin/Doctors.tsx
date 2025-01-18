@@ -15,6 +15,12 @@ const Doctors = () => {
         variant="contained"
         color="primary"
         startIcon={<AddIcon />}
+        component="a" // Makes the Button behave like an anchor tag
+        href="/admin/add-doctor" // URL for navigation
+        sx={{
+          textTransform: "none", // Optional: Keeps the text in normal case
+          textDecoration: "none", // Ensures the link has no underline
+        }}
       >
         Add Doctor
       </Button>

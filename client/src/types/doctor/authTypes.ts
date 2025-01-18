@@ -13,18 +13,18 @@ interface Availability {
 
 export default interface IDoctor {
     email: string;
-    password: string;
     firstName: string;
     lastName: string;
     phone: string;
-    gender: 'male' | 'female';
-    specializaton: string;
+    gender: 'male' | 'female' | "";
+    specialization: string;
     specialties: string[];
     languages: string[];
     registerNo: string;
-    experience: number;
+    experience: number | null;
     biography: string;
-    availability: Availability[];
+    profilePicture: File | null;
+    availability?: Availability[];
 }
 
 export interface IApplicant {

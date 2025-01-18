@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { api } from "../../utils/axiosInterceptor";
 import TokenManager from "../../utils/TokenMangager";
 
@@ -27,7 +28,7 @@ class AuthServiceAdmin {
 
         } catch (error: unknown) {
         
-              if (error instanceof Error) {
+              if (error instanceof AxiosError) {
                 console.error(`error user signup: ${error.message}`, error);
                 throw new Error(`Error signin admin ${ error.message}`)
               }

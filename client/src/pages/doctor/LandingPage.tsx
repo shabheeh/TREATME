@@ -17,7 +17,7 @@ import { TiPlus } from "react-icons/ti";
 import { Link } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form"
-import applicantService from "../../services/doctor/applicantService";
+import applicantService from "../../services/applicant/applicantService";
 import { toast } from "sonner";
 
 interface RegisterFormInputs {

@@ -1,5 +1,5 @@
 import { Document, ObjectId } from "mongoose";
-import { Request, Response, NextFunction } from "express";
+
 
 interface Slot {
     startTime: string;
@@ -19,12 +19,14 @@ export default interface IDoctor extends Document {
     lastName: string;
     phone: string;
     gender: 'male' | 'female';
-    specializaton: ObjectId;
+    // specializaton: ObjectId;
+    specializaton: string;
     specialties: string[];
     languages: string[];
     registerNo: string;
     experience: number;
     biography: string;
+    profilePicture: string;
     availability: Availability[];
 }
 
@@ -43,19 +45,3 @@ export interface IDoctorsFilterResult {
 }
 
 
-export interface IApplicant extends Document {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  registerNo: string;
-  speciality: string;
-}
-
-export interface IApplicantService {
-  createApplicant(applicant: IApplicant): Promise<void>
-}
-
-export interface IApplicantController {
-  createApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
-}

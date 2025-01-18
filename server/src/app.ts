@@ -11,7 +11,7 @@ import logger from './configs/logger';
 import sessionConfig from './configs/sessionConfig';
 import userRouter from "./routes/user/userRouter";
 import adminRouter from "./routes/admin/adminRouter";
-import doctorRouter from './routes/doctor/doctorRouter'
+import doctorRouter from './routes/doctor/applicantRouter'
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();

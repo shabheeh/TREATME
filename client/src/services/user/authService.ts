@@ -5,6 +5,7 @@ import log from 'loglevel'
 import { store } from "../../redux/app/store";
 import { setAuthState, signIn, signOut } from "../../redux/features/user/authSlice";
 import { setTempUser } from "../../redux/features/user/tempSlice";
+import { AxiosError } from "axios";
 
 
 type SignInResult = { user: IUser } ;
@@ -51,7 +52,7 @@ class AuthServiceUser implements IAuthServiceUser {
         
     } catch (error: unknown) {
 
-        if (error instanceof Error) {
+        if (error instanceof AxiosError) {
           log.error(`SignInUser failed: ${error.message}`, error);
     
           throw new Error(error.message)
@@ -76,7 +77,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
     } catch (error: unknown) {
 
-      if (error instanceof Error) {
+      if (error instanceof AxiosError) {
         log.error(`otp verification failed: ${error.message}`, error);
         throw new Error('invlid otp')
       }
@@ -92,7 +93,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
     } catch (error: unknown) {
 
-      if (error instanceof Error) {
+      if (error instanceof AxiosError) {
         log.error(`error user signup: ${error.message}`, error);
   
         throw new Error(error.message)
@@ -126,7 +127,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
     } catch (error: unknown) {
 
-        if (error instanceof Error) {
+        if (error instanceof AxiosError) {
           log.error(`SignInUser failed: ${error.message}`, error);
     
           throw new Error(error.message)
@@ -153,7 +154,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
     } catch (error: unknown) {
 
-        if (error instanceof Error) {
+        if (error instanceof AxiosError) {
 
           log.error(`SignInUser failed: ${error.message}`, error);
     
@@ -195,7 +196,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
         } catch (error: unknown) {
 
-          if (error instanceof Error) {
+          if (error instanceof AxiosError) {
   
             log.error(`google sign in failed: ${error.message}`, error);
       
@@ -222,7 +223,7 @@ class AuthServiceUser implements IAuthServiceUser {
       
         } catch (error: unknown) {
 
-          if (error instanceof Error) {
+          if (error instanceof AxiosError) {
   
             log.error(`Error when otp sending: ${error.message}`, error);
       
@@ -246,7 +247,7 @@ class AuthServiceUser implements IAuthServiceUser {
     
         } catch (error: unknown) {
     
-          if (error instanceof Error) {
+          if (error instanceof AxiosError) {
             log.error(`otp verification failed: ${error.message}`, error);
       
             throw new Error(error.message)
@@ -261,7 +262,7 @@ class AuthServiceUser implements IAuthServiceUser {
         try {
           await api.user.put('/auth/reset-password', {id, password})
         } catch (error) {
-          if (error instanceof Error) {
+          if (error instanceof AxiosError) {
             log.error(`otp verification failed: ${error.message}`, error);
       
             throw new Error(error.message)
@@ -297,8 +298,8 @@ class AuthServiceUser implements IAuthServiceUser {
         try {
 
           await api.user.post('/auth/resend-otp', { email })
-        } catch (error) {
-          if (error instanceof Error) {
+        } catch (error: unknown) {
+          if (error instanceof AxiosError) {
             log.error(`otp sending failed: ${error.message}`, error);
     
           }
@@ -313,7 +314,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
           await api.user.post('/auth/forgot-password/resend-otp', { email })
         } catch (error) {
-          if (error instanceof Error) {
+          if (error instanceof AxiosError) {
             log.error(`otp sending failed: ${error.message}`, error);
     
           }

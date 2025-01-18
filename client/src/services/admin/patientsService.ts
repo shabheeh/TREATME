@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { IUser } from "../../types/user/authTypes";
 import { api } from "../../utils/axiosInterceptor";
 
@@ -30,7 +31,7 @@ class PatientsService {
 
         } catch (error: unknown) {
         
-            if (error instanceof Error) {
+            if (error instanceof AxiosError) {
               console.error(`error fetching patients data: ${error.message}`, error);
               throw new Error(`Error fetching patients data ${ error.message}`)
             }

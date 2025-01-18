@@ -1,6 +1,7 @@
 import { IAdminDoctorController, IAdminDoctorService } from "src/interfaces/IAdmin";
 import logger from "../../configs/logger";
 import { Request, Response, NextFunction } from "express";
+import { generatePassword } from "../../helpers/passwordGenerator";
 
 
 
@@ -15,6 +16,8 @@ class AdminDoctorController implements IAdminDoctorController {
     createDoctor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { doctor } = req.body;
+
+            doctor.password = generatePassword();
 
             const newDoctor = await this.adminDoctorService.createDoctor(doctor)
 

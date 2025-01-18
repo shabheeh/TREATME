@@ -11,6 +11,8 @@ import Doctors from "../pages/admin/Doctors";
 import Dashboard from "../pages/admin/Dashboard";
 import LayoutUser from "../Layouts/user/LayoutUser";
 import VisiitNow from "../components/user/VisitNow";
+import Applicants from "../pages/admin/Applicants";
+import AddDoctor from "../components/admin/AddDoctor";
 
 
 
@@ -33,6 +35,10 @@ function AppRouter() {
           <Route path="" element={ <Dashboard/>} />
           <Route path="/admin/patients" element={ <Patients/>} />
           <Route path="/admin/doctors" element={ <Doctors/> } />
+          <Route path="/admin/recruitements" element={ <Applicants/> } />
+          <Route path="/admin/add-doctor" element={ <AddDoctor/> } />
+
+
         </Route>
       </Routes>
      </Router>

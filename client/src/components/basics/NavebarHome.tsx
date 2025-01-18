@@ -21,7 +21,8 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ onMenuClick }) => {
       position="fixed" 
       sx={{ 
         bgcolor: 'teal',
-        zIndex: (theme) => theme.zIndex.drawer + 1, 
+        // zIndex: (theme) => theme.zIndex.drawer + 1, 
+        // zIndex: 10,
         width: '100%'
       }}
     >
@@ -39,7 +40,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ onMenuClick }) => {
           </IconButton>
           
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <TiPlus size={35} />
+            <TiPlus size={28} />
             <Typography 
               variant="h5" 
               component="div" 

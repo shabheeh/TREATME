@@ -12,7 +12,7 @@ const Navbar = () => {
       position="fixed" 
       sx={{ 
         bgcolor: 'teal',
-        zIndex: 1200,
+        // zIndex: ,
         width: '100%'
       }}
     >
