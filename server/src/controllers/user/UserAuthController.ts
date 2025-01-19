@@ -214,7 +214,7 @@ class UserAuthController implements IUserController {
 
             const { userData } = req.body;
 
-            const { email } = req.user
+            const { email } = req.user;
 
             userData.email = email
 
@@ -289,7 +289,9 @@ class UserAuthController implements IUserController {
             next(error)
         }
     }
-}
 
+    
+} 
+ 
  
 export default UserAuthController;

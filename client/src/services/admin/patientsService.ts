@@ -40,7 +40,24 @@ class PatientsService {
             throw new Error(`Something went error`)
             
         }
-    }    
+    }
+
+    async toggleIsActive(id: string, isActive: boolean) {
+        try {
+            await api.admin.patch('/patient', { id, isActive });
+
+        } catch (error: unknown) {
+        
+            if (error instanceof AxiosError) {
+              console.error(`error block or unblock patient: ${error.message}`, error);
+              throw new Error(`Error block or unblock patient ${ error.message}`)
+            }
+        
+            console.error(`Unknown error`, error);
+            throw new Error(`Something went error`)
+            
+        }
+    }
 }
 
 

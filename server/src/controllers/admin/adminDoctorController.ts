@@ -2,7 +2,8 @@ import { IAdminDoctorController, IAdminDoctorService } from "src/interfaces/IAdm
 import logger from "../../configs/logger";
 import { Request, Response, NextFunction } from "express";
 import { generatePassword } from "../../helpers/passwordGenerator";
-
+import IDoctor from "src/interfaces/IDoctor";
+import { uploadToCloudinary } from "../../utils/uploadImage";
 
 
 class AdminDoctorController implements IAdminDoctorController {
@@ -15,9 +16,36 @@ class AdminDoctorController implements IAdminDoctorController {
 
     createDoctor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { doctor } = req.body;
 
-            doctor.password = generatePassword();
+            let imageUrl: string;
+
+            if (req.file) {
+                const cloudinaryResponse = await uploadToCloudinary(req.file, 'ProfilePictures/Doctors');
+                imageUrl = cloudinaryResponse.url;
+            } else {
+                imageUrl = "https://cdn.pixabay.com/photo/2024/09/03/15/21/ai-generated-9019520_1280.png";
+            }
+          
+
+            const doctor = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                phone: req.body.phone,
+                password: generatePassword(),
+                gender: req.body.gender,
+                biography: req.body.biography,
+                specialization: req.body.specialization,
+                specialties: JSON.parse(req.body.specialties),
+                languages: JSON.parse(req.body.languages),
+                registerNo: req.body.registerNo,
+                experience: JSON.parse(req.body.experience),
+                profilePicture: imageUrl,
+              } as IDoctor
+              
+             
+
+            
 
             const newDoctor = await this.adminDoctorService.createDoctor(doctor)
 

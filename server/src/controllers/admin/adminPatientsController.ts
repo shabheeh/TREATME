@@ -29,6 +29,22 @@ class AdminPatientsController implements IAdminPatientsController {
             next(error)
         }
     }
+
+    togglePatientActivityStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id, isActive } = req.body;
+
+            await this.adminPatientsService.togglePatientActivityStatus(id, isActive)
+
+            res.status(200).json({
+                message: `Successfully ${ isActive ? 'Blocked' : 'Unblocked' } Patient`
+            })
+
+        } catch (error) {
+            logger.error('controller: Error block or unblock patient:', error);
+            next(error)
+        }
+    }
 }
 
 

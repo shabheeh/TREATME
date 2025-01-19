@@ -36,6 +36,23 @@ class AdminPatientsService implements IAdminPatientsService {
             );
         }
     }
+
+    async togglePatientActivityStatus(id: string, isActive: boolean): Promise<void> {
+        try {
+
+            await this.userRepository.updateUser(id, { isActive: !isActive});
+
+        } catch (error) {
+            logger.error('error re-sending otp', error)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
 }
 
 

@@ -50,7 +50,7 @@ export interface IUserAuthService {
   googleSignIn(credential: string): Promise<googleSignInResult>;
   completeProfileAndSignUp(userData: IUser): Promise<IUser>;
   resendOtp(email: string): Promise<void>;
-  resendOtpForgotPassword(email: string): Promise<void>
+  resendOtpForgotPassword(email: string): Promise<void>;
 }
 
 export interface IUserController {

@@ -17,6 +17,7 @@ export interface IUser {
     gender: 'male' | 'female';
     dateOfBirth: string;
     address?: Address;
+    isActive: boolean;
 }
 
 export interface authState {

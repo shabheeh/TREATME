@@ -20,7 +20,7 @@ export default interface IDoctor extends Document {
     phone: string;
     gender: 'male' | 'female';
     // specializaton: ObjectId;
-    specializaton: string;
+    specialization: string;
     specialties: string[];
     languages: string[];
     registerNo: string;

@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import doctorsService from '../../services/admin/doctorsService';
 import { ResponseData } from '../../services/admin/doctorsService';
-import { Typography } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 
 
 
@@ -101,7 +101,7 @@ const DoctorsList = () => {
       <Box sx={{ p: 2 }}>
         <TextField
           fullWidth
-          label="Search Patients"
+          label="Search Doctors"
           variant="outlined"
           value={searchQuery}
           onChange={handleSearchChange}
@@ -113,8 +113,8 @@ const DoctorsList = () => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>First Name</StyledTableCell>
-              <StyledTableCell>Last Name</StyledTableCell>
+              <StyledTableCell>Profile</StyledTableCell>
+              <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell>Gender</StyledTableCell>
               <StyledTableCell>Email</StyledTableCell>
               <StyledTableCell>Phone</StyledTableCell>
@@ -134,7 +134,7 @@ const DoctorsList = () => {
                   <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="h6" color="text.secondary" gutterBottom>
-                        No patients found
+                        No Doctors found
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {/* {searchQuery 
@@ -147,10 +147,12 @@ const DoctorsList = () => {
               ) :
               data?.doctors.map((doctor) => (
                 <StyledTableRow key={doctor.email}>
-                  <StyledTableCell component="th" scope="row">
-                    {doctor.firstName}
+                  <StyledTableCell >
+                    <Avatar src={doctor.profilePicture} />
                   </StyledTableCell>
-                  <StyledTableCell>{doctor.lastName}</StyledTableCell>
+                  <StyledTableCell component="th" scope="row">
+                    Dr. {doctor.firstName} {doctor.lastName}
+                  </StyledTableCell>
                   <StyledTableCell>{doctor.gender}</StyledTableCell>
                   <StyledTableCell>{doctor.email}</StyledTableCell>
                   <StyledTableCell>{doctor.phone}</StyledTableCell>

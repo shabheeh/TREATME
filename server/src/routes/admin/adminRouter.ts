@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import { AdminModel } from '../../models/Admin';
 import AdminRespository from '../../repositories/AdminRepository';
 import AdminAuthService from '../../services/admin/AdminAuthService';
@@ -27,10 +28,14 @@ const adminPatientsController = new AdminPatientsController(adminPatientsService
 
 const router = express.Router()
 
+const upload = multer({ storage: multer.memoryStorage() });
+
 
 router.post('/auth/signin', signinValidation, adminAuthController.signInAdmin)
 
-router.post('/doctor', adminDoctorController.createDoctor)
+router.post('/doctor', upload.single('profilePicture'), adminDoctorController.createDoctor)
+
+router.patch('/patient', adminPatientsController.togglePatientActivityStatus)
 
 router.get("/patients", adminPatientsController.getPatients)
 router.get('/doctors', adminDoctorController.getDoctors)

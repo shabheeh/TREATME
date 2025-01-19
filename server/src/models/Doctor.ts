@@ -31,6 +31,8 @@ const doctorSchema = new Schema(
     experience: { type: Number, required: true, min: 0 },
     biography: { type: String, trim: true },
     availability: { type: [availabilitySchema], default: [] },
+    profilePicture: { type: String, required: true },
+
   },
   {
     timestamps: true, 

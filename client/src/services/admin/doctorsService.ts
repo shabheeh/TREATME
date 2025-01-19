@@ -21,9 +21,10 @@ class DoctorsService {
 
 
     
-    async addDoctor(doctor: IDoctor): Promise<void> {
+    async addDoctor(doctor: FormData): Promise<void> {
         try {
-             await api.admin.post('/doctor', { doctor })
+            
+            await api.admin.post('/doctor', doctor)
 
 
         } catch (error: unknown) {

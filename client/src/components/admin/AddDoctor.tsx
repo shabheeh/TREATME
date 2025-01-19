@@ -155,28 +155,63 @@ const AddDoctor = () => {
     };
 
     const onSubmit = async (data: SignupFormInputs) => {
-        // Ensure experience is a number
         data.experience = Number(data.experience);
-
-        console.log(data);
-
+      
         if (!data.profilePicture) {
-            toast.error("Profile picture is required");
-            return;
+          toast.error("Profile picture is required");
+          return;
         }
-
+      
+        const { size, type } = data.profilePicture;
+        if (size > 5 * 1024 * 1024) { 
+          toast.error("Profile picture must be smaller than 5 MB");
+          return;
+        }
+        if (!["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)) {
+          toast.error("Only image files are allowed");
+          return;
+        }
+      
         try {
-            await doctorsService.addDoctor(data);
+          const formData = new FormData();
+          formData.append("firstName", data.firstName);
+          formData.append("lastName", data.lastName);
+          formData.append("email", data.email);
+          formData.append("phone", data.phone);
+          formData.append("biography", data.biography);
+          formData.append("experience", data.experience.toString());
+          formData.append("registerNo", data.registerNo);
+          formData.append("gender", data.gender);
+          formData.append("specialization", data.specialization);
+          formData.append("specialties", JSON.stringify(data.specialties));
+          formData.append("languages", JSON.stringify(data.languages));
+
+          if (data.profilePicture instanceof File) {
+            formData.append('profilePicture', data.profilePicture);
+          }else {
+            console.log("Profile Picture is not a file");
+            return;
+          }
+      
+          await doctorsService.addDoctor(formData);
+          toast.success("Doctor created successfully!");
+      
         } catch (error) {
-            if(error instanceof AxiosError) {
-                toast.error(error.message);
+          if (error instanceof AxiosError) {
+            if (error.response) {
+              toast.error(`Server Error: ${error.response.data.error || error.message}`);
+            } else if (error.request) {
+              toast.error("No response from the server. Please try again.");
+            } else {
+              toast.error(`Error: ${error.message}`);
             }
-            if(error instanceof Error) {
-                toast.error(error.message);
-            }
-            log.error("error signing up doctor", error);
+          } else {
+            toast.error("An unknown error occurred");
+          }
+          log.error("Error signing up doctor", error);
         }
-    };
+      };
+      
 
     return (
         <Box sx={{ py: 5 }}>

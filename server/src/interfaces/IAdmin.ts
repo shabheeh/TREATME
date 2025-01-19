@@ -35,9 +35,12 @@ export interface IAdminDoctorController {
 
 export interface IAdminPatientsService {
     getPatients(params: IUsersFilter): Promise<IUsersFilterResult>
+    togglePatientActivityStatus(id: string, isAcitve: boolean): Promise<void>
+
     
 }
 
 export interface IAdminPatientsController {
     getPatients(req: Request, res: Response, next: NextFunction): Promise<void>
+    togglePatientActivityStatus(req: Request, res: Response, next: NextFunction): Promise<void>
 }

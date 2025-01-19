@@ -102,7 +102,7 @@ const ApplicantsList = () => {
       <Box sx={{ p: 2 }}>
         <TextField
           fullWidth
-          label="Search Patients"
+          label="Search Applicants"
           variant="outlined"
           value={searchQuery}
           onChange={handleSearchChange}

@@ -16,6 +16,22 @@ export default interface IDoctor {
     firstName: string;
     lastName: string;
     phone: string;
+    gender: 'male' | 'female';
+    specialization: string;
+    specialties: string[];
+    languages: string[];
+    registerNo: string;
+    experience: number;
+    biography: string;
+    profilePicture: string;
+    availability?: Availability[];
+}
+
+export interface IDoctorSignUp {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
     gender: 'male' | 'female' | "";
     specialization: string;
     specialties: string[];
@@ -24,7 +40,6 @@ export default interface IDoctor {
     experience: number | null;
     biography: string;
     profilePicture: File | null;
-    availability?: Availability[];
 }
 
 export interface IApplicant {

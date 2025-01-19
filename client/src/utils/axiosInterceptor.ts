@@ -15,9 +15,6 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
     const instance = axios.create({
         baseURL: API_URLS[role],
         timeout: 10000,
-        headers: {
-            "Content-Type" : 'application/json'
-        },
     });
 
     const refreshAuthToken = async () => {
