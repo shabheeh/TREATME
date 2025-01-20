@@ -58,7 +58,7 @@ import { RootState } from "../../redux/app/store";
 
     return (
   
-        <Box sx={{ py: 10 }}>
+        <Box sx={{ py: 15 }}>
           <Container
             maxWidth="sm"
             sx={{

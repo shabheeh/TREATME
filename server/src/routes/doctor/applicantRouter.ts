@@ -3,6 +3,7 @@ import ApplicantController from '../../controllers/applicant/applicantController
 import { ApplicantModel } from '../../models/Applicant'
 import ApplicantRepository from '../../repositories/ApplicantRepository'
 import ApplicantService from '../../services/applicant/applicantService'
+import { authenticate } from '../../middlewares/authenticate'
 
 
 const applicantRepository = new ApplicantRepository(ApplicantModel)
@@ -13,8 +14,8 @@ const applicantController = new ApplicantController(applicantService)
 const router = express.Router()
 
 
-router.post('/applicant', applicantController.createApplicant)
-router.get('/applicants', applicantController.getApplicants)
+router.post('/applicants', authenticate, applicantController.createApplicant)
+router.get('/applicants', authenticate, applicantController.getApplicants)
 
 
 export default router

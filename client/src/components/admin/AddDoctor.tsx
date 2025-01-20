@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import React, { useState } from "react";
 import doctorsService from "../../services/admin/doctorsService";
 import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface SignupFormInputs {
     firstName: string;
@@ -123,6 +124,7 @@ const AddDoctor = () => {
 
     const profilePicture = watch('profilePicture');
 
+    const navigate = useNavigate()
 
     const [selectedSpecialization, setSelectedSpecialization] = useState("");
     const [specialties, setSpecialties] = useState<string[]>([]);
@@ -195,6 +197,8 @@ const AddDoctor = () => {
       
           await doctorsService.addDoctor(formData);
           toast.success("Doctor created successfully!");
+
+          navigate('/admin/doctors')
       
         } catch (error) {
           if (error instanceof AxiosError) {

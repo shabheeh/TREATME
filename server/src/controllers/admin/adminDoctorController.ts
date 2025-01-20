@@ -2,8 +2,9 @@ import { IAdminDoctorController, IAdminDoctorService } from "src/interfaces/IAdm
 import logger from "../../configs/logger";
 import { Request, Response, NextFunction } from "express";
 import { generatePassword } from "../../helpers/passwordGenerator";
-import IDoctor from "src/interfaces/IDoctor";
+import IDoctor from "../../interfaces/IDoctor";
 import { uploadToCloudinary } from "../../utils/uploadImage";
+import { BadRequestError } from "../../utils/errors";
 
 
 class AdminDoctorController implements IAdminDoctorController {
@@ -23,7 +24,7 @@ class AdminDoctorController implements IAdminDoctorController {
                 const cloudinaryResponse = await uploadToCloudinary(req.file, 'ProfilePictures/Doctors');
                 imageUrl = cloudinaryResponse.url;
             } else {
-                imageUrl = "https://cdn.pixabay.com/photo/2024/09/03/15/21/ai-generated-9019520_1280.png";
+                throw new BadRequestError('Profile Picture is not provided')
             }
           
 
@@ -44,8 +45,6 @@ class AdminDoctorController implements IAdminDoctorController {
               } as IDoctor
               
              
-
-            
 
             const newDoctor = await this.adminDoctorService.createDoctor(doctor)
 

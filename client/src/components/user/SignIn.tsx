@@ -62,7 +62,7 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
       if (isPartialUser) {
         onCompleteProfile();
       } else {
-        navigate('/dashboard');
+        navigate('/visitnow');
       }
     } catch (error) {
       if(error instanceof Error) {
@@ -74,7 +74,7 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
 
   return (
 
-      <Box sx={{ py: 10 }}>
+      <Box sx={{ py: 15 }}>
         <Container
           maxWidth="sm"
           sx={{

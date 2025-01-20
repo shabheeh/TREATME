@@ -101,7 +101,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
   };
 
   return (
-    <Box sx={{ py: 10 }}>
+    <Box sx={{ py: 15 }}>
       <Container
         maxWidth="sm"
         sx={{

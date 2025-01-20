@@ -1,13 +1,12 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 
-export const signupValidation = celebrate({
+export const validateDoctor = celebrate({
   [Segments.BODY]: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     phone: Joi.string().pattern(/^\+?[1-9]\d{1,14}$/).required(),
-    dateOfBirth: Joi.string().pattern(/^\d{2}-\d{2}-\d{4}$/).required(),
     gender: Joi.string().valid('male', 'female').required(),
     specializaton: Joi.string().required(),
     specialties: Joi.array().items(Joi.string()).min(1).required(),
@@ -39,6 +38,5 @@ export const signupValidation = celebrate({
         })
       )
       .optional(),
-    profileImage: Joi.string().uri().optional(),
   }),
 });

@@ -44,7 +44,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
   };
 
   return (
-    <Box sx={{ py: 10 }}>
+    <Box sx={{ py: 15 }}>
       <Container
         maxWidth="sm"
         sx={{

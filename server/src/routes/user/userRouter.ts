@@ -6,13 +6,13 @@ import UserAuthService from "../../services/user/UserAuthService";
 import OtpService from "../../services/OtpService";
 import CacheService from "../../services/CacheService";
 import UserAuthController from "../../controllers/user/UserAuthController";
-import { signupValidation } from "../../validators/userValidator";
+import { validateUser } from "../../validators/userValidator";
 import { signinValidation } from "../../validators/signInValidator";
 import { errors } from 'celebrate';
-import { authenticateToken } from "../../middlewares/authMiddleware";
+import { authenticate } from "../../middlewares/authenticate";
 
 const router = express.Router();
-
+ 
 const userRepository = new UserRepository(UserModel); 
 const cacheService = new CacheService()
 const otpService = new OtpService(cacheService)
@@ -24,7 +24,7 @@ router.post('/auth/send-otp', signinValidation, userAuthController.sendOtp)
 router.post('/auth/verify-otp', userAuthController.verifyOtp)
 
 router.post('/auth/signup', 
-    signupValidation,
+    validateUser,
     userAuthController.signup
 );
 
@@ -38,7 +38,7 @@ router.put("/auth/reset-password", userAuthController.resetPassword)
 
 router.post("/auth/google", userAuthController.googleSignIn)
 
-router.post("/auth/complete-profile", authenticateToken, userAuthController.completeProfile)
+router.post("/auth/complete-profile", authenticate, userAuthController.completeProfile)
 
 router.post('/auth/resend-otp', userAuthController.resendOtp)
 

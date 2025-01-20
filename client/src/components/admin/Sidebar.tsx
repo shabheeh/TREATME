@@ -29,7 +29,7 @@ const menuItems = [
   { text: 'Patients', icon: <People />, path: '/admin/patients' },
   { text: 'Doctors', icon: <FaUserDoctor size={23} />, path: '/admin/doctors' },
   { text: 'Messages', icon: <Message />, path: '/admin/messages' },
-  { text: 'Specialties', icon: <MedicalServices />, path: '/admin/spcialties' },
+  { text: 'Specializations', icon: <MedicalServices />, path: '/admin/specializations' },
   { text: 'Recruitements', icon: <PersonSearch />, path: '/admin/recruitements' },
 ];
 
@@ -118,7 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
       component="nav"
       sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
     >
-      {/* Mobile drawer */}
+
       <Drawer
         variant="temporary"
         open={mobileOpen}

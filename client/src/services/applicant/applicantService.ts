@@ -1,4 +1,4 @@
-import { IApplicant } from "../../types/doctor/authTypes";
+import { IApplicant } from "../../types/doctor/doctor.types";
 import { api } from "../../utils/axiosInterceptor";
 
 
@@ -20,7 +20,7 @@ class ApplicantService {
 
     async createApplicant(applicant: IApplicant): Promise<{message: string}> {
         try {
-            const response = await api.doctor.post('/applicant', { applicant })
+            const response = await api.doctor.post('/applicants', { applicant })
 
             return response.data;
 

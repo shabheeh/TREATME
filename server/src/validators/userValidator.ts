@@ -1,6 +1,6 @@
 import { celebrate, Joi, Segments } from 'celebrate';
 
-export const signupValidation = celebrate({
+export const validateUser = celebrate({
     [Segments.BODY]: Joi.object().keys({
         email: Joi.string().email().required(),
         firstName: Joi.string().required(),

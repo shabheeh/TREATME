@@ -1,5 +1,5 @@
 import { api } from "../../utils/axiosInterceptor";
-import { IUser } from "../../types/user/authTypes";
+import { IUser } from "../../types/user/userAuth.types";
 import TokenManager from "../../utils/TokenMangager";
 import log from 'loglevel'
 import { store } from "../../redux/app/store";

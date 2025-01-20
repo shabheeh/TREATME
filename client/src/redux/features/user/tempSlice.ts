@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {IUser } from "../../../types/user/authTypes";
+import {IUser } from "../../../types/user/userAuth.types";
 
 type InitialStateType = { tempUser: Partial<IUser> | null; }
 

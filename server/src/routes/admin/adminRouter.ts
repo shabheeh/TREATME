@@ -13,6 +13,13 @@ import UserRepository from '../../repositories/UserRepository';
 import { UserModel } from '../../models/User';
 import AdminPatientsService from '../../services/admin/adminPatientsService';
 import AdminPatientsController from '../../controllers/admin/adminPatientsController';
+import { validateDoctor } from '../../validators/doctorValidator';
+import { validateSpecialization } from '../../validators/specializationValidator';
+import SpecializationRepository from '../../repositories/SpecializationRepository';
+import { specializationModel } from '../../models/Specialization';
+import SpecializationService from '../../services/specialization/sepecializationService';
+import SpecializationController from '../../controllers/specialization/specializationController';
+import { authenticate } from '../../middlewares/authenticate';
 
 const adminRepository = new AdminRespository(AdminModel)
 const adminAuthService = new AdminAuthService(adminRepository)
@@ -26,6 +33,10 @@ const userRepository = new UserRepository(UserModel);
 const adminPatientsService = new AdminPatientsService(userRepository);
 const adminPatientsController = new AdminPatientsController(adminPatientsService)
 
+const specializationRepository = new SpecializationRepository(specializationModel)
+const specializationService = new SpecializationService(specializationRepository)
+const specializationController = new SpecializationController(specializationService)
+
 const router = express.Router()
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -33,11 +44,20 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/auth/signin', signinValidation, adminAuthController.signInAdmin)
 
-router.post('/doctor', upload.single('profilePicture'), adminDoctorController.createDoctor)
+router.get('/doctors', authenticate, adminDoctorController.getDoctors)
+router.post('/doctors', authenticate, upload.single('profilePicture'), 
+    validateDoctor, 
+    adminDoctorController.createDoctor
+)
 
-router.patch('/patient', adminPatientsController.togglePatientActivityStatus)
+router.get("/patients", authenticate, adminPatientsController.getPatients)
+router.patch('/patients/:id', authenticate, adminPatientsController.togglePatientActivityStatus)
 
-router.get("/patients", adminPatientsController.getPatients)
-router.get('/doctors', adminDoctorController.getDoctors)
+router.post('/specializations', authenticate, upload.single('image'), 
+    validateSpecialization, 
+    specializationController.createSpecialization
+)
+router.get('/specializations', authenticate, specializationController.getSpecializations)
+
 
 export default router 

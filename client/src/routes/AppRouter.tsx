@@ -13,6 +13,8 @@ import LayoutUser from "../Layouts/user/LayoutUser";
 import VisiitNow from "../components/user/VisitNow";
 import Applicants from "../pages/admin/Applicants";
 import AddDoctor from "../components/admin/AddDoctor";
+import Specializations from "../pages/admin/Specializations";
+import AddSpecialization from "../components/admin/AddSpecialization";
 
 
 
@@ -37,6 +39,8 @@ function AppRouter() {
           <Route path="/admin/doctors" element={ <Doctors/> } />
           <Route path="/admin/recruitements" element={ <Applicants/> } />
           <Route path="/admin/add-doctor" element={ <AddDoctor/> } />
+          <Route path="/admin/specializations" element={ <Specializations/> } />
+          <Route path="/admin/add-specialization" element={ <AddSpecialization/> } />
 
 
         </Route>

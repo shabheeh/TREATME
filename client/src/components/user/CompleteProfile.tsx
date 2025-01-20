@@ -159,7 +159,7 @@ interface CompleteProfileProps {
           navigate('/signin')
         }else {
           await authServiceUser.completeProfile(userData)
-          navigate("/patient")
+          navigate("/visitnow")
         }
         
         
@@ -174,7 +174,7 @@ interface CompleteProfileProps {
     };
   
     return (
-        <Box sx={{ py: 10 }}>
+        <Box sx={{ py: 15 }}>
           <Container
             sx={{
               bgcolor: "white",

@@ -32,7 +32,8 @@ class AdminPatientsController implements IAdminPatientsController {
 
     togglePatientActivityStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { id, isActive } = req.body;
+            const { isActive } = req.body;
+            const { id } = req.params;
 
             await this.adminPatientsService.togglePatientActivityStatus(id, isActive)
 

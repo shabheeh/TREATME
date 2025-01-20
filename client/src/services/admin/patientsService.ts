@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { IUser } from "../../types/user/authTypes";
+import { IUser } from "../../types/user/userAuth.types";
 import { api } from "../../utils/axiosInterceptor";
 
 
@@ -44,7 +44,7 @@ class PatientsService {
 
     async toggleIsActive(id: string, isActive: boolean) {
         try {
-            await api.admin.patch('/patient', { id, isActive });
+            await api.admin.patch(`/patients/${ id }`, { isActive });
 
         } catch (error: unknown) {
         

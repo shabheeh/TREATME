@@ -48,7 +48,7 @@ import { toast } from "sonner";
     return (
         <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
       <Navbar />
-        <Box sx={{ py: 10 }}>
+        <Box sx={{ py: 15 }}>
           <Container
             maxWidth="sm"
             sx={{

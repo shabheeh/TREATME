@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import IDoctor from "../../types/doctor/authTypes";
+import IDoctor from "../../types/doctor/doctor.types";
 import { api } from "../../utils/axiosInterceptor";
 
 interface UrlQuery {
@@ -24,7 +24,7 @@ class DoctorsService {
     async addDoctor(doctor: FormData): Promise<void> {
         try {
             
-            await api.admin.post('/doctor', doctor)
+            await api.admin.post('/doctors', doctor)
 
 
         } catch (error: unknown) {

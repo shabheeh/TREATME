@@ -99,7 +99,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
 
   return (
 
-      <Box sx={{ py: 10 }}>
+      <Box sx={{ py: 15 }}>
         <Container
           maxWidth="sm"
           sx={{

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Sidebar from '../../components/user/Sidebar';
-import NavbarHome from '../../components/basics/NavebarHome';
+import Navbar from '../../components/user/Navbar';
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 
@@ -17,7 +17,7 @@ const LayoutUser = () => {
       height: '100vh',
       overflow: 'hidden'
     }}>
-      <NavbarHome onMenuClick={handleDrawerToggle} />
+      <Navbar  />
       <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
       <Box
         component="main"
