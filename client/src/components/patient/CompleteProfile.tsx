@@ -16,7 +16,7 @@ import {
 // import { IUser } from "../../types/user/authTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/app/store";
-import authServiceUser from "../../services/user/authService";
+import authServicePatient from "../../services/patient/authService";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -155,10 +155,10 @@ interface CompleteProfileProps {
 
       try {
         if (!isPartialUser) {
-          await authServiceUser.signUp(userData)
+          await authServicePatient.signUp(userData)
           navigate('/signin')
         }else {
-          await authServiceUser.completeProfile(userData)
+          await authServicePatient.completeProfile(userData)
           navigate("/visitnow")
         }
         

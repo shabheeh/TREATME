@@ -8,7 +8,7 @@ interface Address {
 }
 
 
-export interface IUser {
+export interface IPatient {
     _id: string;
     firstName: string;
     lastName: string;
@@ -18,10 +18,11 @@ export interface IUser {
     dateOfBirth: string;
     address?: Address;
     isActive: boolean;
+    profilePicture?: string;
 }
 
 export interface authState {
     isAuthenticated: boolean;
-    user: IUser | null;
+    user: IPatient | null;
     isSignUp: boolean;
 }

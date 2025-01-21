@@ -12,7 +12,6 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
 import specializationService from "../../services/admin/specializationService";
 import { useNavigate } from "react-router-dom";
 import { Cropper } from "react-cropper";
@@ -115,14 +114,10 @@ const AddSpecialization = () => {
 
       navigate("/admin/specializations");
     } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.response) {
-          toast.error(`Server Error: ${error.response.data.error || error.message}`);
-        } else if (error.request) {
-          toast.error("No response from the server. Please try again.");
-        } else {
-          toast.error(`Error: ${error.message}`);
-        }
+      if (error instanceof Error) {
+
+        toast.error(`Error: ${error.message}`);
+       
       } else {
         toast.error("An unknown error occurred");
       }

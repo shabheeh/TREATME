@@ -9,8 +9,8 @@ import DoctorRepository from '../../repositories/DoctorRepository';
 import { DoctorModel } from '../../models/Doctor';
 import AdminDoctorService from '../../services/admin/adminDoctorService';
 import AdminDoctorController from '../../controllers/admin/adminDoctorController';
-import UserRepository from '../../repositories/UserRepository';
-import { UserModel } from '../../models/User';
+import UserRepository from '../../repositories/PatientRepository';
+import { PatientModel } from '../../models/Patient';
 import AdminPatientsService from '../../services/admin/adminPatientsService';
 import AdminPatientsController from '../../controllers/admin/adminPatientsController';
 import { validateDoctor } from '../../validators/doctorValidator';
@@ -19,7 +19,7 @@ import SpecializationRepository from '../../repositories/SpecializationRepositor
 import { specializationModel } from '../../models/Specialization';
 import SpecializationService from '../../services/specialization/sepecializationService';
 import SpecializationController from '../../controllers/specialization/specializationController';
-import { authenticate } from '../../middlewares/authenticate';
+import { authenticate } from '../../middlewares/auth';
 
 const adminRepository = new AdminRespository(AdminModel)
 const adminAuthService = new AdminAuthService(adminRepository)
@@ -29,7 +29,7 @@ const doctorRepository = new DoctorRepository(DoctorModel)
 const adminDoctorService = new AdminDoctorService(doctorRepository);
 const adminDoctorController = new AdminDoctorController(adminDoctorService)
 
-const userRepository = new UserRepository(UserModel);
+const userRepository = new UserRepository(PatientModel);
 const adminPatientsService = new AdminPatientsService(userRepository);
 const adminPatientsController = new AdminPatientsController(adminPatientsService)
 

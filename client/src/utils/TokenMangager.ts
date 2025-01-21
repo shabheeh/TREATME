@@ -1,35 +1,23 @@
 
-export const TOKEN_KEYS = {
-    user: {
-        access: 'user_access_token',
-    },
-    doctor: {
-        access: 'doctor_access_token',
-    },
-    admin: {
-        access: 'admin_access_token',
-    }
-} as const
-
 
 interface ITokenManger {
-    getAccessToken(role: keyof typeof TOKEN_KEYS): string | null;
-    setToken(role: keyof typeof TOKEN_KEYS, accessToken: string): void;
-    clearToken(role: keyof typeof TOKEN_KEYS): void
+    getAccessToken(): string | null;
+    setToken(accessToken: string): void;
+    clearToken(): void
 }
 
 
 class TokenManager implements ITokenManger {
-    getAccessToken(role: keyof typeof TOKEN_KEYS): string | null {
-        return localStorage.getItem(TOKEN_KEYS[role].access)
+    getAccessToken(): string | null {
+        return localStorage.getItem('token')
     }
 
-    setToken(role: keyof typeof TOKEN_KEYS, accessToken: string): void {
-        localStorage.setItem(TOKEN_KEYS[role].access, accessToken);
+    setToken(accessToken: string): void {
+        localStorage.setItem('token', accessToken);
     }
 
-    clearToken(role: keyof typeof TOKEN_KEYS): void {
-        localStorage.removeItem(TOKEN_KEYS[role].access)
+    clearToken(): void {
+        localStorage.removeItem('token')
     }
 }
 

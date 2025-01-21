@@ -17,7 +17,6 @@ import log from 'loglevel';
 import { toast } from "sonner";
 import React, { useState } from "react";
 import doctorsService from "../../services/admin/doctorsService";
-import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 
 interface SignupFormInputs {
@@ -201,14 +200,10 @@ const AddDoctor = () => {
           navigate('/admin/doctors')
       
         } catch (error) {
-          if (error instanceof AxiosError) {
-            if (error.response) {
-              toast.error(`Server Error: ${error.response.data.error || error.message}`);
-            } else if (error.request) {
-              toast.error("No response from the server. Please try again.");
-            } else {
-              toast.error(`Error: ${error.message}`);
-            }
+          if (error instanceof Error) {
+            
+            toast.error(`Error: ${error.message}`);
+            
           } else {
             toast.error("An unknown error occurred");
           }

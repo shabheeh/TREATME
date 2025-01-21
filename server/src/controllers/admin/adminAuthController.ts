@@ -20,7 +20,7 @@ class AdminAuthController implements IAdminAuthController {
             
             const result = await this.adminAuthService.signInAdmin(email, password)
 
-            const { accessToken, refreshToken } = result;
+            const { admin, accessToken, refreshToken } = result;
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
@@ -30,6 +30,7 @@ class AdminAuthController implements IAdminAuthController {
             })
 
             res.status(200).json({
+                admin,
                 accessToken,
                 message: 'admin signed in successfully'
             })

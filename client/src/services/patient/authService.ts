@@ -1,24 +1,24 @@
 import { api } from "../../utils/axiosInterceptor";
-import { IUser } from "../../types/user/userAuth.types";
+// import {  } from "../../types/auth/auth.types";
+import { IPatient } from "../../types/patient/patient.types";
 import TokenManager from "../../utils/TokenMangager";
 import log from 'loglevel'
 import { store } from "../../redux/app/store";
-import { setAuthState, signIn, signOut } from "../../redux/features/user/authSlice";
-import { setTempUser } from "../../redux/features/user/tempSlice";
-import { AxiosError } from "axios";
+import { setAuthState, signIn, signOut } from "../../redux/features/auth/authSlice";
+import { setTempUser } from "../../redux/features/auth/tempSlice";
+import { clearUser, setPatient } from "../../redux/features/user/userSlice";
 
 
-type SignInResult = { user: IUser } ;
+type SignInResult = { patient: IPatient } ;
 type SignOutResult = void 
 type MockSignUpResult = { status: number, message: string } 
 type GoogleSignInResult = { PartialUser: boolean }
 type VerifyOtpSignUpResult = void 
-type verifyEmailResult = { user: IUser } 
+type verifyEmailResult = { patient: IPatient } 
 type verifyOtpForgotPasswordResult = { email: string } 
-// type completeProfileResult = { user: Partial<IUser>} | { error: string }
 
 
-interface IAuthServiceUser {
+interface IAuthServicePatient {
     sendOtp(credentials: { email: string, password: string }): Promise<MockSignUpResult>
     signIn(credentials: { email: string; password: string }): Promise<SignInResult>;
     signOut(): Promise<SignOutResult>;
@@ -27,12 +27,12 @@ interface IAuthServiceUser {
     verifyEmail(email: string): Promise<verifyEmailResult>
     verifyOtpForgotPassword(email: string, otp: string): Promise<verifyOtpForgotPasswordResult>
     resetPassword(id: string, password: string): Promise<void >;
-    signUp(userData: Partial<IUser>): Promise<void>;
-    completeProfile(userData: Partial<IUser>): Promise<void >;
+    signUp(patientData: Partial<IPatient>): Promise<void>;
+    completeProfile(patientData: Partial<IPatient>): Promise<void >;
     resendOtpForgotPassword(email: string): Promise<void>
 }
 
-class AuthServiceUser implements IAuthServiceUser {
+class AuthServicePatient implements IAuthServicePatient {
   private tokenManager: TokenManager;
 
   constructor(tokenManager: TokenManager) {
@@ -41,7 +41,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
   async sendOtp(credentials: { email: string; password: string; }): Promise<MockSignUpResult> {
       try {
-        const response = await api.user.post('/auth/send-otp/', credentials)
+        const response = await api.patient.post('/auth/send-otp/', credentials)
         const tempUser = {
           email: credentials.email
         }
@@ -52,7 +52,7 @@ class AuthServiceUser implements IAuthServiceUser {
         
     } catch (error: unknown) {
 
-        if (error instanceof AxiosError) {
+        if (error instanceof Error) {
           log.error(`SignInUser failed: ${error.message}`, error);
     
           throw new Error(error.message)
@@ -67,7 +67,7 @@ class AuthServiceUser implements IAuthServiceUser {
   async verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult> {
     try {
 
-      await api.user.post("/auth/verify-otp", { email, otp })
+      await api.patient.post("/auth/verify-otp", { email, otp })
 
       const tempUser = {
         email
@@ -77,7 +77,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
     } catch (error: unknown) {
 
-      if (error instanceof AxiosError) {
+      if (error instanceof Error) {
         log.error(`otp verification failed: ${error.message}`, error);
         throw new Error('invlid otp')
       }
@@ -87,13 +87,13 @@ class AuthServiceUser implements IAuthServiceUser {
     }
   }
 
-  async signUp(userData: Partial<IUser>): Promise<void > {
+  async signUp(patientData: Partial<IPatient>): Promise<void > {
     try {
-      await api.user.post('/auth/signup', userData)
+      await api.patient.post('/auth/signup', patientData)
 
     } catch (error: unknown) {
 
-      if (error instanceof AxiosError) {
+      if (error instanceof Error) {
         log.error(`error user signup: ${error.message}`, error);
   
         throw new Error(error.message)
@@ -112,30 +112,35 @@ class AuthServiceUser implements IAuthServiceUser {
     try {
     
 
-      const response = await api.user.post("/auth/signin", credentials);
+      const response = await api.patient.post("/auth/signin", credentials);
 
-      const { accessToken, user } = response.data;
+      const { accessToken, patient } = response.data;
 
-      this.tokenManager.setToken("user", accessToken);
+      this.tokenManager.setToken(accessToken);
+
 
       store.dispatch(signIn({
-        user,
-        isAuthenticated: true
+        email: patient.email,
+        role: 'patient',
+        token: accessToken,
       }))
 
-      return user;
+      store.dispatch(setPatient(patient))
+
+      return patient;
 
     } catch (error: unknown) {
 
-        if (error instanceof AxiosError) {
+        if (error instanceof Error) {
           log.error(`SignInUser failed: ${error.message}`, error);
     
           throw new Error(error.message)
 
         }
-    
+
         log.error(`Unknown error occurred during sign-in`, error);
         throw new Error("An unknown error occurred" )
+
 
       }
     }
@@ -144,17 +149,17 @@ class AuthServiceUser implements IAuthServiceUser {
   async signOut(): Promise<SignOutResult> {
     try {
 
-      await api.user.post("/auth/signout");
+      await api.patient.post("/auth/signout");
 
-      this.tokenManager.clearToken("user");
-
+      this.tokenManager.clearToken();
+      store.dispatch(clearUser())
       store.dispatch(signOut())
 
       window.location.href = "/signin";
 
     } catch (error: unknown) {
 
-        if (error instanceof AxiosError) {
+        if (error instanceof Error) {
 
           log.error(`SignInUser failed: ${error.message}`, error);
     
@@ -170,33 +175,44 @@ class AuthServiceUser implements IAuthServiceUser {
 
     async googleSignIn(credential: string): Promise<GoogleSignInResult> {
       try {
-        const response = await api.user.post('/auth/google', { credential })
+        const response = await api.patient.post('/auth/google', { credential })
 
-        const { user, accessToken, partialUser  } = response.data;
+        const { patient, accessToken, partialUser  } = response.data;
 
-        this.tokenManager.setToken("user", accessToken);
+        this.tokenManager.setToken(accessToken);
 
         console.log(response.data)
 
         if(partialUser) {
-          store.dispatch(setAuthState())
+
           store.dispatch(setTempUser({
-            tempUser: user
+            tempUser: patient
           }))
+
+          store.dispatch(signIn({
+            email: patient.email,
+            role: 'patient',
+            token: accessToken,
+            isAuthenticated: false
+          }))
+
           return partialUser
         }
 
         store.dispatch(signIn({
-          user: user,
-          isAuthenticated: true
+          email: patient.email,
+          role: 'patient',
+          token: accessToken,
         }))
+
+        store.dispatch(setPatient(patient))
 
         return partialUser
 
 
         } catch (error: unknown) {
 
-          if (error instanceof AxiosError) {
+          if (error instanceof Error) {
   
             log.error(`google sign in failed: ${error.message}`, error);
       
@@ -215,15 +231,15 @@ class AuthServiceUser implements IAuthServiceUser {
 
           console.log(email)
 
-          const response = await api.user.post('/auth/forgot-password/verify-email', { email });
+          const response = await api.patient.post('/auth/forgot-password/verify-email', { email });
           
-          store.dispatch(setTempUser({ tempUser: response.data.user }))
+          store.dispatch(setTempUser({ tempUser: response.data.patient }))
 
-          return { user: response.data.user };
+          return { patient: response.data.patient };
       
         } catch (error: unknown) {
 
-          if (error instanceof AxiosError) {
+          if (error instanceof Error) {
   
             log.error(`Error when otp sending: ${error.message}`, error);
       
@@ -239,7 +255,7 @@ class AuthServiceUser implements IAuthServiceUser {
 
       async verifyOtpForgotPassword(email: string, otp: string): Promise<verifyOtpForgotPasswordResult> {
         try {
-          await api.user.post("/auth/forgot-password/verify-otp", { email, otp })
+          await api.patient.post("/auth/forgot-password/verify-otp", { email, otp })
     
           return {
             email
@@ -247,7 +263,7 @@ class AuthServiceUser implements IAuthServiceUser {
     
         } catch (error: unknown) {
     
-          if (error instanceof AxiosError) {
+          if (error instanceof Error) {
             log.error(`otp verification failed: ${error.message}`, error);
       
             throw new Error(error.message)
@@ -260,9 +276,9 @@ class AuthServiceUser implements IAuthServiceUser {
 
       async resetPassword(id: string, password: string): Promise<void > {
         try {
-          await api.user.put('/auth/reset-password', {id, password})
+          await api.patient.put('/auth/reset-password', {id, password})
         } catch (error) {
-          if (error instanceof AxiosError) {
+          if (error instanceof Error) {
             log.error(`otp verification failed: ${error.message}`, error);
       
             throw new Error(error.message)
@@ -276,16 +292,16 @@ class AuthServiceUser implements IAuthServiceUser {
       }
 
 
-      async completeProfile(userData: Partial<IUser>): Promise<void > {
+      async completeProfile(patientData: Partial<IPatient>): Promise<void > {
         try {
-          const response = api.user.post('/auth/complete-profile', { userData })
+          const response = await api.patient.post('/auth/complete-profile', { patientData })
 
-          const { user } = (await response).data
+          const { patient } = response.data
 
-          store.dispatch(signIn({
-            user: user,
-            isAuthenticated: true
-          }))
+          console.log( 'pateientesfsdfsd', patient)
+
+          store.dispatch(setAuthState())
+          store.dispatch(setPatient(patient))
 
         } catch (error) {
           console.error(`Unknown error occurred during completing profile`, error);
@@ -297,9 +313,9 @@ class AuthServiceUser implements IAuthServiceUser {
       async resendOtp(email: string): Promise<void> {
         try {
 
-          await api.user.post('/auth/resend-otp', { email })
+          await api.patient.post('/auth/resend-otp', { email })
         } catch (error: unknown) {
-          if (error instanceof AxiosError) {
+          if (error instanceof Error) {
             log.error(`otp sending failed: ${error.message}`, error);
     
           }
@@ -312,9 +328,9 @@ class AuthServiceUser implements IAuthServiceUser {
       async resendOtpForgotPassword(email: string): Promise<void> {
         try {
 
-          await api.user.post('/auth/forgot-password/resend-otp', { email })
+          await api.patient.post('/auth/forgot-password/resend-otp', { email })
         } catch (error) {
-          if (error instanceof AxiosError) {
+          if (error instanceof Error) {
             log.error(`otp sending failed: ${error.message}`, error);
     
           }
@@ -327,6 +343,6 @@ class AuthServiceUser implements IAuthServiceUser {
 }
 
 const tokenManager = new TokenManager()
-const authServiceUser = new AuthServiceUser(tokenManager)
+const authServicePatient = new AuthServicePatient(tokenManager)
 
-export default authServiceUser;
+export default authServicePatient;

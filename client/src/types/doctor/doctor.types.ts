@@ -11,7 +11,7 @@ interface Availability {
 }
 
 
-export default interface IDoctor {
+export interface IDoctor {
     email: string;
     firstName: string;
     lastName: string;

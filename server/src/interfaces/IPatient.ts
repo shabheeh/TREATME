@@ -8,7 +8,7 @@ export interface Address {
   street: string;
 }
 
-export default interface IUser extends Document {
+export default interface IPatient extends Document {
   email: string;
   password?: string;
   firstName: string;
@@ -24,7 +24,7 @@ export default interface IUser extends Document {
 export type SignInResult = {  
   message: string, 
   googleUser: boolean } | {
-  user: IUser,
+  patient: IPatient,
   accessToken: string,
   refreshToken: string 
 }
@@ -32,28 +32,28 @@ export type SignInResult = {
 export type googleSignInResult = { 
   accessToken: string,
   refreshToken: string, 
-  user?: IUser,
-  newUser?: Partial<IUser>,
+  patient?: IPatient,
+  newPatient?: Partial<IPatient>,
   partialUser: boolean
 }
 
 
-export interface IUserAuthService {
+export interface IPatientAuthService {
   sendOtp(email: string, password: string): Promise<void>;
   verifyOtp(email: string, otp: string): Promise<void>;
-  signup(user: IUser): Promise<{ newUser: Partial<IUser>}>
+  signup(patient: IPatient): Promise<{ newUser: Partial<IPatient>}>
   signin(email: string, password: string): Promise<SignInResult>;
-  getUserByEmail(email: string): Promise<IUser>;
-  sendOtpForgotPassword(email: string): Promise<IUser>;
+  getUserByEmail(email: string): Promise<IPatient>;
+  sendOtpForgotPassword(email: string): Promise<IPatient>;
   verifyOtpForgotPassword(email: string, otp: string): Promise<boolean>;
   resetPassword(id: string, password: string): Promise<void>;
   googleSignIn(credential: string): Promise<googleSignInResult>;
-  completeProfileAndSignUp(userData: IUser): Promise<IUser>;
+  completeProfileAndSignUp(userData: IPatient): Promise<IPatient>;
   resendOtp(email: string): Promise<void>;
   resendOtpForgotPassword(email: string): Promise<void>;
 }
 
-export interface IUserController {
+export interface IPatientController {
   sendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   signup(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -68,14 +68,14 @@ export interface IUserController {
 }
 
 
-export interface IUsersFilter {
+export interface IPatientsFilter {
   page: number;
   limit: number;
   search: string;
 }
 
-export interface IUsersFilterResult {
-  users: IUser[];
+export interface IPatientsFilterResult {
+  patients: IPatient[];
   total: number;
   page: number;
   limit: number;

@@ -1,5 +1,5 @@
-import { AxiosError } from "axios";
-import IDoctor from "../../types/doctor/doctor.types";
+
+import { IDoctor } from "../../types/doctor/doctor.types";
 import { api } from "../../utils/axiosInterceptor";
 
 interface UrlQuery {
@@ -29,9 +29,9 @@ class DoctorsService {
 
         } catch (error: unknown) {
         
-            if (error instanceof AxiosError) {
+            if (error instanceof Error) {
               console.error(`error creating Doctor: ${error.message}`, error);
-              throw new Error(`Error creating Doctor ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown error `, error);
@@ -52,9 +52,9 @@ class DoctorsService {
 
         } catch (error: unknown) {
         
-            if (error instanceof AxiosError) {
+            if (error instanceof Error) {
               console.error(`error fetching patients data: ${error.message}`, error);
-              throw new Error(`Error fetching patients data ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown error durin fetching patents list`, error);

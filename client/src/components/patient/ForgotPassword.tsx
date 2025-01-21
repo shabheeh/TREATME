@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 
 import { useForm } from "react-hook-form";
-import authServiceUser from "../../services/user/authService";
+import authServicePatient from "../../services/patient/authService";
 import log from "loglevel";
 import { toast } from "sonner";
 
@@ -30,7 +30,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
 
   const onSubmit = async ({ email }: { email: string }) => {
     try {
-      const result = await authServiceUser.verifyEmail(email);
+      const result = await authServicePatient.verifyEmail(email);
     if ('user' in result) {
           onVerifyEmail()
     }

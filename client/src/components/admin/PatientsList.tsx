@@ -16,7 +16,6 @@ import patientsService from '../../services/admin/patientsService';
 import { ResponseData } from '../../services/admin/patientsService';
 import { Button, Typography } from '@mui/material';
 import { toast } from 'sonner';
-import { AxiosError } from 'axios';
 
 
 
@@ -70,7 +69,7 @@ const PatientsList = () => {
         setError(null);
       } catch (error: unknown) {
         setError('Failed to fetch patients data');
-        if (error instanceof AxiosError) {
+        if (error instanceof Error) {
           toast.error(error.message)
         }else {
           toast.error('something went wrong')
@@ -108,7 +107,7 @@ const PatientsList = () => {
       });
       setData(response);
     } catch (error: unknown) {
-      if(error instanceof AxiosError) {
+      if(error instanceof Error) {
         toast.error(error.message)
       }else {
         toast.error('Something went wrong')
@@ -155,7 +154,7 @@ const PatientsList = () => {
                 </TableCell>
               </TableRow>
             ) : ( 
-              data?.users.length === 0 ? (
+              data?.patients.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
                     <Box sx={{ textAlign: 'center' }}>
@@ -171,18 +170,18 @@ const PatientsList = () => {
                   </TableCell>
                 </TableRow>
               ) :
-              data?.users.map((user) => (
-                <StyledTableRow key={user.email}>
+              data?.patients.map((patient) => (
+                <StyledTableRow key={patient.email}>
                   <StyledTableCell component="th" scope="row">
-                    {user.firstName}
+                    {patient.firstName}
                   </StyledTableCell>
-                  <StyledTableCell>{user.lastName}</StyledTableCell>
-                  <StyledTableCell>{user.gender}</StyledTableCell>
-                  <StyledTableCell>{user.email}</StyledTableCell>
-                  <StyledTableCell>{user.phone}</StyledTableCell>
+                  <StyledTableCell>{patient.lastName}</StyledTableCell>
+                  <StyledTableCell>{patient.gender}</StyledTableCell>
+                  <StyledTableCell>{patient.email}</StyledTableCell>
+                  <StyledTableCell>{patient.phone}</StyledTableCell>
                   <StyledTableCell>
-                  <Button variant="outlined" color={user.isActive ? "error" : 'success'} onClick={() => handleToggleActive(user._id, user.isActive)}>
-                    {user.isActive ? "Block" : "Unblock"}
+                  <Button variant="outlined" color={patient.isActive ? "error" : 'success'} onClick={() => handleToggleActive(patient._id, patient.isActive)}>
+                    {patient.isActive ? "Block" : "Unblock"}
                   </Button>
                   </StyledTableCell>
                 </StyledTableRow>

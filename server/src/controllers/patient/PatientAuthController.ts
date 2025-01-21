@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
-import { IUserAuthService, IUserController } from "src/interfaces/IUser";
+import { IPatientAuthService, IPatientController} from "../../interfaces/IPatient";
 import { BadRequestError } from "../../utils/errors";
 
 
-class UserAuthController implements IUserController { 
+class PatientAuthController implements IPatientController { 
 
-    private userAuthService: IUserAuthService;
+    private patientAuthService: IPatientAuthService;
     private otpService: OtpService;
 
-    constructor(userAuthService: IUserAuthService, otpService: OtpService) {
-        this.userAuthService = userAuthService; 
+    constructor(patientAuthService: IPatientAuthService, otpService: OtpService) {
+        this.patientAuthService = patientAuthService; 
         this.otpService = otpService;
     }
 
@@ -19,7 +19,7 @@ class UserAuthController implements IUserController {
         try {
             const { email, password }: { email: string; password: string } = req.body;
 
-            await this.userAuthService.sendOtp(email, password)
+            await this.patientAuthService.sendOtp(email, password)
             
             const otp = await this.otpService.getOTP(email, 'signup');
     
@@ -35,9 +35,10 @@ class UserAuthController implements IUserController {
     
     verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
+            
             const { email, otp }: { email: string; otp: string } = req.body;
             
-            await this.userAuthService.verifyOtp(email, otp)
+            await this.patientAuthService.verifyOtp(email, otp)
     
             res.status(200).json({
                 message: 'OTP verified successfully',
@@ -57,7 +58,7 @@ class UserAuthController implements IUserController {
             const userData = req.body; 
 
     
-            await this.userAuthService.signup(userData)
+            await this.patientAuthService.signup(userData)
     
             res.status(201).json({
                 message: "User signed up successfully"
@@ -74,14 +75,14 @@ class UserAuthController implements IUserController {
         try {
             const { email, password }: { email: string, password: string } = req.body
 
-            const result = await this.userAuthService.signin(email, password)
+            const result = await this.patientAuthService.signin(email, password)
 
             if("googleUser" in result) {
                 res.status(202).json(result.message);
                 return
             }
 
-            const { accessToken, refreshToken, user } = result;
+            const { accessToken, refreshToken, patient } = result;
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
@@ -92,7 +93,7 @@ class UserAuthController implements IUserController {
 
             res.status(200).json({
                 accessToken, 
-                user
+                patient
             });
 
         } catch (error) {
@@ -107,7 +108,7 @@ class UserAuthController implements IUserController {
 
             const { email } = req.body;
 
-            const user = await this.userAuthService.sendOtpForgotPassword(email);
+            const user = await this.patientAuthService.sendOtpForgotPassword(email);
 
             res.status(200).json({
                 user
@@ -124,7 +125,7 @@ class UserAuthController implements IUserController {
         try {
             const { email, otp } = req.body;
 
-            await this.userAuthService.verifyOtpForgotPassword(email, otp);
+            await this.patientAuthService.verifyOtpForgotPassword(email, otp);
 
 
             res.status(200).json({
@@ -141,7 +142,7 @@ class UserAuthController implements IUserController {
         try {
             const { id, password } = req.body;
 
-            await this.userAuthService.resetPassword(id, password);
+            await this.patientAuthService.resetPassword(id, password);
 
             res.status(200).json({
                 message: 'Password reset successfully'
@@ -156,11 +157,11 @@ class UserAuthController implements IUserController {
         try {
             const { credential } = req.body;
 
-            const result = await this.userAuthService.googleSignIn(credential)
+            const result = await this.patientAuthService.googleSignIn(credential)
 
             if(!result.partialUser) {
 
-                const { user, accessToken, refreshToken, partialUser } = result
+                const { patient, accessToken, refreshToken, partialUser } = result
 
 
                 res.cookie("refreshToken", refreshToken, {
@@ -170,18 +171,18 @@ class UserAuthController implements IUserController {
                     maxAge: 7 * 24 * 60 * 60 * 1000, 
                 })
 
-            logger.info(user)
+            logger.info(patient)
 
 
                 res.status(200).json({
-                    user,
+                    patient,
                     accessToken,
                     partialUser
                 })
                 return
             }
 
-            const { newUser, accessToken, refreshToken, partialUser } = result;
+            const { newPatient, accessToken, refreshToken, partialUser } = result;
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
@@ -192,7 +193,7 @@ class UserAuthController implements IUserController {
 
 
             res.status(200).json({
-                user: newUser,
+                patient: newPatient,
                 accessToken,
                 partialUser
             })
@@ -212,16 +213,17 @@ class UserAuthController implements IUserController {
                 return;
               }
 
-            const { userData } = req.body;
+            const { patientData } = req.body;
 
             const { email } = req.user;
 
-            userData.email = email
 
-            const user = await this.userAuthService.completeProfileAndSignUp(userData)
+            patientData.email = email
+
+            const patient = await this.patientAuthService.completeProfileAndSignUp(patientData)
 
             res.status(200).json({
-                user
+                patient
             })
 
         } catch (error) { 
@@ -238,7 +240,7 @@ class UserAuthController implements IUserController {
                 throw new BadRequestError('No email not provided')
             }
 
-            await this.userAuthService.resendOtp(email)
+            await this.patientAuthService.resendOtp(email)
 
             res.status(200).json({
                 message: 'otp resent successfully'
@@ -258,7 +260,7 @@ class UserAuthController implements IUserController {
                 throw new BadRequestError('No email not provided')
             }
 
-            await this.userAuthService.resendOtpForgotPassword(email)
+            await this.patientAuthService.resendOtpForgotPassword(email)
 
             res.status(200).json({
                 message: 'otp resent successfully'
@@ -294,4 +296,4 @@ class UserAuthController implements IUserController {
 } 
  
  
-export default UserAuthController;
+export default PatientAuthController;

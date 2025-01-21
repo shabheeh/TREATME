@@ -1,11 +1,11 @@
 import { Box } from "@mui/material"
 import { useLocation } from 'react-router-dom';
 import Navbar from "../../components/basics/Navbar"
-import SignIn from "../../components/user/SignIn";
-import SignUp from "../../components/user/SignUp"
-import Otp from "../../components/user/Otp";
-import CompleteProfile from "../../components/user/CompleteProfile";
-import ResetPassword from "../../components/user/ResetPassword";
+import SignIn from "../../components/patient/SignIn";
+import SignUp from "../../components/patient/SignUp"
+import Otp from "../../components/patient/Otp";
+import CompleteProfile from "../../components/patient/CompleteProfile";
+import ResetPassword from "../../components/patient/ResetPassword";
 
 const Authentication = () => {
 

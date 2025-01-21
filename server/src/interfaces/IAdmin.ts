@@ -1,13 +1,14 @@
 import { Document } from "mongoose";
 import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from "./IDoctor";
 import { Request, Response, NextFunction } from "express";
-import { IUsersFilter, IUsersFilterResult } from "./IUser";
+import { IPatientsFilter, IPatientsFilterResult } from "./IPatient";
 export default interface IAdmin extends Document {
     email: string;
     password: string;
 }
 
 export interface SignInAdminResult {
+    admin: IAdmin;
     accessToken: string,
     refreshToken: string
 }
@@ -37,7 +38,7 @@ export interface IAdminDoctorController {
 
 // Admin - Patient
 export interface IAdminPatientsService {
-    getPatients(params: IUsersFilter): Promise<IUsersFilterResult>
+    getPatients(params: IPatientsFilter): Promise<IPatientsFilterResult>
     togglePatientActivityStatus(id: string, isAcitve: boolean): Promise<void>
     
 }

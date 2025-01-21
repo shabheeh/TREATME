@@ -1,18 +1,23 @@
 import { Model } from 'mongoose';
-import IUser, { IUsersFilter, IUsersFilterResult } from "../interfaces/IUser";
-import IUserRepository from "./interfaces/IUserRepository";
+import IPatient, { IPatientsFilter, IPatientsFilterResult } from "../interfaces/IPatient";
+import IPatientRepository from "./interfaces/IPatientRepository";
 import { AppError } from '../utils/errors';
-class UserRepository implements IUserRepository {
-   private readonly model: Model<IUser>;
 
-   constructor(model: Model<IUser>) {
+
+
+
+class PatientRepository implements IPatientRepository {
+
+   private readonly model: Model<IPatient>;
+
+   constructor(model: Model<IPatient>) {
        this.model = model;
    }
 
-   async createUser(user: Partial<IUser>): Promise<IUser> {
+   async createPatient(patient: Partial<IPatient>): Promise<IPatient> {
        try {
-           const newUser = await this.model.create(user);
-           return newUser.toObject();
+           const newPatient = await this.model.create(patient);
+           return newPatient.toObject();
        } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -21,11 +26,11 @@ class UserRepository implements IUserRepository {
        }
    }
 
-   async findUserByEmail(email: string): Promise<IUser | null> {
+   async findPatientByEmail(email: string): Promise<IPatient | null> {
        try {
-           const user = await this.model.findOne({ email })
+           const patient = await this.model.findOne({ email })
                .lean();
-           return user;
+           return patient;
        } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -34,12 +39,12 @@ class UserRepository implements IUserRepository {
        }
    }
 
-   async findUserById(id: string): Promise<IUser | null> {
+   async findPatientById(id: string): Promise<IPatient | null> {
        try {
-           const user = await this.model.findById(id)
+           const patient = await this.model.findById(id)
                .select('-password')
                .lean();
-           return user;
+           return patient;
        } catch (error) {
         throw new AppError(
             `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -48,11 +53,11 @@ class UserRepository implements IUserRepository {
        }
    }
 
-   async updateUser(id: string, userData: Partial<IUser>): Promise<IUser | null> {
+   async updatePatient(id: string, patientData: Partial<IPatient>): Promise<IPatient | null> {
        try {
-           const updatedUser = await this.model.findByIdAndUpdate(
+           const updatedPatient = await this.model.findByIdAndUpdate(
                id,
-               { $set: userData },
+               { $set: patientData },
                { 
                    new: true,
                    runValidators: true,
@@ -60,7 +65,8 @@ class UserRepository implements IUserRepository {
                }
            ).select('-password');
            
-           return updatedUser;
+           return updatedPatient;
+
        } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -69,7 +75,7 @@ class UserRepository implements IUserRepository {
        }
    }
 
-   async getUsers(filter: IUsersFilter): Promise<IUsersFilterResult> {
+   async getPatients(filter: IPatientsFilter): Promise<IPatientsFilterResult> {
         try {
             const { page, limit, search } = filter;
             const skip = (page - 1) * limit;
@@ -84,13 +90,14 @@ class UserRepository implements IUserRepository {
 
             ]
 
-            const users = await this.model.find(query)
+            const patients = await this.model.find(query)
                 .skip(skip)
                 .limit(limit)
+
             const total = await this.model.countDocuments(query)
 
             return {
-                users,
+                patients,
                 total,
                 page,
                 limit,
@@ -106,4 +113,4 @@ class UserRepository implements IUserRepository {
 }
 
 
-export default UserRepository;
+export default PatientRepository;

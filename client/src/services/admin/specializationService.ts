@@ -1,7 +1,7 @@
 
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import { api } from "../../utils/axiosInterceptor";
-import { AxiosError } from "axios";
+
 
 
 class SpecializationService {
@@ -13,9 +13,9 @@ class SpecializationService {
 
         } catch (error: unknown) {
         
-            if (error instanceof AxiosError) {
+            if (error instanceof Error) {
                 console.error(`Error Adding Specialization: ${error.message}`, error);
-                throw new Error(`Error Adding Specialization: ${ error.message}`)
+                throw new Error(error.message)
             }
         
             console.error(`Unknown error`, error);
@@ -35,9 +35,9 @@ class SpecializationService {
 
         } catch (error: unknown) {
         
-            if (error instanceof AxiosError) {
+            if (error instanceof Error) {
                 console.error(`Error Fetching Specialization: ${error.message}`, error);
-                throw new Error(`Error Fetching Specialization: ${ error.message}`)
+                throw new Error(error.message)
             }
         
             console.error(`Unknown error`, error);

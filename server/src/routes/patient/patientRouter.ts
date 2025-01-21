@@ -1,19 +1,19 @@
 
 import express from "express";
-import { UserModel } from "../../models/User";
-import UserRepository from "../../repositories/UserRepository";
-import UserAuthService from "../../services/user/UserAuthService";
+import { PatientModel } from "../../models/Patient";
+import UserRepository from "../../repositories/PatientRepository";
+import UserAuthService from "../../services/patient/authService";
 import OtpService from "../../services/OtpService";
 import CacheService from "../../services/CacheService";
-import UserAuthController from "../../controllers/user/UserAuthController";
+import UserAuthController from "../../controllers/patient/PatientAuthController";
 import { validateUser } from "../../validators/userValidator";
 import { signinValidation } from "../../validators/signInValidator";
 import { errors } from 'celebrate';
-import { authenticate } from "../../middlewares/authenticate";
+import { authenticate } from "../../middlewares/auth";
 
 const router = express.Router();
  
-const userRepository = new UserRepository(UserModel); 
+const userRepository = new UserRepository(PatientModel); 
 const cacheService = new CacheService()
 const otpService = new OtpService(cacheService)
 const userAuthService = new UserAuthService(userRepository, otpService, cacheService);

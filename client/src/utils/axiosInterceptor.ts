@@ -1,16 +1,18 @@
 import axios, { AxiosError} from 'axios';
-import TokenManager, { TOKEN_KEYS } from './TokenMangager';
+import TokenManager from './TokenMangager';
 import log from 'loglevel'
 
 const tokenManager = new TokenManager()
 
 const API_URLS = {
-    user: 'http://localhost:5000/api/user',
+    patient: 'http://localhost:5000/api/patient',
     doctor: 'http://localhost:5000/api/doctor',
     admin: 'http://localhost:5000/api/admin'
 }
 
-const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
+type userRole = 'patient' | 'doctor' | 'admin';
+
+const createAxiosInstance = (role: userRole) => {
     
     const instance = axios.create({
         baseURL: API_URLS[role],
@@ -23,26 +25,27 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
             const response = await axios.post(`${API_URLS[role]}/auth/refresh-token`)
     
             const { accessToken } = response.data;
-            tokenManager.setToken(role, accessToken);
+            tokenManager.setToken(accessToken);
     
             return accessToken;
         } catch (error: unknown) {
             if(error instanceof AxiosError ) {
                 log.error(error.message)
             }
-            tokenManager.clearToken(role);
-            if(role === 'user') {
-                window.location.href = '/signin'
-                return null
+            tokenManager.clearToken();
+            if (role === 'patient') {
+                window.location.href = '/signin'; 
+            } else {
+                window.location.href = `/${role}/signin`; 
             }
-            window.location.href = `${role}/signin`;
+
             return null;
         }
     }
     
     instance.interceptors.request.use(
         async (config) => {
-            const token = tokenManager.getAccessToken(role);
+            const token = tokenManager.getAccessToken();
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
@@ -85,7 +88,7 @@ const createAxiosInstance = (role: keyof typeof TOKEN_KEYS) => {
 }
 
 export const api = {
-    user: createAxiosInstance('user'),
+    patient: createAxiosInstance('patient'),
     doctor: createAxiosInstance('doctor'),
     admin: createAxiosInstance('admin')
 }

@@ -9,7 +9,7 @@ dotenv.config()
 import connectDB from './configs/db';
 import logger from './configs/logger';
 import sessionConfig from './configs/sessionConfig';
-import userRouter from "./routes/user/userRouter";
+import patientRouter from "./routes/patient/patientRouter";
 import adminRouter from "./routes/admin/adminRouter";
 import doctorRouter from './routes/doctor/applicantRouter'
 import { errorHandler } from './middlewares/errorHandler';
@@ -42,7 +42,7 @@ connectDB();
 
 
 //routes
-app.use('/api/user', userRouter)
+app.use('/api/patient', patientRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/doctor', doctorRouter)
 

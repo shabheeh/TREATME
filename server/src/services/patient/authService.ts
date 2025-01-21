@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
-import IUser, { IUserAuthService, SignInResult, googleSignInResult } from '../../interfaces/IUser';
-import IUserRepository from '../../repositories/interfaces/IUserRepository';
+import IPatient, { IPatientAuthService, SignInResult, googleSignInResult } from '../../interfaces/IPatient';
+import IPatientRepository from '../../repositories/interfaces/IPatientRepository';
 import { generateTokens, TokenPayload } from '../../utils/jwt';
 import CacheService from '../CacheService';
 import OtpService from '../OtpService';
@@ -14,18 +14,18 @@ const mailSubject = {
 }
 
 
-class UserAuthService implements IUserAuthService {
+class UserAuthService implements IPatientAuthService {
 
-    private userRepository: IUserRepository;
+    private patientRepository: IPatientRepository;
     private otpService: OtpService;
     private cacheService: CacheService;
 
     constructor(
-        userRepository: IUserRepository, 
+        patientRepository: IPatientRepository, 
         otpService: OtpService,
         cacheService: CacheService
     ) {
-        this.userRepository = userRepository;
+        this.patientRepository = patientRepository;
         this.otpService = otpService;
         this.cacheService = cacheService;
     }
@@ -34,9 +34,9 @@ class UserAuthService implements IUserAuthService {
     async sendOtp(email: string, password: string): Promise<void> {
         try {
 
-            const existingUser = await this.userRepository.findUserByEmail(email)
+            const existingPatient = await this.patientRepository.findPatientByEmail(email)
 
-            if (existingUser) {
+            if (existingPatient) {
                 throw new ConflictError('User with this email already exists')
             }
 
@@ -49,6 +49,7 @@ class UserAuthService implements IUserAuthService {
             if (!otpSent) {
                 throw new BadRequestError('Error Sending OTP')
             }
+
         } catch (error) {
             logger.error('errro sending otp', error.message)
             if (error instanceof AppError) {
@@ -64,13 +65,13 @@ class UserAuthService implements IUserAuthService {
 
     async verifyOtp(email: string, otp: string): Promise<void> {
         try {
-            const userData = await this.cacheService.retrieve(`signup:${email}`)
+            const patientData = await this.cacheService.retrieve(`signup:${email}`)
 
-            if (!userData) {
+            if (!patientData) {
                 throw new AuthError(AuthErrorCode.SESSION_EXPIRED)
             }
 
-            const parsedUserData = JSON.parse(userData)
+            const parsedPatientData = JSON.parse(patientData)
         
 
             const isOtpVerified = await this.otpService.verifyOTP(email, otp, 'signup') 
@@ -81,7 +82,7 @@ class UserAuthService implements IUserAuthService {
 
             await this.cacheService.store(
                 `signup:${email}`,
-                JSON.stringify({ ...parsedUserData, isOtpVerified: true }),
+                JSON.stringify({ ...parsedPatientData, isOtpVerified: true }),
                 600
             )
 
@@ -101,29 +102,29 @@ class UserAuthService implements IUserAuthService {
 
     }
 
-    async signup(user: IUser): Promise<{ newUser: Partial<IUser>}> {
+    async signup(patient: IPatient): Promise<{ newUser: Partial<IPatient>}> {
         try {
 
-            const cachedUserData = await this.cacheService.retrieve(`signup:${user.email}`)
+            const cachedPatientData = await this.cacheService.retrieve(`signup:${patient.email}`)
 
-            if (!cachedUserData) {
+            if (!cachedPatientData) {
                 throw new AuthError(AuthErrorCode.SESSION_EXPIRED)
             }
 
-            const parsedUserData = JSON.parse(cachedUserData);
+            const parsedPatientData = JSON.parse(cachedPatientData);
 
-            if (!parsedUserData.isOtpVerified) {
+            if (!parsedPatientData.isOtpVerified) {
                 throw new BadRequestError('Please verify your email')
             }
 
-            const hashedPassword = await bcrypt.hash(parsedUserData.password, 0);
+            const hashedPassword = await bcrypt.hash(parsedPatientData.password, 0);
 
-            user.password = hashedPassword
+            patient.password = hashedPassword
 
 
-            const newUser = await this.userRepository.createUser(user);
+            const newUser = await this.patientRepository.createPatient(patient);
 
-            await this.cacheService.delete(`signup:${user.email}`)
+            await this.cacheService.delete(`signup:${patient.email}`)
 
             const { password, ...userWithoutPassword } = newUser;
 
@@ -144,36 +145,37 @@ class UserAuthService implements IUserAuthService {
 
     async signin(email: string, password: string): Promise<SignInResult> {
         try {
-            const user = await this.userRepository.findUserByEmail(email);
+            const patient = await this.patientRepository.findPatientByEmail(email);
 
-            if (!user) {
+            if (!patient) {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, 'Invallid Email or Password')
             }
 
-            if (!user.password) {
+            if (!patient.password) {
                 return {
                     googleUser: true,
                     message: 'You previously signed in with Google please use Google for future sign in'
                 }
             }
 
-            const isPasswordMatch = await bcrypt.compare(password, user.password)
+            const isPasswordMatch = await bcrypt.compare(password, patient.password)
 
             if (!isPasswordMatch) {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
             const payload: TokenPayload = {
-                email: user.email,
+                email: patient.email,
                 role: 'patient',
             }
 
             const { accessToken, refreshToken } = generateTokens(payload)
 
-            return { accessToken, refreshToken, user }
+            return { accessToken, refreshToken, patient }
 
         } catch (error) {
-            logger.error('errro signin user', error.message)
+
+            logger.error('error signin patient', error.message)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -186,16 +188,16 @@ class UserAuthService implements IUserAuthService {
     }
 
 
-    async getUserByEmail(email: string): Promise<IUser> {
+    async getUserByEmail(email: string): Promise<IPatient> {
         try {
 
-            const user = await this.userRepository.findUserByEmail(email);
+            const patient = await this.patientRepository.findPatientByEmail(email);
             
-            if (!user) {
+            if (!patient) {
                 throw new AuthError(AuthErrorCode.USER_NOT_FOUND);
             }
 
-            return user
+            return patient
 
         } catch (error) {
             logger.error('errro sending otp for forgot password', error.message)
@@ -209,23 +211,22 @@ class UserAuthService implements IUserAuthService {
         }
     }
 
-    async sendOtpForgotPassword(email: string): Promise<IUser> {
+    async sendOtpForgotPassword(email: string): Promise<IPatient> {
         try {
-            const user = await this.userRepository.findUserByEmail(email);
+            const patient = await this.patientRepository.findPatientByEmail(email);
 
-        if (!user) {
+        if (!patient) {
             throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
         }
 
         
-
         const isOtpSent = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
 
         if(!isOtpSent) {
             throw new BadRequestError('Failed to sent otp, Please try again later')
         }
 
-        return user
+        return patient
         
 
         } catch (error) {
@@ -263,7 +264,7 @@ class UserAuthService implements IUserAuthService {
         try {
             const hashedPassword = await bcrypt.hash(password, 10)
 
-            const updateData = await this.userRepository.updateUser(id, { password: hashedPassword })
+            const updateData = await this.patientRepository.updatePatient(id, { password: hashedPassword })
         
             if (!updateData) {
                 throw new BadRequestError('Error reseting password')
@@ -298,28 +299,28 @@ class UserAuthService implements IUserAuthService {
             }
 
 
-            let user = await this.userRepository.findUserByEmail(payload.email)
+            let patient = await this.patientRepository.findPatientByEmail(payload.email)
             let partialUser = false;
 
-            if(user) {
+            if(patient) {
                 const jwtPayload: TokenPayload = {
-                    email: user.email,
+                    email: patient.email,
                     role: 'patient',
                 }
 
                 const { accessToken, refreshToken } = generateTokens(jwtPayload);
 
-                return { user, accessToken, refreshToken, partialUser }
+                return { patient, accessToken, refreshToken, partialUser }
             }
 
-            const newUser = {
+            const newPatient = {
                 email: payload.email,
                 firstName: payload.given_name,
                 lastName: payload.family_name,
                 profilePicture: payload.picture
             }
 
-            await this.cacheService.store(`google:${newUser.email}`, JSON.stringify(newUser), 300);
+            await this.cacheService.store(`google:${newPatient.email}`, JSON.stringify(newPatient), 300);
 
             const jwtPayload: TokenPayload = {
                 email: payload.email,
@@ -328,7 +329,7 @@ class UserAuthService implements IUserAuthService {
 
             const { accessToken, refreshToken } = generateTokens(jwtPayload)
 
-            return { newUser, accessToken, refreshToken, partialUser: true }
+            return { newPatient, accessToken, refreshToken, partialUser: true }
 
         } catch (error) {
             logger.error('error google signin', error)
@@ -342,16 +343,16 @@ class UserAuthService implements IUserAuthService {
         }
     }
 
-    async completeProfileAndSignUp(userData: IUser): Promise<IUser> {
+    async completeProfileAndSignUp(patientData: IPatient): Promise<IPatient> {
         try {
 
-            const user = await this.userRepository.createUser(userData)
+            const patient = await this.patientRepository.createPatient(patientData)
             
-            if (!user) {
+            if (!patient) {
                 throw new AppError('Failed to create New User')
             }
 
-            return user
+            return patient
             
         } catch (error) {
             logger.error('error creating a new googleUser', error)

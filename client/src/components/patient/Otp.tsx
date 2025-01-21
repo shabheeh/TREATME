@@ -4,9 +4,10 @@ import { Box, Container, Typography, Link, Button } from "@mui/material";
 import PinInput from "react-pin-input";
 import SignupPath from "./SignupPath";
 // import { IUser } from "../../types/user/authTypes";
-import authServiceUser from "../../services/user/authService";
+import authServicePatient from "../../services/patient/authService";
 import { useSelector } from 'react-redux' 
 import { RootState } from "../../redux/app/store";
+import { toast } from "sonner";
 
 interface OtpPageProps {
   isVerifyEmail: boolean;
@@ -22,7 +23,6 @@ interface OtpFormValues {
 const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySignIn }) => {
   const [seconds, setSeconds] = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(true);
-  const [otpError, setOtpError] = useState('')
 
   const tempUser = useSelector((state:RootState) => state.tempUser.tempUser)
 
@@ -55,16 +55,16 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
         if (!tempUser?.email) {
           throw new Error('somethig went wrong please try again')
         }
-        await authServiceUser.resendOtp(tempUser.email)
+        await authServicePatient.resendOtp(tempUser.email)
       }else {
         if (!tempUser?.email) {
           throw new Error('somethig went wrong please try again')
         }
-        await authServiceUser.resendOtpForgotPassword(tempUser?.email)
+        await authServicePatient.resendOtpForgotPassword(tempUser?.email)
       }
     } catch (error) {
       if (error instanceof Error) {
-        setOtpError(error.message)
+        toast.error(error.message)
       }
       console.log(error)
     }
@@ -77,7 +77,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
         if (!tempUser?.email) {
           throw new Error('somethig went wrong please try again')
         }
-        await authServiceUser.verifyOtpSignUp(tempUser.email, data.otp)
+        await authServicePatient.verifyOtpSignUp(tempUser.email, data.otp)
         if(onVerifySignUp) {
           onVerifySignUp()
         }
@@ -85,14 +85,14 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
         if (!tempUser?.email) {
           throw new Error('somethig went wrong please try again')
         }
-        await authServiceUser.verifyOtpForgotPassword(tempUser.email, data.otp)
+        await authServicePatient.verifyOtpForgotPassword(tempUser.email, data.otp)
         if(onVerifySignIn) {
           onVerifySignIn()
         }
       }
     } catch (error) {
       if (error instanceof Error) {
-        setOtpError(error.message)
+        toast.error(error.message)
       }
       console.log(error)
     }
@@ -156,11 +156,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
               </Typography>
             )}
 
-  {otpError && (
-              <Typography color="error" sx={{ mt: 5, mb: 2 }}>
-                {otpError}
-              </Typography>
-            )}
+ 
           
             <Controller
               

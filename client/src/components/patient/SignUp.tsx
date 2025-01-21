@@ -1,3 +1,4 @@
+
 import { 
   Box, 
   Container, 
@@ -6,49 +7,72 @@ import {
   Link,
   Button,
   Divider,
-  CircularProgress 
-} from "@mui/material"
-import { useForm } from "react-hook-form"
-import authServiceUser from "../../services/user/authService";
+  CircularProgress,
+} from "@mui/material";
+import SignupPath from "./SignupPath";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import authServicePatient from "../../services/patient/authService";
+import { GoogleLogin, CredentialResponse} from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
 import { toast } from "sonner";
-interface SignInFormInputs {
+
+interface SignupFormInputs {
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
-interface SignInProps {
-  onForgotPassword: () => void;
-  onCompleteProfile: () => void;
+interface SignUpProps {
+  onSignUp: () => void;
+  onCompleteProfile: () => void
 }
 
-const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SignInFormInputs>({ 
+const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
+  const { 
+    register, 
+    handleSubmit, 
+    watch,
+    formState: { errors } 
+  } = useForm<SignupFormInputs>({
     defaultValues: {
       email: '',
-      password: ''
+      password: '',
+      confirmPassword: ''
     }
   });
 
-  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const onSubmit = async(data: SignInFormInputs) => {
+  const password = watch("password");
+
+  const [loading, setLoading] = useState(false)
+
+  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const onSubmit = async(data: SignupFormInputs) => {
     try {
+      console.log(data);
       setLoading(true)
-      await authServiceUser.signIn(data)
-      navigate('/patient')
-    } catch (error) {
-      if(error instanceof Error) {
-              toast.error(error.message)
-            }
-      console.error('Sign in error:', error);
-    } finally {
+
+      await authServicePatient.sendOtp({email: data.email, password: data.password})
+        onSignUp();
+      
       setLoading(false)
+    } catch (error: unknown) {
+
+      if(error instanceof Error) {
+        setError(true)
+        setErrorMessage(error.message)
+        toast.error(error.message)
+        console.log('hello', error.message)
+      }
+      
+      console.log(error)
     }
   };
+
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
@@ -57,12 +81,12 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
       }
 
       const credential = credentialResponse.credential
-      const isPartialUser = await authServiceUser.googleSignIn(credential)
+      const isPartialUser = await authServicePatient.googleSignIn(credential)
 
       if (isPartialUser) {
         onCompleteProfile();
       } else {
-        navigate('/visitnow');
+        navigate('/dashboard');
       }
     } catch (error) {
       if(error instanceof Error) {
@@ -94,11 +118,15 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
               color: "teal",
               textDecoration: "underline",
               marginTop: 5,
-              marginBottom: 10,
+              marginBottom: 1,
             }}
           >
-            Sign in to your account
+            Sign up your account
           </Typography>
+          <SignupPath step={1} />
+          { error && <Typography > 
+            {errorMessage}
+            </Typography>}
           <Container
             component="form"
             onSubmit={handleSubmit(onSubmit)}
@@ -121,45 +149,47 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
               variant="outlined"
               error={!!errors.email}
               helperText={errors.email?.message}
-              sx={{ width: "80%", margin: "10px auto" }}
+              sx={{ width: "80%", mx: "auto", mt: '20px', mb: '10px'  }}
             />
             <TextField
               {...register("password", { 
                 required: "Password is required",
-                
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters"
+                },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message: "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character"
+                }
               })}
+              type="text"
+
               label="Password"
-              type="password"
               variant="outlined"
               error={!!errors.password}
               helperText={errors.password?.message}
+              sx={{ width: "80%", mx: "auto", my: "10px" }}
+            />
+            <TextField
+              {...register("confirmPassword", { 
+                required: "Please confirm your password",
+                validate: value => 
+                  value === password || "Passwords do not match"
+              })}
+              type="password"
+              label="Confirm Password"
+              variant="outlined"
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword?.message}
               sx={{ width: "80%", margin: "10px auto" }}
             />
-            <Typography
-              sx={{
-                fontSize: "0.8rem",
-                color: "gray",
-                alignSelf: "flex-start",
-                marginLeft: "10%",
-                mt: 1.5,
-                mb: 2,
-                cursor: 'pointer',
-                textDecoration: 'none', 
-                '&:hover': {
-                  textDecoration: 'underline', 
-                },
-              }}
-              onClick={onForgotPassword}
-            >
-              Forgot Password
-            </Typography>
             <Button 
-              type="submit" 
+              type="submit"
               variant="contained"  
               sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}
-            > 
-            { loading ? <CircularProgress /> : "Sign In" }
-              
+            >
+              { loading ? <CircularProgress size={30} /> : "Sign Up" }
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
             <Box sx={{ display: 'flex', justifyContent: 'center', m: 2 }}>
@@ -176,9 +206,9 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
               variant="body2"
               sx={{ mt: 1, mb: 5, textAlign: "center", color: "gray" }}
             >
-              Don't have an account?{" "}
-              <Link href="/signup" underline="hover" sx={{ color: "teal" }}>
-                Sign up here
+              Already have an account?{" "}
+              <Link href="/signin" underline="hover" sx={{ color: "teal" }}>
+                Sign in here
               </Link>
             </Typography>
           </Container>
@@ -187,4 +217,4 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
   )
 }
 
-export default SignIn
+export default SignUp

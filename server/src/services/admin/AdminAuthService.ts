@@ -40,7 +40,7 @@ class AdminAuthService implements IAdminAuthService {
 
             const { accessToken, refreshToken } = generateTokens(payload)
 
-            return { accessToken, refreshToken }
+            return { admin, accessToken, refreshToken }
 
         } catch (error) {
             logger.error('service: error sign in admin', error.message)

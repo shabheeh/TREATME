@@ -1,6 +1,6 @@
 import { IAdminPatientsService } from "src/interfaces/IAdmin";
-import { IUsersFilter, IUsersFilterResult } from "src/interfaces/IUser";
-import IUserRepository from "../../repositories/interfaces/IUserRepository";
+import { IPatientsFilter, IPatientsFilterResult } from "src/interfaces/IPatient";
+import IPatientRepository from "../../repositories/interfaces/IPatientRepository";
 import logger from "../../configs/logger";
 import { AppError } from "../../utils/errors";
 
@@ -9,13 +9,13 @@ import { AppError } from "../../utils/errors";
 
 class AdminPatientsService implements IAdminPatientsService {
 
-    private userRepository: IUserRepository;
+    private patientRepository: IPatientRepository;
 
-    constructor(userRepository: IUserRepository) {
-        this.userRepository = userRepository
+    constructor(patientRepository: IPatientRepository) {
+        this.patientRepository = patientRepository
     }
 
-    async getPatients(params: IUsersFilter): Promise<IUsersFilterResult> {
+    async getPatients(params: IPatientsFilter): Promise<IPatientsFilterResult> {
         try {
             const filter = {
                 page: Math.max(1, params.page || 1),
@@ -23,10 +23,10 @@ class AdminPatientsService implements IAdminPatientsService {
                 search: params.search?.trim() || ''
             }
 
-            return await this.userRepository.getUsers(filter)
+            return await this.patientRepository.getPatients(filter)
 
         } catch (error) {
-            logger.error('error fetching users data', error.message)
+            logger.error('error fetching patients data', error.message)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -40,7 +40,7 @@ class AdminPatientsService implements IAdminPatientsService {
     async togglePatientActivityStatus(id: string, isActive: boolean): Promise<void> {
         try {
 
-            await this.userRepository.updateUser(id, { isActive: !isActive});
+            await this.patientRepository.updatePatient(id, { isActive: !isActive});
 
         } catch (error) {
             logger.error('error re-sending otp', error)

@@ -3,7 +3,7 @@ import ApplicantController from '../../controllers/applicant/applicantController
 import { ApplicantModel } from '../../models/Applicant'
 import ApplicantRepository from '../../repositories/ApplicantRepository'
 import ApplicantService from '../../services/applicant/applicantService'
-import { authenticate } from '../../middlewares/authenticate'
+import { authenticate } from '../../middlewares/auth'
 
 
 const applicantRepository = new ApplicantRepository(ApplicantModel)

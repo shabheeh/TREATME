@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import IUser from '../interfaces/IUser';
+import IPatient from '../interfaces/IPatient';
 
 
 const addressSchema = new Schema({
@@ -11,7 +11,7 @@ const addressSchema = new Schema({
 });
 
 
-const userSchema = new Schema(
+const patientSchema = new Schema(
   {
     email: { type: String, required: true, unique: true, trim: true },
     firstName: { type: String, required: true, trim: true },
@@ -29,4 +29,4 @@ const userSchema = new Schema(
   }
 );
 
-export const UserModel = model<IUser>('User', userSchema);
+export const PatientModel = model<IPatient>('Patient', patientSchema);

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import Navbar from "../../components/basics/Navbar";
-import SignIn from "../../components/user/SignIn";
-import ResetPassword from "../../components/user/ResetPassword";
-import ForgotPassword from "../../components/user/ForgotPassword";
-import Otp from "../../components/user/Otp";
-import CompleteProfile from "../../components/user/CompleteProfile";
+import SignIn from "../../components/patient/SignIn";
+import ResetPassword from "../../components/patient/ResetPassword";
+import ForgotPassword from "../../components/patient/ForgotPassword";
+import Otp from "../../components/patient/Otp";
+import CompleteProfile from "../../components/patient/CompleteProfile";
 
 type Steps = "signin" | "forgot-password" | "verfy-otp" | "reset-password" | "complete-profile";
 

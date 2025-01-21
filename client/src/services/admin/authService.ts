@@ -1,6 +1,8 @@
-import { AxiosError } from "axios";
+
 import { api } from "../../utils/axiosInterceptor";
 import TokenManager from "../../utils/TokenMangager";
+import { store } from "../../redux/app/store";
+import { signIn } from "../../redux/features/auth/authSlice";
 
 
 
@@ -22,22 +24,28 @@ class AuthServiceAdmin {
                 throw new Error(`Something went wrong`)
             }
 
-            const { accessToken } = response.data
+            const { admin, accessToken } = response.data
 
-            this.tokenManager.setToken('admin', accessToken)
+            this.tokenManager.setToken(accessToken)
+
+            store.dispatch(signIn({
+                email: admin.email,
+                role: 'admin',
+                token: accessToken
+            }))
 
         } catch (error: unknown) {
         
-              if (error instanceof AxiosError) {
-                console.error(`error user signup: ${error.message}`, error);
-                throw new Error(`Error signin admin ${ error.message}`)
-              }
+            if (error instanceof Error) {
+            console.error(`error user signup: ${error.message}`);
+            throw new Error(error.message)
+            }
           
-              console.error(`Unknown error occurred during otp verification`, error);
-              throw new Error(`Something went error`)
+            console.error(`Unknown error occurred during otp verification`, error);
+            throw new Error(`Something went error`)
 
               
-            }
+        }
     }
 }
 

@@ -1,5 +1,5 @@
-import { AxiosError } from "axios";
-import { IUser } from "../../types/user/userAuth.types";
+
+import { IPatient } from "../../types/patient/patient.types";
 import { api } from "../../utils/axiosInterceptor";
 
 
@@ -10,7 +10,7 @@ interface UrlQuery {
 }
 
 export interface ResponseData {
-    users: IUser[] | [];
+    patients: IPatient[] | [];
     page: number;
     limit: number;
     totalPages: number;
@@ -31,9 +31,9 @@ class PatientsService {
 
         } catch (error: unknown) {
         
-            if (error instanceof AxiosError) {
+            if (error instanceof Error) {
               console.error(`error fetching patients data: ${error.message}`, error);
-              throw new Error(`Error fetching patients data ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown error durin fetching patents list`, error);
@@ -48,9 +48,9 @@ class PatientsService {
 
         } catch (error: unknown) {
         
-            if (error instanceof AxiosError) {
+            if (error instanceof Error) {
               console.error(`error block or unblock patient: ${error.message}`, error);
-              throw new Error(`Error block or unblock patient ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown error`, error);

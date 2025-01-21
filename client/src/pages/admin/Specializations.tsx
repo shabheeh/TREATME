@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/admin/specializationService";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
 
 const Specializations = () => {
   const [specializations, setSpecializations] = useState<ISpecialization[] | null>(null);
@@ -20,7 +19,7 @@ const Specializations = () => {
         const result = await specializationService.getSpecializations();
         setSpecializations(result);
       } catch (error) {
-        if (error instanceof AxiosError) {
+        if (error instanceof Error) {
           toast.error(error.message);
         } else {
           toast.error("Something went wrong");

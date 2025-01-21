@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {IUser } from "../../../types/user/userAuth.types";
+import { IPatient } from "../../../types/patient/patient.types"; 
 
-type InitialStateType = { tempUser: Partial<IUser> | null; }
+type InitialStateType = { tempUser: Partial<IPatient> | null; }
 
 const initialState: InitialStateType = {
     tempUser: null,
 }
 
 interface SignInActionPayload {
-    tempUser: Partial<IUser>
+    tempUser: Partial<IPatient>
 }
 
 

@@ -8,7 +8,7 @@ import {
   } from "@mui/material"
 
   import { useForm } from "react-hook-form"
-import authServiceUser from "../../services/user/authService";
+import authServicePatient from "../../services/patient/authService";
   import { toast } from "sonner";
   interface ResetPasswordInputs {
     password: string;
@@ -44,7 +44,7 @@ import { RootState } from "../../redux/app/store";
         if(!tempUser?._id) {
           throw new Error('User id not found')
         }
-        await authServiceUser.resetPassword(tempUser._id, data.password)
+        await authServicePatient.resetPassword(tempUser._id, data.password)
         onResetPassword()
         
       } catch (error) {
