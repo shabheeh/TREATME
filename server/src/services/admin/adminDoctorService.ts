@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import logger from "../../configs/logger";
 import { IAdminDoctorService } from "src/interfaces/IAdmin";
 import { AppError } from "../../utils/errors";
+import { sendEmail } from "../../utils/mailer";
+import { generateHtml } from "../../helpers/htmlGenerator";
 
 class AdminDoctorService implements IAdminDoctorService {
 
@@ -25,6 +27,10 @@ class AdminDoctorService implements IAdminDoctorService {
             const newDoctor = await this.doctorRepository.createDoctor(doctor)
 
             const { password, ...withoutPassword } = newDoctor;
+
+            const html = await generateHtml(withoutPassword.email, notHashedPassword)
+
+            await sendEmail(withoutPassword.email, 'Welcome to Treamtme', undefined, html)
 
             return withoutPassword;
 

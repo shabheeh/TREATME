@@ -4,7 +4,7 @@ import LandingPage from '../pages/user/LandingPage';
 import SignInFlow from '../pages/user/SignInFlow';
 import SignUpFlow from '../pages/user/SignUpFlow';
 import LayoutUser from '../Layouts/patient/LayoutPatient';
-import VisiitNow from '../components/patient/VisitNow';
+import VisiitNow from '../pages/user/VisitNow';
 
 export const patientRoutes = [
 

@@ -5,12 +5,13 @@ import log from 'loglevel'
 const tokenManager = new TokenManager()
 
 const API_URLS = {
-    patient: 'http://localhost:5000/api/patient',
-    doctor: 'http://localhost:5000/api/doctor',
-    admin: 'http://localhost:5000/api/admin'
+    patient: import.meta.env.VITE_API_PATIENT,
+    doctor: import.meta.env.VITE_API_DOCTOR,
+    admin: import.meta.env.VITE_API_ADMIN,
+    shared: import.meta.env.VITE_API_SHARED,
 }
 
-type userRole = 'patient' | 'doctor' | 'admin';
+type userRole = 'patient' | 'doctor' | 'admin' | 'shared';
 
 const createAxiosInstance = (role: userRole) => {
     
@@ -21,7 +22,7 @@ const createAxiosInstance = (role: userRole) => {
 
     const refreshAuthToken = async () => {
         try {
-            
+                       
             const response = await axios.post(`${API_URLS[role]}/auth/refresh-token`)
     
             const { accessToken } = response.data;
@@ -33,7 +34,7 @@ const createAxiosInstance = (role: userRole) => {
                 log.error(error.message)
             }
             tokenManager.clearToken();
-            if (role === 'patient') {
+            if (role === 'patient' || role === 'shared') {
                 window.location.href = '/signin'; 
             } else {
                 window.location.href = `/${role}/signin`; 
@@ -90,9 +91,9 @@ const createAxiosInstance = (role: userRole) => {
 export const api = {
     patient: createAxiosInstance('patient'),
     doctor: createAxiosInstance('doctor'),
-    admin: createAxiosInstance('admin')
+    admin: createAxiosInstance('admin'),
+    shared: createAxiosInstance('shared')
 }
-
 
 
 

@@ -174,6 +174,7 @@ const AddDoctor = () => {
         }
       
         try {
+
           const formData = new FormData();
           formData.append("firstName", data.firstName);
           formData.append("lastName", data.lastName);
@@ -233,7 +234,7 @@ const AddDoctor = () => {
                         justifyContent: "center",
                     }}
                 >
-                    {/* Profile Picture Upload */}
+                    
                     <Box sx={{ width: "90%", my: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <Avatar
                             src={profilePicture ? URL.createObjectURL(profilePicture) : undefined}

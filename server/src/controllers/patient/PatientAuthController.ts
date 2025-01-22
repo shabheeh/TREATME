@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
-import { IPatientAuthService, IPatientController} from "../../interfaces/IPatient";
+import { IPatientAuthService, IPatientAuthController } from "../../interfaces/IPatient";
 import { BadRequestError } from "../../utils/errors";
 
 
-class PatientAuthController implements IPatientController { 
+class PatientAuthController implements IPatientAuthController { 
 
     private patientAuthService: IPatientAuthService;
     private otpService: OtpService;
@@ -30,7 +30,7 @@ class PatientAuthController implements IPatientController {
     
         } catch (error) {
             next(error)
-        }
+        } 
     }
     
     verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

@@ -11,7 +11,8 @@ import logger from './configs/logger';
 import sessionConfig from './configs/sessionConfig';
 import patientRouter from "./routes/patient/patientRouter";
 import adminRouter from "./routes/admin/adminRouter";
-import doctorRouter from './routes/doctor/applicantRouter'
+import doctorRouter from './routes/doctor/doctorRouter'
+import sharedRouter from './routes/shared/sharedRouter'
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
@@ -45,6 +46,7 @@ connectDB();
 app.use('/api/patient', patientRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/doctor', doctorRouter)
+app.use('/api/shared', sharedRouter)
 
  
 

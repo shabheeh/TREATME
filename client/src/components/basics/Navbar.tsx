@@ -1,10 +1,9 @@
 import {
   AppBar,
   Box,
-  Typography,
   Toolbar,
 } from '@mui/material';
-import { TiPlus } from "react-icons/ti";
+import logoNavbar from '../../assets/logo.navbar.svg';
 
 const Navbar = () => {
   return (
@@ -12,17 +11,18 @@ const Navbar = () => {
       position="fixed" 
       sx={{ 
         bgcolor: 'teal',
-        // zIndex: ,
-        width: '100%'
+        width: '100%',
       }}
     >
       <Toolbar sx={{ padding: '0.5rem 1rem' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <TiPlus size={27} />
-          <Typography variant="h5" component="div" sx={{ ml: 1, fontWeight: 'bold', color: 'white' }}>
-            treatme
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <img 
+            src={logoNavbar} 
+            alt="Logo" 
+            style={{ height: '25px', cursor: 'pointer' }} 
+          />
         </Box>
+        
       </Toolbar>
     </AppBar>
   );

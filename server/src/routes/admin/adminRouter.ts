@@ -13,12 +13,8 @@ import UserRepository from '../../repositories/PatientRepository';
 import { PatientModel } from '../../models/Patient';
 import AdminPatientsService from '../../services/admin/adminPatientsService';
 import AdminPatientsController from '../../controllers/admin/adminPatientsController';
-import { validateDoctor } from '../../validators/doctorValidator';
-import { validateSpecialization } from '../../validators/specializationValidator';
-import SpecializationRepository from '../../repositories/SpecializationRepository';
-import { specializationModel } from '../../models/Specialization';
-import SpecializationService from '../../services/specialization/sepecializationService';
-import SpecializationController from '../../controllers/specialization/specializationController';
+// import { validateDoctor } from '../../validators/doctorValidator';
+
 import { authenticate } from '../../middlewares/auth';
 
 const adminRepository = new AdminRespository(AdminModel)
@@ -33,9 +29,6 @@ const userRepository = new UserRepository(PatientModel);
 const adminPatientsService = new AdminPatientsService(userRepository);
 const adminPatientsController = new AdminPatientsController(adminPatientsService)
 
-const specializationRepository = new SpecializationRepository(specializationModel)
-const specializationService = new SpecializationService(specializationRepository)
-const specializationController = new SpecializationController(specializationService)
 
 const router = express.Router()
 
@@ -46,18 +39,14 @@ router.post('/auth/signin', signinValidation, adminAuthController.signInAdmin)
 
 router.get('/doctors', authenticate, adminDoctorController.getDoctors)
 router.post('/doctors', authenticate, upload.single('profilePicture'), 
-    validateDoctor, 
+    // validateDoctor, 
     adminDoctorController.createDoctor
 )
 
 router.get("/patients", authenticate, adminPatientsController.getPatients)
 router.patch('/patients/:id', authenticate, adminPatientsController.togglePatientActivityStatus)
 
-router.post('/specializations', authenticate, upload.single('image'), 
-    validateSpecialization, 
-    specializationController.createSpecialization
-)
-router.get('/specializations', authenticate, specializationController.getSpecializations)
+
 
 
 export default router 

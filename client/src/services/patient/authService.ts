@@ -61,7 +61,7 @@ class AuthServicePatient implements IAuthServicePatient {
         log.error(`Unknown error occurred during sign-in`, error);
         throw new Error("An unknown error occurred" )
 
-      }
+    }
   }
 
   async verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult> {
@@ -276,7 +276,7 @@ class AuthServicePatient implements IAuthServicePatient {
 
       async resetPassword(id: string, password: string): Promise<void > {
         try {
-          await api.patient.put('/auth/reset-password', {id, password})
+          await api.patient.patch('/auth/reset-password', {id, password})
         } catch (error) {
           if (error instanceof Error) {
             log.error(`otp verification failed: ${error.message}`, error);

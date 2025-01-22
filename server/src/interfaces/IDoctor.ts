@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from "express";
 import { Document, ObjectId } from "mongoose";
 
 
@@ -27,6 +28,7 @@ export default interface IDoctor extends Document {
     experience: number;
     biography: string;
     profilePicture: string;
+    imagePublicId: string;
     availability: Availability[];
 }
 
@@ -45,3 +47,11 @@ export interface IDoctorsFilterResult {
 }
 
 
+
+export interface IDoctorAuthService {
+  signIn(email: string, password: string): Promise<IDoctor>
+}
+
+export interface IDoctorAuthController {
+  signIn(req: Request, res: Response, next: NextFunction): Promise<void>
+}

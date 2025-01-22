@@ -2,7 +2,7 @@ import { Button, Box, Typography, Grid, Skeleton } from "@mui/material";
 import SpecializationCard from "../../components/admin/SpecializationCard";
 import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
-import specializationService from "../../services/admin/specializationService";
+import specializationService from "../../services/specialization.ts/specializationService";
 import { toast } from "sonner";
 
 const Specializations = () => {
@@ -47,7 +47,7 @@ const Specializations = () => {
           variant="contained"
           color="primary"
           component="a"
-          href="/admin/add-specialization"
+          href="/admin/specializations/add"
           sx={{
             textTransform: "none",
             textDecoration: "none",
@@ -56,7 +56,7 @@ const Specializations = () => {
           Add Specialization
         </Button>
       </Box>
-      <Box sx={{ padding: 2 }}>
+      <Box sx={{ padding: 2, border: '1px solid', borderColor: 'grey.300' }}>
       <Grid container spacing={3}>
         {loading
           ? Array.from({ length: 5 }).map((_, index) => ( 
@@ -114,6 +114,7 @@ const Specializations = () => {
           : specializations?.map((specialization) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={specialization._id}>
                 <SpecializationCard
+                  id={specialization._id}
                   name={specialization.name}
                   description={specialization.description}
                   note={specialization.note}

@@ -86,7 +86,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
       if (isPartialUser) {
         onCompleteProfile();
       } else {
-        navigate('/dashboard');
+        navigate('/visitnow');
       }
     } catch (error) {
       if(error instanceof Error) {

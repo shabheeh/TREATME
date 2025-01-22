@@ -1,14 +1,12 @@
 import {
   AppBar,
   Box,
-  Typography,
   Toolbar,
   IconButton,
 } from '@mui/material';
-import { TiPlus } from "react-icons/ti";
 import MenuIcon from '@mui/icons-material/Menu';
 import React from 'react';
-
+import logoNavbar from '../../assets/logo.navbar.svg'
 
 interface NavbarHomeProps {
   onMenuClick: () => void;
@@ -39,16 +37,13 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ onMenuClick }) => {
             <MenuIcon />
           </IconButton>
           
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <TiPlus size={28} />
-            <Typography 
-              variant="h5" 
-              component="div" 
-              sx={{ ml: 1, fontWeight: 'bold', color: 'white' }}
-            >
-              treatme
-            </Typography>
-          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <img 
+            src={logoNavbar} 
+            alt="Logo" 
+            style={{ height: '25px', cursor: 'pointer' }} 
+          />
+        </Box>
         </Toolbar>
       </Box>
     </AppBar>

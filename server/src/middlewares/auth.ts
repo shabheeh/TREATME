@@ -45,7 +45,7 @@ export const authorize = (...roles: string[]) => {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void | { message: string }> => {
+  ): Promise<void> => {
     try {
       if (!req.user) {
         res.status(401).json({
@@ -58,6 +58,7 @@ export const authorize = (...roles: string[]) => {
         res.status(403).json({
           message: `Access Denied`,
         });
+        return
       }
 
       next();

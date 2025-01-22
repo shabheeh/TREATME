@@ -24,6 +24,19 @@ class DoctorRepository implements IDoctorRepository {
         }
     }
 
+    async findDoctorByEmail(email: string): Promise<IDoctor | null> {
+        try {
+            const doctor = await this.model.findOne({ email })
+                .lean();
+            return doctor;
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
     async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
             try {
                 const { page, limit, search } = filter;

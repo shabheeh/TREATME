@@ -100,7 +100,7 @@ const LandingPage = () => {
                 Connect with top healthcare providers from the comfort of your
                 home. Quality care, when you need it most.
               </Typography>
-              <Link to={'/signin'}>
+              <Link to={'/doctor/signin'}>
               <Button
                 variant="contained"
                 size="large"

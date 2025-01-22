@@ -19,26 +19,26 @@ import {
   MdLogout,
   MdHelpOutline,
 } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/app/store";
+import { signOut } from "../../redux/features/auth/authSlice";
+import { clearUser } from "../../redux/features/user/userSlice";
 
 interface ProfileDialogProps {
   open: boolean;
   onClose: () => void;
-  //   handleManageAccount: () => void;
-  //   handleSignOut: () => void;
-  //   handleHelpSupport: () => void;
 }
 
-const ProfileDialog: React.FC<ProfileDialogProps> = ({
-  open,
-  onClose,
-  //   handleManageAccount,
-  //   handleSignOut,
-  //   handleHelpSupport
-}) => {
+const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
 
-const patient = useSelector((state: RootState) => state.user.patient)
+  const patient = useSelector((state: RootState) => state.user.patient);
+  const dispatch = useDispatch()
+
+  const handleSignOut = () => {
+    dispatch(signOut())
+    dispatch(clearUser())
+  }
+
 
   return (
     <Dialog
@@ -120,6 +120,7 @@ const patient = useSelector((state: RootState) => state.user.patient)
 
         <List sx={{ py: 1 }}>
           <ListItemButton
+            
             sx={{
               px: 5,
               py: 1.5,
@@ -147,6 +148,7 @@ const patient = useSelector((state: RootState) => state.user.patient)
           </ListItemButton>
 
           <ListItemButton
+            onClick={handleSignOut}
             sx={{
               px: 5,
               py: 1.5,

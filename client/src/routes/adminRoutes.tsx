@@ -9,6 +9,7 @@ import AddDoctor from '../components/admin/AddDoctor';
 import Specializations from '../pages/admin/Specializations';
 import AddSpecialization from '../components/admin/AddSpecialization';
 import SignIn from '../components/admin/SignIn';
+import EditSpecialization from '../components/admin/EditSpecialization';
 
 export const adminRoutes = [
     
@@ -27,6 +28,7 @@ export const adminRoutes = [
     <Route path="recruitements" element={<Applicants />} />
     <Route path="add-doctor" element={<AddDoctor />} />
     <Route path="specializations" element={<Specializations />} />
-    <Route path="add-specialization" element={<AddSpecialization />} />
+    <Route path="specializations/add" element={<AddSpecialization />} />
+    <Route path='specializations/edit/:id' element={<EditSpecialization />}/>
   </Route>
 ];

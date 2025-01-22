@@ -12,7 +12,7 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
-import specializationService from "../../services/admin/specializationService";
+import specializationService from "../../services/specialization.ts/specializationService";
 import { useNavigate } from "react-router-dom";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -51,7 +51,6 @@ const AddSpecialization = () => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-    //   setValue("image", file); 
       setCroppedImage(URL.createObjectURL(file));
       setIsCropped(false);
     }

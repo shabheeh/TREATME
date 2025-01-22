@@ -7,16 +7,20 @@ export default interface ISpecialization extends Document {
     note: string;
     fee: number;
     image: string;
+    imagePublicId: string;
 }
 
 
 export interface ISpecializationService {
     createSpecialization(specialization: ISpecialization): Promise<void>;
     getSpecializations(): Promise<ISpecialization[]>
+    getSpecializationById(id: string): Promise<ISpecialization | null>
+    updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization | null>
 }
 
 export interface ISpecializationController {
     createSpecialization(req: Request, res: Response, next: NextFunction): Promise<void>
     getSpecializations(req: Request, res: Response, next: NextFunction): Promise<void>
-
+    getSpecializationById(req: Request, res: Response, next: NextFunction): Promise<void>
+    updateSpecialization(req: Request, res: Response, next: NextFunction): Promise<void>
 }

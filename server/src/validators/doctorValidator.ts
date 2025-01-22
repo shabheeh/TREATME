@@ -3,7 +3,6 @@ import { celebrate, Joi, Segments } from 'celebrate';
 export const validateDoctor = celebrate({
   [Segments.BODY]: Joi.object().keys({
     email: Joi.string().email().required(),
-    password: Joi.string().min(8).required(),
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     phone: Joi.string().pattern(/^\+?[1-9]\d{1,14}$/).required(),

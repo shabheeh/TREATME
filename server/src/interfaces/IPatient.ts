@@ -16,9 +16,11 @@ export default interface IPatient extends Document {
   gender: 'male' | 'female';
   dateOfBirth: Date;
   address?: Address;
-  profilePicture?: string;
   isActive: boolean;
   phone: string;
+  profilePicture?: string;
+  imagePublicId: string;
+
 }
 
 export type SignInResult = {  
@@ -37,6 +39,20 @@ export type googleSignInResult = {
   partialUser: boolean
 }
 
+export interface IPatientsFilter {
+  page: number;
+  limit: number;
+  search: string;
+}
+
+export interface IPatientsFilterResult {
+  patients: IPatient[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number
+}
+
 
 export interface IPatientAuthService {
   sendOtp(email: string, password: string): Promise<void>;
@@ -53,7 +69,7 @@ export interface IPatientAuthService {
   resendOtpForgotPassword(email: string): Promise<void>;
 }
 
-export interface IPatientController {
+export interface IPatientAuthController {
   sendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   signup(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -68,16 +84,11 @@ export interface IPatientController {
 }
 
 
-export interface IPatientsFilter {
-  page: number;
-  limit: number;
-  search: string;
+export interface IPatientAccountService {
+  updateProfile(identifier: string, patientData: Partial<IPatient>): Promise<IPatient | null>
 }
 
-export interface IPatientsFilterResult {
-  patients: IPatient[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number
+export interface IPatientAccountController {
+  updateProfile(req: Request, res: Response, next: NextFunction): Promise<void>
 }
+

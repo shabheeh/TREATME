@@ -12,7 +12,7 @@ class SpecializationRepository implements ISpecializationRepository {
     }
 
 
-    async createSpecialization(specialization: ISpecialization): Promise<void> {
+    async createSpecialization(specialization: Partial<ISpecialization>): Promise<void> {
         try {
 
             await this.model.create(specialization);
@@ -36,6 +36,55 @@ class SpecializationRepository implements ISpecializationRepository {
             );
         }
     }
+
+    async getSpecializationById(id: string): Promise<ISpecialization | null> {
+        try {
+            const specialization = await this.model.findById(id)
+                .lean();
+
+            return specialization;
+
+        } catch (error) {
+
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization | null> {
+        try {
+
+            const updatedData = await this.model.findByIdAndUpdate(
+                id,
+                { $set: updateData },
+                { 
+                    new: true,
+                    runValidators: true,
+                    lean: true
+                }
+            )
+            
+            if (!updatedData) {
+                throw new AppError('Specialization not found', 404);
+            }
+
+            return updatedData;
+
+        } catch (error) {
+            if (error instanceof AppError) throw error;
+            
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    
+
+
 
     
 }

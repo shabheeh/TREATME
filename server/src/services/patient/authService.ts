@@ -14,7 +14,7 @@ const mailSubject = {
 }
 
 
-class UserAuthService implements IPatientAuthService {
+class PatientAuthService implements IPatientAuthService {
 
     private patientRepository: IPatientRepository;
     private otpService: OtpService;
@@ -159,6 +159,7 @@ class UserAuthService implements IPatientAuthService {
             }
 
             const isPasswordMatch = await bcrypt.compare(password, patient.password)
+
 
             if (!isPasswordMatch) {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
@@ -419,4 +420,4 @@ class UserAuthService implements IPatientAuthService {
 }
 
 
-export default UserAuthService
+export default PatientAuthService

@@ -5,7 +5,7 @@ import {
   TextField,
   Link,
   Button,
-  Divider,
+  // Divider,
 } from "@mui/material";
 
 import { useForm } from "react-hook-form";
@@ -113,24 +113,15 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
           >
             Continue
           </Button>
-          <Divider sx={{ mt: 5, width: "100%" }}>Or</Divider>
+          {/* <Divider sx={{ mt: 5, width: "100%" }}>Or</Divider> */}
 
-          <Link
-            href="#"
-            underline="hover"
-            sx={{
-              fontSize: "1rem",
-              m: 1,
-            }}
-          >
-            Sign in with Google
-          </Link>
+          
           <Typography
             variant="body2"
-            sx={{ mt: 1, mb: 5, textAlign: "center", color: "gray" }}
+            sx={{ mt: 5, mb: 5, textAlign: "center", color: "gray" }}
           >
             Don’t have an account?{" "}
-            <Link href="/signup" underline="hover" sx={{ color: "teal" }}>
+            <Link href="/signup" underline="hover" sx={{ color: "teal", }}>
               Sign up here
             </Link>
           </Typography>

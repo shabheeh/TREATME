@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import IPatient, { IPatientsFilter, IPatientsFilterResult } from "../interfaces/IPatient";
 import IPatientRepository from "./interfaces/IPatientRepository";
 import { AppError } from '../utils/errors';
@@ -53,27 +53,38 @@ class PatientRepository implements IPatientRepository {
        }
    }
 
-   async updatePatient(id: string, patientData: Partial<IPatient>): Promise<IPatient | null> {
-       try {
-           const updatedPatient = await this.model.findByIdAndUpdate(
-               id,
-               { $set: patientData },
-               { 
-                   new: true,
-                   runValidators: true,
-                   lean: true
-               }
-           ).select('-password');
-           
-           return updatedPatient;
+   async updatePatient(identifier: string, patientData: Partial<IPatient>): Promise<IPatient | null> {
+    try {
+        
+        const query = mongoose.isValidObjectId(identifier)
+            ? { _id: identifier }
+            : { email: identifier };
 
-       } catch (error) {
-            throw new AppError(
-                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-                500
-            );
-       }
-   }
+        const updatedPatient = await this.model.findOneAndUpdate(
+            query,
+            { $set: patientData },
+            { 
+                new: true,
+                runValidators: true,
+                lean: true
+            }
+        ).select('-password');
+        
+        if (!updatedPatient) {
+            throw new AppError('Patient not found', 404);
+        }
+
+        return updatedPatient;
+
+    } catch (error) {
+        if (error instanceof AppError) throw error;
+        
+        throw new AppError(
+            `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            500
+        );
+    }
+}
 
    async getPatients(filter: IPatientsFilter): Promise<IPatientsFilterResult> {
         try {

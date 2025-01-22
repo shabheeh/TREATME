@@ -1,6 +1,6 @@
-import { AppBar, Box, Typography, Toolbar, Button } from "@mui/material";
+import { AppBar, Box, Toolbar, Button } from "@mui/material";
 import { useSelector } from "react-redux";
-import { TiPlus } from "react-icons/ti";
+import logoNavbar from '../../assets/logo.navbar.svg';
 import { RootState } from "../../redux/app/store";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
@@ -23,15 +23,12 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick }) => {
       }}
     >
       <Toolbar sx={{ padding: "0.5rem 1rem" }}>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <TiPlus size={27} />
-          <Typography
-            variant="h5"
-            component="div"
-            sx={{ ml: 1, fontWeight: "bold", color: "white" }}
-          >
-            treatme
-          </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+          <img 
+            src={logoNavbar} 
+            alt="Logo" 
+            style={{ height: '25px', cursor: 'pointer' }} 
+          />
         </Box>
         {patient && (
           <Box
