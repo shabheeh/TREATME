@@ -29,6 +29,7 @@ export default interface IDoctor extends Document {
     biography: string;
     profilePicture: string;
     imagePublicId: string;
+    isActive: boolean;
     availability: Availability[];
 }
 
@@ -50,6 +51,7 @@ export interface IDoctorsFilterResult {
 
 export interface IDoctorAuthService {
   signIn(email: string, password: string): Promise<IDoctor>
+  checkActiveStatus(email: string): Promise<boolean>
 }
 
 export interface IDoctorAuthController {

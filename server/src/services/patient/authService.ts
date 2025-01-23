@@ -147,8 +147,12 @@ class PatientAuthService implements IPatientAuthService {
         try {
             const patient = await this.patientRepository.findPatientByEmail(email);
 
+            if (patient && !patient.isActive) {
+                throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            }
+
             if (!patient) {
-                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, 'Invallid Email or Password')
+                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
             if (!patient.password) {
@@ -193,6 +197,10 @@ class PatientAuthService implements IPatientAuthService {
         try {
 
             const patient = await this.patientRepository.findPatientByEmail(email);
+
+            if (patient && !patient.isActive) {
+                throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            }
             
             if (!patient) {
                 throw new AuthError(AuthErrorCode.USER_NOT_FOUND);
@@ -216,19 +224,25 @@ class PatientAuthService implements IPatientAuthService {
         try {
             const patient = await this.patientRepository.findPatientByEmail(email);
 
-        if (!patient) {
-            throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
-        }
 
-        
-        const isOtpSent = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
+            if (patient && !patient.isActive) {
+                throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            }
 
-        if(!isOtpSent) {
-            throw new BadRequestError('Failed to sent otp, Please try again later')
-        }
 
-        return patient
-        
+            if (!patient) {
+                throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
+            }
+
+            
+            const isOtpSent = await this.otpService.sendOTP(email, 'signin', mailSubject.resetPassword)
+
+            if(!isOtpSent) {
+                throw new BadRequestError('Failed to sent otp, Please try again later')
+            }
+
+            return patient
+            
 
         } catch (error) {
             logger.error('errro sending otp for forgot password', error.message)
@@ -302,6 +316,11 @@ class PatientAuthService implements IPatientAuthService {
 
             let patient = await this.patientRepository.findPatientByEmail(payload.email)
             let partialUser = false;
+
+            if (patient && !patient.isActive) {
+                throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            }
+
 
             if(patient) {
                 const jwtPayload: TokenPayload = {
@@ -405,6 +424,28 @@ class PatientAuthService implements IPatientAuthService {
 
         } catch (error) {
             logger.error('error re-sending otp', error)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async checkActiveStatus(email: string): Promise<boolean> {
+        try {
+            const patient = await this.patientRepository.findPatientByEmail(email);
+
+            if (!patient) {
+                throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
+            }
+
+            return patient.isActive;
+
+        } catch (error) {
+            logger.error('error checking patient status', error)
             if (error instanceof AppError) {
                 throw error; 
             }

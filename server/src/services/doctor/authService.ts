@@ -18,8 +18,13 @@ class DoctorAuthService implements IDoctorAuthService {
             
             const doctor = await this.doctorRepository.findDoctorByEmail(email)
 
-            if(!doctor) {
-                throw new AppError('Something went wrong')
+
+            if (doctor && !doctor.isActive) {
+                throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            }
+
+            if (!doctor) {
+                throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
             }
 
             const isPasswordMatch = await bcrypt.compare(password, doctor.password)
@@ -42,6 +47,30 @@ class DoctorAuthService implements IDoctorAuthService {
             ); 
         }
     }
+
+    async checkActiveStatus(email: string): Promise<boolean> {
+        try {
+            const doctor = await this.doctorRepository.findDoctorByEmail(email)
+
+            if (!doctor) {
+                throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
+            }
+
+            return doctor.isActive;
+
+        } catch (error) {
+            logger.error('error checking doctor status', error)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+
 }
 
 export default DoctorAuthService

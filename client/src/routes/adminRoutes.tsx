@@ -10,10 +10,18 @@ import Specializations from '../pages/admin/Specializations';
 import AddSpecialization from '../components/admin/AddSpecialization';
 import SignIn from '../components/admin/SignIn';
 import EditSpecialization from '../components/admin/EditSpecialization';
+import AntiProtectedRoute from './AntiProtectedRoute';
 
 export const adminRoutes = [
     
-  <Route path="/admin/signin" element={<SignIn />} />,
+  <Route 
+    path="/admin/signin" 
+    element={
+      <AntiProtectedRoute redirectPath='/admin'>
+        <SignIn />
+      </AntiProtectedRoute>
+    } 
+  />,
   <Route
     path="/admin"
     element={

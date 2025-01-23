@@ -30,6 +30,7 @@ const doctorSchema = new Schema(
     registerNo: { type: String, required: true, unique: true },
     experience: { type: Number, required: true, min: 0 },
     biography: { type: String, trim: true },
+    isActive: { type: Boolean, default: true },
     availability: { type: [availabilitySchema], default: [] },
     profilePicture: { type: String, required: true },
 

@@ -25,6 +25,22 @@ class SpecializationRepository implements ISpecializationRepository {
         }
     }
 
+    async getSpecializationByName(name: string): Promise<ISpecialization | null> {
+        try {
+
+            const specialization = await this.model.findOne({ name: { $regex: new RegExp(name, 'i') } });
+
+            return specialization;
+
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        } 
+    }
+    
+
     async getSpecializations(): Promise<ISpecialization[]> {
         try {
             const specializations = await this.model.find()

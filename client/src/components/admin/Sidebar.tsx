@@ -16,10 +16,14 @@ import {
   Message,
   People,
   MedicalServices,
-  PersonSearch
+  PersonSearch,
+  Logout,
 } from '@mui/icons-material';
 
 import { FaUserDoctor } from "react-icons/fa6";
+import { useDispatch } from 'react-redux';
+import { signOut } from '../../redux/features/auth/authSlice';
+import { clearUser } from '../../redux/features/user/userSlice';
 
 
 const drawerWidth = 240;
@@ -42,6 +46,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch()
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
@@ -51,6 +56,11 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
       onClose();
     }
   };
+
+  const handleSignout = () => {
+    dispatch(signOut())
+    dispatch(clearUser())
+  }
 
   const drawerContent = (
     <List sx={{ pt: 2 }}>
@@ -110,6 +120,59 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
           </ListItemButton>
         </ListItem>
       ))}
+      <ListItem 
+          disablePadding 
+          sx={{ 
+            px: 2,
+            py: 0.5
+          }}
+        >
+          <ListItemButton
+
+            onClick={handleSignout}
+            sx={{
+              borderRadius: '8px',
+              justifyContent: 'center',
+              minHeight: '48px',
+              position: 'relative',
+              '&.Mui-selected': {
+                backgroundColor: '#e6fffa',
+                border: '1px solid #00897b',
+                '&:hover': {
+                  backgroundColor: '#e6fffa',
+                }
+              },
+              '&:hover': {
+                backgroundColor: '#f5f5f5',
+              }
+            }}
+          >
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              width: '80%'
+            }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: '40px',
+                  color: 'rgba(0, 0, 0, 0.54)'
+                }}
+              >
+                <Logout />
+              </ListItemIcon>
+              <ListItemText 
+                primary='Sign Out' 
+                sx={{ 
+                  '& .MuiTypography-root': {
+                    fontWeight: 400,
+                    color: 'inherit',
+                  }
+                }}
+              />
+            </Box>
+          </ListItemButton>
+        </ListItem>
     </List>
   );
 
@@ -138,6 +201,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
         }}
       >
         {drawerContent}
+        
       </Drawer>
 
       {/* Desktop drawer */}

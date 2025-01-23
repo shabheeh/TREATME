@@ -12,6 +12,7 @@ import { errors } from 'celebrate';
 import { authenticate, authorize } from "../../middlewares/auth";
 import PatientAcccountService from "../../services/patient/accountService";
 import PatientAcccountController from "../../controllers/patient/patientAccountController";
+import { checkUserStatus } from "../../middlewares/checkUserStatus";
 
 
 const router = express.Router();
@@ -44,7 +45,12 @@ router.post('/auth/resend-otp', patientAuthController.resendOtp)
 router.post('/auth/forgot-password/resend-otp', patientAuthController.resendOtpForgotPassword)
 router.post('/auth/signout', patientAuthController.signOUt)
 
-router.put('/profile', authenticate, authorize('patient'), patientAccountController.updateProfile)
+router.put('/profile', 
+    authenticate, 
+    checkUserStatus(patientAuthService), 
+    authorize('patient'), 
+    patientAccountController.updateProfile
+) 
 
 
 router.use(errors());

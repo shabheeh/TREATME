@@ -67,6 +67,7 @@ export interface IPatientAuthService {
   completeProfileAndSignUp(userData: IPatient): Promise<IPatient>;
   resendOtp(email: string): Promise<void>;
   resendOtpForgotPassword(email: string): Promise<void>;
+  checkActiveStatus(email: string): Promise<boolean>
 }
 
 export interface IPatientAuthController {

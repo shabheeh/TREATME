@@ -23,7 +23,7 @@ const createAxiosInstance = (role: userRole) => {
     const refreshAuthToken = async () => {
         try {
                        
-            const response = await axios.post(`${API_URLS[role]}/auth/refresh-token`)
+            const response = await axios.post(`${import.meta.env.VITE_API_SHARED}/auth/refresh-token`)
     
             const { accessToken } = response.data;
             tokenManager.setToken(accessToken);

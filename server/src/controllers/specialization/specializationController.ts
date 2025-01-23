@@ -3,6 +3,7 @@ import ISpecialization, { ISpecializationController, ISpecializationService } fr
 import { BadRequestError } from "../../utils/errors";
 import { updateCloudinaryImage, uploadToCloudinary } from "../../utils/uploadImage";
 import logger from "../../configs/logger";
+import { AppError } from "../../utils/errors";
 
 class SpecializationController implements ISpecializationController {
 
@@ -118,6 +119,9 @@ class SpecializationController implements ISpecializationController {
 
         } catch (error) {
             logger.error('Error upadating Specializations', error.message);
+            if (error instanceof AppError) {
+                res.status(error.statusCode).json({ status: error.status, message: error.message });
+            }
             next(error)
         }
     }
