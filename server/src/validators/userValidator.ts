@@ -9,7 +9,7 @@ export const validateUser = celebrate({
             .pattern(/^\+?[1-9]\d{1,14}$/)
             .required(),
             dateOfBirth: Joi.string()
-            .pattern(/^\d{2}-\d{2}-\d{4}$/) 
+            .pattern(/^\d{4}-\d{2}-\d{2}$/) 
             .required(),
         gender: Joi.string().valid('male', 'female').required(),
         address: Joi.object({

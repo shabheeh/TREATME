@@ -89,7 +89,7 @@ class PatientAuthService implements IPatientAuthService {
             await this.otpService.deleteOTP(email, 'signup');
 
         } catch (error) {
-            logger.error('errro verifying otp', error.message)
+            logger.error('error verifying otp', error.message)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -105,6 +105,7 @@ class PatientAuthService implements IPatientAuthService {
     async signup(patient: IPatient): Promise<{ newUser: Partial<IPatient>}> {
         try {
 
+
             const cachedPatientData = await this.cacheService.retrieve(`signup:${patient.email}`)
 
             if (!cachedPatientData) {
@@ -112,6 +113,7 @@ class PatientAuthService implements IPatientAuthService {
             }
 
             const parsedPatientData = JSON.parse(cachedPatientData);
+
 
             if (!parsedPatientData.isOtpVerified) {
                 throw new BadRequestError('Please verify your email')
@@ -332,6 +334,7 @@ class PatientAuthService implements IPatientAuthService {
 
                 return { patient, accessToken, refreshToken, partialUser }
             }
+
 
             const newPatient = {
                 email: payload.email,

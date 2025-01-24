@@ -3,7 +3,6 @@ import logger from "../../configs/logger";
 import { Request, Response, NextFunction } from "express";
 import { generatePassword } from "../../helpers/passwordGenerator";
 import IDoctor from "../../interfaces/IDoctor";
-import { uploadToCloudinary } from "../../utils/uploadImage";
 import { BadRequestError } from "../../utils/errors";
 
 
@@ -18,12 +17,7 @@ class AdminDoctorController implements IAdminDoctorController {
     createDoctor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            let imageUrl: string;
-
-            if (req.file) {
-                const cloudinaryResponse = await uploadToCloudinary(req.file, 'ProfilePictures/Doctors');
-                imageUrl = cloudinaryResponse.url;
-            } else {
+            if (!req.file) {
                 throw new BadRequestError('Profile Picture is not provided')
             }
           
@@ -41,12 +35,12 @@ class AdminDoctorController implements IAdminDoctorController {
                 languages: JSON.parse(req.body.languages),
                 registerNo: req.body.registerNo,
                 experience: JSON.parse(req.body.experience),
-                profilePicture: imageUrl,
               } as IDoctor
               
+              const imageFile = req.file
              
 
-            const newDoctor = await this.adminDoctorService.createDoctor(doctor)
+            const newDoctor = await this.adminDoctorService.createDoctor(doctor, imageFile)
 
             res.status(201).json({
                 doctor: newDoctor,

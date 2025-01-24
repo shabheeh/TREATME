@@ -61,21 +61,21 @@ const EditSpecialization = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    // watch,
     setValue,
     reset,
     formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: {
-      name: "",
-      description: "",
-      note: "",
-      fee: null,
+      name: specialization?.name || "",
+      description: specialization?.description || "",
+      note: specialization?.note || "",
+      fee: specialization?.fee || null,
       image:  null,
     },
   });
 
-  const image = watch("image");
+  // const image = watch("image");
   const navigate = useNavigate();
   const cropperRef = useRef<HTMLImageElement>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);

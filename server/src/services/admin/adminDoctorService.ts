@@ -6,6 +6,7 @@ import { IAdminDoctorService } from "src/interfaces/IAdmin";
 import { AppError } from "../../utils/errors";
 import { sendEmail } from "../../utils/mailer";
 import { generateHtml } from "../../helpers/htmlGenerator";
+import { uploadToCloudinary } from "../../utils/uploadImage";
 
 class AdminDoctorService implements IAdminDoctorService {
 
@@ -15,9 +16,20 @@ class AdminDoctorService implements IAdminDoctorService {
         this.doctorRepository = doctorRepository
     }
 
-    async createDoctor(doctor: IDoctor): Promise<Partial<IDoctor>> {
+    async createDoctor(doctor: IDoctor, imageFile: Express.Multer.File): Promise<Partial<IDoctor>> {
 
         try {
+
+
+
+            const cloudinaryResponse = await uploadToCloudinary(imageFile, 'ProfilePictures/Doctors');
+            const imageUrl = cloudinaryResponse.url;
+            const imageId = cloudinaryResponse.publicId
+
+            doctor.profilePicture = imageUrl;
+            doctor.imagePublicId = imageId
+
+
             const notHashedPassword = doctor.password;
 
             const hashedPassword = await bcrypt.hash(notHashedPassword, 10)

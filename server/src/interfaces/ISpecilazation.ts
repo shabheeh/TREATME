@@ -12,7 +12,7 @@ export default interface ISpecialization extends Document {
 
 
 export interface ISpecializationService {
-    createSpecialization(specialization: ISpecialization): Promise<void>;
+    createSpecialization(specialization: ISpecialization, imageFile: Express.Multer.File): Promise<void>;
     getSpecializations(): Promise<ISpecialization[]>
     getSpecializationById(id: string): Promise<ISpecialization | null>
     updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization | null>

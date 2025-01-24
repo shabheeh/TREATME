@@ -26,7 +26,7 @@ export interface IAdminAuthController {
 
 // Admin - Doctor
 export interface IAdminDoctorService {
-    createDoctor(doctor: IDoctor): Promise<Partial<IDoctor>>
+    createDoctor(doctor: IDoctor, imageFile: Express.Multer.File): Promise<Partial<IDoctor>>
     getDoctors(params: IDoctorsFilter): Promise<IDoctorsFilterResult>
 }
 

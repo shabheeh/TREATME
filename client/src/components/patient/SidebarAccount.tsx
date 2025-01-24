@@ -12,26 +12,18 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import {
-  Message,
-  Medication,
-  EventNote,
-  ContactSupport
+  VpnKey,
+  Group,
+  Person
 } from '@mui/icons-material';
 
-import { FaHouseMedical } from "react-icons/fa6";
-
-
-import { RiHealthBookFill } from "react-icons/ri";
 
 const drawerWidth = 250;
 
 const menuItems = [
-  { text: 'Visit Now', icon: <FaHouseMedical size={23} />, path: '/visitnow' },
-  { text: 'Appointments', icon: <EventNote />, path: '/appointments' },
-  { text: 'Messages', icon: <Message />, path: '/messages' },
-  { text: 'Health Profile', icon: <RiHealthBookFill size={23} />, path: '/health-profile' },
-  { text: 'Medications', icon: <Medication />, path: '/Medications' },
-  { text: 'Help & Support', icon: <ContactSupport />, path: '/help' },
+  { text: 'My Account', icon: <Person />, path: '/account' },
+  { text: 'Security', icon: <VpnKey />, path: '/account/security' },
+  { text: 'Family Members', icon: <Group />, path: '/account/family-members' },
 ];
 
 interface SidebarProps {

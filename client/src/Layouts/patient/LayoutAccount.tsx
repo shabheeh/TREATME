@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import Sidebar from '../../components/patient/Sidebar';
+import SidebarAccount from '../../components/patient/SidebarAccount';
 import Navbar from '../../components/patient/Navbar';
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import ProfileModal from '../../components/patient/ProfileModal';
 
-const LayoutPatient = () => {
+const LayoutAccount = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
@@ -22,8 +22,8 @@ const LayoutPatient = () => {
       height: '100vh',
       overflow: 'hidden'
     }}>
-      <Navbar onProfileClick={() => setProfileModalOpen(true)} />
-      <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
+      <Navbar onMenuClick={handleDrawerToggle} onProfileClick={() => setProfileModalOpen(true)} />
+      <SidebarAccount mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
       <Box
         component="main"
         sx={{
@@ -46,4 +46,4 @@ const LayoutPatient = () => {
   );
 };
 
-export default LayoutPatient;
+export default LayoutAccount;

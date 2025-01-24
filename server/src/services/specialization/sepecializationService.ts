@@ -2,7 +2,7 @@ import ISpecialization, { ISpecializationService } from "../../interfaces/ISpeci
 import ISpecializationRepository from "../../repositories/interfaces/ISpecializationRepository";
 import logger from "../../configs/logger";
 import { AppError, ConflictError } from "../../utils/errors";
-
+import { uploadToCloudinary } from "../../utils/uploadImage";
 class SpecializationService implements ISpecializationService {
 
     private specializationRepository: ISpecializationRepository;
@@ -11,7 +11,7 @@ class SpecializationService implements ISpecializationService {
         this.specializationRepository = specializationRepository
     }
  
-    async createSpecialization(specialization: ISpecialization): Promise<void> {
+    async createSpecialization(specialization: ISpecialization, imageFile: Express.Multer.File): Promise<void> {
         try {
 
             const existingSpecialization = await this.specializationRepository.getSpecializationByName(specialization.name)
@@ -19,6 +19,13 @@ class SpecializationService implements ISpecializationService {
             if (existingSpecialization) {
                 throw new ConflictError('Specailization with this name is exists')
             }
+
+            const cloudinaryResponse = await uploadToCloudinary(imageFile, 'Specializations');
+            const imageUrl = cloudinaryResponse.url;
+            const imagePublicId = cloudinaryResponse.publicId
+
+            specialization.image = imageUrl;
+            specialization.imagePublicId = imagePublicId
 
             await this.specializationRepository.createSpecialization(specialization);
 
@@ -72,18 +79,18 @@ class SpecializationService implements ISpecializationService {
     async updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization | null> {
         try {
 
-            if(updateData.name) {
-                const existingSpecialization = await this.specializationRepository.getSpecializationByName(updateData.name)
+            // if(updateData.name) {
+            //     const existingSpecialization = await this.specializationRepository.getSpecializationByName(updateData.name)
 
-                if (existingSpecialization) {
+            //     if (existingSpecialization) {
   
-                    const existingId = (existingSpecialization as ISpecialization)._id;
+            //         const existingId = (existingSpecialization as ISpecialization)._id;
                     
-                    if (existingId && existingId.toString() !== id.toString()) {
-                        throw new ConflictError('A specialization with this name already exists.');
-                    }
-                }
-            }
+            //         if (existingId && existingId.toString() !== id.toString()) {
+            //             throw new AppError('A specialization with this name already exists.');
+            //         }
+            //     }
+            // }
 
 
             const result = await this.specializationRepository.updateSpecialization(id, updateData);

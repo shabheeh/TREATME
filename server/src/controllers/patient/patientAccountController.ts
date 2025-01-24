@@ -16,7 +16,6 @@ class PatientAcccountController implements IPatientAccountController {
 
     updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { patientData } = req.body;
 
             const identifier = req.user?.email;
 
@@ -24,7 +23,26 @@ class PatientAcccountController implements IPatientAccountController {
                 throw new AppError('Something went wrong')
             }
 
-            const updatedData = await this.patientAccountService.updateProfile(identifier, patientData)
+            const imageFile: Express.Multer.File | undefined = req.file;
+            
+            const patientData = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                phone: req.body.phone,
+                gender: req.body.gender,
+                dateOfBirth: req.body.dateOfBirth,
+                address: {
+                    street: req.body.street,
+                    city: req.body.city,
+                    landmark: req.body.landmark,
+                    state: req.body.state,
+                    pincode: req.body.pincode
+                }
+            }
+
+            
+
+            const updatedData = await this.patientAccountService.updateProfile(identifier, patientData, imageFile)
 
             res.status(200).json({
                 updatedData,

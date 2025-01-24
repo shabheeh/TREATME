@@ -126,11 +126,24 @@ interface CompleteProfileProps {
       }
       return age >= 18;
     };
+
+    const formatDateForBackend = (day: string, month: string, year: string): string => {
+      const formattedDay = day.padStart(2, "0");
+      const formattedMonth = month.padStart(2, "0"); 
+      return `${year}-${formattedMonth}-${formattedDay}`; 
+    };
   
     const onSubmit = async (data: SignupFormInputs) => {
       if (!validateAge(data.birthYear, data.birthMonth, data.birthDay)) {
         return;
       }
+
+      const formattedDateOfBirth = formatDateForBackend(
+        data.birthDay,
+        data.birthMonth,
+        data.birthYear
+      );
+
       log.info(data);
       if(!tempUser?.email) {
         log.error('error signin up user')
@@ -148,7 +161,7 @@ interface CompleteProfileProps {
         email: tempUser.email,
         phone: data.phone,
         gender: data.gender,
-        dateOfBirth: data.birthDay + "-" +  data.birthMonth + "-" + data.birthYear
+        dateOfBirth: formattedDateOfBirth,
       }
       
       console.log(userData)

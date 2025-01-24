@@ -4,8 +4,10 @@ import AntiProtectedRoute from './AntiProtectedRoute';
 import LandingPage from '../pages/user/LandingPage';
 import SignInFlow from '../pages/user/SignInFlow';
 import SignUpFlow from '../pages/user/SignUpFlow';
-import LayoutUser from '../Layouts/patient/LayoutPatient';
+import LayoutPatient from '../Layouts/patient/LayoutPatient';
 import VisiitNow from '../pages/user/VisitNow';
+import LayoutAccount from '../Layouts/patient/LayoutAccount';
+import MyAccount from '../pages/user/MyAccount';
 
 export const patientRoutes = [
   <Route path="/" element={<LandingPage />} />,
@@ -26,10 +28,20 @@ export const patientRoutes = [
     } 
   />,
   <Route
+    path="/account"
+    element={
+      <ProtectedRoute allowedRoles={['patient']}>
+        <LayoutAccount />
+      </ProtectedRoute>
+    }
+  >
+    <Route path="" element={<MyAccount />} />
+  </Route>,
+  <Route
     path="/"
     element={
       <ProtectedRoute allowedRoles={['patient']}>
-        <LayoutUser />
+        <LayoutPatient />
       </ProtectedRoute>
     }
   >

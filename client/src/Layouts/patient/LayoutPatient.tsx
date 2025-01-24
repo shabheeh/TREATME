@@ -22,7 +22,7 @@ const LayoutPatient = () => {
       height: '100vh',
       overflow: 'hidden'
     }}>
-      <Navbar onProfileClick={() => setProfileModalOpen(true)} />
+      <Navbar onMenuClick={handleDrawerToggle}  onProfileClick={() => setProfileModalOpen(true)} />
       <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
       <Box
         component="main"

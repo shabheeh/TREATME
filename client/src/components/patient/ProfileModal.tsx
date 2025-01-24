@@ -120,7 +120,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
 
         <List sx={{ py: 1 }}>
           <ListItemButton
-            
+            href="/account"
             sx={{
               px: 5,
               py: 1.5,

@@ -19,7 +19,7 @@ export default interface IPatient extends Document {
   isActive: boolean;
   phone: string;
   profilePicture?: string;
-  imagePublicId: string;
+  imagePublicId?: string;
 
 }
 
@@ -86,7 +86,7 @@ export interface IPatientAuthController {
 
 
 export interface IPatientAccountService {
-  updateProfile(identifier: string, patientData: Partial<IPatient>): Promise<IPatient | null>
+  updateProfile(identifier: string, patientData: Partial<IPatient>, imageFile: Express.Multer.File | undefined): Promise<IPatient | null>
 }
 
 export interface IPatientAccountController {

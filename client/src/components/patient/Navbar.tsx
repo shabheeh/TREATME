@@ -1,17 +1,19 @@
-import { AppBar, Box, Toolbar, Button } from "@mui/material";
+import { AppBar, Box, Toolbar, Button, IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import logoNavbar from '../../assets/logo.navbar.svg';
 import { RootState } from "../../redux/app/store";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
 import React from "react";
+import MenuIcon from '@mui/icons-material/Menu';
 
 
 interface NavbarProps {
-  onProfileClick: () => void
+  onProfileClick: () => void;
+  onMenuClick: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onProfileClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
   const patient = useSelector((state: RootState) => state.user.patient);
 
   return (
@@ -23,6 +25,16 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick }) => {
       }}
     >
       <Toolbar sx={{ padding: "0.5rem 1rem" }}>
+      <IconButton
+            onClick={onMenuClick}
+            sx={{ 
+              display: { xs: 'flex', lg: 'none' }, 
+              mr: 2,
+              color: 'white'
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
       <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <img 
             src={logoNavbar} 

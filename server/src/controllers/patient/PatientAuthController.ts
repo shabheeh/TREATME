@@ -55,6 +55,8 @@ class PatientAuthController implements IPatientAuthController {
     signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
+
+
             const userData = req.body; 
 
     

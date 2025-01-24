@@ -1,5 +1,6 @@
 
 import express from "express";
+import multer from "multer";
 import { PatientModel } from "../../models/Patient";
 import PatientRepository from "../../repositories/PatientRepository";
 import PatientAuthService from "../../services/patient/authService";
@@ -17,6 +18,8 @@ import { checkUserStatus } from "../../middlewares/checkUserStatus";
 
 const router = express.Router();
  
+const upload = multer({ storage: multer.memoryStorage() });
+
 const patientRepository = new PatientRepository(PatientModel); 
 const cacheService = new CacheService()
 const otpService = new OtpService(cacheService)
@@ -49,6 +52,7 @@ router.put('/profile',
     authenticate, 
     checkUserStatus(patientAuthService), 
     authorize('patient'), 
+    upload.single('profilePicture'),
     patientAccountController.updateProfile
 ) 
 

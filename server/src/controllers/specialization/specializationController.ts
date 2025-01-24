@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ISpecialization, { ISpecializationController, ISpecializationService } from "../../interfaces/ISpecilazation";
 import { BadRequestError } from "../../utils/errors";
-import { updateCloudinaryImage, uploadToCloudinary } from "../../utils/uploadImage";
+import { updateCloudinaryImage } from "../../utils/uploadImage";
 import logger from "../../configs/logger";
 import { AppError } from "../../utils/errors";
 
@@ -16,14 +16,8 @@ class SpecializationController implements ISpecializationController {
     createSpecialization = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            let imageUrl: string;
-            let imagePublicId: string;
 
-            if (req.file) {
-                const cloudinaryResponse = await uploadToCloudinary(req.file, 'Specializations');
-                imageUrl = cloudinaryResponse.url;
-                imagePublicId = cloudinaryResponse.publicId
-            } else {
+            if (!req.file) {
                 throw new BadRequestError('Image is not provided')
             }
 
@@ -32,11 +26,11 @@ class SpecializationController implements ISpecializationController {
                 description: req.body.description,
                 note: req.body.note,
                 fee: req.body.fee,
-                image: imageUrl,
-                imagePublicId: imagePublicId,
             } as ISpecialization
 
-            await this.specializationService.createSpecialization(specialization)
+            const imageFile = req.file
+
+            await this.specializationService.createSpecialization(specialization, imageFile)
 
             res.status(201).json({
                 message: 'Specialization created successfully'

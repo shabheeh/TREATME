@@ -8,7 +8,7 @@ class AcccountService {
 
 
 
-    async updateProfile(patientData: IPatient): Promise<IPatient> {
+    async updateProfile(patientData: FormData): Promise<IPatient> {
         try {
 
             const response = await api.patient.put('/profile', patientData);
