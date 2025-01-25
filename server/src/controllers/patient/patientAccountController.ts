@@ -41,11 +41,10 @@ class PatientAcccountController implements IPatientAccountController {
             }
 
             
-
             const updatedData = await this.patientAccountService.updateProfile(identifier, patientData, imageFile)
 
             res.status(200).json({
-                updatedData,
+                patient: updatedData,
                 message: 'Profile updated Successfully'
             })
 

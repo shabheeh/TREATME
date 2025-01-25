@@ -29,7 +29,6 @@ const AddSpecialization = () => {
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<FormInputs>({
@@ -42,11 +41,12 @@ const AddSpecialization = () => {
     },
   });
 
-  const image = watch("image");
+
   const navigate = useNavigate();
   const cropperRef = useRef<HTMLImageElement>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [isCropped, setIsCropped] = useState(false); 
+  const [loading, setLoading] = useState(false)
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -76,6 +76,7 @@ const AddSpecialization = () => {
   };
 
   const onSubmit = async (data: FormInputs) => {
+
     data.fee = Number(data.fee);
 
     if (!data.image) {
@@ -94,6 +95,7 @@ const AddSpecialization = () => {
     }
 
     try {
+      setLoading(true)
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
@@ -112,7 +114,9 @@ const AddSpecialization = () => {
       toast.success("Specialization added successfully!");
 
       navigate("/admin/specializations");
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       if (error instanceof Error) {
 
         toast.error(`Error: ${error.message}`);
@@ -239,6 +243,8 @@ const AddSpecialization = () => {
             />
           </Box>
           <Button
+            loading={loading}
+            disabled={loading}
             fullWidth
             type="submit"
             variant="contained"

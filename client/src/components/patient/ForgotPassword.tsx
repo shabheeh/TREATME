@@ -12,6 +12,7 @@ import { useForm } from "react-hook-form";
 import authServicePatient from "../../services/patient/authService";
 import log from "loglevel";
 import { toast } from "sonner";
+import { useState } from "react";
 
 type ForgotPasswordProps = {
   onVerifyEmail: () => void;
@@ -28,14 +29,20 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
     },
   });
 
+  const [loading, setLoading] = useState(false);
+
+
   const onSubmit = async ({ email }: { email: string }) => {
     try {
+      setLoading(true)
       const result = await authServicePatient.verifyEmail(email);
     if ('user' in result) {
           onVerifyEmail()
     }
+    setLoading(false)
 
     } catch (error) {
+      setLoading(false)
       if(error instanceof Error) {
         toast.error(error.message)
       }
@@ -107,6 +114,8 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
             sx={{ width: "80%", margin: "20px auto" }}
           />
           <Button
+            loading={loading}
+            disabled={loading}
             variant="contained"
             type="submit"
             sx={{ py: 1, width: "80%", fontSize: "1rem" }}

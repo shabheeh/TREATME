@@ -1,4 +1,3 @@
-
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Box,
@@ -17,11 +16,10 @@ import {
   Person
 } from '@mui/icons-material';
 
-
 const drawerWidth = 250;
 
 const menuItems = [
-  { text: 'My Account', icon: <Person />, path: '/account' },
+  { text: 'Account Details', icon: <Person />, path: '/account' },
   { text: 'Security', icon: <VpnKey />, path: '/account/security' },
   { text: 'Family Members', icon: <Group />, path: '/account/family-members' },
 ];
@@ -30,7 +28,6 @@ interface SidebarProps {
   mobileOpen: boolean
   onClose: () => void;
 }
-
 
 const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
   const navigate = useNavigate();
@@ -57,7 +54,7 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
           }}
         >
           <ListItemButton
-            selected={location.pathname === item.path}
+            selected={location.pathname === item.path} 
             onClick={() => handleNavigate(item.path)}
             sx={{
               borderRadius: '8px',
@@ -80,12 +77,14 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               display: 'flex', 
               alignItems: 'center',
               justifyContent: 'flex-start',
-              width: '80%'
+              width: '100%',
+
             }}>
               <ListItemIcon
                 sx={{
+      
                   minWidth: '40px',
-                  color: location.pathname === item.path ? '#00897b' : 'rgba(0, 0, 0, 0.54)'
+                  color: location.pathname === item.path ? '#00897b' : 'rgba(0, 0, 0, 0.54)' // Exact match
                 }}
               >
                 {item.icon}
@@ -94,8 +93,8 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 primary={item.text} 
                 sx={{ 
                   '& .MuiTypography-root': {
-                    fontWeight: location.pathname === item.path ? 600 : 400,
-                    color: location.pathname === item.path ? '#00897b' : 'inherit',
+                    fontWeight: location.pathname === item.path ? 600 : 400, // Exact match
+                    color: location.pathname === item.path ? '#00897b' : 'inherit', // Exact match
                   }
                 }}
               />

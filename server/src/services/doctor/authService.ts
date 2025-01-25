@@ -34,6 +34,7 @@ class DoctorAuthService implements IDoctorAuthService {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
+            
             return doctor
 
         } catch (error) {

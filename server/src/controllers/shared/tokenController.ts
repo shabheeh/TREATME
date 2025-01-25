@@ -10,7 +10,10 @@ class TokenController {
     handleRefreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const refreshToken = req.cookies.refreshToken 
-    
+
+
+            console.log('toeknedsf', refreshToken)
+
             if (!refreshToken) {
                 throw new AuthError(AuthErrorCode.TOKEN_EXPIRED)
             }

@@ -6,6 +6,7 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { MdAccountCircle } from "react-icons/md";
 import React from "react";
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from "react-router-dom";
 
 
 interface NavbarProps {
@@ -15,6 +16,11 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
   const patient = useSelector((state: RootState) => state.user.patient);
+  const navigate = useNavigate()
+
+  const handleLogoClick = () => {
+    navigate('/visitnow')
+  }
 
   return (
     <AppBar
@@ -35,11 +41,12 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
           >
             <MenuIcon />
           </IconButton>
-      <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <img 
             src={logoNavbar} 
             alt="Logo" 
             style={{ height: '25px', cursor: 'pointer' }} 
+            onClick={handleLogoClick}
           />
         </Box>
         {patient && (

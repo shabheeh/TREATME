@@ -4,10 +4,19 @@ import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization.ts/specializationService";
 import { toast } from "sonner";
+// import { useDispatch } from "react-redux";
+// import { signOut } from "../../redux/features/auth/authSlice";
+// import { clearUser } from "../../redux/features/user/userSlice";
 
 const VisitNow = () => {
   const [specializations, setSpecializations] = useState<ISpecialization[] | null>(null);
   const [loading, setLoading] = useState(false);
+
+
+  // const dispatch = useDispatch()
+
+  // dispatch(signOut())
+  // dispatch(clearUser())
 
 
   useEffect(() => {

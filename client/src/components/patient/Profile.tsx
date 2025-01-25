@@ -44,7 +44,7 @@ const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
  
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <Box>
-                    <Typography variant="h6" sx={{ mb: 2, borderBottom: '2px solid', pb: 1 }}>
+                    <Typography variant="h6" sx={{ mb: 2, borderBottom: '1px solid grey', pb: 1 }}>
                         Personal Information
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -61,12 +61,15 @@ const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
                 </Box>
  
                 <Box>
-                    <Typography variant="h6" sx={{ mb: 2, borderBottom: '2px solid', pb: 1 }}>
+                    <Typography variant="h6" sx={{ mb: 2, borderBottom: '1px solid grey', pb: 1 }}>
                         Address
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         <Typography>
                             <strong>Street:</strong> {patient?.address?.street || 'Not provided'}
+                        </Typography>
+                        <Typography>
+                            <strong>Landmark:</strong> {patient?.address?.landmark || 'Not provided'}
                         </Typography>
                         <Typography>
                             <strong>City:</strong> {patient?.address?.city || 'Not specified'}

@@ -25,7 +25,7 @@ class PatientAcccountService implements IPatientAccountService {
 
             if (imageFile) {
                 if (patient?.profilePicture && patient.imagePublicId ) {
-                    const cloudinaryResponse = await updateCloudinaryImage(patient.imagePublicId, imageFile)
+                    const cloudinaryResponse = await updateCloudinaryImage(patient.imagePublicId, imageFile, 'ProfilePictures/Patient')
                     imageUrl = cloudinaryResponse.url;
                     imageId = cloudinaryResponse.publicId
                 }else {

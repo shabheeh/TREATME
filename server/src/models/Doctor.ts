@@ -33,6 +33,7 @@ const doctorSchema = new Schema(
     isActive: { type: Boolean, default: true },
     availability: { type: [availabilitySchema], default: [] },
     profilePicture: { type: String, required: true },
+    imagePublicId: { type: String, required: true }
 
   },
   {

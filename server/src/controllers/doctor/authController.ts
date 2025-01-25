@@ -21,6 +21,8 @@ class DoctorAuthController implements IDoctorAuthController {
 
             const doctor = await this.doctorAuthService.signIn(email, password);
 
+         
+
             res.status(200).json({
                 doctor,
                 message: 'Doctor signed in successfully'

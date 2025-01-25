@@ -88,8 +88,8 @@ class PatientAuthController implements IPatientAuthController {
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
-                secure: true,
-                sameSite: "strict",
+                secure: false,
+                sameSite: "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000, 
             })
 
@@ -168,13 +168,10 @@ class PatientAuthController implements IPatientAuthController {
 
                 res.cookie("refreshToken", refreshToken, {
                     httpOnly: true,
-                    secure: true,
-                    sameSite: "strict",
+                    secure: false,
+                    sameSite: "lax",
                     maxAge: 7 * 24 * 60 * 60 * 1000, 
                 })
-
-            logger.info(patient)
-
 
                 res.status(200).json({
                     patient,
@@ -188,8 +185,8 @@ class PatientAuthController implements IPatientAuthController {
 
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
-                secure: true,
-                sameSite: "strict",
+                secure: false,
+                sameSite: "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000, 
             })
 
@@ -279,8 +276,8 @@ class PatientAuthController implements IPatientAuthController {
             
             res.clearCookie("refreshToken", {
                 httpOnly: true,
-                secure: true,
-                sameSite: "strict",
+                secure: false,
+                sameSite: "lax",
             });
 
             res.status(200).json({

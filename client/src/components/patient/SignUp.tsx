@@ -7,7 +7,6 @@ import {
   Link,
   Button,
   Divider,
-  CircularProgress,
 } from "@mui/material";
 import SignupPath from "./SignupPath";
 import React, { useState } from "react";
@@ -61,7 +60,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
       
       setLoading(false)
     } catch (error: unknown) {
-
+      setLoading(false)
       if(error instanceof Error) {
         setError(true)
         setErrorMessage(error.message)
@@ -185,11 +184,13 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
               sx={{ width: "80%", margin: "10px auto" }}
             />
             <Button 
+              loading={loading}
+              disabled={loading}
               type="submit"
               variant="contained"  
               sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}
             >
-              { loading ? <CircularProgress size={30} /> : "Sign Up" }
+              Sign Up
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
             <Box sx={{ display: 'flex', justifyContent: 'center', m: 2 }}>

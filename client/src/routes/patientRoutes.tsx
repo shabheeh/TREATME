@@ -8,6 +8,7 @@ import LayoutPatient from '../Layouts/patient/LayoutPatient';
 import VisiitNow from '../pages/user/VisitNow';
 import LayoutAccount from '../Layouts/patient/LayoutAccount';
 import MyAccount from '../pages/user/MyAccount';
+import Family from '../pages/user/Family';
 
 export const patientRoutes = [
   <Route path="/" element={<LandingPage />} />,
@@ -36,6 +37,8 @@ export const patientRoutes = [
     }
   >
     <Route path="" element={<MyAccount />} />
+    <Route path="family-members" element={<Family />} />
+
   </Route>,
   <Route
     path="/"

@@ -2,7 +2,7 @@ import ISpecialization, { ISpecializationService } from "../../interfaces/ISpeci
 import ISpecializationRepository from "../../repositories/interfaces/ISpecializationRepository";
 import logger from "../../configs/logger";
 import { AppError, ConflictError } from "../../utils/errors";
-import { uploadToCloudinary } from "../../utils/uploadImage";
+import { uploadToCloudinary, updateCloudinaryImage } from "../../utils/uploadImage";
 class SpecializationService implements ISpecializationService {
 
     private specializationRepository: ISpecializationRepository;
@@ -76,22 +76,29 @@ class SpecializationService implements ISpecializationService {
         }
     }
 
-    async updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization | null> {
+    async updateSpecialization(id: string, updateData: Partial<ISpecialization>, imageFile: Express.Multer.File | undefined): Promise<ISpecialization | null> {
         try {
 
-            // if(updateData.name) {
-            //     const existingSpecialization = await this.specializationRepository.getSpecializationByName(updateData.name)
+            if(updateData.name) {
+                const existingSpecialization = await this.specializationRepository.getSpecializationByName(updateData.name)
 
-            //     if (existingSpecialization) {
+                if (existingSpecialization) {
   
-            //         const existingId = (existingSpecialization as ISpecialization)._id;
+                    const existingId = (existingSpecialization as ISpecialization)._id;
                     
-            //         if (existingId && existingId.toString() !== id.toString()) {
-            //             throw new AppError('A specialization with this name already exists.');
-            //         }
-            //     }
-            // }
+                    if (existingId && existingId.toString() !== id.toString()) {
+                        throw new AppError('A specialization with this name already exists.');
+                    }
+                }
+            }
 
+            const specialization = await this.specializationRepository.getSpecializationById(id)
+
+            if(imageFile && specialization?.imagePublicId) {
+                const newImage = await updateCloudinaryImage(specialization.imagePublicId, imageFile, `specializations`)
+                updateData.image = newImage.url
+                updateData.imagePublicId = newImage.publicId
+            }
 
             const result = await this.specializationRepository.updateSpecialization(id, updateData);
 

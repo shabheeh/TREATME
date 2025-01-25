@@ -29,6 +29,7 @@ interface FormInputs {
 const EditSpecialization = () => {
   const { id } = useParams<{ id: string }>();
   const [specialization, setSpecialization] = useState<ISpecialization | null>(null);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
 
@@ -111,6 +112,7 @@ const EditSpecialization = () => {
   };
 
   const onSubmit = async (data: FormInputs) => {
+    
     data.fee = Number(data.fee);
 
 
@@ -127,6 +129,7 @@ const EditSpecialization = () => {
     }
 
     try {
+      setLoading(true)
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
@@ -142,8 +145,10 @@ const EditSpecialization = () => {
       toast.success("Specialization updated successfully!");
       navigate("/admin/specializations");
 
+      setLoading(false)
     } catch (error) {
       if (error instanceof Error) {
+        setLoading(false)
         toast.error(`Error: ${error.message}`);
       } else {
         toast.error("An unknown error occurred");
@@ -217,6 +222,7 @@ const EditSpecialization = () => {
               fullWidth
               label="Name"
               variant="outlined"
+              InputLabelProps={{ shrink: true }}
               error={!!errors.name}
               helperText={errors.name?.message}
             />
@@ -225,6 +231,7 @@ const EditSpecialization = () => {
             <TextField
               {...register("description", { required: "Description is required" })}
               fullWidth
+              InputLabelProps={{ shrink: true }}
               label="Description"
               variant="outlined"
               error={!!errors.description}
@@ -245,6 +252,7 @@ const EditSpecialization = () => {
                   fullWidth
                   label="Note"
                   multiline
+                  InputLabelProps={{ shrink: true }}
                   rows={4}
                   variant="outlined"
                   error={!!errors.note}
@@ -264,6 +272,7 @@ const EditSpecialization = () => {
               })}
               fullWidth
               type="number"
+              InputLabelProps={{ shrink: true }}
               label="Fee"
               variant="outlined"
               error={!!errors.fee}
@@ -271,6 +280,8 @@ const EditSpecialization = () => {
             />
           </Box>
           <Button
+            loading={loading}
+            disabled={loading}
             fullWidth
             type="submit"
             variant="contained"

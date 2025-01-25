@@ -39,7 +39,8 @@ interface CompleteProfileProps {
   const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
     const [availableDays, setAvailableDays] = useState<string[]>([]);
     const tempUser = useSelector((state: RootState) => state.tempUser.tempUser)
-    
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate()
 
     const { 
@@ -163,10 +164,10 @@ interface CompleteProfileProps {
         gender: data.gender,
         dateOfBirth: formattedDateOfBirth,
       }
-      
-      console.log(userData)
+
 
       try {
+        setLoading(true)
         if (!isPartialUser) {
           await authServicePatient.signUp(userData)
           navigate('/signin')
@@ -175,9 +176,10 @@ interface CompleteProfileProps {
           navigate("/visitnow")
         }
         
-        
+        setLoading(false)
         log.info("user singued success")
       } catch (error) {
+        setLoading(false)
         if(error instanceof Error) {
           toast.error(error.message)
         }
@@ -410,6 +412,8 @@ interface CompleteProfileProps {
               </Box>
   
               <Button 
+                loading={loading}
+                disabled={loading}
                 fullWidth
                 type="submit"
                 variant="contained"  

@@ -126,6 +126,7 @@ const AddDoctor = () => {
 
   const [selectedSpecialization, setSelectedSpecialization] = useState("");
   const [specialties, setSpecialties] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false)
 
   const handleSpecializationChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -165,6 +166,7 @@ const AddDoctor = () => {
   };
 
   const onSubmit = async (data: SignupFormInputs) => {
+
     data.experience = Number(data.experience);
 
     if (!data.profilePicture) {
@@ -185,6 +187,7 @@ const AddDoctor = () => {
     }
 
     try {
+      setLoading(true)
       const formData = new FormData();
       formData.append("firstName", data.firstName);
       formData.append("lastName", data.lastName);
@@ -209,7 +212,9 @@ const AddDoctor = () => {
       toast.success("Doctor created successfully!");
 
       navigate("/admin/doctors");
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       if (error instanceof Error) {
         toast.error(`Error: ${error.message}`);
       } else {
@@ -522,6 +527,8 @@ const AddDoctor = () => {
           </Box>
 
           <Button
+            loading={loading}
+            disabled={loading}
             fullWidth
             type="submit"
             variant="contained"

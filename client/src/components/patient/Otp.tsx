@@ -23,6 +23,8 @@ interface OtpFormValues {
 const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySignIn }) => {
   const [seconds, setSeconds] = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(true);
+  const [loading, setLoading] = useState(false);
+
 
   const tempUser = useSelector((state:RootState) => state.tempUser.tempUser)
 
@@ -73,6 +75,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
 
   const onSubmit = async(data: OtpFormValues) => {
     try {
+      setLoading(true)
       if (isVerifyEmail) {
         if (!tempUser?.email) {
           throw new Error('somethig went wrong please try again')
@@ -90,7 +93,9 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
           onVerifySignIn()
         }
       }
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       if (error instanceof Error) {
         toast.error(error.message)
       }
@@ -200,6 +205,8 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
             />
             
             <Button
+              loading={loading}
+              disabled={loading}
               type="submit"
               variant="contained"
               sx={{ py: 1, width: "80%", fontSize: "1rem" }}

@@ -18,6 +18,7 @@ const createAxiosInstance = (role: userRole) => {
     const instance = axios.create({
         baseURL: API_URLS[role],
         timeout: 10000,
+        withCredentials: true,
     });
 
     const refreshAuthToken = async () => {

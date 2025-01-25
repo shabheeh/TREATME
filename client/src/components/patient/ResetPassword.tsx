@@ -7,9 +7,9 @@ import {
     Button,
   } from "@mui/material"
 
-  import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import authServicePatient from "../../services/patient/authService";
-  import { toast } from "sonner";
+import { toast } from "sonner";
   interface ResetPasswordInputs {
     password: string;
     confirmPassword: string;
@@ -18,7 +18,7 @@ import authServicePatient from "../../services/patient/authService";
 interface ResetPasswordProps {
   onResetPassword: () => void
 }
-
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/app/store";
   
@@ -35,19 +35,25 @@ import { RootState } from "../../redux/app/store";
       }
     });
 
+    const [loading, setLoading] = useState(false);
+
+
     const tempUser = useSelector((state: RootState) => state.tempUser.tempUser)
   
     const password = watch("password");
   
     const onSubmit = async (data: ResetPasswordInputs) => {
       try {
+        setLoading(true)
         if(!tempUser?._id) {
           throw new Error('User id not found')
         }
         await authServicePatient.resetPassword(tempUser._id, data.password)
         onResetPassword()
+        setLoading(false)
         
       } catch (error) {
+        setLoading(false)
         if(error instanceof Error) {
           toast.error(error.message)
         }
@@ -139,6 +145,8 @@ import { RootState } from "../../redux/app/store";
                 sx={{ width: "80%", margin: "10px auto" }}
               />
               <Button 
+                loading={loading}
+                disabled={loading}
                 type="submit"
                 variant="contained"  
                 sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}

@@ -1,6 +1,7 @@
 import log from "loglevel";
-import { IPatient } from "../../types/patient/patient.types";
 import { api } from "../../utils/axiosInterceptor";
+import { store } from "../../redux/app/store";
+import { setPatient } from "../../redux/features/user/userSlice";
 
 
 
@@ -8,14 +9,17 @@ class AcccountService {
 
 
 
-    async updateProfile(patientData: FormData): Promise<IPatient> {
+    async updateProfile(patientData: FormData): Promise<void> {
         try {
 
             const response = await api.patient.put('/profile', patientData);
 
             const { patient } = response.data;
 
-            return patient;
+
+            store.dispatch(setPatient(patient))
+
+
 
         } catch (error: unknown) {
 

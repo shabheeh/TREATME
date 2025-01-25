@@ -4,7 +4,6 @@ import {
     Typography, 
     TextField, 
     Button,
-    CircularProgress 
   } from "@mui/material"
 import { useForm } from "react-hook-form"
 import React, { useState } from "react";
@@ -109,12 +108,14 @@ import { toast } from "sonner";
                 helperText={errors.password?.message}
                 sx={{ width: "80%", margin: "10px auto" }}
               />
-              <Button 
+              <Button
+                loading={loading}
+                disabled={loading}
                 type="submit" 
                 variant="contained"  
                 sx={{ py: 2, mt: 3, mb:13, width: '80%', fontSize: '1rem' }}
               > 
-              { loading ? <CircularProgress /> : "Sign In" }
+              Sign In
                 
               </Button>
               

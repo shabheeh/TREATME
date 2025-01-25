@@ -110,6 +110,8 @@ import { toast } from "sonner";
                 sx={{ width: "80%", margin: "10px auto" }}
               />
               <Button 
+                loading={loading}
+                disabled={loading}
                 type="submit" 
                 variant="contained"  
                 sx={{ py: 2, mt: 3, mb:13, width: '80%', fontSize: '1rem' }}

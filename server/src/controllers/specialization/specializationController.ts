@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import ISpecialization, { ISpecializationController, ISpecializationService } from "../../interfaces/ISpecilazation";
 import { BadRequestError } from "../../utils/errors";
-import { updateCloudinaryImage } from "../../utils/uploadImage";
 import logger from "../../configs/logger";
-import { AppError } from "../../utils/errors";
 
 class SpecializationController implements ISpecializationController {
 
@@ -86,6 +84,9 @@ class SpecializationController implements ISpecializationController {
                 throw new BadRequestError('Something went wrong')
             }
 
+
+            
+
             const updateData = {
                 name: req.body.name,
                 description: req.body.description,
@@ -93,18 +94,10 @@ class SpecializationController implements ISpecializationController {
                 fee: req.body.fee
             } as ISpecialization
             
-            const specialization = await this.specializationService.getSpecializationById(id)
-
+            const imageFile: Express.Multer.File | undefined = req.file;
             
 
-            if(req.file && specialization?.imagePublicId) {
-                const newImage = await updateCloudinaryImage(specialization.imagePublicId, req.file)
-                updateData.image = newImage.url
-                updateData.imagePublicId = newImage.publicId
-            }
-
-
-            const updatedData = this.specializationService.updateSpecialization(id, updateData)
+            const updatedData = await this.specializationService.updateSpecialization(id, updateData, imageFile)
 
             res.status(200).json({
                 updatedData,
@@ -113,9 +106,6 @@ class SpecializationController implements ISpecializationController {
 
         } catch (error) {
             logger.error('Error upadating Specializations', error.message);
-            if (error instanceof AppError) {
-                res.status(error.statusCode).json({ status: error.status, message: error.message });
-            }
             next(error)
         }
     }

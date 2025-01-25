@@ -6,7 +6,6 @@ import {
   Link,
   Button,
   Divider,
-  CircularProgress 
 } from "@mui/material"
 import { useForm } from "react-hook-form"
 import authServicePatient from "../../services/patient/authService";
@@ -154,12 +153,14 @@ const SignIn: React.FC<SignInProps> = ({ onForgotPassword, onCompleteProfile }) 
               Forgot Password
             </Typography>
             <Button 
+              loading={loading}
+              disabled={loading}
               type="submit" 
               variant="contained"  
               sx={{ py: 2, my: 2, width: '80%', fontSize: '1rem' }}
             > 
-            { loading ? <CircularProgress /> : "Sign In" }
-              
+            Sign In
+     
             </Button>
             <Divider sx={{ mt: 5, width: '100%' }}>Or</Divider>
             <Box sx={{ display: 'flex', justifyContent: 'center', m: 2 }}>

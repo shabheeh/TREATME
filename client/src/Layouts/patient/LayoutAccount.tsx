@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SidebarAccount from '../../components/patient/SidebarAccount';
 import Navbar from '../../components/patient/Navbar';
 import { Outlet } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import ProfileModal from '../../components/patient/ProfileModal';
 
 const LayoutAccount = () => {
@@ -37,6 +37,20 @@ const LayoutAccount = () => {
           width: { xs: '100%', lg: `calc(100% - 240px)` }
         }}
       >
+        <Box sx={{
+          my: 4,
+          display: 'flex',
+          flexDirection: 'column',
+          borderBottom: '1px solid lightgray',
+        }}>
+        <Typography  variant="h4" gutterBottom
+        sx={{
+          alignSelf: 'center'
+        }}>
+        Manage Account
+      </Typography>
+        </Box>
+
         <Outlet />
       </Box>
 

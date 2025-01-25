@@ -88,7 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               display: 'flex', 
               alignItems: 'center',
               justifyContent: 'flex-start',
-              width: '80%'
+              width: '95%'
             }}>
               <ListItemIcon
                 sx={{
@@ -119,7 +119,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
       component="nav"
       sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
     >
-      {/* Mobile drawer */}
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -140,8 +139,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
       >
         {drawerContent}
       </Drawer>
-
-      {/* Desktop drawer */}
       <Drawer
         variant="permanent"
         sx={{

@@ -70,12 +70,14 @@ class SpecializationService {
     async updateSpecialization(id: string, updateData: FormData): Promise<void> {
         try {
 
-            await api.shared.put(`/specializations/${id}`, updateData);
+            const response = await api.shared.put(`/specializations/${id}`, updateData);
+
+            console.log(response.status)
 
         } catch (error: unknown) {
         
             if (error instanceof Error) {
-                console.error(`Error Fetching Specialization: ${error.message}`, error);
+                console.error(`Error updating Specialization: ${error.message}`, error);
                 throw new Error(error.message)
             }
         

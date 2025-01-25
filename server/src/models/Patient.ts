@@ -21,6 +21,7 @@ const patientSchema = new Schema(
     dateOfBirth: { type: Date, optional: true }, 
     address: addressSchema,
     profilePicture: { type: String, trim: true },
+    imagePublicId: { type: String, required: true },
     isActive: { type: Boolean, default: true },
     phone: { type: String, optional: true, trim: true },
   },

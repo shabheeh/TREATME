@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { 
     Avatar, 
     Box, 
@@ -38,9 +38,9 @@ type EditProfileProps = {
 
 const EditProfile: React.FC<EditProfileProps> = ({ 
     handleSave, 
-    handleCancel 
 }) => {
     const patient = useSelector((state: RootState) => state.user.patient);
+    const [loading, setLoading] = useState(false);
 
     const { 
         register,
@@ -96,6 +96,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
         }
 
         try {
+            setLoading(true)
 
             const formData = new FormData() 
             formData.append('firstName', data.firstName);
@@ -103,11 +104,11 @@ const EditProfile: React.FC<EditProfileProps> = ({
             formData.append('phone', data.phone);
             formData.append('gender', data.gender);
             formData.append('dateOfBirth', data.dateOfBirth);
-            formData.append('lastName', data.street);
-            formData.append('firstName', data.city);
-            formData.append('lastName', data.landmark);
-            formData.append('firstName', data.state);
-            formData.append('lastName', data.pincode);
+            formData.append('street', data.street);
+            formData.append('city', data.city);
+            formData.append('landmark', data.landmark);
+            formData.append('state', data.state);
+            formData.append('pincode', data.pincode);
 
             if (data.profilePicture && data.profilePicture instanceof File) {
                 formData.append("profilePicture", data.profilePicture);
@@ -115,8 +116,10 @@ const EditProfile: React.FC<EditProfileProps> = ({
 
             await accountService.updateProfile(formData);
             toast.success('Profile updated Successfully')
+            setLoading(false)
             
         } catch (error) {
+            setLoading(false)
             if (error instanceof Error) {
                 toast.error(`Error: ${error.message}`);
             } else {
@@ -337,6 +340,8 @@ const EditProfile: React.FC<EditProfileProps> = ({
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
                     <Button 
+                        loading={loading}
+                        disabled={loading}
                         variant="contained" 
                         type="submit"
                     >
@@ -344,7 +349,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
                     </Button>
                     <Button 
                         variant="outlined" 
-                        onClick={handleCancel}
+                        onClick={handleSave}
                     >
                         Cancel
                     </Button>

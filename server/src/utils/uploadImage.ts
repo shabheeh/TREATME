@@ -30,7 +30,11 @@ export async function uploadToCloudinary(
 
 
 
-export async function updateCloudinaryImage(oldPublicId: string, newImage: Express.Multer.File) {
+export async function updateCloudinaryImage(
+  oldPublicId: string, 
+  newImage: Express.Multer.File,
+  folder: string
+) {
 
   try {
 
@@ -40,7 +44,7 @@ export async function updateCloudinaryImage(oldPublicId: string, newImage: Expre
     const fileUri = `data:${newImage.mimetype};base64,${fileStr}`;
     
     const uploadResponse = await cloudinary.uploader.upload(fileUri, {
-      folder: 'doctors',
+      folder,
       resource_type: 'auto'
     });
 
