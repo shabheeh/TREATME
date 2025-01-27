@@ -1,14 +1,15 @@
 import { Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import AntiProtectedRoute from './AntiProtectedRoute';
-import LandingPage from '../pages/user/LandingPage';
-import SignInFlow from '../pages/user/SignInFlow';
-import SignUpFlow from '../pages/user/SignUpFlow';
+import LandingPage from '../pages/patient/LandingPage';
+import SignInFlow from '../pages/patient/SignInFlow';
+import SignUpFlow from '../pages/patient/SignUpFlow';
 import LayoutPatient from '../Layouts/patient/LayoutPatient';
-import VisiitNow from '../pages/user/VisitNow';
+import VisiitNow from '../pages/patient/VisitNow';
 import LayoutAccount from '../Layouts/patient/LayoutAccount';
-import MyAccount from '../pages/user/MyAccount';
-import Family from '../pages/user/Family';
+import MyAccount from '../pages/patient/MyAccount';
+import Family from '../pages/patient/Family';
+
 
 export const patientRoutes = [
   <Route path="/" element={<LandingPage />} />,
@@ -38,7 +39,6 @@ export const patientRoutes = [
   >
     <Route path="" element={<MyAccount />} />
     <Route path="family-members" element={<Family />} />
-
   </Route>,
   <Route
     path="/"

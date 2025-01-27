@@ -14,6 +14,10 @@ import { authenticate, authorize } from "../../middlewares/auth";
 import PatientAcccountService from "../../services/patient/accountService";
 import PatientAcccountController from "../../controllers/patient/patientAccountController";
 import { checkUserStatus } from "../../middlewares/checkUserStatus";
+import DependentRepository from "../../repositories/DependentRepository";
+import { DependentModel } from "../../models/Dependent";
+import DependentService from "../../services/dependent/dependentService";
+import DependentController from "../../controllers/dependent/dependentController";
 
 
 const router = express.Router();
@@ -29,6 +33,9 @@ const patientAuthController = new PatientAuthController(patientAuthService, otpS
 const patientAccountService = new PatientAcccountService(patientRepository);
 const patientAccountController = new PatientAcccountController(patientAccountService)
 
+const dependentRepository = new DependentRepository(DependentModel)
+const dependentService = new DependentService(dependentRepository)
+const dependentController = new DependentController(dependentService)
 
 router.post('/auth/send-otp', signinValidation, patientAuthController.sendOtp)
 router.post('/auth/verify-otp', patientAuthController.verifyOtp)
@@ -55,6 +62,21 @@ router.put('/profile',
     upload.single('profilePicture'),
     patientAccountController.updateProfile
 ) 
+
+router.post('/dependents', 
+    authenticate, 
+    checkUserStatus(patientAuthService), 
+    authorize('patient'), 
+    upload.single('profilePicture'),
+    dependentController.createDependent
+)
+
+router.get('/dependents/:id',
+    authenticate,
+    checkUserStatus(patientAuthService),
+    authorize('patient'),
+    dependentController.getDependents
+)
 
 
 router.use(errors());

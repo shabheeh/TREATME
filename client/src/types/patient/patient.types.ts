@@ -19,10 +19,24 @@ export interface IPatient {
     address?: Address;
     isActive: boolean;
     profilePicture?: string;
+    imagePublicId?: string;
+
 }
 
 export interface authState {
     isAuthenticated: boolean;
     user: IPatient | null;
     isSignUp: boolean;
+}
+
+export interface IDependent {
+    _id: string;
+    primaryUserId: string;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    relationship: string;
+    dateOfBirth: string;
+    profilePicture?: string;
+    imagePublicId?: string;
 }

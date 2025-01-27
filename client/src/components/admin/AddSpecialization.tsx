@@ -242,16 +242,33 @@ const AddSpecialization = () => {
               helperText={errors.fee?.message}
             />
           </Box>
+          <Box sx={{
+            width: '60%',
+            display: 'flex',
+            gap: 2,
+          }}>
           <Button
             loading={loading}
             disabled={loading}
             fullWidth
             type="submit"
             variant="contained"
-            sx={{ py: 2, my: 5, width: "90%", fontSize: "1rem" }}
+            sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
           >
             Add Specialization
           </Button>
+          <Button
+            loading={loading}
+            disabled={loading}
+            fullWidth
+            type="submit"
+            variant="outlined"
+            sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+          >
+            Cancel
+          </Button>
+          </Box>
+          
         </Container>
       </Container>
     </Box>

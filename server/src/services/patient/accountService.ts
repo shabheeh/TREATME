@@ -14,7 +14,6 @@ class PatientAcccountService implements IPatientAccountService {
     }
     
 
-
     async updateProfile(identifier: string, patientData: IPatient, imageFile: Express.Multer.File | undefined): Promise<IPatient | null> {
         try {
 
