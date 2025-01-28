@@ -53,12 +53,12 @@ router.post("/auth/google", patientAuthController.googleSignIn)
 router.post("/auth/complete-profile", authenticate, patientAuthController.completeProfile)
 router.post('/auth/resend-otp', patientAuthController.resendOtp)
 router.post('/auth/forgot-password/resend-otp', patientAuthController.resendOtpForgotPassword)
-router.post('/auth/signout', patientAuthController.signOUt)
+router.post('/auth/signout', patientAuthController.signOut)
 
 router.put('/profile', 
     authenticate, 
     checkUserStatus(patientAuthService), 
-    authorize('patient'), 
+    authorize('patient'),  
     upload.single('profilePicture'),
     patientAccountController.updateProfile
 ) 
@@ -77,6 +77,22 @@ router.get('/dependents/:id',
     authorize('patient'),
     dependentController.getDependents
 )
+
+router.put('/dependents/:id',
+    authenticate,
+    checkUserStatus(patientAuthService),
+    authorize('patient'),
+    upload.single('profilePicture'),
+    dependentController.updateDependent
+)
+
+router.delete('/dependents/:id',
+    authenticate,
+    checkUserStatus(patientAuthService),
+    authorize('patient'),
+    dependentController.deleteDependent
+)
+
 
 
 router.use(errors());

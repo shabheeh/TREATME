@@ -24,12 +24,13 @@ const createAxiosInstance = (role: userRole) => {
     const refreshAuthToken = async () => {
         try {
                        
-            const response = await axios.post(`${import.meta.env.VITE_API_SHARED}/auth/refresh-token`)
+            const response = await axios.post(`${import.meta.env.VITE_API_SHARED}/auth/refresh-token` ,{}, { withCredentials: true } )
     
             const { accessToken } = response.data;
             tokenManager.setToken(accessToken);
     
             return accessToken;
+
         } catch (error: unknown) {
             if(error instanceof AxiosError ) {
                 log.error(error.message)

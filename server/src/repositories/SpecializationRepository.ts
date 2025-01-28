@@ -69,7 +69,7 @@ class SpecializationRepository implements ISpecializationRepository {
         }
     }
 
-    async updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization | null> {
+    async updateSpecialization(id: string, updateData: Partial<ISpecialization>): Promise<ISpecialization> {
         try {
 
             const updatedData = await this.model.findByIdAndUpdate(
@@ -99,9 +99,6 @@ class SpecializationRepository implements ISpecializationRepository {
     }
 
     
-
-
-
     
 }
 

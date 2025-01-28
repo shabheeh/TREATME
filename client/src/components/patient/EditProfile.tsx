@@ -14,7 +14,8 @@ import { PhotoCamera } from "@mui/icons-material";
 import { calculateAge } from "../../helpers/ageCalculator";
 import { toast } from "sonner";
 import accountService from "../../services/patient/accountService";
-
+import dependentService from "../../services/dependent/dependentService";
+import { IDependent, IPatient } from "../../types/patient/patient.types";
 
 
 interface IFormInputs {
@@ -24,12 +25,23 @@ interface IFormInputs {
     gender: 'male' | 'female';
     dateOfBirth: string;
     profilePicture: File | null;
+    relationship: string;
     street: string;
     city: string;
     landmark: string;
     state: string;
     pincode: string;
 }
+
+const relationships = [
+    "Parent",
+    "Child",
+    "Sibling",
+    "Grandparent",
+    "Grandchild",
+    "Wife",
+    "Husband"
+  ];
 
 type EditProfileProps = {
     handleSave: () => void;
@@ -40,7 +52,13 @@ const EditProfile: React.FC<EditProfileProps> = ({
     handleSave, 
 }) => {
     const patient = useSelector((state: RootState) => state.user.patient);
+    const currentPatient = useSelector((state: RootState) => state.user.currentUser)
     const [loading, setLoading] = useState(false);
+
+    const isDependent = (user: IPatient | IDependent ): user is IDependent => {
+            return 'relationship' in user;
+        
+      };
 
     const { 
         register,
@@ -51,13 +69,14 @@ const EditProfile: React.FC<EditProfileProps> = ({
         formState: { errors }
     } = useForm<IFormInputs>({
         defaultValues: {
-            firstName: patient?.firstName || '',
-            lastName: patient?.lastName || '',
-            dateOfBirth: patient?.dateOfBirth 
-                ? new Date(patient.dateOfBirth).toISOString().split('T')[0] 
+            firstName: currentPatient?.firstName || '',
+            lastName: currentPatient?.lastName || '',
+            dateOfBirth: currentPatient?.dateOfBirth 
+                ? new Date(currentPatient.dateOfBirth).toISOString().split('T')[0] 
                 : '',
-            gender: patient?.gender,
+            gender: currentPatient?.gender,
             phone: patient?.phone || '',
+            relationship:  currentPatient && isDependent(currentPatient) ? currentPatient.relationship : '',
             street: patient?.address?.street || '',
             city: patient?.address?.city || '',
             landmark: patient?.address?.landmark || '',
@@ -98,6 +117,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
         try {
             setLoading(true)
 
+            // primary account holder
             const formData = new FormData() 
             formData.append('firstName', data.firstName);
             formData.append('lastName', data.lastName);
@@ -110,11 +130,28 @@ const EditProfile: React.FC<EditProfileProps> = ({
             formData.append('state', data.state);
             formData.append('pincode', data.pincode);
 
+
+            //dependent
+            const formDataDependent = new FormData()
+            formDataDependent.append('firstName', data.firstName);
+            formDataDependent.append('lastName', data.lastName);
+            formDataDependent.append('gender', data.gender);
+            formDataDependent.append('dateOfBirth', data.dateOfBirth)
+            formDataDependent.append('relationship', data.relationship)
+
             if (data.profilePicture && data.profilePicture instanceof File) {
                 formData.append("profilePicture", data.profilePicture);
+                formDataDependent.append("profilePicture", data.profilePicture);
             }
 
-            await accountService.updateProfile(formData);
+
+            if ( currentPatient && isDependent(currentPatient)) {
+                if(!currentPatient?._id) return
+                await dependentService.updateProfile(currentPatient?._id, formDataDependent)
+            }else {
+                await accountService.updateProfile(formData);
+            }
+
             toast.success('Profile updated Successfully')
             setLoading(false)
             
@@ -125,7 +162,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
             } else {
                 toast.error("An unknown error occurred");
             }
-            console.log("Error updating specialization", error);
+            console.log("Error updating dependent", error);
         }
 
         handleSave();
@@ -156,9 +193,9 @@ const EditProfile: React.FC<EditProfileProps> = ({
                     src={ 
                         profilePicture 
                             ? URL.createObjectURL(profilePicture) 
-                            : patient?.profilePicture || "/api/placeholder/48/48" 
+                            : currentPatient?.profilePicture || "/api/placeholder/48/48" 
                     }
-                    alt={ patient?.firstName }
+                    alt={ currentPatient?.firstName }
                     sx={{
                         width: 100,
                         height: 100,
@@ -171,7 +208,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
                     variant="outlined" 
                     startIcon={<PhotoCamera />}
                 >
-                    {patient?.profilePicture ? 'Update Photo' : 'Upload Photo'}
+                    {currentPatient?.profilePicture ? 'Update Photo' : 'Upload Photo'}
                     <input 
                         type="file" 
                         hidden 
@@ -191,6 +228,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
                                 message: "Please enter a valid First Name",
                             },
                         })}
+                        
                         fullWidth
                         label="First Name"
                         variant="outlined"
@@ -213,29 +251,60 @@ const EditProfile: React.FC<EditProfileProps> = ({
                     />
                 </Box>
 
-                <TextField
-                    {...register("phone", {
-                        required: "Phone Number is required",
-                        pattern: {
-                            value: /^[2-9]\d{9}$/,
-                            message: "Please enter a valid 10-digit Phone Number",
-                        },
-                    })}
-                    fullWidth
-                    type="tel"
-                    label="Phone Number"
-                    variant="outlined"
-                    error={!!errors.phone}
-                    helperText={errors.phone?.message}
-                />
+                { currentPatient && !isDependent(currentPatient) && 
+                    <TextField
+                        {...register("phone", {
+                            required: "Phone Number is required",
+                            pattern: {
+                                value: /^[2-9]\d{9}$/,
+                                message: "Please enter a valid 10-digit Phone Number",
+                            },
+                        })}
+                        disabled={isDependent(currentPatient)}
+                        fullWidth
+                        type="tel"
+                        label="Phone Number"
+                        variant="outlined"
+                        error={!!errors.phone}
+                        helperText={errors.phone?.message}
+                    />
+                }
+
+                { currentPatient && isDependent(currentPatient) && 
+                    <Controller
+                        name="relationship"
+                        control={control}
+                        rules={{ required: "Relationship is required" }}
+                        render={({ field }) => (
+                        <TextField
+                            {...field}
+                            select
+                            fullWidth
+                            label="Relationship"
+                            variant="outlined"
+                            error={!!errors.relationship}
+                            helperText={errors.relationship?.message}
+                        >
+                            {relationships.map((relationship, index) => (
+                            <MenuItem key={index} value={relationship}>
+                                {relationship}
+                            </MenuItem>
+                            ))}
+                        </TextField>
+                        )}
+                    />
+                }
 
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                     <TextField
                         {...register("dateOfBirth", {
                             required: "Date of Birth is required",
                             validate: (value) => {
-                                const age = calculateAge(value);
-                                return age >= 18 || "You must be at least 18 years old";
+                                if (currentPatient && !isDependent(currentPatient)) {
+                                  const age = calculateAge(value);
+                                  return age >= 18 || "You must be at least 18 years old";
+                                }
+                                return true;
                             }
                         })}
                         fullWidth
@@ -270,73 +339,78 @@ const EditProfile: React.FC<EditProfileProps> = ({
                     />
                 </Box>
 
-                
-
-                <Typography variant="h6" sx={{ mb: 2, borderBottom: '2px solid', pb: 1 }}>
-                    Address
-                </Typography>
-
-                <TextField
-                    {...register("street", {
-                        required: "Street address is required"
-                    })}
-                    fullWidth
-                    label="Street"
-                    variant="outlined"
-                    error={!!errors.street}
-                    helperText={errors.street?.message}
-                />
-
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                { currentPatient && !isDependent(currentPatient) && 
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Typography variant="h6" sx={{ mb: 2, borderBottom: '2px solid', pb: 1 }}>
+                        Address
+                    </Typography>
+    
                     <TextField
-                        {...register("city", {
-                            required: "City is required"
+                        {...register("street", {
+                            required: "Street address is required"
                         })}
                         fullWidth
-                        label="City"
+                        label="Street"
                         variant="outlined"
-                        error={!!errors.city}
-                        helperText={errors.city?.message}
+                        error={!!errors.street}
+                        helperText={errors.street?.message}
                     />
+    
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                        <TextField
+                            {...register("city", {
+                                required: "City is required"
+                            })}
+                            fullWidth
+                            label="City"
+                            variant="outlined"
+                            error={!!errors.city}
+                            helperText={errors.city?.message}
+                        />
+                        <TextField
+                            {...register("landmark", {
+                                required: "Landmark is required"
+                            })}
+                            fullWidth
+                            label="Landmark"
+                            variant="outlined"
+                            error={!!errors.landmark}
+                            helperText={errors.landmark?.message}
+                        />
+                    </Box>
+    
+                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                     <TextField
-                        {...register("landmark", {
-                            required: "Landmark is required"
+                            {...register("state", {
+                                required: "State is required"
+                            })}
+                            fullWidth
+                            label="State"
+                            variant="outlined"
+                            error={!!errors.state}
+                            helperText={errors.state?.message}
+                        />
+                    <TextField
+                        {...register("pincode", {
+                            required: "Postal Code is required",
+                            pattern: {
+                                value: /^\d{6}$/,
+                                message: "Please enter a valid 6-digit Postal Code"
+                            }
                         })}
                         fullWidth
-                        label="Landmark"
+                        label="Pin Code"
                         variant="outlined"
-                        error={!!errors.landmark}
-                        helperText={errors.landmark?.message}
+                        error={!!errors.pincode}
+                        helperText={errors.pincode?.message}
                     />
-                </Box>
+                    
+                    </Box>
+                    
+                    </Box>
+                }
 
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                <TextField
-                        {...register("state", {
-                            required: "State is required"
-                        })}
-                        fullWidth
-                        label="State"
-                        variant="outlined"
-                        error={!!errors.state}
-                        helperText={errors.state?.message}
-                    />
-                <TextField
-                    {...register("pincode", {
-                        required: "Postal Code is required",
-                        pattern: {
-                            value: /^\d{6}$/,
-                            message: "Please enter a valid 6-digit Postal Code"
-                        }
-                    })}
-                    fullWidth
-                    label="Pin Code"
-                    variant="outlined"
-                    error={!!errors.pincode}
-                    helperText={errors.pincode?.message}
-                />
                 
-                </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
                     <Button 

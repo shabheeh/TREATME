@@ -44,6 +44,7 @@ class SpecializationController implements ISpecializationController {
         try {
             const specializations = await this.specializationService.getSpecializations()
 
+
             res.status(200).json({
                 specializations,
                 message: 'Specializations fetched successfully'
@@ -85,7 +86,6 @@ class SpecializationController implements ISpecializationController {
             }
 
 
-            
 
             const updateData = {
                 name: req.body.name,

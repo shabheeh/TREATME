@@ -9,6 +9,7 @@ type ProfileProps ={
 
 const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
     const patient = useSelector((state: RootState) => state.user.patient);
+    const currentPatient = useSelector((state: RootState) => state.user.currentUser)
  
     return (
         <Box sx={{ 
@@ -25,8 +26,8 @@ const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
                 mb: 4 
             }}>
                 <Avatar
-                    src={patient?.profilePicture || "/api/placeholder/48/48"}
-                    alt={patient?.firstName}
+                    src={currentPatient?.profilePicture || "/api/placeholder/48/48"}
+                    alt={currentPatient?.firstName}
                     sx={{
                         width: 100,
                         height: 100,
@@ -35,7 +36,7 @@ const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
                     }}
                 />
                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                    {patient?.firstName} {patient?.lastName}
+                    {currentPatient?.firstName} {currentPatient?.lastName}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
                     {patient?.email}
@@ -49,10 +50,10 @@ const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         <Typography>
-                            <strong>Date of Birth:</strong>  {new Date(patient?.dateOfBirth ?? new Date()).toLocaleDateString('en-GB') || 'Not Provided'}
+                            <strong>Date of Birth:</strong>  {new Date(currentPatient?.dateOfBirth ?? new Date()).toLocaleDateString('en-GB') || 'Not Provided'}
                         </Typography>
                         <Typography>
-                            <strong>Gender:</strong> {patient?.gender || 'Not specified'}
+                            <strong>Gender:</strong> {currentPatient?.gender || 'Not specified'}
                         </Typography>
                         <Typography>
                             <strong>Phone:</strong> {patient?.phone || 'Not available'}

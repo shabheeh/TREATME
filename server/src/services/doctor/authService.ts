@@ -1,8 +1,11 @@
-import IDoctor, { IDoctorAuthService } from "../../interfaces/IDoctor";
+import { IDoctorAuthService, SignInResult } from "../../interfaces/IDoctor";
 import IDoctorRepository from "../../repositories/interfaces/IDoctorRepository";
 import bcrypt from 'bcryptjs'
 import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
+import { generateTokens, TokenPayload } from "../../utils/jwt";
+
+
 
 
 class DoctorAuthService implements IDoctorAuthService {
@@ -12,16 +15,16 @@ class DoctorAuthService implements IDoctorAuthService {
     constructor(doctorRepository: IDoctorRepository) {
         this.doctorRepository = doctorRepository
     }
-
-    async signIn(email: string, password: string): Promise<IDoctor> {
+ 
+    async signIn(email: string, password: string): Promise<SignInResult> {
         try {
             
             const doctor = await this.doctorRepository.findDoctorByEmail(email)
 
 
-            if (doctor && !doctor.isActive) {
-                throw new AuthError(AuthErrorCode.USER_BLOCKED)
-            }
+            // if (doctor && !doctor.isActive) {
+            //     throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            // }
 
             if (!doctor) {
                 throw new AuthError(AuthErrorCode.USER_NOT_FOUND)
@@ -34,8 +37,15 @@ class DoctorAuthService implements IDoctorAuthService {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
+
+            const payload: TokenPayload = {
+                email: doctor.email,
+                role: 'doctor'
+            }
+
+            const { accessToken, refreshToken } = generateTokens(payload)
             
-            return doctor
+            return { accessToken, refreshToken, doctor }
 
         } catch (error) {
             logger.error('error doctor signin', error)

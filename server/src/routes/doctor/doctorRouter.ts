@@ -27,6 +27,6 @@ router.post('/applicants', authenticate, applicantController.createApplicant)
 router.get('/applicants', authenticate, applicantController.getApplicants)
 
 router.post('/auth/signin', signinValidation, doctorAuthController.signIn)
-
+router.post('/auth/signout', doctorAuthController.signOut)
 
 export default router

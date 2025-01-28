@@ -15,11 +15,15 @@ export default interface IDependent extends Document {
 
 
 export interface IDependentService {
-    createDependent(dependent: IDependent, imageFile: Express.Multer.File | undefined): Promise<IDependent>
-    getDependents(primaryUserId: string): Promise<IDependent[] | []>
+    createDependent(dependent: IDependent, imageFile: Express.Multer.File | undefined): Promise<IDependent>;
+    getDependents(primaryUserId: string): Promise<IDependent[] | []>;
+    deleteDependent(id: string): Promise<void>;
+    updateDependent(id: string, updateData: Partial<IDependent>, imageFile: Express.Multer.File | undefined): Promise<IDependent>
 }
 
 export interface IDependentController {
-    createDependent(req: Request, res: Response, next: NextFunction): Promise<void>
-    getDependents(req: Request, res: Response, next: NextFunction): Promise<void>
+    createDependent(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getDependents(req: Request, res: Response, next: NextFunction): Promise<void>;
+    deleteDependent(req: Request, res: Response, next: NextFunction): Promise<void>;
+    updateDependent(req: Request, res: Response, next: NextFunction): Promise<void>
 }

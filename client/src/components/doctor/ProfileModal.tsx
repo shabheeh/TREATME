@@ -24,7 +24,6 @@ import authServicePatient from "../../services/patient/authService";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { IDependent, IPatient } from "../../types/patient/patient.types";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -34,13 +33,14 @@ interface ProfileDialogProps {
 const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
 
 
-  const currentPatient = useSelector((state: RootState) => state.user.currentUser)
+  const doctor = useSelector((state: RootState) => state.user.doctor)
+  
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
     try {
       await authServicePatient.signOut()
-      navigate('/signin')
+      navigate('/doctor/signin')
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message)
@@ -50,9 +50,6 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
     }
   }
 
-  const isDependent = (user: IDependent | IPatient): user is IDependent => {
-    return 'relationship' in user;
-  }
 
 
   return (
@@ -71,15 +68,12 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
           py: 1,
           px: 3,
         }}
       >
-        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-          Switch Profile
-        </Typography>
 
         <IconButton
           onClick={onClose}
@@ -102,8 +96,8 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
         <Box sx={{ px: 0, py: 2 }}>
           <ListItem sx={{ px: 4, py: 2 }}>
             <Avatar
-              src={ currentPatient?.profilePicture ? currentPatient.profilePicture : "/api/placeholder/48/48" }
-              alt={ currentPatient?.firstName }
+              src={ doctor?.profilePicture ? doctor.profilePicture : "/api/placeholder/48/48" }
+              alt={ doctor?.firstName }
               sx={{
                 width: 48,
                 height: 48,
@@ -117,7 +111,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
                   color: "grey.800",
                 }}
               >
-                { currentPatient?.firstName } { currentPatient?.lastName }
+                { doctor?.firstName } { doctor?.lastName }
               </Typography>
               <Typography
                 sx={{
@@ -125,7 +119,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
                   fontSize: "0.875rem",
                 }}
               >
-                { currentPatient && isDependent(currentPatient) ? currentPatient.relationship : 'Primary Account Holder'}
+                {doctor?.registerNo}
               </Typography>
             </Box>
           </ListItem>

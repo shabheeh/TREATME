@@ -7,6 +7,7 @@ const dependentSchema = new Schema({
     lastName: { type: String, required: true },
     primaryUserId: { type: Schema.Types.ObjectId, ref: 'Patients', required: true },
     gender: { type: String, enum: ['male', 'female'], required: true },
+    relationship: { type: String, required: true },
     dateOfBirth: { type: Date, optional: true }, 
     profilePicture: { type: String },
     imagePublicId: { type: String },

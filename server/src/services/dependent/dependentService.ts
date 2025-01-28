@@ -1,7 +1,7 @@
 import IDependent, { IDependentService } from "../../interfaces/IDependent";
 import IDependentRepository from "../../repositories/interfaces/IDependentRepository";
 import logger from "../../configs/logger";
-import { uploadToCloudinary } from "../../utils/uploadImage";
+import { uploadToCloudinary, updateCloudinaryImage } from "../../utils/uploadImage";
 import { AppError } from "../../utils/errors";
 
 class DependentService implements IDependentService {
@@ -49,6 +49,57 @@ class DependentService implements IDependentService {
                 `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 500
             ); 
+        }
+    }
+
+    async deleteDependent(id: string): Promise<void> {
+        try {
+            
+            await this.dependentRepository.deleteDependent(id)
+
+        } catch (error) {
+            logger.error('Error deleting dependent', error);
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async updateDependent(id: string, updateData: Partial<IDependent>, imageFile: Express.Multer.File | undefined): Promise<IDependent> {
+        try {
+            const dependent = await this.dependentRepository.findDependentById(id)
+
+
+            if (imageFile) {
+                if (dependent?.profilePicture && dependent.imagePublicId ) {
+                    const cloudinaryResponse = await updateCloudinaryImage(dependent.imagePublicId, imageFile, 'ProfilePictures/Patient')
+                    updateData.profilePicture = cloudinaryResponse.url;
+                    updateData.imagePublicId = cloudinaryResponse.publicId
+                }else {
+                    const cloudinaryResponse = await uploadToCloudinary(imageFile, 'ProfilePictures/Patients')
+                    updateData.profilePicture = cloudinaryResponse.url;
+                    updateData.profilePicture = cloudinaryResponse.publicId
+                }
+
+            }
+
+            const result = await this.dependentRepository.updateDependent(id, updateData)
+
+            return result;
+
+        } catch (error) {
+            logger.error('error updating dependent profile', error)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 }

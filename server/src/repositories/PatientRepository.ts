@@ -54,37 +54,37 @@ class PatientRepository implements IPatientRepository {
    }
 
    async updatePatient(identifier: string, patientData: Partial<IPatient>): Promise<IPatient | null> {
-    try {
-        
-        const query = mongoose.isValidObjectId(identifier)
-            ? { _id: identifier }
-            : { email: identifier };
+        try {
+            
+            const query = mongoose.isValidObjectId(identifier)
+                ? { _id: identifier }
+                : { email: identifier };
 
-        const updatedPatient = await this.model.findOneAndUpdate(
-            query,
-            { $set: patientData },
-            { 
-                new: true,
-                runValidators: true,
-                lean: true
+            const updatedPatient = await this.model.findOneAndUpdate(
+                query,
+                { $set: patientData },
+                { 
+                    new: true,
+                    runValidators: true,
+                    lean: true
+                }
+            ).select('-password');
+            
+            if (!updatedPatient) {
+                throw new AppError('Patient not found', 404);
             }
-        ).select('-password');
-        
-        if (!updatedPatient) {
-            throw new AppError('Patient not found', 404);
+
+            return updatedPatient;
+
+        } catch (error) {
+            if (error instanceof AppError) throw error;
+            
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
-
-        return updatedPatient;
-
-    } catch (error) {
-        if (error instanceof AppError) throw error;
-        
-        throw new AppError(
-            `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            500
-        );
     }
-}
 
    async getPatients(filter: IPatientsFilter): Promise<IPatientsFilterResult> {
         try {

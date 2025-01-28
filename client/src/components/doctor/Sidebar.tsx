@@ -1,3 +1,4 @@
+
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Box,
@@ -11,17 +12,26 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import {
-  VpnKey,
-  Group,
-  Person
+  Message,
+  Medication,
+  EventNote,
+  ContactSupport
 } from '@mui/icons-material';
+
+import { FaHouseMedical } from "react-icons/fa6";
+
+
+import { RiHealthBookFill } from "react-icons/ri";
 
 const drawerWidth = 250;
 
 const menuItems = [
-  { text: 'Account Details', icon: <Person />, path: '/account' },
-  { text: 'Security', icon: <VpnKey />, path: '/account/security' },
-  { text: 'Family Members', icon: <Group />, path: '/account/family-members' },
+  { text: 'Dashboard', icon: <FaHouseMedical size={23} />, path: '/doctor' },
+  { text: 'Appointments', icon: <EventNote />, path: '/doctor/appointments' },
+  { text: 'Messages', icon: <Message />, path: '/doctor/messages' },
+  { text: 'Patients', icon: <RiHealthBookFill size={23} />, path: '/doctor/patients' },
+  { text: 'Schedules', icon: <Medication />, path: '/doctor/schedules' },
+  { text: 'Help & Support', icon: <ContactSupport />, path: '/help' },
 ];
 
 interface SidebarProps {
@@ -29,7 +39,8 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
+
+const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -54,7 +65,7 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
           }}
         >
           <ListItemButton
-            selected={location.pathname === item.path} 
+            selected={location.pathname === item.path}
             onClick={() => handleNavigate(item.path)}
             sx={{
               borderRadius: '8px',
@@ -77,14 +88,12 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               display: 'flex', 
               alignItems: 'center',
               justifyContent: 'flex-start',
-              width: '100%',
-
+              width: '95%'
             }}>
               <ListItemIcon
                 sx={{
-      
                   minWidth: '40px',
-                  color: location.pathname === item.path ? '#00897b' : 'rgba(0, 0, 0, 0.54)' // Exact match
+                  color: location.pathname === item.path ? '#00897b' : 'rgba(0, 0, 0, 0.54)'
                 }}
               >
                 {item.icon}
@@ -93,8 +102,8 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 primary={item.text} 
                 sx={{ 
                   '& .MuiTypography-root': {
-                    fontWeight: location.pathname === item.path ? 600 : 400, // Exact match
-                    color: location.pathname === item.path ? '#00897b' : 'inherit', // Exact match
+                    fontWeight: location.pathname === item.path ? 600 : 400,
+                    color: location.pathname === item.path ? '#00897b' : 'inherit',
                   }
                 }}
               />
@@ -130,8 +139,6 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
       >
         {drawerContent}
       </Drawer>
-
-      {/* Desktop drawer */}
       <Drawer
         variant="permanent"
         sx={{
@@ -153,4 +160,4 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
   );
 };
 
-export default SidebarAccount;
+export default Sidebar;

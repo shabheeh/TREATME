@@ -42,7 +42,7 @@ class PatientAcccountService implements IPatientAccountService {
             return result;
 
         } catch (error) {
-            logger.error('error google signin', error)
+            logger.error('error updating profile', error)
             if (error instanceof AppError) {
                 throw error; 
             }

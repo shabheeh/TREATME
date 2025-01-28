@@ -31,6 +31,8 @@ const relationships = [
     "Sibling",
     "Grandparent",
     "Grandchild",
+    "Wife",
+    "Husband"
   ];
 
 type AddDependentProps = {

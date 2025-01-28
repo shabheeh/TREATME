@@ -6,11 +6,10 @@ import log from 'loglevel'
 import { store } from "../../redux/app/store";
 import { setAuthState, signIn, signOut } from "../../redux/features/auth/authSlice";
 import { setTempUser } from "../../redux/features/auth/tempSlice";
-import { clearUser, setPatient } from "../../redux/features/user/userSlice";
+import { clearUser, setCurrentPatient, setPatient } from "../../redux/features/user/userSlice";
 
 
 type SignInResult = { patient: IPatient } ;
-type SignOutResult = void 
 type MockSignUpResult = { status: number, message: string } 
 type GoogleSignInResult = { PartialUser: boolean }
 type VerifyOtpSignUpResult = void 
@@ -21,7 +20,7 @@ type verifyOtpForgotPasswordResult = { email: string }
 interface IAuthServicePatient {
     sendOtp(credentials: { email: string, password: string }): Promise<MockSignUpResult>
     signIn(credentials: { email: string; password: string }): Promise<SignInResult>;
-    signOut(): Promise<SignOutResult>;
+    signOut(): Promise<void>;
     verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult>
     googleSignIn(credential: string): Promise<GoogleSignInResult>
     verifyEmail(email: string): Promise<verifyEmailResult>
@@ -126,6 +125,8 @@ class AuthServicePatient implements IAuthServicePatient {
       }))
 
       store.dispatch(setPatient(patient))
+      
+      store.dispatch(setCurrentPatient(patient))
 
       return patient;
 
@@ -146,7 +147,7 @@ class AuthServicePatient implements IAuthServicePatient {
     }
 
 
-  async signOut(): Promise<SignOutResult> {
+  async signOut(): Promise<void> {
     try {
 
       await api.patient.post("/auth/signout");
@@ -154,8 +155,6 @@ class AuthServicePatient implements IAuthServicePatient {
       this.tokenManager.clearToken();
       store.dispatch(clearUser())
       store.dispatch(signOut())
-
-      window.location.href = "/signin";
 
     } catch (error: unknown) {
 

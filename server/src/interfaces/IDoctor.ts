@@ -47,13 +47,19 @@ export interface IDoctorsFilterResult {
   totalPages: number
 }
 
+export interface SignInResult {
+  doctor: IDoctor;
+  accessToken: string;
+  refreshToken: string;
+}
 
 
 export interface IDoctorAuthService {
-  signIn(email: string, password: string): Promise<IDoctor>
+  signIn(email: string, password: string): Promise<SignInResult>
   checkActiveStatus(email: string): Promise<boolean>
 }
 
 export interface IDoctorAuthController {
   signIn(req: Request, res: Response, next: NextFunction): Promise<void>
+  signOut(req: Request, res: Response, next: NextFunction): Promise<void>
 }

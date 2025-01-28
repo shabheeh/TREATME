@@ -14,11 +14,11 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
-  const currentPatient = useSelector((state: RootState) => state.user.currentUser)
+  const doctor = useSelector((state: RootState) => state.user.doctor)
   const navigate = useNavigate()
 
   const handleLogoClick = () => {
-    navigate('/visitnow')
+    navigate('/doctor')
   }
 
   return (
@@ -48,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
             onClick={handleLogoClick}
           />
         </Box>
-        {currentPatient && (
+        {doctor && (
           <Box
             sx={{
               display: "flex",
@@ -69,14 +69,14 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
               onClick={onProfileClick}
             >
               <Avatar
-                src={currentPatient?.profilePicture}
+                src={doctor?.profilePicture}
                 sx={{
                   width: 32,
                   height: 32, 
                   fontSize: 14, 
                 }}
               >
-                {currentPatient?.firstName?.[0]} 
+                {doctor?.firstName?.[0]} 
               </Avatar>
             </Button>
           </Box>

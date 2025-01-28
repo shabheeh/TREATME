@@ -17,11 +17,13 @@ class PatientAcccountController implements IPatientAccountController {
     updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            const identifier = req.user?.email;
-
-            if (!identifier) {
-                throw new AppError('Something went wrong')
+            if (!req.user) {
+                throw new AppError('User not authenticated')
             }
+
+            const identifier = req.user.email;
+
+            
 
             const imageFile: Express.Multer.File | undefined = req.file;
             
@@ -50,7 +52,7 @@ class PatientAcccountController implements IPatientAccountController {
 
 
         } catch (error) {
-            logger.error('error updateing profile', error)
+            logger.error('error updating profile', error)
             next(error)
         }
     }

@@ -52,7 +52,7 @@ export enum AuthErrorCode {
         [AuthErrorCode.USER_NOT_FOUND]: 'User not found'
       };
   
-      super(message || defaultMessages[code], 403, 'fail');
+      super(message || defaultMessages[code], 401, 'fail');
       this.code = code;
     }
   }

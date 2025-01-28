@@ -75,6 +75,7 @@ export interface IPatientAuthController {
   verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   signup(req: Request, res: Response, next: NextFunction): Promise<void>;
   signin(req: Request, res: Response, next: NextFunction): Promise<void>;
+  signOut(req: Request, res: Response, next: NextFunction): Promise<void>;
   sendOtpForgotPassowrd(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifyOtpForgotPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
   resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
