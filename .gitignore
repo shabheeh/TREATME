@@ -35,4 +35,3 @@ logs
 # OS
 .DS_Store
 Thumbs.db
->>>>>>> 4ae574e (moved logger to shared)
