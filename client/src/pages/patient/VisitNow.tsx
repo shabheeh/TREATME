@@ -1,4 +1,4 @@
-import { Box, Grid, Skeleton } from "@mui/material";
+import { Box, Grid, Skeleton, Typography } from "@mui/material";
 import SpecializationCard from "../../components/patient/SpecializationCard";
 import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
@@ -42,6 +42,9 @@ const VisitNow = () => {
     <>
       
       <Box sx={{ padding: 2, border: '1px solid', borderColor: 'grey.300' }}>
+        <Typography sx={{ pb: 2, fontWeight: 600, fontSize: '18px'}}>
+          Book an Appointment
+        </Typography>
       <Grid container spacing={3}>
         {loading
           ? Array.from({ length: 5 }).map((_, index) => ( 

@@ -1,5 +1,5 @@
 import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from "src/interfaces/IDoctor";
-import IDoctorRepository from "../../repositories/interfaces/IDoctorRepository";
+import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepository";
 import bcrypt from 'bcryptjs';
 import logger from "../../configs/logger";
 import { IAdminDoctorService } from "src/interfaces/IAdmin";

@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import IDoctorRepository from "./interfaces/IDoctorRepository";
 import IDoctor, { IDoctorsFilter, IDoctorsFilterResult} from "src/interfaces/IDoctor";
-import { AppError } from "../utils/errors";
+import { AppError } from "../../utils/errors";
 
 
 class DoctorRepository implements IDoctorRepository {

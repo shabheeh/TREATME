@@ -2,7 +2,7 @@
 import express from "express";
 import multer from "multer";
 import { PatientModel } from "../../models/Patient";
-import PatientRepository from "../../repositories/PatientRepository";
+import PatientRepository from "../../repositories/patient/PatientRepository";
 import PatientAuthService from "../../services/patient/authService";
 import OtpService from "../../services/OtpService";
 import CacheService from "../../services/CacheService";
@@ -14,7 +14,7 @@ import { authenticate, authorize } from "../../middlewares/auth";
 import PatientAcccountService from "../../services/patient/accountService";
 import PatientAcccountController from "../../controllers/patient/patientAccountController";
 import { checkUserStatus } from "../../middlewares/checkUserStatus";
-import DependentRepository from "../../repositories/DependentRepository";
+import DependentRepository from "../../repositories/patient/DependentRepository";
 import { DependentModel } from "../../models/Dependent";
 import DependentService from "../../services/dependent/dependentService";
 import DependentController from "../../controllers/dependent/dependentController";

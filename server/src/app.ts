@@ -35,7 +35,6 @@ app.use(sessionConfig);
 app.use(cookieParser()); 
  
 
-
  
 
 //connect db
@@ -72,3 +71,9 @@ if(!PORT) {
 app.listen(PORT, () => {
     logger.info(`Server is running on http://localhost:${PORT}`);
 }) 
+
+
+// testing
+// app.listen(5000, '0.0.0.0', () => {
+//     console.log("Server running on port 5000");
+// });

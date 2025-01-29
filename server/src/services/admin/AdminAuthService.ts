@@ -1,6 +1,6 @@
 import bcrpyt from 'bcryptjs';
 import logger from '../../configs/logger';
-import IAdminRepository from 'src/repositories/interfaces/IAdminRepository';
+import IAdminRepository from 'src/repositories/admin/interfaces/IAdminRepository';
 import { generateTokens, TokenPayload } from '../../utils/jwt';
 import { IAdminAuthService, SignInAdminResult } from '../../interfaces/IAdmin';
 import { AppError, AuthError, AuthErrorCode } from '../../utils/errors';

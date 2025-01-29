@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
-import ISpecialization from "../interfaces/ISpecilazation";
+import ISpecialization from "../../interfaces/ISpecilazation";
 import ISpecializationRepository from "./interfaces/ISpecializationRepository";
-import { AppError } from "../utils/errors";
+import { AppError } from "../../utils/errors";
 
 class SpecializationRepository implements ISpecializationRepository {
 

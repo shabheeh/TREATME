@@ -1,5 +1,5 @@
 import { IDoctorAuthService, SignInResult } from "../../interfaces/IDoctor";
-import IDoctorRepository from "../../repositories/interfaces/IDoctorRepository";
+import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepository";
 import bcrypt from 'bcryptjs'
 import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";

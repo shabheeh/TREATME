@@ -1,6 +1,6 @@
 import { IAdminPatientsService } from "src/interfaces/IAdmin";
 import { IPatientsFilter, IPatientsFilterResult } from "src/interfaces/IPatient";
-import IPatientRepository from "../../repositories/interfaces/IPatientRepository";
+import IPatientRepository from "../../repositories/patient/interface/IPatientRepository";
 import logger from "../../configs/logger";
 import { AppError } from "../../utils/errors";
 

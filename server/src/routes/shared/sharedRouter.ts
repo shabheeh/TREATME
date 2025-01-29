@@ -1,13 +1,13 @@
 import express from 'express';
 import multer from 'multer';
-import SpecializationRepository from '../../repositories/SpecializationRepository';
+import SpecializationRepository from '../../repositories/specialization/SpecializationRepository';
 import { specializationModel } from '../../models/Specialization';
 import SpecializationService from '../../services/specialization/sepecializationService';
 import SpecializationController from '../../controllers/specialization/specializationController';
 import { validateSpecialization } from '../../validators/specializationValidator';
 import { authenticate, authorize } from '../../middlewares/auth';
 import { checkUserStatus } from '../../middlewares/checkUserStatus';
-import PatientRepository from '../../repositories/PatientRepository';
+import PatientRepository from '../../repositories/patient/PatientRepository';
 import { PatientModel } from '../../models/Patient';
 import PatientAuthService from '../../services/patient/authService';
 import OtpService from '../../services/OtpService';

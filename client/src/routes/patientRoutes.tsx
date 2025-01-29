@@ -9,6 +9,7 @@ import VisiitNow from '../pages/patient/VisitNow';
 import LayoutAccount from '../Layouts/patient/LayoutAccount';
 import MyAccount from '../pages/patient/MyAccount';
 import Family from '../pages/patient/Family';
+import HealthProfile from '../pages/patient/HealthProfile';
 
 
 export const patientRoutes = [
@@ -49,5 +50,6 @@ export const patientRoutes = [
     }
   >
     <Route path="visitnow" element={<VisiitNow />} />
+    <Route path='health-profile' element={<HealthProfile />} />
   </Route>
 ];

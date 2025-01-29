@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
-import IDependentRepository from "./interfaces/IDependentRepository";
-import IDependent from "../interfaces/IDependent";
-import { AppError } from "../utils/errors";
+import IDependentRepository from "./interface/IDependentRepository";
+import IDependent from "../../interfaces/IDependent";
+import { AppError } from "../../utils/errors";
 
 class DependentRepository implements IDependentRepository {
 

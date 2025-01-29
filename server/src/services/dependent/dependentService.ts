@@ -1,5 +1,5 @@
 import IDependent, { IDependentService } from "../../interfaces/IDependent";
-import IDependentRepository from "../../repositories/interfaces/IDependentRepository";
+import IDependentRepository from "../../repositories/patient/interface/IDependentRepository";
 import logger from "../../configs/logger";
 import { uploadToCloudinary, updateCloudinaryImage } from "../../utils/uploadImage";
 import { AppError } from "../../utils/errors";

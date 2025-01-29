@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import IApplicantRepository from "./interfaces/IApplicantRepository";
 import { IApplicant } from "src/interfaces/IApplicant";
-import { AppError } from "../utils/errors";
+import { AppError } from "../../utils/errors";
 import { IApplicantsFilter, IApplicantsFilterResult } from "src/interfaces/IApplicant";
 
 

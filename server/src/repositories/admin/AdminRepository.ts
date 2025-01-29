@@ -1,7 +1,7 @@
 import { Model } from 'mongoose';
-import IAdmin from "../interfaces/IAdmin";
+import IAdmin from "../../interfaces/IAdmin";
 import IAdminRepository from "./interfaces/IAdminRepository";
-import { AppError } from '../utils/errors';
+import { AppError } from '../../utils/errors';
 class AdminRepository implements IAdminRepository {
     private readonly model: Model<IAdmin>;
 

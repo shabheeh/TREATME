@@ -1,15 +1,15 @@
 import express from 'express';
 import multer from 'multer';
 import { AdminModel } from '../../models/Admin';
-import AdminRespository from '../../repositories/AdminRepository';
+import AdminRespository from '../../repositories/admin/AdminRepository';
 import AdminAuthService from '../../services/admin/AdminAuthService';
 import AdminAuthController from '../../controllers/admin/adminAuthController';
 import { signinValidation } from '../../validators/signInValidator';
-import DoctorRepository from '../../repositories/DoctorRepository';
+import DoctorRepository from '../../repositories/doctor/DoctorRepository';
 import { DoctorModel } from '../../models/Doctor';
 import AdminDoctorService from '../../services/admin/adminDoctorService';
 import AdminDoctorController from '../../controllers/admin/adminDoctorController';
-import UserRepository from '../../repositories/PatientRepository';
+import UserRepository from '../../repositories/patient/PatientRepository';
 import { PatientModel } from '../../models/Patient';
 import AdminPatientsService from '../../services/admin/adminPatientsService';
 import AdminPatientsController from '../../controllers/admin/adminPatientsController';

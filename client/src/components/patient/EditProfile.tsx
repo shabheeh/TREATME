@@ -117,7 +117,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
         try {
             setLoading(true)
 
-            // primary account holder
+            // primary user
             const formData = new FormData() 
             formData.append('firstName', data.firstName);
             formData.append('lastName', data.lastName);
@@ -166,7 +166,6 @@ const EditProfile: React.FC<EditProfileProps> = ({
         }
 
         handleSave();
-        console.log(data);
     };
 
     

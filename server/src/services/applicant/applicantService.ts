@@ -1,7 +1,7 @@
 import { AppError, ConflictError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { IApplicant, IApplicantService, IApplicantsFilter, IApplicantsFilterResult } from "../../interfaces/IApplicant";
-import IApplicantRepository from "../../repositories/interfaces/IApplicantRepository";
+import IApplicantRepository from "../../repositories/doctor/interfaces/IApplicantRepository";
 
 
 class ApplicantService implements IApplicantService {

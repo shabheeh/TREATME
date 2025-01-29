@@ -1,5 +1,5 @@
 import ISpecialization, { ISpecializationService } from "../../interfaces/ISpecilazation";
-import ISpecializationRepository from "../../repositories/interfaces/ISpecializationRepository";
+import ISpecializationRepository from "../../repositories/specialization/interfaces/ISpecializationRepository";
 import logger from "../../configs/logger";
 import { AppError, ConflictError } from "../../utils/errors";
 import { uploadToCloudinary, updateCloudinaryImage } from "../../utils/uploadImage";

@@ -1,4 +1,4 @@
-import IPatientRepository from "src/repositories/interfaces/IPatientRepository";
+import IPatientRepository from "src/repositories/patient/interface/IPatientRepository";
 import IPatient, { IPatientAccountService } from "../../interfaces/IPatient";
 import { AppError } from "../../utils/errors";
 import logger from "../../configs/logger";

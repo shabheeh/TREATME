@@ -1,7 +1,7 @@
 import mongoose, { Model } from 'mongoose';
-import IPatient, { IPatientsFilter, IPatientsFilterResult } from "../interfaces/IPatient";
-import IPatientRepository from "./interfaces/IPatientRepository";
-import { AppError } from '../utils/errors';
+import IPatient, { IPatientsFilter, IPatientsFilterResult } from "../../interfaces/IPatient";
+import IPatientRepository from "./interface/IPatientRepository";
+import { AppError } from '../../utils/errors';
 
 
 

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import IPatient, { IPatientAuthService, SignInResult, googleSignInResult } from '../../interfaces/IPatient';
-import IPatientRepository from '../../repositories/interfaces/IPatientRepository';
+import IPatientRepository from '../../repositories/patient/interface/IPatientRepository';
 import { generateTokens, TokenPayload } from '../../utils/jwt';
 import CacheService from '../CacheService';
 import OtpService from '../OtpService';
