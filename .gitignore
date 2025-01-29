@@ -1,8 +1,7 @@
-<<<<<<< HEAD
 
-=======
 #Dependencies
 node_modules/
+**/node_modules/
 
 
 
@@ -12,6 +11,10 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+**/.env
+
+client/.env
+server/.env
 
 # Build outputs
 /build
@@ -35,3 +38,5 @@ logs
 # OS
 .DS_Store
 Thumbs.db
+
+client/.vite
