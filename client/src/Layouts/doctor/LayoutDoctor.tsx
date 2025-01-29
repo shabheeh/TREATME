@@ -31,7 +31,7 @@ const LayoutDoctor = () => {
           p: 3,
           marginLeft: { xs: 0, lg: '0' },
           marginTop: '64px',
-          backgroundColor: '#f5f7fa',
+          backgroundColor: '#ffffff',
           height: 'calc(100vh - 64px)',
           overflow: 'auto',
           width: { xs: '100%', lg: `calc(100% - 240px)` }

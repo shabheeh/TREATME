@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 export default interface IDependent extends Document {
     firstName: string;
     lastName: string;
-    primaryUserId: string;
+    primaryUserId: ObjectId;
     gender: 'male' | 'female';
     relationship: string;
     dateOfBirth: Date;

@@ -21,7 +21,9 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ onMenuClick }) => {
         bgcolor: 'teal',
         // zIndex: (theme) => theme.zIndex.drawer + 1, 
         // zIndex: 10,
-        width: '100%'
+        width: '100%',
+        boxShadow: 0
+
       }}
     >
       <Box sx={{ px: 2 }}> 

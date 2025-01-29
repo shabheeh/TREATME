@@ -1,6 +1,6 @@
 import { Avatar, Box, Button, Typography } from "@mui/material"
 import { useSelector } from "react-redux"
-import { RootState } from "../../redux/app/store"
+import { RootState } from "../../../redux/app/store"
 import React from "react"
 
 type ProfileProps ={
@@ -17,7 +17,6 @@ const Profile: React.FC<ProfileProps> = ({ handleEdit }) => {
             mx: 'auto', 
             p: 3,
             
-            backgroundColor: 'white'
         }}>
             <Box sx={{ 
                 display: 'flex', 

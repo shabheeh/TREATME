@@ -8,11 +8,11 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { PhotoCamera } from "@mui/icons-material";
-import { calculateAge } from "../../helpers/ageCalculator";
+import { calculateAge } from "../../../helpers/ageCalculator";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/app/store";
-import dependentService from "../../services/dependent/dependentService";
+import { RootState } from "../../../redux/app/store";
+import dependentService from "../../../services/dependent/dependentService";
 
 
 interface IFormInputs {

@@ -4,9 +4,9 @@ import { Box, Container, Typography, Link, Button } from "@mui/material";
 import PinInput from "react-pin-input";
 import SignupPath from "./SignupPath";
 // import { IUser } from "../../types/user/authTypes";
-import authServicePatient from "../../services/patient/authService";
+import authServicePatient from "../../../services/patient/authService";
 import { useSelector } from 'react-redux' 
-import { RootState } from "../../redux/app/store";
+import { RootState } from "../../../redux/app/store";
 import { toast } from "sonner";
 
 interface OtpPageProps {

@@ -48,5 +48,5 @@ export interface IApplicant {
     email: string;
     registerNo: string;
     phone: string;
-    specialty: string;
+    speciality: string;
 }

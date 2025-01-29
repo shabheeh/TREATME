@@ -11,7 +11,7 @@ import {
 import SignupPath from "./SignupPath";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import authServicePatient from "../../services/patient/authService";
+import authServicePatient from "../../../services/patient/authService";
 import { GoogleLogin, CredentialResponse} from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";

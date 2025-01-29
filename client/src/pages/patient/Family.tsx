@@ -4,8 +4,8 @@ import {
 
 } from '@mui/material';
 import { useState } from 'react';
-import FamilyMembers from '../../components/patient/FamilyMembers';
-import AddDependent from '../../components/patient/AddDependent';
+import FamilyMembers from '../../components/patient/profile/FamilyMembers';
+import AddDependent from '../../components/patient/profile/AddDependent';
 
 
 

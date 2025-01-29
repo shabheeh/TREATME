@@ -3,7 +3,7 @@ import ISpecialization from "src/interfaces/ISpecilazation";
 
 
 
-const specializationSchema = new Schema(
+const specializationSchema = new Schema<ISpecialization>(
     {
         name: { type: String, required: true, trim: true },
         description: { type: String, required: true },

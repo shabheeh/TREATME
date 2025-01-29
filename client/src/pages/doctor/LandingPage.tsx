@@ -26,7 +26,7 @@ interface RegisterFormInputs {
     email: string;
     phone: string;
     registerNo: string;
-    specialty: string
+    speciality: string
 }
 
 const LandingPage = () => {
@@ -43,7 +43,7 @@ const LandingPage = () => {
         email: "",
         phone: "",
         registerNo: "",
-        specialty: ""
+        speciality: ""
         }
     });
 
@@ -319,7 +319,7 @@ const LandingPage = () => {
           </Grid>
           <Grid item xs={6}>
           <Controller
-                      name="specialty"
+                      name="speciality"
                       control={control}
                       rules={{ required: "Please Select the type" }}
                       render={({ field }) => (
@@ -328,8 +328,8 @@ const LandingPage = () => {
                           select
                           fullWidth
                           label="Type of Provider"
-                          error={!!errors.specialty}
-                          helperText={errors.specialty?.message}
+                          error={!!errors.speciality}
+                          helperText={errors.speciality?.message}
                         >
                           {types.map((type, idx) => (
                             <MenuItem key={idx} value={type}>

@@ -2,10 +2,10 @@ import { model, Schema } from "mongoose";
 import IDependent from "src/interfaces/IDependent";
 
 
-const dependentSchema = new Schema({
+const dependentSchema = new Schema<IDependent>({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    primaryUserId: { type: Schema.Types.ObjectId, ref: 'Patients', required: true },
+    primaryUserId: { type: Schema.Types.ObjectId, ref: 'Patient', required: true },
     gender: { type: String, enum: ['male', 'female'], required: true },
     relationship: { type: String, required: true },
     dateOfBirth: { type: Date, optional: true }, 

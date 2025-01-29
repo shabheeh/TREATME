@@ -11,14 +11,14 @@ import {
   Skeleton,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { IDependent } from '../../types/patient/patient.types';
-import { calculateAge } from '../../helpers/ageCalculator';
-import dependentService from '../../services/dependent/dependentService';
+import { IDependent } from '../../../types/patient/patient.types';
+import { calculateAge } from '../../../helpers/ageCalculator';
+import dependentService from '../../../services/dependent/dependentService';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../redux/app/store';
+import { RootState } from '../../../redux/app/store';
 import { toast } from 'sonner';
 import DeleteDependentModal from './DeleteDependentModal';
-import { setCurrentPatient } from '../../redux/features/user/userSlice';
+import { setCurrentPatient } from '../../../redux/features/user/userSlice';
 
 
 interface FamilyMembersProps {

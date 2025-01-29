@@ -8,7 +8,7 @@ import {
   Divider,
 } from "@mui/material"
 import { useForm } from "react-hook-form"
-import authServicePatient from "../../services/patient/authService";
+import authServicePatient from "../../../services/patient/authService";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Document, ObjectId } from "mongoose";
+import { Document } from "mongoose";
 
 
 interface Slot {

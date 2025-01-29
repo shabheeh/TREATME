@@ -8,7 +8,7 @@ import {
   } from "@mui/material"
 
 import { useForm } from "react-hook-form"
-import authServicePatient from "../../services/patient/authService";
+import authServicePatient from "../../../services/patient/authService";
 import { toast } from "sonner";
   interface ResetPasswordInputs {
     password: string;
@@ -20,7 +20,7 @@ interface ResetPasswordProps {
 }
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/app/store";
+import { RootState } from "../../../redux/app/store";
   
   const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
     const { 

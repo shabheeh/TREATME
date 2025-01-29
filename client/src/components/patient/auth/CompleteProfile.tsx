@@ -15,8 +15,8 @@ import {
   import log from 'loglevel';
 // import { IUser } from "../../types/user/authTypes";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/app/store";
-import authServicePatient from "../../services/patient/authService";
+import { RootState } from "../../../redux/app/store";
+import authServicePatient from "../../../services/patient/authService";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 

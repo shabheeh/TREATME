@@ -19,12 +19,12 @@ import {
   MdLogout,
   MdHelpOutline,
 } from "react-icons/md";
-import { RootState } from "../../redux/app/store";
-import authServicePatient from "../../services/patient/authService";
+import { RootState } from "../../../redux/app/store";
+import authServicePatient from "../../../services/patient/authService";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { IDependent, IPatient } from "../../types/patient/patient.types";
+import { IDependent, IPatient } from "../../../types/patient/patient.types";
 
 interface ProfileDialogProps {
   open: boolean;

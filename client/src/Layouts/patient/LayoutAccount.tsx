@@ -3,7 +3,7 @@ import SidebarAccount from '../../components/patient/SidebarAccount';
 import Navbar from '../../components/patient/Navbar';
 import { Outlet } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import ProfileModal from '../../components/patient/ProfileModal';
+import ProfileModal from '../../components/patient/profile/ProfileModal';
 
 const LayoutAccount = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,7 +31,7 @@ const LayoutAccount = () => {
           p: 3,
           marginLeft: { xs: 0, lg: '0' },
           marginTop: '64px',
-          backgroundColor: '#f5f7fa',
+          backgroundColor: '#ffffff',
           height: 'calc(100vh - 64px)',
           overflow: 'auto',
           width: { xs: '100%', lg: `calc(100% - 240px)` }

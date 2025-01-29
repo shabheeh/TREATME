@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import Navbar from "../../components/basics/Navbar";
-import SignUp from "../../components/patient/SignUp";
-import Otp from "../../components/patient/Otp";
-import CompleteProfile from "../../components/patient/CompleteProfile";
+import SignUp from "../../components/patient/auth/SignUp";
+import Otp from "../../components/patient/auth/Otp";
+import CompleteProfile from "../../components/patient/auth/CompleteProfile";
 
 const SignUpFlow: React.FC = () => {
   const [step, setStep] = useState<"signup" | "verfy-email" | "complete-profile">("signup");

@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import Profile from '../../components/patient/Profile'
-import EditProfile from '../../components/patient/EditProfile'
+import Profile from '../../components/patient/profile/Profile'
+import EditProfile from '../../components/patient/profile/EditProfile'
 
 const MyAccount = () => {
     const [isEditing, setIsEditing] = useState(false)

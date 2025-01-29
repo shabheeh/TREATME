@@ -11,7 +11,7 @@ const addressSchema = new Schema({
 });
 
 
-const patientSchema = new Schema(
+const patientSchema = new Schema<IPatient>(
   {
     email: { type: String, required: true, unique: true, trim: true },
     firstName: { type: String, required: true, trim: true },
