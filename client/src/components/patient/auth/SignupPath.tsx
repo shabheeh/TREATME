@@ -54,8 +54,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
         Verify Email
       </Typography>
         </Stack>
-        
-        {/* Long Arrow */}
+      
         <Box
           sx={{
             width: "100px", 

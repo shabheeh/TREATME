@@ -26,7 +26,7 @@ class AdminPatientsService implements IAdminPatientsService {
             return await this.patientRepository.getPatients(filter)
 
         } catch (error) {
-            logger.error('error fetching patients data', error.message)
+            logger.error('error fetching patients data', error)
             if (error instanceof AppError) {
                 throw error; 
             }

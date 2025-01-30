@@ -203,8 +203,6 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
         {drawerContent}
         
       </Drawer>
-
-      {/* Desktop drawer */}
       <Drawer
         variant="permanent"
         sx={{

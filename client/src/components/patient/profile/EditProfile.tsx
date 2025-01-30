@@ -5,7 +5,6 @@ import {
     Button, 
     MenuItem, 
     TextField, 
-    Typography 
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
@@ -26,11 +25,6 @@ interface IFormInputs {
     dateOfBirth: string;
     profilePicture: File | null;
     relationship: string;
-    street: string;
-    city: string;
-    landmark: string;
-    state: string;
-    pincode: string;
 }
 
 const relationships = [
@@ -76,13 +70,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
                 : '',
             gender: currentPatient?.gender,
             phone: patient?.phone || '',
-            relationship:  currentPatient && isDependent(currentPatient) ? currentPatient.relationship : '',
-            street: patient?.address?.street || '',
-            city: patient?.address?.city || '',
-            landmark: patient?.address?.landmark || '',
-            state: patient?.address?.state || '',
-            pincode: patient?.address?.pincode || ''
-            
+            relationship:  currentPatient && isDependent(currentPatient) ? currentPatient.relationship : '',            
         }
     });
 
@@ -124,30 +112,18 @@ const EditProfile: React.FC<EditProfileProps> = ({
             formData.append('phone', data.phone);
             formData.append('gender', data.gender);
             formData.append('dateOfBirth', data.dateOfBirth);
-            formData.append('street', data.street);
-            formData.append('city', data.city);
-            formData.append('landmark', data.landmark);
-            formData.append('state', data.state);
-            formData.append('pincode', data.pincode);
 
 
-            //dependent
-            const formDataDependent = new FormData()
-            formDataDependent.append('firstName', data.firstName);
-            formDataDependent.append('lastName', data.lastName);
-            formDataDependent.append('gender', data.gender);
-            formDataDependent.append('dateOfBirth', data.dateOfBirth)
-            formDataDependent.append('relationship', data.relationship)
 
             if (data.profilePicture && data.profilePicture instanceof File) {
                 formData.append("profilePicture", data.profilePicture);
-                formDataDependent.append("profilePicture", data.profilePicture);
             }
 
 
             if ( currentPatient && isDependent(currentPatient)) {
+                formData.append('relationship', data.relationship)
                 if(!currentPatient?._id) return
-                await dependentService.updateProfile(currentPatient?._id, formDataDependent)
+                await dependentService.updateProfile(currentPatient?._id, formData)
             }else {
                 await accountService.updateProfile(formData);
             }
@@ -337,77 +313,6 @@ const EditProfile: React.FC<EditProfileProps> = ({
                         )}
                     />
                 </Box>
-
-                { currentPatient && !isDependent(currentPatient) && 
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <Typography variant="h6" sx={{ mb: 2, borderBottom: '2px solid', pb: 1 }}>
-                        Address
-                    </Typography>
-    
-                    <TextField
-                        {...register("street", {
-                            required: "Street address is required"
-                        })}
-                        fullWidth
-                        label="Street"
-                        variant="outlined"
-                        error={!!errors.street}
-                        helperText={errors.street?.message}
-                    />
-    
-                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                        <TextField
-                            {...register("city", {
-                                required: "City is required"
-                            })}
-                            fullWidth
-                            label="City"
-                            variant="outlined"
-                            error={!!errors.city}
-                            helperText={errors.city?.message}
-                        />
-                        <TextField
-                            {...register("landmark", {
-                                required: "Landmark is required"
-                            })}
-                            fullWidth
-                            label="Landmark"
-                            variant="outlined"
-                            error={!!errors.landmark}
-                            helperText={errors.landmark?.message}
-                        />
-                    </Box>
-    
-                    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                    <TextField
-                            {...register("state", {
-                                required: "State is required"
-                            })}
-                            fullWidth
-                            label="State"
-                            variant="outlined"
-                            error={!!errors.state}
-                            helperText={errors.state?.message}
-                        />
-                    <TextField
-                        {...register("pincode", {
-                            required: "Postal Code is required",
-                            pattern: {
-                                value: /^\d{6}$/,
-                                message: "Please enter a valid 6-digit Postal Code"
-                            }
-                        })}
-                        fullWidth
-                        label="Pin Code"
-                        variant="outlined"
-                        error={!!errors.pincode}
-                        helperText={errors.pincode?.message}
-                    />
-                    
-                    </Box>
-                    
-                    </Box>
-                }
 
                 
 

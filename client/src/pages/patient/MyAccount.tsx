@@ -1,24 +1,30 @@
 import { useState } from 'react'
 import Profile from '../../components/patient/profile/Profile'
 import EditProfile from '../../components/patient/profile/EditProfile'
+import EditAddress from '../../components/patient/profile/EditAddress';
+
+type CurrentState = "view-account" | 'edit-profile' | 'edit-address';
 
 const MyAccount = () => {
-    const [isEditing, setIsEditing] = useState(false)
+    const [currentState, setCurrentState] = useState<CurrentState>("view-account")
 
-    const switchToEdit = () => {
-        setIsEditing(true)
+    const switchToEditProfile = () => {
+        setCurrentState('edit-profile')
     }
 
-    const switchToProfile = () => {
-        setIsEditing(false)
+    const swithToEditAddress = () => {
+        setCurrentState('edit-address')
+    }
+
+    const switchToViewProfile = () => {
+        setCurrentState('view-account')
     }
 
     return (
         <>
-            {isEditing 
-                ? <EditProfile handleSave={switchToProfile} /> 
-                : <Profile handleEdit={switchToEdit} />
-            }
+            { currentState === 'view-account' && <Profile handleEditProfile={switchToEditProfile} handleEditAddress={swithToEditAddress} /> }
+            { currentState === 'edit-profile' && <EditProfile handleSave={switchToViewProfile} /> }
+            { currentState === "edit-address" && <EditAddress handleSave={switchToViewProfile} /> }
         </>
     )
 }

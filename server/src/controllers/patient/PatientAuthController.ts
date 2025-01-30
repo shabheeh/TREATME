@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
 import { IPatientAuthService, IPatientAuthController } from "../../interfaces/IPatient";
-import { BadRequestError } from "../../utils/errors";
-
+import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
+import { TokenPayload } from "../../utils/jwt";
 
 class PatientAuthController implements IPatientAuthController { 
 
@@ -46,7 +46,7 @@ class PatientAuthController implements IPatientAuthController {
             });
     
         } catch (error) {
-            logger.error(error.message)
+            logger.error('error verifying otp', error)
             next(error)
 
         }
@@ -67,7 +67,7 @@ class PatientAuthController implements IPatientAuthController {
             });
     
         } catch (error) {
-            logger.error(error.message)
+            logger.error('error signup', error)
             next(error)
 
         }
@@ -99,7 +99,7 @@ class PatientAuthController implements IPatientAuthController {
             });
 
         } catch (error) {
-            logger.error(error.message)
+            logger.error('error signin', error)
             next(error)
 
         }
@@ -118,7 +118,7 @@ class PatientAuthController implements IPatientAuthController {
             
             
         } catch (error) {
-            logger.error(error.message)
+            logger.error('error sedning otp fogotpassword', error)
             next(error)
         }
     }
@@ -135,7 +135,7 @@ class PatientAuthController implements IPatientAuthController {
             })
 
         } catch (error) {
-            logger.error(error.message)
+            logger.error('error veriying otp forgotpassword', error)
             next(error)
         }
     }
@@ -150,7 +150,7 @@ class PatientAuthController implements IPatientAuthController {
                 message: 'Password reset successfully'
             })
         } catch (error) {
-            logger.error(error.message)
+            logger.error('error reset password', error)
             next(error)
         }
     }
@@ -206,16 +206,13 @@ class PatientAuthController implements IPatientAuthController {
     completeProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-
-            if (!req.user) {
-                res.status(400).json({ message: 'No user information found' });
-                return;
-              }
+            if (!req.user || !(req.user as TokenPayload).email) {
+                throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+            }
 
             const { patientData } = req.body;
 
             const { email } = req.user;
-
 
             patientData.email = email
 
@@ -223,8 +220,8 @@ class PatientAuthController implements IPatientAuthController {
 
             res.status(200).json({
                 patient
-            })
-
+            }) 
+  
         } catch (error) { 
             logger.error('Error during Google authentication singup:', error);
             next(error)
@@ -290,7 +287,6 @@ class PatientAuthController implements IPatientAuthController {
             next(error)
         }
     }
-
     
 } 
  

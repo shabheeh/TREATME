@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Stack, Button, TextField } from "@mui/material";
+import { Box, Typography, Stack, Button, TextField, MenuItem } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked } from "@mui/icons-material";
 
 
@@ -40,7 +40,7 @@ const Medications = () => {
                 <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                  
-                    placeholder="E.g. Lipitor, DayQuil"
+                    placeholder="E.g. Asprin, Paracetamol"
                     label="Medication"
                     variant="outlined"
                     sx={{
@@ -48,14 +48,19 @@ const Medications = () => {
                     }}
                 />
                 <TextField
-
+                    select
                     placeholder="E.g. Once a day"
                     label="Frequency"
                     variant="outlined"
                     sx={{
                         width: '30%'
                     }}
-                />
+                >
+                  <MenuItem value='Once a day'>Once a day</MenuItem>
+                  <MenuItem value='Twice a day'>Twice a day</MenuItem>
+                  <MenuItem value='Thrice a day'>Thrice a day</MenuItem>
+
+                </TextField>
                 <Button
                     
                     variant="contained"

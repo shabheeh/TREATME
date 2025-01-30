@@ -9,11 +9,11 @@ function AppRouter() {
   return (
     <Router>
       <Routes>
-        {/* public routes anyone can access */}
+        // public routes
         <Route path="/401" element={<Unauthorized />} />
 
         
-        {/* user routes */}
+        // user routes
         {patientRoutes}
         {adminRoutes}
         {doctorRoutes}

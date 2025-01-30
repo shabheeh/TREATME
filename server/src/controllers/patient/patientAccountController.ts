@@ -1,9 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
-import { IPatientAccountController, IPatientAccountService } from "src/interfaces/IPatient";
+import IPatient, { IPatientAccountController, IPatientAccountService } from "src/interfaces/IPatient";
 import { AppError } from "../../utils/errors";
+import { TokenPayload } from "../../utils/jwt";
 
-
+declare global {
+  namespace Express {
+    interface Request {
+      user?: TokenPayload;
+    }
+  }
+}
 
 
 class PatientAcccountController implements IPatientAccountController {
@@ -27,23 +34,18 @@ class PatientAcccountController implements IPatientAccountController {
 
             const imageFile: Express.Multer.File | undefined = req.file;
             
-            const patientData = {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                phone: req.body.phone,
-                gender: req.body.gender,
-                dateOfBirth: req.body.dateOfBirth,
-                address: {
-                    street: req.body.street,
-                    city: req.body.city,
-                    landmark: req.body.landmark,
-                    state: req.body.state,
-                    pincode: req.body.pincode
-                }
+            let patientData: Partial<IPatient> = {}
+
+            if(req.body.street) {
+                patientData.address = req.body;
+            }else {
+                patientData = req.body;
             }
+            
 
             
             const updatedData = await this.patientAccountService.updateProfile(identifier, patientData, imageFile)
+
 
             res.status(200).json({
                 patient: updatedData,

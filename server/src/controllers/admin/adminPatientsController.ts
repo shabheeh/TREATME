@@ -25,7 +25,7 @@ class AdminPatientsController implements IAdminPatientsController {
             res.status(200).json({ result })
 
         } catch (error) {
-            logger.error('controller:error fetching patients data ', error.message);
+            logger.error('controller:error fetching patients data ', error);
             next(error)
         }
     }

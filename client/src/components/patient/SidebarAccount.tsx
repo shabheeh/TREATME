@@ -84,7 +84,7 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 sx={{
       
                   minWidth: '40px',
-                  color: location.pathname === item.path ? '#00897b' : 'rgba(0, 0, 0, 0.54)' // Exact match
+                  color: location.pathname === item.path ? '#00897b' : 'rgba(0, 0, 0, 0.54)' 
                 }}
               >
                 {item.icon}
@@ -93,8 +93,8 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 primary={item.text} 
                 sx={{ 
                   '& .MuiTypography-root': {
-                    fontWeight: location.pathname === item.path ? 600 : 400, // Exact match
-                    color: location.pathname === item.path ? '#00897b' : 'inherit', // Exact match
+                    fontWeight: location.pathname === item.path ? 600 : 400,
+                    color: location.pathname === item.path ? '#00897b' : 'inherit', 
                   }
                 }}
               />
@@ -130,8 +130,6 @@ const SidebarAccount: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
       >
         {drawerContent}
       </Drawer>
-
-      {/* Desktop drawer */}
       <Drawer
         variant="permanent"
         sx={{

@@ -36,7 +36,7 @@ class AdminAuthController implements IAdminAuthController {
             })
             
         } catch (error) {
-            logger.error('controller:error sign in admin ', error.message);
+            logger.error('controller:error sign in admin ', error);
             next(error)
         }
     }

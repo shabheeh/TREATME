@@ -31,10 +31,10 @@ const SignInFlow: React.FC = () => {
           onCompleteProfile={goToCompleteProfile}
         />
       )}
-      {step === "forgot-password" && <ForgotPassword onVerifyEmail={gotVerifyOtp} />}
-      {step === "verfy-otp" && <Otp isVerifyEmail={false} onVerifySignIn={goToRestPassword} />}
-      {step === "reset-password" && <ResetPassword onResetPassword={goToSignIn} />}
-      {step === "complete-profile" && <CompleteProfile isPartialUser={partialUser} />}
+      { step === "forgot-password" && <ForgotPassword onVerifyEmail={gotVerifyOtp} /> }
+      { step === "verfy-otp" && <Otp isVerifyEmail={false} onVerifySignIn={goToRestPassword} /> }
+      { step === "reset-password" && <ResetPassword onResetPassword={goToSignIn} /> }
+      { step === "complete-profile" && <CompleteProfile isPartialUser={partialUser} /> }
     </Box>
   );
 };

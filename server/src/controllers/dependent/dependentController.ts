@@ -38,7 +38,7 @@ class DependentController implements IDependentController {
             })
 
         } catch (error) {
-            logger.error('error creating dependent', error.message)
+            logger.error('error creating dependent', error)
             next(error)
         }
     }

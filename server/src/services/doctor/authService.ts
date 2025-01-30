@@ -23,7 +23,7 @@ class DoctorAuthService implements IDoctorAuthService {
 
 
             // if (doctor && !doctor.isActive) {
-            //     throw new AuthError(AuthErrorCode.USER_BLOCKED)
+            //     throw new AuthError(AuthErrorCode.USER_BLOCKED, 403)
             // }
 
             if (!doctor) {

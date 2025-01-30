@@ -13,15 +13,15 @@ const tabContent = [
     },
     {
         title: 'Lifestyle',
-        component: <div>Content for Tab 2</div>,
+        component: <div>tab 2</div>,
     },
     {
         title: 'Family History',
-        component: <div>Content for Tab 3</div>,
+        component: <div>tab 3</div>,
     },
     {
         title: 'Behavioural History',
-        component: <div>Content for Tab 3</div>,
+        component: <div>tab 4</div>,
     },
   ];
 

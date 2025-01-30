@@ -14,9 +14,9 @@ const SignUpFlow: React.FC = () => {
   return (
     <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
       <Navbar />
-      {step === "signup" && <SignUp onSignUp={goVerifyEmail} onCompleteProfile={goToCompleteProfile} />}  
-      {step === "verfy-email" && <Otp isVerifyEmail={true} onVerifySignUp={goToCompleteProfile} />}
-      {step === "complete-profile" && <CompleteProfile  isPartialUser={false} />}
+      { step === "signup" && <SignUp onSignUp={goVerifyEmail} onCompleteProfile={goToCompleteProfile} /> }  
+      { step === "verfy-email" && <Otp isVerifyEmail={true} onVerifySignUp={goToCompleteProfile} /> }
+      { step === "complete-profile" && <CompleteProfile  isPartialUser={false} /> }
     </Box>
   );
 };

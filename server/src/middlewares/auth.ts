@@ -1,21 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken } from '../utils/jwt';
+import { verifyAccessToken, TokenPayload } from '../utils/jwt';
 import logger from '../configs/logger';
-
-
-interface JwtPayload {
-  email: string;
-  role: string;
-}
 
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload;
+      user?: TokenPayload;
     }
   }
-}
-
+} 
+ 
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers['authorization'];
@@ -28,13 +22,15 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
   
     try {
 
-      const decoded = await verifyAccessToken(token) as JwtPayload
-      req.user = decoded;
+      const decoded = await verifyAccessToken(token) 
+
+      req.user = decoded as TokenPayload
+
 
       next();
 
     } catch (error) {
-        logger.error('Authentication Error', error.message)
+        logger.error('Authentication Error', error)
         res.status(401).json({ message: 'Invalid or expired token' });
     }
 };
@@ -62,6 +58,7 @@ export const authorize = (...roles: string[]) => {
       }
 
       next();
+
     } catch (error: unknown) {
 
       if(error instanceof Error)

@@ -2,7 +2,7 @@ import { Box, Grid, Skeleton, Typography } from "@mui/material";
 import SpecializationCard from "../../components/patient/SpecializationCard";
 import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
-import specializationService from "../../services/specialization.ts/specializationService";
+import specializationService from "../../services/specialization/specializationService";
 import { toast } from "sonner";
 // import { useDispatch } from "react-redux";
 // import { signOut } from "../../redux/features/auth/authSlice";

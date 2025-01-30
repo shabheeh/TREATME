@@ -35,7 +35,7 @@ class SpecializationController implements ISpecializationController {
             })
 
         } catch (error) {
-            logger.error('Error creating Specialization', error.message);
+            logger.error('Error creating Specialization', error);
             next(error)
         }
     }
@@ -51,7 +51,7 @@ class SpecializationController implements ISpecializationController {
             })
 
         } catch (error) {
-            logger.error('Error Fetching Specializations', error.message);
+            logger.error('Error Fetching Specializations', error);
             next(error)
         }
     }
@@ -72,7 +72,7 @@ class SpecializationController implements ISpecializationController {
             })
 
         } catch (error) {
-            logger.error('Error Fetching Specialization', error.message);
+            logger.error('Error Fetching Specialization', error);
             next(error)
         }
     }
@@ -105,7 +105,7 @@ class SpecializationController implements ISpecializationController {
             })
 
         } catch (error) {
-            logger.error('Error upadating Specializations', error.message);
+            logger.error('Error upadating Specializations', error);
             next(error)
         }
     }

@@ -6,12 +6,12 @@ import { IPatientAuthService } from "../interfaces/IPatient";
 
 
 
-export const checkUserStatus = (service: IPatientAuthService | IDoctorAuthService) => {
+export const isUserActive = (service: IPatientAuthService | IDoctorAuthService) => {
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
       try {
 
         if (!req.user || !req.user.email) {
-          res.status(401).json({ message: "Unauthorized" });
+          res.status(401).json({ message: "Unauthenticated" });
           return
         }
   
@@ -29,6 +29,7 @@ export const checkUserStatus = (service: IPatientAuthService | IDoctorAuthServic
   
 
         return next();
+        
       } catch (error) {
         logger.error('Error in checkUserStatus middleware:', error);
         return next(error);  

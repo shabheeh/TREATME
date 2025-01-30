@@ -38,7 +38,7 @@ const LayoutAccount = () => {
         }}
       >
         <Box sx={{
-          my: 4,
+          
           display: 'flex',
           flexDirection: 'column',
           borderBottom: '1px solid lightgray',

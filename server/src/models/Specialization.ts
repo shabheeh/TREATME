@@ -17,4 +17,4 @@ const specializationSchema = new Schema<ISpecialization>(
     }
 );
 
-export const specializationModel = model<ISpecialization>('Specialization', specializationSchema)
+export const SpecializationModel = model<ISpecialization>('Specialization', specializationSchema)

@@ -51,7 +51,7 @@ class PatientAuthService implements IPatientAuthService {
             }
 
         } catch (error) {
-            logger.error('errro sending otp', error.message)
+            logger.error('errro sending otp', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -89,7 +89,7 @@ class PatientAuthService implements IPatientAuthService {
             await this.otpService.deleteOTP(email, 'signup');
 
         } catch (error) {
-            logger.error('error verifying otp', error.message)
+            logger.error('error verifying otp', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -133,7 +133,7 @@ class PatientAuthService implements IPatientAuthService {
             return { newUser: userWithoutPassword };
 
         } catch (error) {
-            logger.error('error during signup', error.message)
+            logger.error('error during signup', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -182,7 +182,7 @@ class PatientAuthService implements IPatientAuthService {
 
         } catch (error) {
 
-            logger.error('error signin patient', error.message)
+            logger.error('error signin patient', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -211,7 +211,7 @@ class PatientAuthService implements IPatientAuthService {
             return patient
 
         } catch (error) {
-            logger.error('errro sending otp for forgot password', error.message)
+            logger.error('errro sending otp for forgot password', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -247,7 +247,7 @@ class PatientAuthService implements IPatientAuthService {
             
 
         } catch (error) {
-            logger.error('errro sending otp for forgot password', error.message)
+            logger.error('errro sending otp for forgot password', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -265,7 +265,7 @@ class PatientAuthService implements IPatientAuthService {
             return isOtpVerified;
 
         } catch (error) {
-            logger.error('error sign in with google', error.message)
+            logger.error('error sign in with google', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -288,7 +288,7 @@ class PatientAuthService implements IPatientAuthService {
             }
 
         } catch (error) {
-            logger.error('error reseting password', error.message)
+            logger.error('error reseting password', error)
             if (error instanceof AppError) {
                 throw error; 
             }

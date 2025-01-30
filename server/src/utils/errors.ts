@@ -8,7 +8,8 @@ export enum AuthErrorCode {
     TOKEN_EXPIRED = 'TOKEN_EXPIRED',
     INVALID_TOKEN = 'INVALID_TOKEN',
     USER_BLOCKED = 'USER_BLOCKED',
-    USER_NOT_FOUND = 'USER_NOT_FOUND'
+    USER_NOT_FOUND = 'USER_NOT_FOUND',
+    UNAUTHENTICATED = 'UNAUTHENTICATED'
   }
   
   export class AppError extends Error {
@@ -39,7 +40,8 @@ export enum AuthErrorCode {
   export class AuthError extends AppError {
     constructor(
       public code: AuthErrorCode,
-      message?: string
+      message?: string,
+      public statusCode: number = 401  
     ) {
       const defaultMessages = {
         [AuthErrorCode.INVALID_CREDENTIALS]: 'Invalid email or password',
@@ -47,12 +49,16 @@ export enum AuthErrorCode {
         [AuthErrorCode.OTP_EXPIRED]: 'OTP has expired. Please request a new one',
         [AuthErrorCode.SESSION_EXPIRED]: 'Session has expired. Please login again',
         [AuthErrorCode.TOKEN_EXPIRED]: 'Token has expired',
-        [AuthErrorCode.INVALID_TOKEN]: 'Invalid or malformed token', 
+        [AuthErrorCode.INVALID_TOKEN]: 'Invalid or malformed token',
         [AuthErrorCode.USER_BLOCKED]: 'User account has been blocked',
-        [AuthErrorCode.USER_NOT_FOUND]: 'User not found'
+        [AuthErrorCode.USER_NOT_FOUND]: 'User not found',
+        [AuthErrorCode.UNAUTHENTICATED]: 'User is not Authenticated'
       };
   
-      super(message || defaultMessages[code], 401, 'fail');
+
+      super(message || defaultMessages[code], statusCode, 'fail');
       this.code = code;
     }
   }
+  
+  

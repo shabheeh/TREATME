@@ -23,7 +23,7 @@ class ApplicantService implements IApplicantService {
 
             await this.applicantRepository.createApplicant(applicant)
         } catch (error) {
-            logger.error('error creating applicant', error.message)
+            logger.error('error creating applicant', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -45,7 +45,7 @@ class ApplicantService implements IApplicantService {
             return this.applicantRepository.getApplicants(filter)
 
         } catch (error) {
-            logger.error('error', error.message)
+            logger.error('error getting applicants', error)
             if (error instanceof AppError) {
                 throw error; 
             }

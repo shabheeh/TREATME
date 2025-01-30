@@ -2,6 +2,7 @@ import axios, { AxiosError} from 'axios';
 import TokenManager from './TokenMangager';
 import log from 'loglevel'
 
+
 const tokenManager = new TokenManager()
 
 const API_URLS = {
@@ -61,6 +62,16 @@ const createAxiosInstance = (role: userRole) => {
         (response) => response,
         async (error) => {
           const originalRequest = error.config;
+
+
+          if (error.response?.status === 403) {
+            if (role === 'patient' || role === 'shared') {
+                window.location.href = '/signin'; 
+            } else {
+                window.location.href = `/${role}/signin`; 
+            }
+            return Promise.reject(new Error('Forbidden: Permission denied'));
+          }
     
           if (error.response?.status !== 401 || originalRequest._retry) {
             
@@ -83,6 +94,7 @@ const createAxiosInstance = (role: userRole) => {
           } catch (refreshError) {
 
             return Promise.reject(refreshError);
+
           }
         }
     );

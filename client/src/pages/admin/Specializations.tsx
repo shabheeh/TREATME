@@ -2,7 +2,7 @@ import { Button, Box, Typography, Grid, Skeleton } from "@mui/material";
 import SpecializationCard from "../../components/admin/SpecializationCard";
 import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
-import specializationService from "../../services/specialization.ts/specializationService";
+import specializationService from "../../services/specialization/specializationService";
 import { toast } from "sonner";
 
 const Specializations = () => {
@@ -106,7 +106,6 @@ const Specializations = () => {
               ))
             : specializations?.length === 0
               ? (
-                  // Fallback UI when no specializations are found
                   <Grid item xs={12}>
                     <Box
                       display="flex"

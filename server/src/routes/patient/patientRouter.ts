@@ -13,14 +13,14 @@ import { errors } from 'celebrate';
 import { authenticate, authorize } from "../../middlewares/auth";
 import PatientAcccountService from "../../services/patient/accountService";
 import PatientAcccountController from "../../controllers/patient/patientAccountController";
-import { checkUserStatus } from "../../middlewares/checkUserStatus";
+import { isUserActive } from "../../middlewares/checkUserStatus";
 import DependentRepository from "../../repositories/patient/DependentRepository";
 import { DependentModel } from "../../models/Dependent";
 import DependentService from "../../services/dependent/dependentService";
 import DependentController from "../../controllers/dependent/dependentController";
 
 
-const router = express.Router();
+const router = express.Router(); 
  
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -55,9 +55,10 @@ router.post('/auth/resend-otp', patientAuthController.resendOtp)
 router.post('/auth/forgot-password/resend-otp', patientAuthController.resendOtpForgotPassword)
 router.post('/auth/signout', patientAuthController.signOut)
 
+
 router.put('/profile', 
     authenticate, 
-    checkUserStatus(patientAuthService), 
+    isUserActive(patientAuthService), 
     authorize('patient'),  
     upload.single('profilePicture'),
     patientAccountController.updateProfile
@@ -65,7 +66,7 @@ router.put('/profile',
 
 router.post('/dependents', 
     authenticate, 
-    checkUserStatus(patientAuthService), 
+    isUserActive(patientAuthService), 
     authorize('patient'), 
     upload.single('profilePicture'),
     dependentController.createDependent
@@ -73,14 +74,14 @@ router.post('/dependents',
 
 router.get('/dependents/:id',
     authenticate,
-    checkUserStatus(patientAuthService),
+    isUserActive(patientAuthService),
     authorize('patient'),
     dependentController.getDependents
 )
 
 router.put('/dependents/:id',
     authenticate,
-    checkUserStatus(patientAuthService),
+    isUserActive(patientAuthService),
     authorize('patient'),
     upload.single('profilePicture'),
     dependentController.updateDependent
@@ -88,7 +89,7 @@ router.put('/dependents/:id',
 
 router.delete('/dependents/:id',
     authenticate,
-    checkUserStatus(patientAuthService),
+    isUserActive(patientAuthService),
     authorize('patient'),
     dependentController.deleteDependent
 )

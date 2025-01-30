@@ -12,7 +12,7 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
-import specializationService from "../../services/specialization.ts/specializationService";
+import specializationService from "../../services/specialization/specializationService";
 import { useNavigate } from "react-router-dom";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";

@@ -47,7 +47,7 @@ class AdminDoctorService implements IAdminDoctorService {
             return withoutPassword;
 
         } catch (error) {
-            logger.error('error creating a new doctor', error.message)
+            logger.error('error creating a new doctor', error)
             if (error instanceof AppError) {
                 throw error; 
             }
@@ -71,7 +71,7 @@ class AdminDoctorService implements IAdminDoctorService {
 
 
         } catch (error) {
-            logger.error('error creating a new doctor', error.message)
+            logger.error('error creating a new doctor', error)
             if (error instanceof AppError) {
                 throw error; 
             }

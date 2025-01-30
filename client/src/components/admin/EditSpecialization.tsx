@@ -12,7 +12,7 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
-import specializationService from "../../services/specialization.ts/specializationService";
+import specializationService from "../../services/specialization/specializationService";
 import { useNavigate, useParams } from "react-router-dom";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
@@ -44,7 +44,7 @@ const EditSpecialization = () => {
             description: specialization.description,
             note: specialization.note,
             fee: specialization.fee,
-            image: null, // You can handle this differently if needed
+            image: null, 
           });
 
       } catch (error) {

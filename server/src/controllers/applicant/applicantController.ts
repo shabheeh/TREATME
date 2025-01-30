@@ -23,7 +23,7 @@ class ApplicantController implements IApplicantController {
 
 
         } catch (error) {
-            logger.error('controller:error fetching patients data ', error.message);
+            logger.error('controller:error fetching patients data ', error);
             next(error)
         }
     }
@@ -41,7 +41,7 @@ class ApplicantController implements IApplicantController {
             res.status(200).json({ result })
 
         } catch (error) {
-            logger.error('error listing applicants', error.message)
+            logger.error('error listing applicants', error)
             next(error)
         }
     }

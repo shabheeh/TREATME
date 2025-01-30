@@ -23,8 +23,6 @@ const Family = () => {
 
   
 
-
-
   return (
     <Box sx={{ mt: 4 }}>
       <Typography variant="h6" gutterBottom>

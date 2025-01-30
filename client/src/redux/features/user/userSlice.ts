@@ -10,7 +10,6 @@ const initialUserState = {
   patient: null as IPatient | null, 
   doctor: null as IDoctor | null,
   admin: null as IAdmin | null,
-  // dependents: [] as IDependent[], 
   currentUser: null as IPatient | IDependent | null,
 };
 
@@ -33,25 +32,6 @@ const userSlice = createSlice({
       state.admin = action.payload;
     },
 
-    // addDependent: (state, action: PayloadAction<IDependent>) => {
-    //   state.dependents.push(action.payload);
-    // },
-
-    // removeDependent: (state, action: PayloadAction<string>) => {
-    //   state.dependents = state.dependents.filter(dependent => dependent._id !== action.payload);
-    // },
-
-    // switchUser: (state, action: PayloadAction<string>) => {
-    //   if (state.patient && action.payload === state.patient._id) {
-    //     state.currentUser = state.patient; 
-    //   } else {
-    //     const dependent = state.dependents.find(dep => dep._id === action.payload);
-    //     if (dependent) {
-    //       state.currentUser = dependent; 
-    //     }
-    //   }
-    // },
-
     setCurrentPatient: (state, action: PayloadAction< IPatient | IDependent>) => {
         state.currentUser = action.payload
     },
@@ -72,10 +52,7 @@ const userSlice = createSlice({
     setPatient, 
     setDoctor, 
     setAdmin, 
-    // addDependent, 
     clearUser, 
-    // switchUser,
-    // removeDependent
     setCurrentPatient,
   } = userSlice.actions;
   

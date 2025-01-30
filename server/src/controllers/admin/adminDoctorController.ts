@@ -49,7 +49,7 @@ class AdminDoctorController implements IAdminDoctorController {
 
  
         } catch (error) {
-            logger.error('controller:error crating new Doctor ', error.message);
+            logger.error('controller:error crating new Doctor ', error);
             next(error)
         }
     }
@@ -67,7 +67,7 @@ class AdminDoctorController implements IAdminDoctorController {
             res.status(200).json({ result })
 
         } catch (error) {
-            logger.error('controller:error crating new Doctor ', error.message);
+            logger.error('controller:error crating new Doctor ', error);
             next(error)
         }
     }

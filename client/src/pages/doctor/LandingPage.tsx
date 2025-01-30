@@ -368,13 +368,11 @@ const LandingPage = () => {
 
       
 
-      {/* Footer */}
       <Box sx={{ bgcolor: "grey.900", color: "white", py: 6 }}>
         <Container maxWidth="xl">
           <Grid container spacing={4}>
             <Grid item xs={12} md={3}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                {/* <AddIcon sx={{ fontSize: 24 }} /> */}
                 <TiPlus size={30} />
                 <Typography variant="h6" sx={{ ml: 1 }}>
                   TreatMe

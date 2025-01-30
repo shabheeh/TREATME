@@ -5,7 +5,7 @@ import { AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
 
 
-class TokenController {
+class AuthController {
 
     handleRefreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -30,4 +30,4 @@ class TokenController {
     }
 }
 
-export default TokenController
+export default AuthController

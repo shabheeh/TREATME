@@ -138,7 +138,7 @@ const DoctorsList = () => {
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {/* {searchQuery 
-                          ? 'Try adjusting your search criteria'
+                          ? 'Try adjusting your search input'
                           : 'No patients have been added yet'} */}
                       </Typography>
                     </Box>

@@ -43,7 +43,7 @@ class AdminAuthService implements IAdminAuthService {
             return { admin, accessToken, refreshToken }
 
         } catch (error) {
-            logger.error('service: error sign in admin', error.message)
+            logger.error('service: error sign in admin', error)
             if (error instanceof AppError) {
                 throw error; 
             }

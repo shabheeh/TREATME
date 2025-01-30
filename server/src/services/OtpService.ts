@@ -38,7 +38,7 @@ class OtpService implements IOtpService {
             return otp;
 
         } catch (error) {
-            logger.error('otp service',error.message)
+            logger.error('otp service',error)
             throw new Error('error sending otp')
         }
         
