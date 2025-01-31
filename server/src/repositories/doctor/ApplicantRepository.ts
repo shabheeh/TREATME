@@ -24,9 +24,10 @@ class ApplicantRepository implements IApplicantRepository {
         }
     }
 
-    async findApplicantByEmail(email: String): Promise<IApplicant | null> {
+    async findApplicantByEmail(email: string): Promise<IApplicant | null> {
         try {
-            return this.model.findOne({ email })
+            const applicant = await this.model.findOne({ email }).populate('specialization');
+            return applicant;
         } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -52,6 +53,7 @@ class ApplicantRepository implements IApplicantRepository {
             ]
 
             const applicants = await this.model.find(query)
+                .populate('specialization')
                 .skip(skip)
                 .limit(limit)
             const total = await this.model.countDocuments(query)
@@ -68,6 +70,19 @@ class ApplicantRepository implements IApplicantRepository {
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 500
             );
+        }
+    }
+
+    async findApplicantById(id: string): Promise<IApplicant | null> {
+        try {
+            const applicant = await this.model.findById(id).populate('specialization');
+            return applicant;
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+            
         }
     }
 }

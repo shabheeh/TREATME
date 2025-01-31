@@ -3,6 +3,7 @@ import { IApplicant, IApplicantsFilter, IApplicantsFilterResult } from "src/inte
 
 export default interface IApplicantRepository {
     createApplicant(applicant: IApplicant): Promise<void>
-    findApplicantByEmail(email: String): Promise<IApplicant | null>
+    findApplicantByEmail(email: string): Promise<IApplicant | null>
+    findApplicantById(id: string): Promise<IApplicant | null>
     getApplicants(filter: IApplicantsFilter): Promise<IApplicantsFilterResult>
 }  

@@ -46,7 +46,7 @@ const Profile: React.FC<ProfileProps> = ({
       </Box>
 
       <Grid container spacing={6}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={currentPatient?._id !== patient?._id ? 8 : 6}>
           <Box>
           <Box 
             sx={{ 
@@ -54,7 +54,8 @@ const Profile: React.FC<ProfileProps> = ({
                 justifyContent: 'space-between', 
                 alignItems: 'center', mb: 2, 
                 borderBottom: '1px solid grey', 
-                pb: 1 }}
+                pb: 1,
+              }}
                 >
               <Typography variant="h6">
                 Personal Information

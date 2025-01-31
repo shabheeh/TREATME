@@ -1,8 +1,5 @@
 
 export const validateFile = (file: File, allowedTypes: string[], maxSize: number) => {
-    if (!file) {
-      return { valid: false, message: "File is required" };
-    }
   
     const { size, type } = file;
   

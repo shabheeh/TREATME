@@ -2,6 +2,7 @@ import { AppError, ConflictError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { IApplicant, IApplicantService, IApplicantsFilter, IApplicantsFilterResult } from "../../interfaces/IApplicant";
 import IApplicantRepository from "../../repositories/doctor/interfaces/IApplicantRepository";
+import { uploadToCloudinary } from "../../utils/uploadImage";
 
 
 class ApplicantService implements IApplicantService {
@@ -12,16 +13,24 @@ class ApplicantService implements IApplicantService {
         this.applicantRepository = applicantRepository
     }
 
-    async createApplicant(applicant: IApplicant): Promise<void> {
+    async createApplicant(applicantData: IApplicant, idProofFile: Express.Multer.File, resumeFile: Express.Multer.File): Promise<void> {
         try {
 
-            const existingApplicant = await this.applicantRepository.findApplicantByEmail(applicant.email)
+            const existingApplicant = await this.applicantRepository.findApplicantByEmail(applicantData.email)
 
             if (existingApplicant) {
                 throw new ConflictError('Alreeady Registerd Candidate')
             }
 
-            await this.applicantRepository.createApplicant(applicant)
+            const uplodIdProof = await uploadToCloudinary(idProofFile, 'Applicants');
+            const uploadResume = await uploadToCloudinary(resumeFile, 'Applicants');
+            
+            applicantData.idProof = uplodIdProof.url;
+            applicantData.resume = uploadResume.url;
+
+
+            await this.applicantRepository.createApplicant(applicantData)
+
         } catch (error) {
             logger.error('error creating applicant', error)
             if (error instanceof AppError) {
@@ -55,6 +64,31 @@ class ApplicantService implements IApplicantService {
             );
         }
     }
+
+    async getApplicant(id: string): Promise<IApplicant> {
+        try {
+            
+            const applicant = await this.applicantRepository.findApplicantById(id)
+
+            if(!applicant) {
+                throw new AppError('Applicant not found')
+            }
+
+            return applicant
+
+        } catch (error) {
+            logger.error('error getting applicant', error)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+
 }
 
 export default ApplicantService

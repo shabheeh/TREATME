@@ -7,7 +7,7 @@ export const validateDoctor = celebrate({
     lastName: Joi.string().required(),
     phone: Joi.string().pattern(/^\+?[1-9]\d{1,14}$/).required(),
     gender: Joi.string().valid('male', 'female').required(),
-    specializaton: Joi.string().required(),
+    specialization: Joi.string().required(),
     specialties: Joi.array().items(Joi.string()).min(1).required(),
     languages: Joi.array().items(Joi.string()).min(1).required(),
     registerNo: Joi.string().required(),

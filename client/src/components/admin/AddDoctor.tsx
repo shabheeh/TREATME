@@ -534,7 +534,7 @@ const AddDoctor = () => {
             variant="contained"
             sx={{ py: 2, my: 5, width: "90%", fontSize: "1rem" }}
           >
-            Complete Profile
+            Submit
           </Button>
         </Container>
       </Container>

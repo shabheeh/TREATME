@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -15,8 +15,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { ResponseData } from '../../services/applicant/applicantService';
 import { Typography } from '@mui/material';
 import applicantService from '../../services/applicant/applicantService';
-
-
+import { IApplicant } from '../../types/doctor/doctor.types';
+import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -45,7 +46,9 @@ const ApplicantsList = () => {
   const [page, setPage] = useState(0);  
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState('');
-   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const navigate = useNavigate();
+
   
     useEffect(() => {
       const timer = setTimeout(() => {
@@ -68,9 +71,13 @@ const ApplicantsList = () => {
 
         setData(response);
         setError(null);
-      } catch (err) {
+      } catch (error) {
         setError('Failed to fetch patients data');
-        console.error('Error fetching data:', err);
+        if (error instanceof Error) {
+          toast.error(error.message)
+        }else {
+          toast.error('something went wrong')
+        }
       } finally {
         setLoading(false);
       }
@@ -97,6 +104,12 @@ const ApplicantsList = () => {
     return <div>Error: {error}</div>;
   }
 
+
+
+  const handleRowClick = (applicant: IApplicant) => {
+    navigate(`/admin/recruitements/${applicant._id}`); 
+  };
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Box sx={{ p: 2 }}>
@@ -116,9 +129,9 @@ const ApplicantsList = () => {
             <TableRow>
               <StyledTableCell>First Name</StyledTableCell>
               <StyledTableCell>Last Name</StyledTableCell>
-              {/* <StyledTableCell>Gender</StyledTableCell> */}
               <StyledTableCell>Email</StyledTableCell>
               <StyledTableCell>Phone</StyledTableCell>
+              <StyledTableCell>Specialization</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -147,14 +160,18 @@ const ApplicantsList = () => {
                 </TableRow>
               ) :
               data?.applicants.map((applicant) => (
-                <StyledTableRow key={applicant.email}>
+                <StyledTableRow 
+                key={applicant._id}
+                onClick={() => handleRowClick(applicant)}
+                sx={{ cursor: "pointer" }} 
+                >
                   <StyledTableCell component="th" scope="row">
                     {applicant.firstName}
                   </StyledTableCell>
                   <StyledTableCell>{applicant.lastName}</StyledTableCell>
-                  {/* <StyledTableCell>{applicant.gender}</StyledTableCell> */}
                   <StyledTableCell>{applicant.email}</StyledTableCell>
                   <StyledTableCell>{applicant.phone}</StyledTableCell>
+                  <StyledTableCell>{applicant.specialization.name}</StyledTableCell>
                 </StyledTableRow>
               ))
             )}

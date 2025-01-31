@@ -1,3 +1,4 @@
+import { ISpecialization } from "../specialization/specialization.types";
 
 interface Slot {
     startTime: string;
@@ -12,6 +13,7 @@ interface Availability {
 
 
 export interface IDoctor {
+    _id: string;
     email: string;
     firstName: string;
     lastName: string;
@@ -43,10 +45,17 @@ export interface IDoctorSignUp {
 }
 
 export interface IApplicant {
+    _id: string;
     firstName: string;
     lastName: string;
     email: string;
     registerNo: string;
     phone: string;
-    speciality: string;
+    specialization: ISpecialization;
+    experience: number;
+    workingTwoHrs: string;
+    licensedState: string;
+    languages: string[]
+    idProof: string;
+    resume: string;
 }

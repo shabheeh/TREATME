@@ -5,11 +5,13 @@ import AntiProtectedRoute from './AntiProtectedRoute';
 import ProtectedRoute from './ProtectedRoute';
 import LayoutDoctor from '../Layouts/doctor/LayoutDoctor';
 import { Dashboard } from '../pages/doctor/Dashboard';
+import RegisterForm from '../components/doctor/RegisterForm';
 
 
 export const doctorRoutes = [
     
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
+  <Route path='/doctor/apply' element={<RegisterForm /> } />,
   <Route 
     path="/doctor/signin" 
     element={

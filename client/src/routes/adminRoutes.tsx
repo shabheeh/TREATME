@@ -11,6 +11,7 @@ import AddSpecialization from '../components/admin/AddSpecialization';
 import SignIn from '../components/admin/SignIn';
 import EditSpecialization from '../components/admin/EditSpecialization';
 import AntiProtectedRoute from './AntiProtectedRoute';
+import ApplicantDetails from '../components/admin/ApplicantDetails';
 
 export const adminRoutes = [
     
@@ -34,6 +35,7 @@ export const adminRoutes = [
     <Route path="patients" element={<Patients />} />
     <Route path="doctors" element={<Doctors />} />
     <Route path="recruitements" element={<Applicants />} />
+    <Route path='recruitements/:id' element={<ApplicantDetails />} />
     <Route path="add-doctor" element={<AddDoctor />} />
     <Route path="specializations" element={<Specializations />} />
     <Route path="specializations/add" element={<AddSpecialization />} />

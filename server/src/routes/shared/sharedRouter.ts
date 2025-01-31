@@ -45,6 +45,9 @@ router.post('/specializations', authenticate, authorize('admin'), upload.single(
 
 router.get('/specializations', authenticate, isUserActive(patientAuthService), specializationController.getSpecializations)
 
+router.get('/specializations/public', specializationController.getSpecializations)
+
+
 router.get('/specializations/:id', authenticate, authorize('admin'), specializationController.getSpecializationById)
 
 router.put('/specializations/:id', authenticate, authorize('admin'), upload.single('image'), specializationController.updateSpecialization)

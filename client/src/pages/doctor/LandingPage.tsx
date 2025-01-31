@@ -7,8 +7,6 @@ import {
   List,
   ListItem,
   Typography,
-  TextField,
-  MenuItem,
 } from "@mui/material";
 
 
@@ -16,74 +14,18 @@ import bgImage from "../../assets/Hero-banner.jpg";
 import { TiPlus } from "react-icons/ti";
 import { Link } from "react-router-dom";
 
-import { useForm, Controller } from "react-hook-form"
-import applicantService from "../../services/applicant/applicantService";
-import { toast } from "sonner";
 
-interface RegisterFormInputs {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    registerNo: string;
-    speciality: string
-}
 
 const LandingPage = () => {
 
-    const { 
-        register, 
-        handleSubmit,
-        control,
-        formState: { errors } 
-    } = useForm<RegisterFormInputs>({
-        defaultValues: {
-        firstName:  "",
-        lastName:  "",
-        email: "",
-        phone: "",
-        registerNo: "",
-        speciality: ""
-        }
-    });
-
-
-    const types = [ "Primary Care", "Dermatology", "Psychiatry", "Therapy"]
-
-    const onSubmit = async(data: RegisterFormInputs) => {
-
-        try {
-
-          const promise = applicantService.createApplicant(data);
-
-          toast.promise(promise, {
-            loading: 'Submitting application...',
-            success: (result) => {
-              return result.message; 
-            },
-            error: (error) => {
-              return error.message
-            }
-          });
-
-
-        } catch (error) {
-          if(error instanceof Error) {
-            toast.error('Error Sending Application')
-          }else {
-            toast.error('Something Went Wrong')
-            console.log(error)
-          }
-          
-        }
-    }
+    
 
 
 
   return (
     <Box>
 
-        <Navbar />  
+      <Navbar />  
       <Box sx={{ bgcolor: "white", color: "teal" }}>
         <Container maxWidth="xl" disableGutters>
           <Grid container alignItems="center">
@@ -214,154 +156,15 @@ const LandingPage = () => {
             
           </Grid>
           </Grid>
-          <Grid container spacing={2}>
-  <Grid item xs={12} md={8}>
-    <Container
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-
-      <Box sx={{ width: "100%", my: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <TextField
-              {...register("firstName", {
-                required: "First Name is required",
-                pattern: {
-                  value: /^[A-Z][a-zA-Z' -]*$/,
-                  message: "Please enter a valid First Name",
-                },
-              })}
-              fullWidth
-              label="First Name"
-              variant="outlined"
-              error={!!errors.firstName}
-              helperText={errors.firstName?.message}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              {...register("lastName", {
-                required: "Last Name is required",
-                pattern: {
-                  value: /^[A-Z][a-zA-Z' -]*$/,
-                  message: "Please enter a valid Last Name",
-                },
-              })}
-              fullWidth
-              label="Last Name"
-              variant="outlined"
-              error={!!errors.lastName}
-              helperText={errors.lastName?.message}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-      <Box sx={{ width: "100%", my: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <TextField
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Please enter a valid Email",
-                },
-              })}
-              fullWidth
-              label="Email"
-              variant="outlined"
-              error={!!errors.email}
-              helperText={errors.email?.message}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              {...register("phone", {
-                required: "Phone Number is required",
-                pattern: {
-                    value: /^[2-9]\d{9}$/,
-                    message: "Please enter a valid Phone Number"
-                },
-              })}
-              fullWidth
-              label="Phone Number"
-              variant="outlined"
-              error={!!errors.phone}
-              helperText={errors.phone?.message}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-      <Box sx={{ width: "100%", my: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <TextField
-              {...register("registerNo", {
-                required: "Register No: is required",
-                pattern: {
-                    value: /^[A-Za-z0-9/-]{6,15}$/,
-                  message: "Please enter a Register No",
-                },
-              })}
-              fullWidth
-              label="Register No:"
-              variant="outlined"
-              error={!!errors.registerNo}
-              helperText={errors.registerNo?.message}
-            />
-          </Grid>
-          <Grid item xs={6}>
-          <Controller
-                      name="speciality"
-                      control={control}
-                      rules={{ required: "Please Select the type" }}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          select
-                          fullWidth
-                          label="Type of Provider"
-                          error={!!errors.speciality}
-                          helperText={errors.speciality?.message}
-                        >
-                          {types.map((type, idx) => (
-                            <MenuItem key={idx} value={type}>
-                              {type}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      )}
-                    />
-          </Grid>
-        </Grid>
-      </Box>
+          
       <Button
+        href="/doctor/apply"
         type="submit"
         variant="contained"
         sx={{ py: 1, px: 4,  my: 4, alignSelf: 'start', fontSize: "1rem" }}
       >
-        Submit
+        Apply Now
       </Button>
-    </Container>
-  </Grid>
-
-  <Grid item xs={12} md={4}>
-    <Box
-      
-    >
-      <Typography variant="h6" align="center">
-
-      </Typography>
-    </Box>
-  </Grid>
-</Grid>
 
         </Container>
       </Box>

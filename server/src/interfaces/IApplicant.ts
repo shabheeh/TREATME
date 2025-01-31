@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 import { Request, Response, NextFunction } from "express";
 
 
@@ -8,7 +8,13 @@ export interface IApplicant extends Document {
     email: string;
     phone: string;
     registerNo: string;
-    speciality: string;
+    specialization: ObjectId;
+    languages: string[];
+    experience: number;
+    workingTwoHrs: 'Yes' | 'No';
+    licensedState: string;
+    idProof: string;
+    resume: string;
 }
 
 export interface IApplicantsFilter {
@@ -26,13 +32,16 @@ export interface IApplicantsFilterResult {
 }
   
   export interface IApplicantService {
-    createApplicant(applicant: IApplicant): Promise<void>
+    createApplicant(applicantData: IApplicant, idProofFile: Express.Multer.File, resumeFile: Express.Multer.File): Promise<void>
     getApplicants(params: IApplicantsFilter): Promise<IApplicantsFilterResult>
+    getApplicant(id: string): Promise<IApplicant>
   }
   
   export interface IApplicantController {
     createApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
     getApplicants(req: Request, res: Response, next: NextFunction): Promise<void>
+    getApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
+    
   }
 
 

@@ -46,6 +46,29 @@ class SpecializationService {
         }
     }
 
+
+    async getSpecializationsPublic(): Promise<ISpecialization[]> {
+        try {
+
+            const response = await api.shared.get('/specializations/public');
+
+            const { specializations } = response.data
+
+            return specializations
+
+        } catch (error: unknown) {
+        
+            if (error instanceof Error) {
+                console.error(`Error Fetching Specializations: ${error.message}`, error);
+                throw new Error(error.message)
+            }
+        
+            console.error(`Unknown error`, error);
+            throw new Error(`Something went error`)
+            
+        }
+    }
+
     async getSpecializationById(id: string): Promise<ISpecialization> {
         try {
             const response = await api.shared.get(`/specializations/${id}`)

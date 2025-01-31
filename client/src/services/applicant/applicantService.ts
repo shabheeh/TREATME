@@ -18,9 +18,9 @@ export interface ResponseData {
 
 class ApplicantService {
 
-    async createApplicant(applicant: IApplicant): Promise<{message: string}> {
+    async createApplicant(applicant: FormData): Promise<{message: string}> {
         try {
-            const response = await api.doctor.post('/applicants', { applicant })
+            const response = await api.doctor.post('/applicants', applicant )
 
             return response.data;
 
@@ -43,18 +43,37 @@ class ApplicantService {
 
             const { result } = response.data
 
-            console.log('resykttt',result)
-
             return result
 
         } catch (error: unknown) {
         
             if (error instanceof Error) {
-              console.error(`Error creating applicant: ${error.message}`, error);
+              console.error(`Error fetching applicants: ${error.message}`, error);
               throw new Error(`Error Sending application ${ error.message}`)
             }
         
             console.error(`Unknown creating applicant`, error);
+            throw new Error(`Something went error`)
+            
+        }
+    }
+
+    async getApplicant(id: string): Promise<IApplicant> {
+        try {
+            const response = await api.doctor.get(`/applicants/${id}`);
+
+            const { applicant } = response.data;
+
+            return applicant
+
+        } catch (error: unknown) {
+        
+            if (error instanceof Error) {
+              console.error(`Error fetching applicant: ${error.message}`, error);
+              throw new Error(`Error Sending application ${ error.message}`)
+            }
+        
+            console.error(`Unknown error`, error);
             throw new Error(`Something went error`)
             
         }
