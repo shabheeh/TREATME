@@ -148,7 +148,7 @@ const ApplicantsList = () => {
                   <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="h6" color="text.secondary" gutterBottom>
-                        No patients found
+                        No Applicants found
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
                         {/* {searchQuery 

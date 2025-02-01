@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Typography,
   Button,
   Grid,
-//   Card,
-//   CardContent,
   Alert,
-  Paper,
   Skeleton,
   Divider,
 } from "@mui/material";
 import { IApplicant } from "../../types/doctor/doctor.types";
 import applicantService from "../../services/applicant/applicantService";
 import { toast } from "sonner";
-// import Loading from "../basics/Loading";
+
 import { 
     Description,
     Badge,
@@ -26,6 +23,7 @@ import {
     AssignmentInd,
     LocationOn,
  } from "@mui/icons-material";
+import ConfirmActionModal from "../basics/ConfirmActionModal";
 
 
 const ApplicantDetails: React.FC = () => {
@@ -33,6 +31,8 @@ const ApplicantDetails: React.FC = () => {
   const [applicant, setApplicant] = useState<IApplicant | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchApplicant = async () => {
@@ -66,6 +66,26 @@ const ApplicantDetails: React.FC = () => {
       toast.error("File URL is not available");
     }
   };
+
+
+  const handleReject = async () => {
+    try {
+      if(!id) return
+      await applicantService.rejectApplicant(id)
+      toast.success('Application Rejected')
+      setRejectModalOpen(false)
+      navigate('/admin/recruitements')
+    } catch (error) {
+      setRejectModalOpen(false)
+
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }else {
+        toast.error('Something went wrong')
+      }
+    }
+  }
+
 
   if (loading) {
     return (
@@ -164,7 +184,6 @@ const ApplicantDetails: React.FC = () => {
     </Grid>
   </Grid>
 
-  {/* Accept & Reject Buttons at Bottom Right */}
   <Box
     sx={{
       display: "flex",
@@ -175,15 +194,24 @@ const ApplicantDetails: React.FC = () => {
   >
     <Button
   variant="contained"
-  color="success"
   component="a"
-  href={`mailto:${applicant?.email}?subject=Application Accepted&body=Dear ${applicant?.firstName},%0D%0A%0D%0AWe are pleased to inform you that your application has been accepted.`}
+  href={`mailto:${applicant?.email}`}
 >
-  Accept
-</Button>
-    <Button variant="outlined" >Reject</Button>
+  Contact
+    </Button>
+    <Button variant="outlined" onClick={() => setRejectModalOpen(true)} >Reject</Button>
   </Box>
+
+  <ConfirmActionModal 
+    open={rejectModalOpen}
+    title='Reject Application'
+    description="Are you sure you want to reject this Applicant"
+    handleClose={() => setRejectModalOpen(false)}
+    handleConfirm={handleReject}
+  />
 </Box>
+
+
 
   );
 };

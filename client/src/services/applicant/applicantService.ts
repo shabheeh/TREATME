@@ -28,7 +28,7 @@ class ApplicantService {
         
             if (error instanceof Error) {
               console.error(`error creating applicant: ${error.message}`, error);
-              throw new Error(`Error Sending application ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown creating applicant`, error);
@@ -49,7 +49,7 @@ class ApplicantService {
         
             if (error instanceof Error) {
               console.error(`Error fetching applicants: ${error.message}`, error);
-              throw new Error(`Error Sending application ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown creating applicant`, error);
@@ -70,13 +70,30 @@ class ApplicantService {
         
             if (error instanceof Error) {
               console.error(`Error fetching applicant: ${error.message}`, error);
-              throw new Error(`Error Sending application ${ error.message}`)
+              throw new Error(error.message)
             }
         
             console.error(`Unknown error`, error);
             throw new Error(`Something went error`)
             
         }
+    }
+
+    async rejectApplicant(id: string): Promise<void> {
+        try {
+             await api.doctor.delete(`/applicants/${id}`)
+
+            } catch (error: unknown) {
+        
+                if (error instanceof Error) {
+                  console.error(`Error removing applicant: ${error.message}`, error);
+                  throw new Error(error.message)
+                }
+            
+                console.error(`Unknown error`, error);
+                throw new Error(`Something went error`)
+                
+            }
     }
 }
 

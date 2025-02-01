@@ -17,7 +17,7 @@ import dependentService from '../../../services/dependent/dependentService';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/app/store';
 import { toast } from 'sonner';
-import DeleteDependentModal from './DeleteDependentModal';
+import ConfirmActionModal from '../../basics/ConfirmActionModal';
 import { setCurrentPatient } from '../../../redux/features/user/userSlice';
 
 
@@ -351,10 +351,15 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({ changeCurrentState }) => 
           </Card>
         </Grid>
       </Grid>
-      <DeleteDependentModal
+      <ConfirmActionModal
         open={open}
+        title="Remove Member"
+        description="Are you sure you want to remove this member? This action cannot be undone."
+        confirmText="Remove"
+        cancelText="Cancel"
+        confirmColor="warning"
         handleClose={() => setOpen(false)}
-        handleDelete={handleDelete}
+        handleConfirm={handleDelete}
       />
     </Box>
   );

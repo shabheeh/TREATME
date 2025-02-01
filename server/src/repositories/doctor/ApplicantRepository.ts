@@ -52,11 +52,14 @@ class ApplicantRepository implements IApplicantRepository {
 
             ]
 
-            const applicants = await this.model.find(query)
-                .populate('specialization')
-                .skip(skip)
-                .limit(limit)
-            const total = await this.model.countDocuments(query)
+            const [applicants, total] = await Promise.all([
+                this.model.find(query)
+                    .populate("specialization")
+                    .skip(skip)
+                    .limit(limit),
+                this.model.countDocuments(query)
+            ]);
+            
 
             return {
                 applicants,
@@ -85,6 +88,23 @@ class ApplicantRepository implements IApplicantRepository {
             
         }
     }
+
+    async deleteApplicant(id: string): Promise<void> {
+        try {
+            const deletedApplicant = await this.model.findByIdAndDelete(id).exec()
+    
+            if (!deletedApplicant) {
+                throw new AppError("Applicant not found", 404);
+            }
+    
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+                500
+            );
+        }
+    }
+    
 }
 
 export default ApplicantRepository; 

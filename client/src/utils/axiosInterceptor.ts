@@ -1,6 +1,9 @@
 import axios, { AxiosError} from 'axios';
 import TokenManager from './TokenMangager';
 import log from 'loglevel'
+import { store } from '../redux/app/store';
+import { signOut } from '../redux/features/auth/authSlice';
+import { clearUser } from '../redux/features/user/userSlice';
 
 
 const tokenManager = new TokenManager()
@@ -65,6 +68,8 @@ const createAxiosInstance = (role: userRole) => {
 
 
           if (error.response?.status === 403) {
+            store.dispatch(signOut())
+            store.dispatch(clearUser())
             if (role === 'patient' || role === 'shared') {
                 window.location.href = '/signin'; 
             } else {

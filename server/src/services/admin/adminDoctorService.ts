@@ -40,7 +40,7 @@ class AdminDoctorService implements IAdminDoctorService {
 
             const { password, ...withoutPassword } = newDoctor;
 
-            const html = await generateHtml(withoutPassword.email, notHashedPassword)
+            const html = generateHtml(withoutPassword.email, notHashedPassword)
 
             await sendEmail(withoutPassword.email, 'Welcome to Treamtme', undefined, html)
 

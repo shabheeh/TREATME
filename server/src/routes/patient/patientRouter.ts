@@ -18,24 +18,38 @@ import DependentRepository from "../../repositories/patient/DependentRepository"
 import { DependentModel } from "../../models/Dependent";
 import DependentService from "../../services/dependent/dependentService";
 import DependentController from "../../controllers/dependent/dependentController";
+import DoctorRepository from "../../repositories/doctor/DoctorRepository";
+import { DoctorModel } from "../../models/Doctor";
+import DoctorAuthService from "../../services/doctor/authService";
 
 
 const router = express.Router(); 
  
 const upload = multer({ storage: multer.memoryStorage() });
 
+// patient auth di-(dipendency injection)
 const patientRepository = new PatientRepository(PatientModel); 
-const cacheService = new CacheService()
-const otpService = new OtpService(cacheService)
+const cacheService = new CacheService();
+const otpService = new OtpService(cacheService);
 const patientAuthService = new PatientAuthService(patientRepository, otpService, cacheService);
 const patientAuthController = new PatientAuthController(patientAuthService, otpService);
 
+// patient account di
 const patientAccountService = new PatientAcccountService(patientRepository);
 const patientAccountController = new PatientAcccountController(patientAccountService)
 
-const dependentRepository = new DependentRepository(DependentModel)
-const dependentService = new DependentService(dependentRepository)
-const dependentController = new DependentController(dependentService)
+// dependent di
+const dependentRepository = new DependentRepository(DependentModel);
+const dependentService = new DependentService(dependentRepository);
+const dependentController = new DependentController(dependentService);
+
+// doctor di for middleware
+const doctorRepository = new DoctorRepository(DoctorModel);
+const doctorAuthService = new DoctorAuthService(doctorRepository)
+
+
+ 
+// ---------------------------------------------------------------
 
 router.post('/auth/send-otp', signinValidation, patientAuthController.sendOtp)
 router.post('/auth/verify-otp', patientAuthController.verifyOtp)
@@ -58,7 +72,7 @@ router.post('/auth/signout', patientAuthController.signOut)
 
 router.put('/profile', 
     authenticate, 
-    isUserActive(patientAuthService), 
+    isUserActive(patientAuthService, doctorAuthService), 
     authorize('patient'),  
     upload.single('profilePicture'),
     patientAccountController.updateProfile
@@ -66,22 +80,22 @@ router.put('/profile',
 
 router.post('/dependents', 
     authenticate, 
-    isUserActive(patientAuthService), 
+    isUserActive(patientAuthService, doctorAuthService), 
     authorize('patient'), 
     upload.single('profilePicture'),
-    dependentController.createDependent
+    dependentController.createDependent,
 )
 
 router.get('/dependents/:id',
     authenticate,
-    isUserActive(patientAuthService),
+    isUserActive(patientAuthService, doctorAuthService),
     authorize('patient'),
     dependentController.getDependents
 )
 
 router.put('/dependents/:id',
     authenticate,
-    isUserActive(patientAuthService),
+    isUserActive(patientAuthService, doctorAuthService),
     authorize('patient'),
     upload.single('profilePicture'),
     dependentController.updateDependent
@@ -89,7 +103,7 @@ router.put('/dependents/:id',
 
 router.delete('/dependents/:id',
     authenticate,
-    isUserActive(patientAuthService),
+    isUserActive(patientAuthService, doctorAuthService),
     authorize('patient'),
     dependentController.deleteDependent
 )

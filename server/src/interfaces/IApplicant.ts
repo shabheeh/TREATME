@@ -1,5 +1,6 @@
 import { Document, ObjectId } from "mongoose";
 import { Request, Response, NextFunction } from "express";
+import ISpecialization from "./ISpecilazation";
 
 
 export interface IApplicant extends Document {
@@ -8,7 +9,7 @@ export interface IApplicant extends Document {
     email: string;
     phone: string;
     registerNo: string;
-    specialization: ObjectId;
+    specialization: ObjectId | ISpecialization;
     languages: string[];
     experience: number;
     workingTwoHrs: 'Yes' | 'No';
@@ -35,13 +36,14 @@ export interface IApplicantsFilterResult {
     createApplicant(applicantData: IApplicant, idProofFile: Express.Multer.File, resumeFile: Express.Multer.File): Promise<void>
     getApplicants(params: IApplicantsFilter): Promise<IApplicantsFilterResult>
     getApplicant(id: string): Promise<IApplicant>
+    deleteApplicant(id: string): Promise<void>
   }
   
   export interface IApplicantController {
     createApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
     getApplicants(req: Request, res: Response, next: NextFunction): Promise<void>
     getApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
-    
+    deleteApplicant(req: Request, res: Response, next: NextFunction): Promise<void>
   }
 
 

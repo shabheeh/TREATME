@@ -6,4 +6,5 @@ export default interface IApplicantRepository {
     findApplicantByEmail(email: string): Promise<IApplicant | null>
     findApplicantById(id: string): Promise<IApplicant | null>
     getApplicants(filter: IApplicantsFilter): Promise<IApplicantsFilterResult>
+    deleteApplicant(id: string): Promise<void>
 }  

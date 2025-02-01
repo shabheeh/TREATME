@@ -38,6 +38,7 @@ router.post('/applicants',
 
 router.get('/applicants', authenticate, authorize('admin'), applicantController.getApplicants)
 router.get('/applicants/:id', authenticate, authorize('admin'), applicantController.getApplicant)
+router.delete('/applicants/:id', authenticate, authorize('admin'), applicantController.deleteApplicant)
 
 router.post('/auth/signin', signinValidation, doctorAuthController.signIn)
 router.post('/auth/signout', doctorAuthController.signOut)

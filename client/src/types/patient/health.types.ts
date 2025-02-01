@@ -1,5 +1,3 @@
-import { Request, Response, NextFunction } from "express";
-import { Document, ObjectId } from "mongoose";
 
 export interface IMedication {
     name: string;
@@ -32,8 +30,9 @@ export interface IBodyMeasureMents {
     bmi: string
 }
 
-export interface IHealthHistory extends Document {
-    patientId: ObjectId;
+export interface IHealthHistory {
+    _id: string;
+    patientId: string;
     patientType: 'Patient' | 'Dependent';
     medications: IMedication[];
     allergies: IAllergy[];
@@ -42,14 +41,4 @@ export interface IHealthHistory extends Document {
     familyHistory: IFamilyHistory[];
     bodyMeasurements: IBodyMeasureMents
 
-}
-
-export interface IHealthHistoryService {
-    getHealthHistory(patientId: string): Promise<IHealthHistory>
-    updateHealthHistory(patientId: string, updateData: Partial<IHealthHistory>): Promise<IHealthHistory>
-}
-
-export interface IHealthHistoryController {
-    getHealthHistory(req: Request, res: Response, next: NextFunction): Promise<void>
-    updateHealthHistory(req: Request, res: Response, next: NextFunction): Promise<void>
 }

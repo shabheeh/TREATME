@@ -60,7 +60,7 @@ const HealthHistorySchema = new Schema<IHealthHistory>({
   bodyMeasurements: { type: BodyMeasurementsSchema, required: true },
 });
 
-const HealthHistory = model<IHealthHistory>('HealthHistory', HealthHistorySchema);
+export const HealthHistory = model<IHealthHistory>('HealthHistory', HealthHistorySchema);
 
-export default HealthHistory;
+
  

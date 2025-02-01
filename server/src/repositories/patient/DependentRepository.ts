@@ -52,8 +52,12 @@ class DependentRepository implements IDependentRepository {
 
     async deleteDependent(id: string): Promise<void> {
         try {
-            await this.model.findByIdAndDelete(id)
-        } catch (error) {
+            const deletedDependent = await this.model.findByIdAndDelete(id)
+
+            if (!deletedDependent) {
+                throw new AppError('Dependent not found', 404)
+            }
+         } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 500

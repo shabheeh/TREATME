@@ -83,6 +83,24 @@ class ApplicantController implements IApplicantController {
             next(error)
         }
     }
+
+    deleteApplicant = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id } = req.params;
+
+            if (!id) {
+                throw new BadRequestError('Bad Request')
+            }
+
+            await this.applicantService.deleteApplicant(id)
+
+            res.status(200)
+
+        } catch (error) {
+            logger.error('error deleteing applicant', error)
+            next(error)
+        }
+    }
 }
 
 export default ApplicantController

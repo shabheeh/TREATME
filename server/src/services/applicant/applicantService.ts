@@ -3,6 +3,8 @@ import logger from "../../configs/logger";
 import { IApplicant, IApplicantService, IApplicantsFilter, IApplicantsFilterResult } from "../../interfaces/IApplicant";
 import IApplicantRepository from "../../repositories/doctor/interfaces/IApplicantRepository";
 import { uploadToCloudinary } from "../../utils/uploadImage";
+import { sendEmail } from "../../utils/mailer";
+import ISpecialization from "src/interfaces/ISpecilazation";
 
 
 class ApplicantService implements IApplicantService {
@@ -78,6 +80,46 @@ class ApplicantService implements IApplicantService {
 
         } catch (error) {
             logger.error('error getting applicant', error)
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async deleteApplicant(id: string): Promise<void> {
+        try {
+
+            const applicant = await this.getApplicant(id)
+
+            const mailContent = `
+                <p>Dear ${applicant.firstName},</p>
+                
+
+                <p>Thank you for taking the time to apply for the ${((applicant.specialization) as ISpecialization).name} position at Treatme.</p>
+
+                <p>After careful consideration, we regret to inform you that we do not find you fit for the position at this time.</p>
+
+                <p>We appreciate your interest in our organization and wish you all the best in your future endeavors.</p>
+
+                <p>Warm regards,<br/> 
+                <strong>Treatme</strong></p>
+            `;
+
+            await sendEmail(
+                applicant.email, 
+                "Update on Your Application Status",
+                undefined,
+                mailContent
+            )
+
+            await this.applicantRepository.deleteApplicant(id);
+
+        } catch (error) {
+            logger.error('error deleting applicant', error)
             if (error instanceof AppError) {
                 throw error; 
             }

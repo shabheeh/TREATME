@@ -101,11 +101,13 @@ class PatientRepository implements IPatientRepository {
 
             ]
 
-            const patients = await this.model.find(query)
-                .skip(skip)
-                .limit(limit)
+            const [patients, total] = await Promise.all([
+                this.model.find(query)
+                    .skip(skip)
+                    .limit(limit),
+                this.model.countDocuments(query)
+            ])
 
-            const total = await this.model.countDocuments(query)
 
             return {
                 patients,
