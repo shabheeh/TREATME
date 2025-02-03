@@ -1,6 +1,6 @@
 import { Schema, model, Types } from 'mongoose';
 import { 
-    IBodyMeasureMents, 
+    // IBodyMeasureMents, 
     IHealthHistory, 
     IFamilyHistory, 
     IMedication, 
@@ -11,9 +11,9 @@ import {
 
 const MedicationSchema = new Schema<IMedication>({
   name: { type: String, required: true },
-  dosage: { type: String, required: true },
+  frequency: { type: String, required: true },
   reportedBy: { type: String, required: true },
-});
+}); 
 
 const AllergySchema = new Schema<IAllergy>({
   allergicTo: { type: String, required: true },
@@ -31,14 +31,14 @@ const FamilyHistorySchema = new Schema<IFamilyHistory>({
   relationship: { type: String, required: true },
 });
 
-const BodyMeasurementsSchema = new Schema<IBodyMeasureMents>({
-  height: {
-    feet: { type: Number, required: true },
-    inches: { type: Number, required: true },
-  },
-  weight: { type: Number, required: true },
-  bmi: { type: String, required: true },
-});
+// const BodyMeasurementsSchema = new Schema<IBodyMeasureMents>({
+//   height: {
+//     feet: { type: Number, required: true },
+//     inches: { type: Number, required: true },
+//   },
+//   weight: { type: Number, required: true },
+//   bmi: { type: String, required: true },
+// });
 
 
 const HealthHistorySchema = new Schema<IHealthHistory>({
@@ -57,7 +57,7 @@ const HealthHistorySchema = new Schema<IHealthHistory>({
   healthConditions: { type: [String], required: true },
   surgeries: { type: [SurgerySchema], required: true },
   familyHistory: { type: [FamilyHistorySchema], required: true },
-  bodyMeasurements: { type: BodyMeasurementsSchema, required: true },
+  // bodyMeasurements: { type: BodyMeasurementsSchema, required: true },
 });
 
 export const HealthHistory = model<IHealthHistory>('HealthHistory', HealthHistorySchema);

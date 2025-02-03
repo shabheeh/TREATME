@@ -14,7 +14,7 @@ class HealthProfileService {
         } catch (error: unknown) {
         
             if (error instanceof Error) {
-                console.error(`Failed to update health history: ${error.message}`, error);
+                console.error(`Failed to fetch health history: ${error.message}`, error);
                 throw new Error(error.message)
             }
 
@@ -24,14 +24,21 @@ class HealthProfileService {
         }
     }
 
-    async updataHelathHistory(id: string,  updateData: Partial<IHealthHistory>): Promise<IHealthHistory> {
+    async updateHealthHistory(
+        patientId: string,
+        field: keyof IHealthHistory,
+        newValue: IHealthHistory[typeof field] 
+      ) {
         try {
-            const response = await api.shared.put(`/health-history/${id}`, { updateData });
+          const response = await api.shared.patch(`/health-history/${patientId}`, {
+            [field]: newValue
+          });
 
-            const { healthHistroy } = response.data;
+          const { healthHistory } = response.data;
 
-            return healthHistroy;
+          console.log(healthHistory, 'serv')
 
+          return healthHistory;
         } catch (error: unknown) {
         
             if (error instanceof Error) {
@@ -43,7 +50,7 @@ class HealthProfileService {
             throw new Error("An unknown error occurred" )
     
         }
-    }
+      }
 }
 
 const healthProfileService = new HealthProfileService();

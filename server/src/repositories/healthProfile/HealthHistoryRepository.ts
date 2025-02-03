@@ -12,17 +12,14 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
       this.model = model;
     }
 
-    async findHealthHistory(patientId: string): Promise<IHealthHistory> {
+    async findHealthHistory(patientId: string): Promise<IHealthHistory | null> {
       try {
         const healthHistroy = await this.model.findOne({ patientId });
 
-        if (!healthHistroy) {
-          throw new AppError('Something went wrong');
-        }
 
         return healthHistroy;
 
-      } catch (error) {
+      } catch (error) { 
         throw new AppError(
           `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
           500

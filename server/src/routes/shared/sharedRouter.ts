@@ -61,14 +61,14 @@ router.get('/specializations/public', specializationController.getSpecialization
 router.get('/specializations/:id', authenticate, authorize('admin'), specializationController.getSpecializationById)
 router.put('/specializations/:id', authenticate, authorize('admin'), upload.single('image'), specializationController.updateSpecialization)
 
-router.get('/health-hitory/:id', 
+router.get('/health-history/:id', 
     authenticate,
     isUserActive(patientAuthService, doctorAuthService),
     authorize('patient'),
     healthHistoryController.getHealthHistory
 )
 
-router.put('/health-history/:id',
+router.patch('/health-history/:id',
     authenticate,
     isUserActive(patientAuthService, doctorAuthService),
     authorize('patient'),

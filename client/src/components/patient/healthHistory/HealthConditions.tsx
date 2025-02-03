@@ -9,22 +9,18 @@ import { RootState } from "../../../redux/app/store";
 import { toast } from 'sonner';
 import ConfirmActionModal from "../../basics/ConfirmActionModal";
 
-interface MedicationsProps {
-  medications: IMedication[];
+interface HealthConditionsProps {
+  healthConditions: string[];
   onUpdate: (healthHistory: IHealthHistory) => void
 }
 
-const frequencyOptions = [
-  'Once a day',
-  'Twice a day',
-  'Three times a day',
-];
 
-const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => {
-  const [showMedicationInputs, setShowMedicationInputs] = useState(medications.length > 0);
+
+const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, onUpdate  }) => {
+  const [showMedicationInputs, setShowMedicationInputs] = useState(healthConditions.length > 0);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [medicationToRemove, setMedicationToRemove] = useState<IMedication | null>(null)
+  const [conditionToRemove, setConditionToRemove] = useState<number | null>(null)
   
   const currentPatient = useSelector((state: RootState) => state.user.currentUser);
 
@@ -34,15 +30,14 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     control,
     reset,
     formState: { errors }
-  } = useForm<IMedication>({
+  } = useForm<{ condtion: string}>({
     defaultValues: {
-      name: '',
-      frequency: '',
-      reportedBy: 'Self Reported'
+        condtion: '',
+
     }
   });
 
-  const updateMedications = async (updatedMedications: IMedication[]) => {
+  const updateCoditions = async (updatedConditions: string[]) => {
     if (!currentPatient?._id) {
       toast.error('No patient selected');
       return;
@@ -52,39 +47,40 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     try {
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
-        'medications',
-        updatedMedications
+        'healthConditions',
+        updatedConditions
       );
       onUpdate(result)
 
-      toast.success('Medications updated successfully');
+      toast.success('Health Condions updated successfully');
 
     } catch (error) {
-      if(error instanceof Error) {
-        toast.error(error.message)
-      }else {
-        toast.error('Something went wrong')
-      }
+        if (error instanceof Error) {
+            toast.error(error.message)
+        } else {
+            toast.error('Something went wrong');
+        }
+
     } finally {
       setLoading(false);
       setModalOpen(false)
     }
   };
 
-  const onSubmit = (data: IMedication) => {
-    const updatedMedications = [...medications, data];
-    updateMedications(updatedMedications);
+  const onSubmit = (data: string) => {
+    const updatedMedications = [...healthConditions, data];
+    updateCoditions(updatedMedications);
     reset();
   };
 
   
 
-  const handleRemoveMedication = () => {
-    if(!medicationToRemove) return
-    const updatedMedications = medications.filter(
-      med => med._id !== medicationToRemove._id 
+  const handleRemoveCondition = () => {
+    if(!conditionToRemove) return
+    const updatedConditions = healthConditions.filter(
+      (_condition, idx) => idx !== conditionToRemove 
     );
-    updateMedications(updatedMedications);
+    updateCoditions(updatedConditions);
   };
 
 
@@ -252,4 +248,4 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
   );
 };
 
-export default Medications;
+export default HealthConditions;

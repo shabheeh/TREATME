@@ -3,7 +3,7 @@ import { Document, ObjectId } from "mongoose";
 
 export interface IMedication {
     name: string;
-    dosage: string;
+    frequency: string;
     reportedBy: string;
 }
 
@@ -23,14 +23,14 @@ export interface IFamilyHistory {
     relationship: string;
 }
 
-export interface IBodyMeasureMents {
-    height: {
-        feet: number;
-        inches: number;
-    }
-    weight: number;
-    bmi: string
-}
+// export interface IBodyMeasureMents {
+//     height: {
+//         feet: number;
+//         inches: number;
+//     }
+//     weight: number;
+//     bmi: string
+// }
 
 export interface IHealthHistory extends Document {
     patientId: ObjectId;
@@ -40,12 +40,12 @@ export interface IHealthHistory extends Document {
     healthConditions: string[];
     surgeries: ISurgery[];
     familyHistory: IFamilyHistory[];
-    bodyMeasurements: IBodyMeasureMents
+    // bodyMeasurements: IBodyMeasureMents
 
 }
 
 export interface IHealthHistoryService {
-    getHealthHistory(patientId: string): Promise<IHealthHistory>
+    getHealthHistory(patientId: string): Promise<IHealthHistory | null>
     updateHealthHistory(patientId: string, updateData: Partial<IHealthHistory>): Promise<IHealthHistory>
 }
 

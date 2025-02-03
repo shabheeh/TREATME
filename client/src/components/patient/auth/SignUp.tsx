@@ -52,7 +52,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
 
   const onSubmit = async(data: SignupFormInputs) => {
     try {
-      console.log(data);
+      
       setLoading(true)
 
       await authServicePatient.sendOtp({email: data.email, password: data.password})

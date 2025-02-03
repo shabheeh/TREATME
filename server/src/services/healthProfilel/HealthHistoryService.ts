@@ -12,12 +12,12 @@ class HealthHistoryService implements IHealthHistoryService {
         this.healthHistoryRepo = healthHistoryRepo
     }
 
-    async getHealthHistory(patientId: string): Promise<IHealthHistory> {
+    async getHealthHistory(patientId: string): Promise<IHealthHistory | null> {
         try {
             const healthHistory = await this.healthHistoryRepo.findHealthHistory(patientId);
 
             return healthHistory;
-
+ 
         } catch (error) {
             logger.error('Failded to update healt history', error)
             if (error instanceof AppError) {

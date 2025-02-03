@@ -39,10 +39,10 @@ class HealthHistoryController implements IHealthHistoryController {
                 throw new BadRequestError('Bad request')
             }
 
-            const updatedData = await this.healthHistoryService.updateHealthHistory(id, updateData)
+            const healthHistory = await this.healthHistoryService.updateHealthHistory(id, updateData)
 
             res.status(200).json({
-                updatedData
+                healthHistory
             })
 
         } catch (error) {
