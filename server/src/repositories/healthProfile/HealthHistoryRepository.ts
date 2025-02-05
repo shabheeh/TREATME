@@ -23,7 +23,7 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
         throw new AppError(
           `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
           500
-      );
+        );
       }
     }
   
@@ -41,7 +41,7 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
         throw new AppError(
           `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
           500
-      );
+        );
       }
     }
 }

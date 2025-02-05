@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Box, Typography, Stack, Button, TextField, Grid, IconButton, MenuItem } from "@mui/material";
+import { Box, Typography, Stack, Button, TextField, Grid, IconButton } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
-import { IHealthHistory, IMedication } from "../../../types/patient/health.types";
-import { useForm, Controller } from "react-hook-form";
+import { IHealthCondition, IHealthHistory } from "../../../types/patient/health.types";
+import { useForm } from "react-hook-form";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
@@ -10,34 +10,33 @@ import { toast } from 'sonner';
 import ConfirmActionModal from "../../basics/ConfirmActionModal";
 
 interface HealthConditionsProps {
-  healthConditions: string[];
+  healthConditions: IHealthCondition[];
   onUpdate: (healthHistory: IHealthHistory) => void
 }
 
 
 
 const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, onUpdate  }) => {
-  const [showMedicationInputs, setShowMedicationInputs] = useState(healthConditions.length > 0);
+  const [showConditionInputs, setShowConditionInputs] = useState(healthConditions.length > 0);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [conditionToRemove, setConditionToRemove] = useState<number | null>(null)
+  const [conditionToRemove, setConditionToRemove] = useState<IHealthCondition | null>(null)
   
   const currentPatient = useSelector((state: RootState) => state.user.currentUser);
 
   const { 
     register, 
     handleSubmit,
-    control,
     reset,
     formState: { errors }
-  } = useForm<{ condtion: string}>({
+  } = useForm<IHealthCondition>({
     defaultValues: {
-        condtion: '',
-
+        condition: '',
+        reportedBy: 'Self Reported'
     }
   });
 
-  const updateCoditions = async (updatedConditions: string[]) => {
+  const updateCoditions = async (updatedConditions: IHealthCondition[]) => {
     if (!currentPatient?._id) {
       toast.error('No patient selected');
       return;
@@ -67,7 +66,7 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, o
     }
   };
 
-  const onSubmit = (data: string) => {
+  const onSubmit = (data: IHealthCondition) => {
     const updatedMedications = [...healthConditions, data];
     updateCoditions(updatedMedications);
     reset();
@@ -78,7 +77,7 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, o
   const handleRemoveCondition = () => {
     if(!conditionToRemove) return
     const updatedConditions = healthConditions.filter(
-      (_condition, idx) => idx !== conditionToRemove 
+      (condition) => condition._id !== conditionToRemove._id 
     );
     updateCoditions(updatedConditions);
   };
@@ -90,46 +89,43 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, o
     onSubmit={handleSubmit(onSubmit)}
     >
       
-      { medications.length === 0 && 
+      { healthConditions.length === 0 && 
       <Typography variant="body1" sx={{ mb: 2, }}>
-      Are you currently taking any medication?
+      Do you have any health conditions?
       </Typography>
       }
 
-      {medications.length === 0 && (
+      {healthConditions.length === 0 && (
         <Stack direction="row" spacing={2}>
           <Button
-            variant={showMedicationInputs ? "contained" : "outlined"}
-            startIcon={showMedicationInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
-            onClick={() => setShowMedicationInputs(true)}
+            variant={showConditionInputs ? "contained" : "outlined"}
+            startIcon={showConditionInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
+            onClick={() => setShowConditionInputs(true)}
           >
             Yes
           </Button>
 
           <Button
-            variant={showMedicationInputs ? "outlined" : "contained"}
-            startIcon={showMedicationInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
-            onClick={() => setShowMedicationInputs(false)}
+            variant={showConditionInputs ? "outlined" : "contained"}
+            startIcon={showConditionInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
+            onClick={() => setShowConditionInputs(false)}
           >
             No
           </Button>
         </Stack>
       )}
 
-      {showMedicationInputs && (
+      {showConditionInputs && (
         <Box sx={{ width: "100%", my: 2 }}>
-          {medications.length > 0 && (
+          {healthConditions.length > 0 && (
             <Box sx={{ mb: 3 }}>
-        
-              <Grid container spacing={2} sx={{ borderBottom: "1px solid #e0e0e0", pb: 1, pt:0,  backgroundColor: "#F5F5F5", textAlign: 'center' }}>
-                <Grid item xs={4}>
+              <Typography sx={{ fontWeight: 600, fontSize: '18px',  mb: 4 }}>
+                My Health Conditions
+              </Typography>
+              <Grid container spacing={2} sx={{ borderBottom: "1px solid #e0e0e0", pb: 1, pt:0,  backgroundColor: "#F5F5F5",  }}>
+                <Grid item xs={7}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    Medication
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    Frequency
+                    Conditions
                   </Typography>
                 </Grid>
                 <Grid item xs={3}>
@@ -137,26 +133,23 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, o
                     Source
                   </Typography>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={2} sx={{ textAlign: 'center'}}>
                 <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                     Remove
                   </Typography>
                 </Grid>
               </Grid>
-              {medications.map((medication, index) => (
-                <Grid container spacing={2} key={index} sx={{ borderBottom: "1px solid #e0e0e0",  py: 1, textAlign: 'center' }}>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">{medication.name}</Typography>
+              {healthConditions.map((condition) => (
+                <Grid container spacing={2} key={ condition._id} sx={{ borderBottom: "1px solid #e0e0e0",  py: 1,  }}>
+                  <Grid item xs={7}>
+                    <Typography variant="body1">{ condition.condition }</Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <Typography variant="body1">{medication.frequency}</Typography>
+                    <Typography variant="body1">{ condition.reportedBy }</Typography>
                   </Grid>
-                  <Grid item xs={3}>
-                    <Typography variant="body1">{medication.reportedBy}</Typography>
-                  </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={2} sx={{ textAlign: 'center'}}>
                     <IconButton onClick={() => {
-                      setMedicationToRemove(medication); 
+                      setConditionToRemove(condition); 
                       setModalOpen(true)
                       }}>
                       <Delete sx={{ color: "#ff4444" }} />
@@ -168,52 +161,26 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, o
             </Box>
           )}
 
-          { medications.length > 0 && 
+          { healthConditions.length > 0 && 
           <Typography sx={{ fontWeight: 600}}>
-          Add new Medication
-        </Typography>
+            Add other health condition
+          </Typography>
           }
 
           <Box>
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
           
           <TextField
-            {...register("name", {
-              required: "Name is required",
+            {...register("condition", {
+              required: "Required",
             })}
-            placeholder="E.g. Aspirin, Paracetamol"
+            placeholder="E.g. Blood Pressure, Cholesterol"
             fullWidth
-            label="Medication"
+            label="Condition"
             variant="outlined"
-            sx={{ width: "50%" }}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-          />
-          <Controller
-            name="frequency"
-            control={control}
-            defaultValue=""
-            rules={{
-              required: "Frequency is required",
-            }}
-            render={({ field }) => (
-              <TextField
-                select
-                label="Frequency"
-                variant="outlined"
-                value={field.value}
-                onChange={field.onChange}
-                sx={{ width: "30%" }}
-                error={!!errors.frequency}
-                helperText={errors.frequency?.message}
-              >
-                {frequencyOptions.map((option, idx) => (
-                  <MenuItem key={idx} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
+            sx={{ width: "80%" }}
+            error={!!errors.condition}
+            helperText={errors.condition?.message}
           />
           <Button
             type="submit"
@@ -239,10 +206,10 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({ healthConditions, o
 
       <ConfirmActionModal 
       open={modalOpen}
-      title="Remove Medication"
+      title="Remove Condition"
       confirmColor="error"
       handleClose={() => setModalOpen(false)}
-      handleConfirm={handleRemoveMedication}
+      handleConfirm={handleRemoveCondition}
       />
     </Box>
   );

@@ -10,6 +10,8 @@ import healthProfileService from '../../../services/healthProfile/healthProfileS
 import { toast } from 'sonner';
 import Loading from '../../basics/Loading';
 import Allergies from './Allergies';
+import HealthConditions from './HealthConditions';
+import Surgeries from './Surgeries';
 
 
 const HealthHistory = () => {
@@ -51,9 +53,13 @@ const HealthHistory = () => {
   return (
     <Stack spacing={4} alignItems="center">
       <Medications medications={healthHistory?.medications ? healthHistory.medications : [] } onUpdate={updateHealthHistory} />
-      <Divider sx={{ width: '100%', borderColor: 'grey.300' }} />
+      <Divider sx={{ width: '100%', borderColor: 'grey.400' }} />
+      <HealthConditions healthConditions={healthHistory?.healthConditions ? healthHistory.healthConditions : []} onUpdate={updateHealthHistory} />
+      <Divider sx={{ width: '100%', borderColor: 'grey.400' }} />
       <Allergies allergies={healthHistory?.allergies ? healthHistory.allergies : [] } onUpdate={updateHealthHistory} />
-
+      <Divider sx={{ width: '100%', borderColor: 'grey.400' }} />
+      <Surgeries surgeries={healthHistory?.surgeries ? healthHistory.surgeries : [] } onUpdate={updateHealthHistory} />
+      <Divider sx={{ width: '100%', borderColor: 'grey.400' }} />
     </Stack>
   );
 };

@@ -37,40 +37,66 @@ class DoctorRepository implements IDoctorRepository {
         }
     }
 
-    async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
-            try {
-                const { page, limit, search } = filter;
-                const skip = (page - 1) * limit;
-    
-                const query: any = {}
-    
-                query.$or = [
-                    { firstName: { $regex: search, $options: 'i' } },
-                    { lastName: { $regex: search, $options: 'i' } },
-                    { email: { $regex: search, $options: 'i' } },
-                    { phone: { $regex: search, $options: 'i' } }
-    
-                ]
-    
-                const doctors = await this.model.find(query)
-                    .skip(skip)
-                    .limit(limit)
-                const total = await this.model.countDocuments(query)
-    
-                return {
-                    doctors,
-                    total,
-                    page,
-                    limit,
-                    totalPages: Math.ceil(total / limit)
+    async updateDoctor(id: string, updateData: Partial<IDoctor>): Promise<IDoctor> {
+        try {
+            const updatedDoctor = await this.model.findOneAndUpdate(
+                { id },
+                { $set: updateData },
+                { 
+                    new: true,
+                    runValidators: true,
+                    lean: true
                 }
-            } catch (error) {
-                throw new AppError(
-                    `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-                    500
-                );
+            ).select('-password');
+
+            if (!updatedDoctor) {
+                throw new AppError('Something went wrong')
             }
-       }
+
+            return updatedDoctor;
+            
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
+        try {
+            const { page, limit, search } = filter;
+            const skip = (page - 1) * limit;
+
+            const query: any = {}
+
+            query.$or = [
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { phone: { $regex: search, $options: 'i' } }
+
+            ]
+
+            const doctors = await this.model.find(query)
+                .skip(skip)
+                .limit(limit)
+            const total = await this.model.countDocuments(query)
+
+            return {
+                doctors,
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
 }
 
 export default DoctorRepository;

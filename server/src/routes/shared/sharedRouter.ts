@@ -18,9 +18,17 @@ import DoctorRepository from '../../repositories/doctor/DoctorRepository';
 import { DoctorModel } from '../../models/Doctor';
 import DoctorAuthService from '../../services/doctor/authService';
 import HealthHistoryRepository from "../../repositories/healthProfile/HealthHistoryRepository";
-import { HealthHistory } from "../../models/HealthHistory";
-import HealthHistoryService from "../../services/healthProfilel/HealthHistoryService";
+import { HealthHistoryModel } from "../../models/HealthHistory";
+import HealthHistoryService from "../../services/healthProfile/HealthHistoryService";
 import HealthHistoryController from "../../controllers/healthProfile/healthHistoryController";
+import LifestyleRepository from '../../repositories/healthProfile/LifestyleRepository';
+import { LifestyleModel } from '../../models/Lifestyle';
+import LifestyleService from '../../services/healthProfile/LifestyleService';
+import LifestyleController from '../../controllers/healthProfile/lifestyleController';
+import BehaviouralHealthRepository from '../../repositories/healthProfile/BehaviouralHealthRepository';
+import { BehaviouralHealthModel } from '../../models/BehaviouralHealth';
+import BehaviouralHealthService from '../../services/healthProfile/BehaviouralHealthService';
+import BehaviouralHealthController from '../../controllers/healthProfile/behaviouralHealthController';
 
 const router = express.Router()
 
@@ -44,10 +52,19 @@ const doctorRepository = new DoctorRepository(DoctorModel)
 const doctorAuthService = new DoctorAuthService(doctorRepository)
 
 // health history di
-const healthHistoryRepository = new HealthHistoryRepository(HealthHistory);
+const healthHistoryRepository = new HealthHistoryRepository(HealthHistoryModel);
 const healthHistoryService = new HealthHistoryService(healthHistoryRepository);
 const healthHistoryController = new HealthHistoryController(healthHistoryService);
 
+// lifestyle di
+const lifestyleRepository = new LifestyleRepository(LifestyleModel);
+const lifestyleService = new LifestyleService(lifestyleRepository);
+const lifestyleController = new LifestyleController(lifestyleService)
+
+// behavioural health di
+const behaviouralHealthRepository = new BehaviouralHealthRepository(BehaviouralHealthModel);
+const behavioralHealthService = new BehaviouralHealthService(behaviouralHealthRepository);
+const behaviouralHealController = new BehaviouralHealthController(behavioralHealthService);
 
 router.post('/auth/refresh-token',tokenController.handleRefreshToken)
 router.get('/auth/status', authenticate, checkUserStatus(patientAuthService, doctorAuthService))
@@ -75,6 +92,34 @@ router.patch('/health-history/:id',
     healthHistoryController.updateHealthHistory
 )
 
+router.get('/lifestyle/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient'),
+    lifestyleController.getLifestyle
+)
+
+router.patch('/lifestyle/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient'),
+    lifestyleController.updateLifestyle
+)
+
+router.get('/behavioural-health/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient'),
+    behaviouralHealController.getBehaviuoralHealth
+)
+
+router.patch('/behavioural-health/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient'),
+    behaviouralHealController.updateBehavouralHealth
+)
 
 
-export default router 
+
+export default router  

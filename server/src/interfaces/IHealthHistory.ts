@@ -11,16 +11,25 @@ export interface IAllergy {
     allergicTo: string;
     Severity: string;
     reaction: string;
+    reportedBy: string;
 }
 
 export interface ISurgery {
     procedure: string,
-    date: Date;
+    year: string;
+    reportedBy: string;
 }
 
 export interface IFamilyHistory {
     condition: string;
     relationship: string;
+    reportedBy: string;
+}
+
+ 
+export interface IHealthCondition {
+    condition: string;
+    reportedBy: string
 }
 
 // export interface IBodyMeasureMents {
@@ -37,7 +46,7 @@ export interface IHealthHistory extends Document {
     patientType: 'Patient' | 'Dependent';
     medications: IMedication[];
     allergies: IAllergy[];
-    healthConditions: string[];
+    healthConditions: IHealthCondition[];
     surgeries: ISurgery[];
     familyHistory: IFamilyHistory[];
     // bodyMeasurements: IBodyMeasureMents

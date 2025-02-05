@@ -1,4 +1,4 @@
-import { IHealthHistory } from "../../types/patient/health.types";
+import { IBehaviouralHealth, IHealthHistory, ILifestyle } from "../../types/patient/health.types";
 import { api } from "../../utils/axiosInterceptor";
 
 class HealthProfileService {
@@ -36,8 +36,6 @@ class HealthProfileService {
 
           const { healthHistory } = response.data;
 
-          console.log(healthHistory, 'serv')
-
           return healthHistory;
         } catch (error: unknown) {
         
@@ -49,6 +47,83 @@ class HealthProfileService {
             console.error(`Unknown error occurred`, error);
             throw new Error("An unknown error occurred" )
     
+        }
+      }
+
+      async getLifestyle(patientId: string): Promise<ILifestyle> {
+        try {
+          const response = await api.shared.get(`/lifestyle/${patientId}`);
+          const { lifestyle } = response.data;
+          return lifestyle;
+        } catch (error: unknown) {
+        
+          if (error instanceof Error) {
+              console.error(`Failed to get lifestyle: ${error.message}`, error);
+              throw new Error(error.message)
+          }
+
+          console.error(`Unknown error occurred`, error);
+          throw new Error("An unknown error occurred" )
+  
+        }
+      }
+
+      async updateLifestyle(patientId: string, updateData: Partial<ILifestyle>): Promise<ILifestyle> {
+        try {
+          const response = await api.shared.patch(`/lifestyle/${patientId}`, updateData );
+
+          const { lifestyle } = response.data;
+          return lifestyle
+        } catch (error: unknown) {
+        
+          if (error instanceof Error) {
+              console.error(`Failed to update lifestyle: ${error.message}`, error);
+              throw new Error(error.message)
+          }
+
+          console.error(`Unknown error occurred`, error);
+          throw new Error("An unknown error occurred" )
+  
+        }
+      }
+
+
+      async getBehaviouralHealth(patientId: string): Promise<IBehaviouralHealth> {
+        try {
+
+          const response = await api.shared.get(`/behavioural-health/${patientId}`);
+          const { behavioralHealth } = response.data;
+          return behavioralHealth;
+
+        } catch (error: unknown) {
+        
+          if (error instanceof Error) {
+              console.error(`Failed to get behavioural health: ${error.message}`, error);
+              throw new Error(error.message)
+          }
+
+          console.error(`Unknown error occurred`, error);
+          throw new Error("An unknown error occurred" )
+  
+        }
+      }
+
+      async updateBehavioualHealth(patientId: string, updateData: Partial<IBehaviouralHealth>): Promise<IBehaviouralHealth> {
+        try {
+          const response = await api.shared.patch(`/behavioural-health/${patientId}`, { updateData } );
+
+          const { behavioralHealth } = response.data;
+          return behavioralHealth
+        } catch (error: unknown) {
+        
+          if (error instanceof Error) {
+              console.error(`Failed to update Behavioual health: ${error.message}`, error);
+              throw new Error(error.message)
+          }
+
+          console.error(`Unknown error occurred`, error);
+          throw new Error("An unknown error occurred" )
+  
         }
       }
 }

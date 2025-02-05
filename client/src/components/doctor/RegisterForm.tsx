@@ -203,7 +203,7 @@ const RegisterForm = () => {
       
 
       await applicantService.createApplicant(formData);
-      toast.success("Doctor created successfully!");
+      toast.success("Registered successfully!");
 
       navigate("/doctor-recruitement");
 

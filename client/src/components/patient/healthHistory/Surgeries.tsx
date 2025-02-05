@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, Stack, Button, TextField, Grid, IconButton, MenuItem } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
-import { IHealthHistory, IMedication } from "../../../types/patient/health.types";
+import { IHealthHistory, ISurgery } from "../../../types/patient/health.types";
 import { useForm, Controller } from "react-hook-form";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
 import { useSelector } from "react-redux";
@@ -9,22 +9,30 @@ import { RootState } from "../../../redux/app/store";
 import { toast } from 'sonner';
 import ConfirmActionModal from "../../basics/ConfirmActionModal";
 
-interface MedicationsProps {
-  medications: IMedication[];
+interface SurgeriesProps {
+  surgeries: ISurgery[];
   onUpdate: (healthHistory: IHealthHistory) => void
 }
 
-const frequencyOptions = [
-  'Once a day',
-  'Twice a day',
-  'Three times a day',
-];
+const generateYearsOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const yearsOptions = [];
+  
+    for (let i = 0; i <= 20; i++) {
+      yearsOptions.push((currentYear - i).toString());
+    }
+  
+    return yearsOptions;
+  };
+  
+const yearsOptions = generateYearsOptions();
 
-const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => {
-  const [showMedicationInputs, setShowMedicationInputs] = useState(medications.length > 0);
+
+const Surgeries: React.FC<SurgeriesProps> = ({ surgeries, onUpdate  }) => {
+  const [showSurgeryInputs, setShowSurgeryInputs] = useState(surgeries.length > 0);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [medicationToRemove, setMedicationToRemove] = useState<IMedication | null>(null)
+  const [surgeryToRemove, setSurgeryToRemove] = useState<ISurgery | null>(null)
   
   const currentPatient = useSelector((state: RootState) => state.user.currentUser);
 
@@ -34,15 +42,15 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     control,
     reset,
     formState: { errors }
-  } = useForm<IMedication>({
+  } = useForm<ISurgery>({
     defaultValues: {
-      name: '',
-      frequency: '',
+      procedure: '',
+      year: '',
       reportedBy: 'Self Reported'
     }
   });
 
-  const updateMedications = async (updatedMedications: IMedication[]) => {
+  const updateSurgeries = async (updatedSurgeries: ISurgery[]) => {
     if (!currentPatient?._id) {
       toast.error('No patient selected');
       return;
@@ -52,8 +60,8 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     try {
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
-        'medications',
-        updatedMedications
+        'surgeries',
+        updatedSurgeries
       );
       onUpdate(result)
 
@@ -71,20 +79,20 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     }
   };
 
-  const onSubmit = (data: IMedication) => {
-    const updatedMedications = [...medications, data];
-    updateMedications(updatedMedications);
+  const onSubmit = (data: ISurgery) => {
+    const updatedSurgeries = [...surgeries, data];
+    updateSurgeries(updatedSurgeries);
     reset();
   };
 
   
 
   const handleRemoveMedication = () => {
-    if(!medicationToRemove) return
-    const updatedMedications = medications.filter(
-      med => med._id !== medicationToRemove._id 
+    if(!surgeryToRemove) return
+    const updatedSurgeries = surgeries.filter(
+      surgery => surgery._id !== surgeryToRemove._id 
     );
-    updateMedications(updatedMedications);
+    updateSurgeries(updatedSurgeries);
   };
 
 
@@ -94,49 +102,48 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     onSubmit={handleSubmit(onSubmit)}
     >
       
-      { medications.length === 0 && 
+      { surgeries.length === 0 && 
       <Typography variant="body1" sx={{ mb: 2, }}>
-      Are you currently taking any medication?
+        Have you ever had any surgeries or medical procedures?
       </Typography>
       }
 
-      {medications.length === 0 && (
+      {surgeries.length === 0 && (
         <Stack direction="row" spacing={2}>
           <Button
-            variant={showMedicationInputs ? "contained" : "outlined"}
-            startIcon={showMedicationInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
-            onClick={() => setShowMedicationInputs(true)}
+            variant={showSurgeryInputs ? "contained" : "outlined"}
+            startIcon={showSurgeryInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
+            onClick={() => setShowSurgeryInputs(true)}
           >
             Yes
           </Button>
 
           <Button
-            variant={showMedicationInputs ? "outlined" : "contained"}
-            startIcon={showMedicationInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
-            onClick={() => setShowMedicationInputs(false)}
+            variant={showSurgeryInputs ? "outlined" : "contained"}
+            startIcon={showSurgeryInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
+            onClick={() => setShowSurgeryInputs(false)}
           >
             No
           </Button>
         </Stack>
       )}
 
-      {showMedicationInputs && (
+      {showSurgeryInputs && (
         <Box sx={{ width: "100%", my: 2 }}>
-          
-          {medications.length > 0 && (
+          {surgeries.length > 0 && (
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, fontSize: '18px',  mb: 4 }}>
-              My medications
-            </Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: '18px',  mb: 4 }}>
+                    My Surgeries and Procedures
+                </Typography>
               <Grid container spacing={2} sx={{ borderBottom: "1px solid #e0e0e0", pb: 1, pt:0,  backgroundColor: "#F5F5F5", }}>
                 <Grid item xs={4}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    Medications
+                    Procedures
                   </Typography>
                 </Grid>
                 <Grid item xs={3}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    Frequency
+                    year
                   </Typography>
                 </Grid>
                 <Grid item xs={3}>
@@ -150,20 +157,20 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
                   </Typography>
                 </Grid>
               </Grid>
-              {medications.map((medication, index) => (
+              {surgeries.map((surgery, index) => (
                 <Grid container spacing={2} key={index} sx={{ borderBottom: "1px solid #e0e0e0",  py: 1,  }}>
                   <Grid item xs={4}>
-                    <Typography variant="body1">{medication.name}</Typography>
+                    <Typography variant="body1">{surgery.procedure}</Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <Typography variant="body1">{medication.frequency}</Typography>
+                    <Typography variant="body1">{surgery.year}</Typography>
                   </Grid>
                   <Grid item xs={3}>
-                    <Typography variant="body1">{medication.reportedBy}</Typography>
+                    <Typography variant="body1">{surgery.reportedBy}</Typography>
                   </Grid>
                   <Grid item xs={2} sx={{ textAlign: 'center'}}>
                     <IconButton onClick={() => {
-                      setMedicationToRemove(medication); 
+                      setSurgeryToRemove(surgery); 
                       setModalOpen(true)
                       }}>
                       <Delete sx={{ color: "#ff4444" }} />
@@ -175,9 +182,9 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
             </Box>
           )}
 
-          { medications.length > 0 && 
+          { surgeries.length > 0 && 
           <Typography sx={{ fontWeight: 600}}>
-            Add new Medication
+            Add new Prodedure
           </Typography>
           }
 
@@ -185,36 +192,39 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
           
           <TextField
-            {...register("name", {
-              required: "Name is required",
+            {...register("procedure", {
+              required: "Required",
             })}
-            placeholder="E.g. Aspirin, Paracetamol"
+            placeholder="E.g. Appendectomy, Cholecystectomy"
             fullWidth
-            label="Medication"
+            label="Procedure"
             variant="outlined"
-            sx={{ width: "50%" }}
-            error={!!errors.name}
-            helperText={errors.name?.message}
+            sx={{ width: "60%" }}
+            error={!!errors.procedure}
+            helperText={errors.procedure?.message}
           />
           <Controller
-            name="frequency"
+            name="year"
             control={control}
             defaultValue=""
             rules={{
-              required: "Frequency is required",
+              required: "Required",
             }}
             render={({ field }) => (
               <TextField
                 select
-                label="Frequency"
+                label="Year"
                 variant="outlined"
                 value={field.value}
                 onChange={field.onChange}
-                sx={{ width: "30%" }}
-                error={!!errors.frequency}
-                helperText={errors.frequency?.message}
+                sx={{ width: "20%" }}
+                error={!!errors.year}
+                helperText={errors.year?.message}
               >
-                {frequencyOptions.map((option, idx) => (
+                <MenuItem  value='Not Sure'>
+                    Not Sure
+                  </MenuItem>
+                {yearsOptions.map((option, idx) => (
                   <MenuItem key={idx} value={option}>
                     {option}
                   </MenuItem>
@@ -246,7 +256,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
 
       <ConfirmActionModal 
       open={modalOpen}
-      title="Remove Medication"
+      title="Remove Procedure"
       confirmColor="error"
       handleClose={() => setModalOpen(false)}
       handleConfirm={handleRemoveMedication}
@@ -255,4 +265,4 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
   );
 };
 
-export default Medications;
+export default Surgeries;

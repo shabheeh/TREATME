@@ -257,9 +257,6 @@ const AddDependent: React.FC<AddDependentProps> = ({
                         error={!!errors.dateOfBirth}
                         helperText={errors.dateOfBirth?.message}
                     />
-
-                
-
                     <Controller
                         name="gender"
                         control={control}

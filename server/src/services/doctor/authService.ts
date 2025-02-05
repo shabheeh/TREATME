@@ -22,9 +22,9 @@ class DoctorAuthService implements IDoctorAuthService {
             const doctor = await this.doctorRepository.findDoctorByEmail(email)
 
 
-            // if (doctor && !doctor.isActive) {
-            //     throw new AuthError(AuthErrorCode.USER_BLOCKED, 403)
-            // }
+            if (doctor && !doctor.isActive) {
+                throw new AuthError(AuthErrorCode.USER_BLOCKED, undefined, 403)
+            }
 
             if (!doctor) {
                 throw new AuthError(AuthErrorCode.USER_NOT_FOUND)

@@ -26,6 +26,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
           const result = await sharedService.checkUserStatus();
           setIsActive(result);
 
+
           if (!result) {
             dispatch(signOut());
             dispatch(clearUser());
@@ -48,6 +49,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
 
 
     if (!auth.isAuthenticated || !isActive) {
+      
       if (location.pathname.startsWith("/admin")) {
         return <Navigate to="/admin/signin" state={{ from: location }} replace />;
       }

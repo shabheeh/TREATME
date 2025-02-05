@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Card } from '@mui/material';
 import { CustomTabs, TabPanel } from '../../components/basics/Tabs'; 
 import HealthHistory from '../../components/patient/healthHistory/HealthHistory';
+import Lifestyle from '../../components/patient/lifestyle/Lifestyle';
+import FamilyHistory from '../../components/patient/familyHistory/FamilyHistory';
+import BehavioralHealth from '../../components/patient/behaviouralHealth/BehaviouralHealth';
 
 
-
+ 
 
 const tabContent = [
     {
@@ -13,15 +16,15 @@ const tabContent = [
     },
     {
         title: 'Lifestyle',
-        component: <div>tab 2</div>,
+        component: <Lifestyle />,
     },
     {
         title: 'Family History',
-        component: <div>tab 3</div>,
+        component: <FamilyHistory />,
     },
     {
         title: 'Behavioural History',
-        component: <div>tab 4</div>,
+        component: <BehavioralHealth />,
     },
   ];
 

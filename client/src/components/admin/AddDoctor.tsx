@@ -15,9 +15,11 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import doctorsService from "../../services/admin/doctorsService";
 import { useNavigate } from "react-router-dom";
+import { ISpecialization } from "../../types/specialization/specialization.types";
+import specializationService from "../../services/specialization/specializationService";
 
 interface SignupFormInputs {
   firstName: string;
@@ -35,57 +37,6 @@ interface SignupFormInputs {
   profilePicture: File | null;
 }
 
-const specializations = [
-  {
-    name: "Dermatology",
-    specialties: [
-      "Cosmetic Dermatology",
-      "Pediatric Dermatology",
-      "Dermatopathology",
-      "Mohs Surgery",
-      "General Dermatology",
-      "Immunodermatology",
-      "Hair and Scalp Disorders",
-    ],
-  },
-  {
-    name: "General Medicine",
-    specialties: [
-      "Internal Medicine",
-      "Preventive Medicine",
-      "Geriatrics",
-      "Infectious Diseases",
-      "Endocrinology",
-      "Nephrology",
-      "Rheumatology",
-    ],
-  },
-  {
-    name: "Psychiatry",
-    specialties: [
-      "Child and Adolescent Psychiatry",
-      "Geriatric Psychiatry",
-      "Addiction Psychiatry",
-      "Forensic Psychiatry",
-      "Neuropsychiatry",
-      "Psychotherapy",
-      "Consultation-Liaison Psychiatry",
-    ],
-  },
-  {
-    name: "Therapy",
-    specialties: [
-      "Physical Therapy",
-      "Occupational Therapy",
-      "Speech Therapy",
-      "Cognitive Behavioral Therapy",
-      "Family Therapy",
-      "Couples Therapy",
-      "Art Therapy",
-    ],
-  },
-];
-
 const languageOptions = [
   "English",
   "Malayalam",
@@ -94,6 +45,9 @@ const languageOptions = [
   "Telugu",
   "Kannada",
   "Urdu",
+  "Bengali",
+  "Gujarati",
+  "Punjabi",
 ];
 
 const AddDoctor = () => {
@@ -124,23 +78,27 @@ const AddDoctor = () => {
 
   const navigate = useNavigate();
 
-  const [selectedSpecialization, setSelectedSpecialization] = useState("");
-  const [specialties, setSpecialties] = useState<string[]>([]);
+  const [specializations, setSpecializations] = useState<ISpecialization[] | []>([]);
   const [loading, setLoading] = useState(false)
 
-  const handleSpecializationChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedSpec = e.target.value;
-    setSelectedSpecialization(selectedSpec);
-    const selectedSpecializationObj = specializations.find(
-      (spec) => spec.name === selectedSpec
-    );
-    setSpecialties(
-      selectedSpecializationObj ? selectedSpecializationObj.specialties : []
-    );
-    setValue("specialties", []);
-  };
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        setLoading(true);
+        const result = await specializationService.getSpecializationsPublic();
+        setSpecializations(result);
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Something went wrong");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSpecializations();
+  }, []);
 
   const handleProfilePictureChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -447,7 +405,6 @@ const AddDoctor = () => {
               variant="outlined"
               error={!!errors.specialization}
               helperText={errors.specialization?.message}
-              onChange={handleSpecializationChange}
             >
               {specializations.map((spec) => (
                 <MenuItem key={spec.name} value={spec.name}>
@@ -455,33 +412,23 @@ const AddDoctor = () => {
                 </MenuItem>
               ))}
             </TextField>
-            {specialties.length > 0 && (
+            
               <Box sx={{ mt: 2 }}>
                 <TextField
                   {...register("specialties", {
                     required: "Specialty is required",
                   })}
-                  select
+                  
                   fullWidth
                   label="Specialties"
                   variant="outlined"
                   error={!!errors.specialties}
                   helperText={errors.specialties?.message}
-                  SelectProps={{
-                    multiple: true,
-                    value: watch("specialties"),
-                    onChange: (e) =>
-                      setValue("specialties", e.target.value as string[]),
-                  }}
+                  
                 >
-                  {specialties.map((specialty) => (
-                    <MenuItem key={specialty} value={specialty}>
-                      {specialty}
-                    </MenuItem>
-                  ))}
                 </TextField>
               </Box>
-            )}
+            
           </Box>
 
           <Box sx={{ width: "90%", my: 2 }}>

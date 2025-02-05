@@ -63,3 +63,11 @@ export interface IDoctorAuthController {
   signIn(req: Request, res: Response, next: NextFunction): Promise<void>
   signOut(req: Request, res: Response, next: NextFunction): Promise<void>
 }
+
+export interface IDoctorService {
+  updateAvailability(id: string, updateData: Partial<IDoctor>): Promise<IDoctor>;
+}
+
+export interface IDoctorController {
+  updateAvailability(req: Request, res: Response, next: NextFunction): Promise<IDoctor>;
+}

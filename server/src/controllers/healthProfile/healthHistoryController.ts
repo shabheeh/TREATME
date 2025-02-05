@@ -35,6 +35,8 @@ class HealthHistoryController implements IHealthHistoryController {
             const { id } = req.params;
             const updateData = req.body;
 
+            console.log(updateData)
+
             if (!id || !updateData) {
                 throw new BadRequestError('Bad request')
             }

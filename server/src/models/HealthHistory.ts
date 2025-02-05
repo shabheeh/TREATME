@@ -1,12 +1,13 @@
 import { Schema, model, Types } from 'mongoose';
 import { 
     // IBodyMeasureMents, 
+    IHealthCondition,
     IHealthHistory, 
     IFamilyHistory, 
     IMedication, 
     IAllergy, 
     ISurgery 
-} from 'src/interfaces/IHealthHistory';
+} from '../interfaces/IHealthHistory';
 
 
 const MedicationSchema = new Schema<IMedication>({
@@ -19,16 +20,24 @@ const AllergySchema = new Schema<IAllergy>({
   allergicTo: { type: String, required: true },
   Severity: { type: String, required: true },
   reaction: { type: String, required: true },
+  reportedBy: { type: String, required: true },
 });
 
 const SurgerySchema = new Schema<ISurgery>({
   procedure: { type: String, required: true },
-  date: { type: Date, required: true },
+  year: { type: String, required: true },
+  reportedBy: { type: String, required: true },
 });
+
+const healthConditionSchema = new Schema<IHealthCondition>({
+  condition: { type: String, required: true },
+  reportedBy: { type: String, required: true }
+})
 
 const FamilyHistorySchema = new Schema<IFamilyHistory>({
   condition: { type: String, required: true },
   relationship: { type: String, required: true },
+  reportedBy: { type: String, required: true },
 });
 
 // const BodyMeasurementsSchema = new Schema<IBodyMeasureMents>({
@@ -54,13 +63,17 @@ const HealthHistorySchema = new Schema<IHealthHistory>({
   },
   medications: { type: [MedicationSchema], required: true },
   allergies: { type: [AllergySchema], required: true },
-  healthConditions: { type: [String], required: true },
+  healthConditions: { type: [healthConditionSchema], required: true },
   surgeries: { type: [SurgerySchema], required: true },
   familyHistory: { type: [FamilyHistorySchema], required: true },
   // bodyMeasurements: { type: BodyMeasurementsSchema, required: true },
-});
+},
+{
+    timestamps: true,
+}
+)
 
-export const HealthHistory = model<IHealthHistory>('HealthHistory', HealthHistorySchema);
+export const HealthHistoryModel = model<IHealthHistory>('HealthHistory', HealthHistorySchema);
 
-
+  
  

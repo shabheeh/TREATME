@@ -38,7 +38,15 @@ const StyledTabs = styled(Tabs)({
 
 export const CustomTabs: React.FC<CustomTabsProps> = ({ value, onChange, tabContent }) => {
   return (
-    <StyledTabs value={value} onChange={onChange} aria-label="tabs">
+    <StyledTabs
+      value={value}
+      onChange={onChange}
+      aria-label="tabs"
+      variant="scrollable"
+      scrollButtons="auto"
+      indicatorColor="primary"
+      textColor="primary"
+    >
       {tabContent.map((tab, index) => (
         <StyledTab
           key={index}

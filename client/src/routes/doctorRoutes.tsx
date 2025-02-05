@@ -6,6 +6,7 @@ import ProtectedRoute from './ProtectedRoute';
 import LayoutDoctor from '../Layouts/doctor/LayoutDoctor';
 import { Dashboard } from '../pages/doctor/Dashboard';
 import RegisterForm from '../components/doctor/RegisterForm';
+import Schedule from '../pages/doctor/Schedule';
 
 
 export const doctorRoutes = [
@@ -29,6 +30,7 @@ export const doctorRoutes = [
     }
   >
     <Route path="" element={<Dashboard />} />
+    <Route path='schedules' element={ <Schedule /> } />
     
   </Route>
 ];

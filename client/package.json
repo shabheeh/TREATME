@@ -10,19 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
     "@fontsource/noto-sans": "^5.1.1",
     "@mui/icons-material": "^6.3.1",
-    "@mui/material": "^6.4.1",
+    "@mui/material": "^6.4.3",
     "@mui/x-data-grid": "^7.23.6",
-    "@mui/x-date-pickers": "^7.24.1",
+    "@mui/x-date-pickers": "^7.25.0",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.5.0",
     "@toolpad/core": "^0.12.0",
     "axios": "^1.7.9",
     "cropperjs": "^1.6.2",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "loglevel": "^1.9.2",
     "lucide-react": "^0.473.0",
     "react": "^18.3.1",
@@ -34,6 +33,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
     "redux-persist": "^6.0.0",
+    "shadcn-ui": "^0.9.4",
     "sonner": "^1.7.1"
   },
   "devDependencies": {
