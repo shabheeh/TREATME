@@ -67,6 +67,25 @@ class DoctorAuthService {
             
         }
     }
+
+    async updateAvailability(id: string, updateData: Partial<IDoctor>): Promise<IDoctor> {
+        try {
+            const response = await api.doctor.patch(`/schedules/${id}`, { updateData })
+            const { doctor } = response.data;
+            return doctor;
+
+        } catch (error: unknown) {
+        
+            if (error instanceof Error) {
+                console.error(`Error updating doctor: ${error.message}`, error);
+                throw new Error(error.message)
+            }
+        
+            console.error(`Unknown error`, error);
+            throw new Error(`Something went error`)
+            
+        }
+    }
 }
 
 const tokenManager = new TokenManager()

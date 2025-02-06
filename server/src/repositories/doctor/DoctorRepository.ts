@@ -40,11 +40,10 @@ class DoctorRepository implements IDoctorRepository {
     async updateDoctor(id: string, updateData: Partial<IDoctor>): Promise<IDoctor> {
         try {
             const updatedDoctor = await this.model.findOneAndUpdate(
-                { id },
+                { _id: id },
                 { $set: updateData },
                 { 
                     new: true,
-                    runValidators: true,
                     lean: true
                 }
             ).select('-password');

@@ -1,13 +1,15 @@
+import dayjs from "dayjs";
 import { ISpecialization } from "../specialization/specialization.types";
 
-interface Slot {
-    startTime: string;
-    endTime: string;
+export interface Slot {
+    _id?: string;
+    startTime: dayjs.Dayjs;
+    endTime: dayjs.Dayjs;
     isBooked: boolean;
 }
 
-interface Availability {
-    day: string;
+export interface Availability {
+    date: dayjs.Dayjs;
     slots: Slot[]
 }
 
@@ -26,7 +28,7 @@ export interface IDoctor {
     experience: number;
     biography: string;
     profilePicture: string;
-    availability?: Availability[];
+    availability: Availability[];
 }
 
 export interface IDoctorSignUp {

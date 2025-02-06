@@ -1,16 +1,21 @@
 import { Request, Response, NextFunction } from "express";
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 
-interface Slot {
-    startTime: string;
-    endTime: string;
+export interface Slot {
+    startTime: Date;
+    endTime: Date;
     isBooked: boolean;
 }
 
-interface Availability {
-    day: string;
+export interface DaySchedule {
+    date: Date;
     slots: Slot[]
+}
+
+export interface Schedule {
+  doctorId: ObjectId;
+  availability: DaySchedule[];
 }
 
 export default interface IDoctor extends Document {
@@ -20,8 +25,7 @@ export default interface IDoctor extends Document {
     lastName: string;
     phone: string;
     gender: 'male' | 'female';
-    // specializaton: ObjectId;
-    specialization: string;
+    specialization: ObjectId;
     specialties: string[];
     languages: string[];
     registerNo: string;
@@ -30,7 +34,6 @@ export default interface IDoctor extends Document {
     profilePicture: string;
     imagePublicId: string;
     isActive: boolean;
-    availability: Availability[];
 }
 
 export interface IDoctorsFilter {
@@ -64,10 +67,10 @@ export interface IDoctorAuthController {
   signOut(req: Request, res: Response, next: NextFunction): Promise<void>
 }
 
-export interface IDoctorService {
-  updateAvailability(id: string, updateData: Partial<IDoctor>): Promise<IDoctor>;
+export interface IScheduleService {
+  updateAvailability(doctorId: string, updateData: Availability): Promise<Availability>;
 }
 
-export interface IDoctorController {
-  updateAvailability(req: Request, res: Response, next: NextFunction): Promise<IDoctor>;
+export interface IScheduleController {
+  updateAvailability(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

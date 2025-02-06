@@ -12,6 +12,14 @@ import DoctorAuthController from '../../controllers/doctor/authController'
 import { signinValidation } from '../../validators/signInValidator'
 import { validateApplicant } from '../../validators/applicantValidator';
 import { convertFormData } from '../../middlewares/convertFormData';
+import DoctorService from '../../services/doctor/scheduleService.ts';
+import DoctorController from '../../controllers/doctor/doctorController';
+import { isUserActive } from '../../middlewares/checkUserStatus';
+import { PatientModel } from '../../models/Patient';
+import PatientAuthService from '../../services/patient/authService';
+import PatientRepository from '../../repositories/patient/PatientRepository';
+import CacheService from '../../services/CacheService';
+import OtpService from '../../services/OtpService';
 
 
 const applicantRepository = new ApplicantRepository(ApplicantModel)
@@ -21,6 +29,15 @@ const applicantController = new ApplicantController(applicantService)
 const doctorRepository = new DoctorRepository(DoctorModel);
 const doctorAuthService = new DoctorAuthService(doctorRepository);
 const doctorAuthController = new DoctorAuthController(doctorAuthService) 
+
+
+const patientRepository = new PatientRepository(PatientModel);
+const cacheService = new CacheService()
+const otpService = new OtpService(cacheService)
+const patientAuthService = new PatientAuthService(patientRepository, otpService, cacheService)
+
+const doctorService = new DoctorService(doctorRepository);
+const doctorController = new DoctorController(doctorService)
 
 
 const router = express.Router()
@@ -42,5 +59,12 @@ router.delete('/applicants/:id', authenticate, authorize('admin'), applicantCont
 
 router.post('/auth/signin', signinValidation, doctorAuthController.signIn)
 router.post('/auth/signout', doctorAuthController.signOut)
+
+router.patch('/schedules/:id', 
+    authenticate, 
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('doctor'),
+    doctorController.updateAvailability
+)
 
 export default router
