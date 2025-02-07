@@ -2,20 +2,20 @@ import { Request, Response, NextFunction } from "express";
 import { Document, ObjectId } from "mongoose";
 
 
-export interface Slot {
+export interface ISlot {
     startTime: Date;
     endTime: Date;
     isBooked: boolean;
 }
 
-export interface DaySchedule {
+export interface IDaySchedule {
     date: Date;
-    slots: Slot[]
+    slots: ISlot[]
 }
 
-export interface Schedule {
+export interface ISchedule {
   doctorId: ObjectId;
-  availability: DaySchedule[];
+  availability: IDaySchedule[];
 }
 
 export default interface IDoctor extends Document {
@@ -68,9 +68,11 @@ export interface IDoctorAuthController {
 }
 
 export interface IScheduleService {
-  updateAvailability(doctorId: string, updateData: Availability): Promise<Availability>;
+  getSchedule(doctorId: string): Promise<ISchedule | null>
+  updateSchedule(doctorId: string, updateData: ISchedule): Promise<ISchedule>;
 }
 
 export interface IScheduleController {
-  updateAvailability(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getSchedule(req: Request, res: Response, next: NextFunction): Promise<void>
+  updateSchedule(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

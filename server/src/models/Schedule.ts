@@ -1,21 +1,21 @@
 import { Schema, model } from "mongoose";
-import { Schedule, Slot } from "../interfaces/IDoctor";
+import { IDaySchedule, ISchedule, ISlot } from "../interfaces/IDoctor";
 
 
-const slotSchema = new Schema<Slot>({
+const slotSchema = new Schema<ISlot>({
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     isBooked: { type: Boolean, default: false }
 });
 
-const scheduleSchema = new Schema<Schedule>({
-    doctorId: { type: Schema.Types.ObjectId, ref: "Doctor", required: true, unique: true }, // One per doctor
-    availability: [
-        {
-            date: { type: Date, required: true },
-            slots: [slotSchema] 
-        }
-    ]
+const availabilitySchema = new Schema<IDaySchedule>({
+    date: { type: Date, required: true },
+    slots: [slotSchema]
+})
+
+const scheduleSchema = new Schema<ISchedule>({
+    doctorId: { type: Schema.Types.ObjectId, ref: "Doctor", required: true, unique: true }, 
+    availability: [availabilitySchema]
 });
 
-export const AvailabilityModel =  model<Schedule>("Schedule", scheduleSchema);
+export const ScheduleModel =  model<ISchedule>("Schedule", scheduleSchema);

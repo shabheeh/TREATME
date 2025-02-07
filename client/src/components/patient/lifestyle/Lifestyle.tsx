@@ -35,42 +35,42 @@ const Lifestyle: React.FC = () => {
           {
             id: 'doExercise',
             question: 'Do you exercise regularly (at least 3 times a week)?',
-            answer: result.doExercise !== undefined ? result.doExercise : null,
+            answer: result && result.doExercise !== undefined ? result.doExercise : null,
           },
           {
             id: 'sleepSevenPlusHrs',
             question: 'Do you get at least 7 hours of sleep most nights?',
-            answer: result.sleepSevenPlusHrs !== undefined ? result.sleepSevenPlusHrs : null,
+            answer: result && result.sleepSevenPlusHrs !== undefined ? result.sleepSevenPlusHrs : null,
           },
           {
             id: 'doSmoke',
             question: 'Do you smoke or use tobacco products?',
-            answer: result.doSmoke !== undefined ? result.doSmoke : null,
+            answer: result && result.doSmoke !== undefined ? result.doSmoke : null,
           },
           {
             id: 'doAlcohol',
             question: 'Do you consume alcohol more than twice a week?',
-            answer: result.doAlcohol !== undefined ? result.doAlcohol : null,
+            answer: result && result.doAlcohol !== undefined ? result.doAlcohol : null,
           },
           {
             id: 'followDietPlan',
             question: 'Do you follow a balanced diet with fruits and vegetables?',
-            answer: result.followDietPlan !== undefined ? result.followDietPlan : null,
+            answer: result && result.followDietPlan !== undefined ? result.followDietPlan : null,
           },
           {
             id: 'highStress',
             question: 'Do you regularly experience high levels of stress?',
-            answer: result.highStress !== undefined ? result.highStress : null,
+            answer: result && result.highStress !== undefined ? result.highStress : null,
           },
           {
             id: 'doMeditate',
             question: 'Do you practice meditation or mindfulness?',
-            answer: result.doMeditate !== undefined ? result.doMeditate : null,
+            answer: result && result.doMeditate !== undefined ? result.doMeditate : null,
           },
           {
             id: 'vaccinatedCovid19',
             question: 'Have you been vaccinated against COVID-19?',
-            answer: result.vaccinatedCovid19 !== undefined ? result.vaccinatedCovid19 : null,
+            answer: result && result.vaccinatedCovid19 !== undefined ? result.vaccinatedCovid19 : null,
           },
         ]);
       } catch (error) {

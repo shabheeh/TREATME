@@ -40,7 +40,7 @@ const HealthHistory = () => {
       
     }
     fetchHealthHistory()
-  }, [])
+  }, [currentPatient])
 
   const updateHealthHistory = (healthData: IHealthHistory) => {
     setHealthHistory(healthData)

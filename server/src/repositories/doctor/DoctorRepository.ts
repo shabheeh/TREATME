@@ -27,6 +27,7 @@ class DoctorRepository implements IDoctorRepository {
     async findDoctorByEmail(email: string): Promise<IDoctor | null> {
         try {
             const doctor = await this.model.findOne({ email })
+                .populate('specialization')
                 .lean();
             return doctor;
         } catch (error) {

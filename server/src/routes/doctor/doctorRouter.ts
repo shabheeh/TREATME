@@ -12,14 +12,16 @@ import DoctorAuthController from '../../controllers/doctor/authController'
 import { signinValidation } from '../../validators/signInValidator'
 import { validateApplicant } from '../../validators/applicantValidator';
 import { convertFormData } from '../../middlewares/convertFormData';
-import DoctorService from '../../services/doctor/scheduleService.ts';
-import DoctorController from '../../controllers/doctor/doctorController';
 import { isUserActive } from '../../middlewares/checkUserStatus';
 import { PatientModel } from '../../models/Patient';
 import PatientAuthService from '../../services/patient/authService';
 import PatientRepository from '../../repositories/patient/PatientRepository';
 import CacheService from '../../services/CacheService';
 import OtpService from '../../services/OtpService';
+import ScheduleRepository from '../../repositories/doctor/ScheduleRepository';
+import { ScheduleModel } from '../../models/Schedule';
+import ScheduleService from '../../services/doctor/scheduleService.ts';
+import ScheduleController from '../../controllers/doctor/scheduleController';
 
 
 const applicantRepository = new ApplicantRepository(ApplicantModel)
@@ -36,8 +38,9 @@ const cacheService = new CacheService()
 const otpService = new OtpService(cacheService)
 const patientAuthService = new PatientAuthService(patientRepository, otpService, cacheService)
 
-const doctorService = new DoctorService(doctorRepository);
-const doctorController = new DoctorController(doctorService)
+const scheduleRepository = new ScheduleRepository(ScheduleModel);
+const scheduleService = new ScheduleService(scheduleRepository);
+const scheduleController = new ScheduleController(scheduleService)
 
 
 const router = express.Router()
@@ -60,11 +63,17 @@ router.delete('/applicants/:id', authenticate, authorize('admin'), applicantCont
 router.post('/auth/signin', signinValidation, doctorAuthController.signIn)
 router.post('/auth/signout', doctorAuthController.signOut)
 
+router.get('/schedules/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    scheduleController.getSchedule
+)
+
 router.patch('/schedules/:id', 
     authenticate, 
     isUserActive(patientAuthService, doctorAuthService),
     authorize('doctor'),
-    doctorController.updateAvailability
+    scheduleController.updateSchedule
 )
 
 export default router

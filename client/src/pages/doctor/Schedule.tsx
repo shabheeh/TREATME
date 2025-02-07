@@ -24,35 +24,60 @@ import { toast } from 'sonner';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/app/store';
 import isBetween from 'dayjs/plugin/isBetween';
-import doctorAuthService from '../../services/doctor/authService';
-import { Slot, Availability } from '../../types/doctor/doctor.types';
+
+import { ISchedule, IDaySchedule, ISlot } from '../../types/doctor/doctor.types';
+import scheduleService from '../../services/doctor/scheduleService';
+
+dayjs.extend(isBetween);
+
+const SPECIALIZATION_DURATION: { [key: string]: number } = {
+  'Dermatology': 20,
+  'Urgent Care': 15,
+  'Therapy': 45,
+  'Psychiatry': 30,
+  'Default': 30
+};
 
 export default function ScheduleManagement() {
   const today = dayjs();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(today);
-  const [schedules, setSchedules] = useState<Availability[]>([]);
+  const [schedules, setSchedules] = useState<IDaySchedule[]>([]); 
   const [isAddSlotDialogOpen, setIsAddSlotDialogOpen] = useState(false);
   const [newTimeSlot, setNewTimeSlot] = useState<{ startTime: Dayjs | null, endTime: Dayjs | null }>({
     startTime: null,
     endTime: null
   });
-
   const doctor = useSelector((state: RootState) => state.user.doctor);
 
   useEffect(() => {
-    if (doctor) {
-      const availability = doctor.availability?.map(avail => ({
-        ...avail,
-        date: dayjs(avail.date)
-      })) || [];
-      setSchedules(availability);
-    }
+    if (!doctor) return;
+    const fetchSchedule = async () => {
+      try {
+        const scheduleResponse: ISchedule | null = await scheduleService.getSchedule(doctor._id);
+        if (scheduleResponse && scheduleResponse.availability) {
+          const scheduleWithDayjsDates = scheduleResponse.availability.map((avail: IDaySchedule) => ({
+            date: dayjs(avail.date),
+            slots: avail.slots.map((slot: ISlot) => ({
+              ...slot,
+              startTime: dayjs(slot.startTime),
+              endTime: dayjs(slot.endTime) 
+            }))
+          }));
+          setSchedules(scheduleWithDayjsDates);
+        } else {
+          setSchedules([]); 
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Something went wrong');
+      }
+    };
+    fetchSchedule();
   }, [doctor]);
 
   const formatDate = (date: Dayjs) => {
     return date.format('MMM D, YYYY');
   };
-  dayjs.extend(isBetween);
+
   const formatTime = (date: Dayjs | null | undefined) => {
     if (!date || !(date instanceof dayjs)) {
       return 'Invalid Time';
@@ -61,50 +86,74 @@ export default function ScheduleManagement() {
   };
 
   const addTimeSlot = async () => {
-    if (!newTimeSlot.startTime || !newTimeSlot.endTime) return;
-    
-    if (newTimeSlot.endTime.isBefore(newTimeSlot.startTime)) {
-      toast.warning('End time must be after start time');
-      return;
-    }
 
-    const newSlot: Slot = {
-      startTime: newTimeSlot.startTime,
-      endTime: newTimeSlot.endTime,
-      isBooked: false
-    };
+    if (!newTimeSlot.startTime) return;
+    
+    const startTime = newTimeSlot.startTime;
+    
+    const specialization = doctor?.specialization?.name || 'default';
+    const slotDuration = SPECIALIZATION_DURATION[specialization] || SPECIALIZATION_DURATION['default'];
+    const endTime = startTime.add(slotDuration, 'minute');
+    
+    if (selectedDate.isSame(today, 'day')) {
+      const currentTime = dayjs(); 
+      if (startTime.isBefore(currentTime)) {
+        toast.warning('Cannot set a slot time that passed today');
+        return;
+      }
+    }
     
     const existingAvailability = schedules.find(avail => avail.date.isSame(selectedDate, 'day'));
     const existingSlots = existingAvailability ? existingAvailability.slots : [];
     
-    const isOverlapping = existingSlots.some(slot => 
-      (newSlot.startTime.isBetween(slot.startTime, slot.endTime) ||
-       newSlot.endTime.isBetween(slot.startTime, slot.endTime) ||
-       (dayjs(slot.startTime).isBetween(newSlot.startTime, newSlot.endTime)))
+    const isDuplicateStartTime = existingSlots.some(slot => 
+      slot.startTime.isSame(startTime)
     );
-
+    
+    if (isDuplicateStartTime) {
+      toast.warning('A time slot with this start time already exists');
+      return;
+    }
+    
+    const isOverlapping = existingSlots.some(slot => 
+      (startTime.isBetween(slot.startTime, slot.endTime) ||
+       endTime.isBetween(slot.startTime, slot.endTime) ||
+       (slot.startTime.isBetween(startTime, endTime)))
+    );
+    
     if (isOverlapping) {
       toast.warning('Time slot overlaps with an existing slot');
       return;
     }
-
+    
+    const newSlot: ISlot = {
+      startTime,
+      endTime,
+      isBooked: false
+    };
+    
     const updatedSchedules = schedules.map(avail => 
       avail.date.isSame(selectedDate, 'day') 
         ? { ...avail, slots: [...avail.slots, newSlot].sort((a, b) => a.startTime.diff(b.startTime)) }
         : avail
     );
-
+    
     if (!existingAvailability) {
       updatedSchedules.push({ date: selectedDate, slots: [newSlot] });
     }
-
+    
     try {
       if (!doctor) return;
-      const result = await doctorAuthService.updateAvailability(doctor._id, { availability: updatedSchedules });
-      setSchedules(result.availability.map(avail => ({
-        ...avail,
-        date: dayjs(avail.date)
-      })));
+      const result = await scheduleService.updateSchedule(doctor._id, { availability: updatedSchedules });
+      const formatedResult = result.availability.map((avail: IDaySchedule) => ({
+        date: dayjs(avail.date),
+        slots: avail.slots.map((slot: ISlot) => ({
+          ...slot,
+          startTime: dayjs(slot.startTime),
+          endTime: dayjs(slot.endTime) 
+        }))
+      }));
+      setSchedules(formatedResult);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong');
     } finally {
@@ -115,49 +164,39 @@ export default function ScheduleManagement() {
 
   const removeTimeSlot = async (date: Dayjs, slotId: string) => {
     try {
-      // Step 1: Find the availability for the given date
+
       const existingAvailability = schedules.find(avail => avail.date.isSame(date, 'day'));
       if (!existingAvailability) {
         toast.error('No availability found for the selected date');
         return;
       }
-  
-      // Step 2: Remove the slot with the given ID
+
       const updatedSlots = existingAvailability.slots.filter(slot => slot._id !== slotId);
-  
-      // Step 3: Prepare the updated availability data for the specific date
-      const updatedAvailability = {
-        ...existingAvailability,
+
+      const updatedAvailability: IDaySchedule = {
+        date: existingAvailability.date,
         slots: updatedSlots
       };
-  
-      // Step 4: Prepare the updated availability array
+
       const updatedSchedules = schedules.map(avail =>
         avail.date.isSame(date, 'day') ? updatedAvailability : avail
       );
-  
-      // Step 5: Update the database with the updated availability
+
       if (!doctor) {
         toast.error('Doctor information is not available');
         return;
       }
-  
-      await doctorAuthService.updateAvailability(doctor._id, {
+      await scheduleService.updateSchedule(doctor._id, {
         availability: updatedSchedules
       });
-      console.log(schedules, 'before')
-  
-      // Step 6: Update the local state
+
       setSchedules(updatedSchedules);
-  
-      console.log(schedules, 'after')
       toast.success('Time slot removed successfully');
     } catch (error) {
-      // Handle errors gracefully
+
       toast.error(error instanceof Error ? error.message : 'Failed to remove time slot');
     }
   };
-
 
   const generateWeekDates = () => {
     const dates = [];
@@ -210,7 +249,7 @@ export default function ScheduleManagement() {
                   }}
                 >
                   <Typography variant="body2">
-                    {`${formatTime(dayjs(slot?.startTime))} to ${formatTime(dayjs(slot?.endTime))}`}
+                    {`${formatTime(slot.startTime)} to ${formatTime(slot.endTime)}`}
                   </Typography>
                   <IconButton 
                     size="small" 
@@ -230,6 +269,8 @@ export default function ScheduleManagement() {
       );
     });
   };
+
+  console.log(doctor?.specialization.name, 'doc')
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -269,20 +310,28 @@ export default function ScheduleManagement() {
           maxWidth="xs"
           fullWidth
         >
-          <DialogTitle color='primary' sx={{ my: 1}}>Add Time Slot for {formatDate(selectedDate)}</DialogTitle>
+          <DialogTitle color='primary' sx={{ my: 1}}>
+            Add Time Slot for {formatDate(selectedDate)}
+            {doctor?.specialization?.name && (
+              <Typography variant="body2" color="text.secondary">
+                {doctor.specialization.name} - Default Slot Duration: {SPECIALIZATION_DURATION[doctor.specialization.name] || 30} mins
+              </Typography>
+            )}
+          </DialogTitle>
           <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mt: 1 }}>
+            <Box sx={{ mt: 1 }}>
               <TimePicker
+              sx={{ width: '100%'}}
                 label="Start Time"
                 value={newTimeSlot.startTime}
-                onChange={(newValue) => setNewTimeSlot(prev => ({ ...prev, startTime: newValue as Dayjs }))}
-                views={['hours', 'minutes']}
-                ampm
-              />
-              <TimePicker
-                label="End Time"
-                value={newTimeSlot.endTime}
-                onChange={(newValue) => setNewTimeSlot(prev => ({ ...prev, endTime: newValue as Dayjs }))}
+                onChange={(newValue) => setNewTimeSlot(prev => ({ 
+                  ...prev, 
+                  startTime: newValue as Dayjs,
+                  endTime: newValue ? newValue.add(
+                    SPECIALIZATION_DURATION[doctor?.specialization?.name || 'default'] || 30, 
+                    'minute'
+                  ) : null
+                }))}
                 views={['hours', 'minutes']}
                 ampm
               />
@@ -292,7 +341,7 @@ export default function ScheduleManagement() {
             <Button onClick={() => setIsAddSlotDialogOpen(false)}>Cancel</Button>
             <Button 
               onClick={addTimeSlot} 
-              disabled={!newTimeSlot.startTime || !newTimeSlot.endTime}
+              disabled={!newTimeSlot.startTime}
             >
               Add Slot
             </Button>

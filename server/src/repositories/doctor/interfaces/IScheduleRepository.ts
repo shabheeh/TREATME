@@ -1,3 +1,8 @@
+import { ISchedule } from "../../../interfaces/IDoctor";
 
+interface IScheduleRepository {
+    findSchedule(doctorId: string): Promise<ISchedule | null>;
+    updateSchedule(doctorId: string, updateData: Partial<ISchedule>): Promise<ISchedule>
+}
 
-class
+export default IScheduleRepository
