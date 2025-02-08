@@ -194,7 +194,7 @@ class PatientAuthController implements IPatientAuthController {
             res.status(200).json({
                 patient: newPatient,
                 accessToken,
-                partialUser
+                partialUser 
             })
 
         } catch (error) {

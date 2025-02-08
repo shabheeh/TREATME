@@ -150,11 +150,11 @@ class PatientAuthService implements IPatientAuthService {
             const patient = await this.patientRepository.findPatientByEmail(email);
 
             if (patient && !patient.isActive) {
-                throw new AuthError(AuthErrorCode.USER_BLOCKED)
+                throw new AuthError(AuthErrorCode.USER_BLOCKED, undefined, 403)
             }
 
             if (!patient) {
-                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
+                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400)
             }
 
             if (!patient.password) {
@@ -168,7 +168,7 @@ class PatientAuthService implements IPatientAuthService {
 
 
             if (!isPasswordMatch) {
-                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
+                throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400)
             }
 
             const payload: TokenPayload = {

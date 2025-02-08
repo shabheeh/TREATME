@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import {
   Message,
-  Medication,
+// Medication,
   EventNote,
   ContactSupport
 } from '@mui/icons-material';
@@ -30,7 +30,7 @@ const menuItems = [
   { text: 'Appointments', icon: <EventNote />, path: '/appointments' },
   { text: 'Messages', icon: <Message />, path: '/messages' },
   { text: 'Health Profile', icon: <RiHealthBookFill size={23} />, path: '/health-profile' },
-  { text: 'Medications', icon: <Medication />, path: '/Medications' },
+  // { text: 'Medications', icon: <Medication />, path: '/Medications' },
   { text: 'Help & Support', icon: <ContactSupport />, path: '/help' },
 ];
 

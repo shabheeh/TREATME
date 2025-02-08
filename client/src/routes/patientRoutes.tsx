@@ -10,6 +10,10 @@ import LayoutAccount from '../Layouts/patient/LayoutAccount';
 import MyAccount from '../pages/patient/MyAccount';
 import Family from '../pages/patient/Family';
 import HealthProfile from '../pages/patient/HealthProfile';
+import TherapyReason from '../components/patient/appointment/TherapyReason';
+import LayoutAppointment from '../Layouts/patient/LayoutAppointment';
+import ReviewBehaviouralHealth from '../components/patient/appointment/ReviewBehaviouralHealth';
+import ReviewHealthHistory from '../components/patient/appointment/ReviewHealthHistory';
 
 
 export const patientRoutes = [
@@ -41,6 +45,20 @@ export const patientRoutes = [
     <Route path="" element={<MyAccount />} />
     <Route path="family-members" element={<Family />} />
   </Route>,
+  
+  <Route path='/'
+  element={
+    <ProtectedRoute allowedRoles={['patient']}>
+      <LayoutAppointment />
+    </ProtectedRoute>
+  }
+  >
+  <Route path='therapy/reason' element={<TherapyReason /> } />
+  <Route path='review-behavioural-health' element={<ReviewBehaviouralHealth />} />,
+  <Route path='review-health-history' element={<ReviewHealthHistory />} />,
+
+</Route>,
+  
   <Route
     path="/"
     element={
@@ -53,3 +71,4 @@ export const patientRoutes = [
     <Route path='health-profile' element={<HealthProfile />} />
   </Route>
 ];
+

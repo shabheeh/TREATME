@@ -35,7 +35,6 @@ const MENTAL_HEALTH_CONDITIONS = [
   'Eating Disorder',
   'Schizophrenia',
   'Personality Disorder',
-  'Other'
 ] as const;
 
 const THERAPY_STATUS_OPTIONS = [
@@ -66,7 +65,6 @@ const COPING_MECHANISMS = [
   'Breathing Exercises',
   'Professional Help',
   'Support Groups',
-  'Other'
 ] as const;
 
 const BehavioralHealth = () => {

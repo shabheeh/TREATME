@@ -8,10 +8,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { toast } from 'sonner';
 import ConfirmActionModal from "../../basics/ConfirmActionModal";
+import { transitionStyles } from '../../../utils/viewTransition';
+import { useViewTransition } from '../../../hooks/viewTransitionHook';
 
 interface MedicationsProps {
   medications: IMedication[];
-  onUpdate: (healthHistory: IHealthHistory) => void
+  onUpdate: (healthHistory: IHealthHistory) => void;
 }
 
 const frequencyOptions = [
@@ -27,6 +29,8 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
   const [medicationToRemove, setMedicationToRemove] = useState<IMedication | null>(null)
   
   const currentPatient = useSelector((state: RootState) => state.user.currentUser);
+
+  const { withTransition } = useViewTransition();
 
   const { 
     register, 
@@ -71,63 +75,72 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
     }
   };
 
-  const onSubmit = (data: IMedication) => {
-    const updatedMedications = [...medications, data];
-    updateMedications(updatedMedications);
-    reset();
+  const toggleMedicationInputs = () => {
+    withTransition(() => {
+      setShowMedicationInputs(!showMedicationInputs);
+    });
   };
 
-  
+  const onSubmit = (data: IMedication) => {
+    withTransition(async () => {
+      const updatedMedications = [...medications, data];
+      await updateMedications(updatedMedications);
+      reset();
+    });
+  };
 
   const handleRemoveMedication = () => {
-    if(!medicationToRemove) return
-    const updatedMedications = medications.filter(
-      med => med._id !== medicationToRemove._id 
-    );
-    updateMedications(updatedMedications);
+    if(!medicationToRemove) return;
+    withTransition(async () => {
+      const updatedMedications = medications.filter(
+        med => med._id !== medicationToRemove._id 
+      );
+      await updateMedications(updatedMedications);
+    });
   };
 
 
   return (
-    <Box sx={{ width: "90%", mb: 2 }}
-    component="form"
-    onSubmit={handleSubmit(onSubmit)}
-    >
-      
-      { medications.length === 0 && 
-      <Typography variant="body1" sx={{ mb: 2, }}>
-      Are you currently taking any medication?
-      </Typography>
-      }
+    <>
+      <style>{transitionStyles}</style>
+      <Box 
+        sx={{ width: "90%", mb: 2 }}
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        {medications.length === 0 && (
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Are you currently taking any medication?
+          </Typography>
+        )}
 
-      {medications.length === 0 && (
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant={showMedicationInputs ? "contained" : "outlined"}
-            startIcon={showMedicationInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
-            onClick={() => setShowMedicationInputs(true)}
-          >
-            Yes
-          </Button>
+        {medications.length === 0 && (
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant={showMedicationInputs ? "contained" : "outlined"}
+              startIcon={showMedicationInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
+              onClick={toggleMedicationInputs}
+            >
+              Yes
+            </Button>
 
-          <Button
-            variant={showMedicationInputs ? "outlined" : "contained"}
-            startIcon={showMedicationInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
-            onClick={() => setShowMedicationInputs(false)}
-          >
-            No
-          </Button>
-        </Stack>
-      )}
+            <Button
+              variant={showMedicationInputs ? "outlined" : "contained"}
+              startIcon={showMedicationInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
+              onClick={toggleMedicationInputs}
+            >
+              No
+            </Button>
+          </Stack>
+        )}
 
-      {showMedicationInputs && (
-        <Box sx={{ width: "100%", my: 2 }}>
-          
-          {medications.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 600, fontSize: '18px',  mb: 4 }}>
-              My medications
-            </Typography>
+        {showMedicationInputs && (
+          <Box sx={{ width: "100%", my: 2 }}>
+            {medications.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography sx={{ fontWeight: 600, fontSize: '18px', mb: 4 }}>
+                  My medications
+                </Typography>
               <Grid container spacing={2} sx={{ borderBottom: "1px solid #e0e0e0", pb: 1, pt:0,  backgroundColor: "#F5F5F5", }}>
                 <Grid item xs={4}>
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
@@ -151,7 +164,16 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
                 </Grid>
               </Grid>
               {medications.map((medication, index) => (
-                <Grid container spacing={2} key={index} sx={{ borderBottom: "1px solid #e0e0e0",  py: 1,  }}>
+                  <Grid 
+                    container 
+                    spacing={2} 
+                    key={index} 
+                    sx={{ 
+                      borderBottom: "1px solid #e0e0e0",
+                      py: 1,
+                      viewTransitionName: `medication-${medication._id}` // Add transition name
+                    }}
+                  >
                   <Grid item xs={4}>
                     <Typography variant="body1">{medication.name}</Typography>
                   </Grid>
@@ -181,7 +203,11 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
           </Typography>
           }
 
-          <Box>
+        <Box 
+              sx={{ 
+                viewTransitionName: 'medication-form' // Add transition name for the form
+              }}
+            >
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
           
           <TextField
@@ -252,6 +278,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
       handleConfirm={handleRemoveMedication}
       />
     </Box>
+    </>
   );
 };
 

@@ -61,9 +61,11 @@ const FamilyHistory = () => {
       try {
         setLoading(true);
         const result = await healthProfileService.getHealthHistory(currentPatient._id);
-        setFamilyHistory(result.familyHistory || []);
+
+        setFamilyHistory(result?.familyHistory || []);
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Failed to fetch health history');
+        setFamilyHistory([]);
       } finally {
         setLoading(false);
       }
@@ -94,7 +96,6 @@ const FamilyHistory = () => {
           relationship: relationship.trim(),
         },
       ];
-
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
         'familyHistory',
@@ -116,7 +117,6 @@ const FamilyHistory = () => {
       const updatedHistory: IFamilyHistory[] = familyHistory.filter(
         history => history.condition !== conditionToRemove
       );
-
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
         'familyHistory',

@@ -15,9 +15,10 @@ type SpecializationCardProps = {
   note: string;
   fee: number;
   image: string;
+  link: string;
 };
 
-const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, description, note, fee, image }) => {
+const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, description, note, fee, image, link }) => {
   return (
     <Card
       sx={{
@@ -81,6 +82,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, descripti
           Fee: ₹{fee}
         </Typography>
         <Button
+          href={link}
           fullWidth
           sx={{
             borderRadius: '50px',
