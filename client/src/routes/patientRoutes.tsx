@@ -14,6 +14,7 @@ import TherapyReason from '../components/patient/appointment/TherapyReason';
 import LayoutAppointment from '../Layouts/patient/LayoutAppointment';
 import ReviewBehaviouralHealth from '../components/patient/appointment/ReviewBehaviouralHealth';
 import ReviewHealthHistory from '../components/patient/appointment/ReviewHealthHistory';
+import ListDoctors from '../components/patient/appointment/ListDoctors';
 
 
 export const patientRoutes = [
@@ -56,6 +57,7 @@ export const patientRoutes = [
   <Route path='therapy/reason' element={<TherapyReason /> } />
   <Route path='review-behavioural-health' element={<ReviewBehaviouralHealth />} />,
   <Route path='review-health-history' element={<ReviewHealthHistory />} />,
+  <Route path='doctors' element={<ListDoctors />} />
 
 </Route>,
   

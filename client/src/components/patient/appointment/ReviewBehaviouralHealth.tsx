@@ -33,7 +33,7 @@ const ReviewBehaviouralHealth = () => {
 
       <Divider sx={{ my: 4 }} />
       <Link 
-            href="#"  
+            href="/review-health-history"  
             sx={{ 
               display: "flex", 
               alignItems: "center", 

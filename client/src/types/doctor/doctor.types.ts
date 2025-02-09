@@ -20,6 +20,7 @@ export interface ISchedule {
 }
 
 
+
 export interface IDoctor {
     _id: string;
     email: string;
