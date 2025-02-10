@@ -1,16 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
-import AdminAuthService from "../../services/admin/AdminAuthService";
-import { IAdminAuthController } from "../../interfaces/IAdmin";
-
-
-
+import { IAdminAuthController, IAdminAuthService } from "../../interfaces/IAdmin";
 
 class AdminAuthController implements IAdminAuthController {
 
-    private adminAuthService: AdminAuthService;
+    private adminAuthService: IAdminAuthService;
 
-    constructor(adminAuthService: AdminAuthService) {
+    constructor(adminAuthService: IAdminAuthService) {
         this.adminAuthService = adminAuthService
     }
 

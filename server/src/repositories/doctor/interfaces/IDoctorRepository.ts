@@ -3,7 +3,7 @@ import IDoctor, { IDoctorsFilter, IDoctorsFilterResult, ISchedule} from "src/int
 
 export interface getDoctorsWithSchedulesQuery {
     specialization: string,
-    gender: 'male' | 'female' | 'all';
+    gender: 'male' | 'female';
     language: string;
     selectedDate: Date;
     page: string

@@ -1,3 +1,4 @@
+import { Request, Response, NextFunction } from "express";
 import { Document, ObjectId } from "mongoose";
 
 
@@ -8,7 +9,19 @@ export interface IAppointment extends Document {
     date: Date;
     duration: string;
     reason: string;
-    status: 'requested' | 'confirmed' | 'completed' | 'cancelled'
+    status: 'pending' | 'requested' | 'confirmed' | 'completed' | 'cancelled',
+
 }
 
 export default IAppointment
+
+
+export interface IAppointmentService {
+    createAppointment(appointmentData: Partial<IAppointment>): Promise<Partial<IAppointment>>
+    updateAppointment(id: string, updateData: Partial<IAppointment>): Promise<Partial<IAppointment>>
+}
+
+export interface IAppointmentController {
+    createAppointment(req: Request, res: Response, next: NextFunction): Promise<void>
+    updateAppointment(req: Request, res: Response, next: NextFunction): Promise<void>
+}

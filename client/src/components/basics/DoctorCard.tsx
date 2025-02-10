@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -10,7 +10,9 @@ import {
   Grid,
   styled
 } from '@mui/material';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import { formatMonthDay, formatTime, getDayName } from '../../utils/dateUtils';
+import { IDaySchedule } from '../../types/doctor/doctor.types';
+
 
 
 
@@ -24,42 +26,47 @@ const TimeChip = styled(Chip)(({ theme }) => ({
   }
 }));
 
+
 interface ProviderCardProps {
   name: string;
-  role: string;
-  imageUrl: string;
+  specialties: string[];
+  profilePicture: string;
   experience: number;
-  availability: {
-    dayName: string;
-    date: string;
-    slots: string[];
-  }[];
-//   onViewFullAvailability?: () => void;
-}
+  availability: IDaySchedule[]
+};
+
 
 const DoctorCard: React.FC<ProviderCardProps> = ({
   name,
-  role,
-  imageUrl,
+  specialties,
+  profilePicture,
   availability,
   experience,
-//   onViewFullAvailability
+
 }) => {
+
+  const [selectedSlot, setSelectedSlot] = useState(null)
+
+  const handleSlotClick = (slot) => {
+    setSelectedSlot(slot)
+  }
+  
   return (
+
+
     <Card 
       sx={{ 
         maxWidth: '100%',
         border: '1px solid',
         borderColor: 'teal',
         boxShadow: 'none',
-        // borderRadius: 2,
 
       }}
     >
       <CardContent sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Avatar
-            src={imageUrl}
+            src={profilePicture}
             sx={{ 
               width: 70, 
               height: 70,
@@ -77,12 +84,12 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                 mb: 0.5
               }}
             >
-              {name}
+              Dr. {name}
             </Link>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {/* <LocalHospitalIcon sx={{ color: 'text.secondary', fontSize: 20 }} /> */}
-              <Typography color="text.secondary">
-                {role}
+            
+              <Typography sx={{ fontSize: '14px', color: 'GrayText'}}>
+                {specialties.join(' ')}
               </Typography>
               <Typography color="text.secondary">
                 {experience}
@@ -93,71 +100,73 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
 
         
         <Box sx={{ textAlign: 'right', maxWidth: 330 }}>
-        <Grid container spacing={2}>
-            {availability.map((day, index) => (
-            <Grid item xs={12} key={index} sx={{ display: 'flex', flexDirection: 'column', }}>
-                
-                {/* Day and Date Row */}
-                <Grid container direction="row" spacing={1}>
-                <Grid item>
-                    <Typography
-                    component="span"
-                    color="text.secondary"
-                    sx={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'left' }}
-                    >
-                    {day.dayName}
-                    </Typography>
-                </Grid>
-                <Grid item>
-                    <Typography component="span" color="text.secondary" sx={{ fontSize: '12px' }}>
-                    {day.date}
-                    </Typography>
-                </Grid>
-                </Grid>
-
-                {/* Time Slots */}
-                <Grid container direction="row" spacing={1}>
-  {day.slots.slice(0, 3).map((slot, slotIndex) => (
-    <Grid item key={slotIndex} xs={3}> 
-      <TimeChip label={slot} size="small" />
-    </Grid>
-  ))}
-  
-  {day.slots.length > 3 && (
-    <Grid item xs={3}>
-      <Link
-        href="#"
-        sx={{ color: 'primary.main', fontSize: '0.875rem' }}
-        onClick={() => console.log("Show more slots")} 
-      >
-        {`+${day.slots.length - 3} more`}
-      </Link>
-    </Grid>
-  )}
-</Grid>
-
-
-
+  <Grid container spacing={1}>
+    {availability &&
+      availability.slice(0, 2).map((day, index) => (
+        <Grid item xs={12} key={index} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Grid container direction="row" spacing={1} alignItems="center">
+            <Grid item>
+              <Typography
+                component="span"
+                color="text.secondary"
+                sx={{ fontSize: '12px', fontWeight: 'bold', textAlign: 'left' }}
+              >
+                {getDayName(day.date)}
+              </Typography>
             </Grid>
-            ))}
-        </Grid>
+            <Grid item>
+              <Typography component="span" color="text.secondary" sx={{ fontSize: '12px' }}>
+                {formatMonthDay(day.date)}
+              </Typography>
+            </Grid>
+          </Grid>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
-        <Link
-            href="#"
-            underline="hover"
-            // onClick={onViewFullAvailability}
-            sx={{
-            color: 'primary.main',
-            fontSize: '0.875rem',
-            mt: 1,
-            display: 'inline-block'
-            }}
-        >
-            View Full Availability
-        </Link>
-        </Box>
-        </Box>
+          <Grid container direction="row" spacing={1}>
+                {day.slots.slice(0, 3).map((slot, slotIndex) => (
+                  <Grid item key={slotIndex} xs={3}> 
+                    <TimeChip
+                     label={formatTime(slot.startTime)} size="small" 
+                     onClick={() => handleSlotClick(slot)}
+                    sx={{
+                      backgroundColor:  slot === selectedSlot ? 'primary.main' : 'inherit',
+                      color: slot === selectedSlot ? 'white' : 'primary.main',
+                      ":hover": {backgroundColor: 'teal', color: 'white'}
+                    }}
+                  />
+                  </Grid>
+                ))}
+  
+                {day.slots.length > 3 && (
+                  <Grid item xs={3}>
+                    <Link
+                      href="#"
+                      sx={{ color: 'primary.main', fontSize: '0.875rem' }}
+                      onClick={() => console.log("Show more slots")} 
+                    >
+                      {`+${day.slots.length - 3} more`}
+                    </Link>
+                  </Grid>
+                )}
+              </Grid>
+        </Grid>
+      ))}
+  </Grid>
+
+  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+    <Link
+      href="#"
+      underline="hover"
+      sx={{
+        color: 'primary.main',
+        fontSize: '0.875rem',
+        display: 'inline-block',
+      }}
+    >
+      View Full Availability
+    </Link>
+  </Box>
+</Box>
+
 
       </CardContent>
     </Card>

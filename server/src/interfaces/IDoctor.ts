@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Document, ObjectId } from "mongoose";
+import { getDoctorsWithSchedulesQuery, getDoctorsWithSchedulesResult } from "src/repositories/doctor/interfaces/IDoctorRepository";
 
 
 export interface ISlot {
@@ -78,4 +79,12 @@ export interface IScheduleService {
 export interface IScheduleController {
   getSchedule(req: Request, res: Response, next: NextFunction): Promise<void>
   updateSchedule(req: Request, res: Response, next: NextFunction): Promise<void>;
+}
+
+export interface IDoctorService {
+  getDoctorsWithSchedules(query: getDoctorsWithSchedulesQuery): Promise<getDoctorsWithSchedulesResult>
+}
+
+export interface IDoctorController {
+  getDoctorsWithSchedules(req: Request, res: Response, next: NextFunction): Promise<void>
 }

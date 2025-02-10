@@ -1,21 +1,19 @@
-import dayjs from "dayjs";
+
 import { ISpecialization } from "../specialization/specialization.types";
 
 export interface ISlot {
     _id?: string;
-    startTime: dayjs.Dayjs;
-    endTime: dayjs.Dayjs;
+    startTime: Date;
+    endTime: Date;
     isBooked: boolean;
 }
 
 export interface IDaySchedule {
-    date: dayjs.Dayjs;
+    date: Date;
     slots: ISlot[]
 }
 
 export interface ISchedule {
-    _id: string;
-    doctorId: string;
     availability: IDaySchedule[]
 }
 
@@ -66,4 +64,23 @@ export interface IApplicant {
     languages: string[]
     idProof: string;
     resume: string;
+}
+
+
+export interface IDoctorWithSchedule extends IDoctor {
+    availability: IDaySchedule[]
+}
+
+export interface getDoctorWithScheduleQuery {
+    specialization: string;
+    gender: 'male' | 'female' | 'any' | '';
+    language: string,
+    page: number;
+    selectedDate: Date;
+}
+
+export interface getDoctorsWithSchedulesResult {
+    doctors: IDoctorWithSchedule[]
+    currentPage: number;
+    totalPages: number;
 }

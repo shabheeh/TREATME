@@ -81,7 +81,6 @@ class DoctorAuthService implements IDoctorAuthService {
         }
     }
 
-
 }
 
 export default DoctorAuthService

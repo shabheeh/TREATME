@@ -22,25 +22,34 @@ import ScheduleRepository from '../../repositories/doctor/ScheduleRepository';
 import { ScheduleModel } from '../../models/Schedule';
 import ScheduleService from '../../services/doctor/scheduleService.ts';
 import ScheduleController from '../../controllers/doctor/scheduleController';
+import DoctorService from '../../services/doctor/doctorService';
+import DoctorController from '../../controllers/doctor/doctorController';
 
-
+// applicant di
 const applicantRepository = new ApplicantRepository(ApplicantModel)
 const applicantService = new ApplicantService(applicantRepository)
 const applicantController = new ApplicantController(applicantService)
 
+// doctor auth di
 const doctorRepository = new DoctorRepository(DoctorModel);
 const doctorAuthService = new DoctorAuthService(doctorRepository);
 const doctorAuthController = new DoctorAuthController(doctorAuthService) 
 
-
+// patient di for middleware
 const patientRepository = new PatientRepository(PatientModel);
 const cacheService = new CacheService()
 const otpService = new OtpService(cacheService)
 const patientAuthService = new PatientAuthService(patientRepository, otpService, cacheService)
 
+// schedule di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
 const scheduleService = new ScheduleService(scheduleRepository);
-const scheduleController = new ScheduleController(scheduleService)
+const scheduleController = new ScheduleController(scheduleService);
+
+// doctor di common
+const doctorService = new DoctorService(doctorRepository);
+const doctorController = new DoctorController(doctorService);
+
 
 
 const router = express.Router()
@@ -74,6 +83,12 @@ router.patch('/schedules/:id',
     isUserActive(patientAuthService, doctorAuthService),
     authorize('doctor'),
     scheduleController.updateSchedule
+)
+
+router.get('/doctors', 
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    doctorController.getDoctorsWithSchedules
 )
 
 export default router

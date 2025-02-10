@@ -99,84 +99,97 @@ class DoctorRepository implements IDoctorRepository {
     }
 
     async getDoctorsWithSchedules(query: getDoctorsWithSchedulesQuery): Promise<getDoctorsWithSchedulesResult> {
-        try {
-            const { specialization, gender, language, page = '1', selectedDate } = query;
+      try {
+        const { specialization, gender, language, page = '1', selectedDate } = query;
     
-            const skip = (parseInt(page) - 1) * 10;
-            const limit = 10;
+        const skip = (parseInt(page) - 1) * 10;
+        const limit = 10;
     
-            const selectedDateISO = selectedDate ? new Date(selectedDate) : new Date();
-            const nextDayISO = selectedDate ? new Date(selectedDateISO.getTime() + 86400000) : null;
+        // Parse the selected date
+        const selectedDateISO = selectedDate ? new Date(selectedDate) : new Date();
     
-            const totalDoctorsCount = await this.model.countDocuments({
+        // Count the total number of doctors matching the query
+        const totalDoctorsCount = await this.model.countDocuments({
+          ...(specialization && { specialization }),
+          ...(gender && { gender: gender.toString() }),
+          ...(language && { languages: language.toString() }),
+        });
+    
+        // Aggregate the doctors and their availability
+        const doctors = await this.model.aggregate([
+          {
+            $match: {
               ...(specialization && { specialization }),
               ...(gender && { gender: gender.toString() }),
               ...(language && { languages: language.toString() }),
-            });
+            }
+          },
+          {
+            $lookup: {
+              from: "schedules",
+              localField: "_id",
+              foreignField: "doctorId",
+              as: "schedule",
+            }
+          },
+          {
+            $unwind: {
+              path: "$schedule",
+              // preserveNullAndEmptyArrays: true 
+            }
+          },
+          {
+            $addFields: {
+              availability: {
+                $filter: {
+                  input: "$schedule.availability",
+                  as: "av",
+                  cond: {
+                    $gte: ["$$av.date", selectedDateISO] // Filter availability dates >= selected date
+                  }
+                }
+              }
+            }
+          },
+          {
+            $match: {
+              $expr: {
+                $gt: [{ $size: "$availability" }, 0] // Only include doctors with future availability
+              }
+            }
+          },
+          {
+            $project: {
+              _id: 1,
+              firstName: 1,
+              lastName: 1,
+              specialization: 1,
+              specialties: 1,
+              gender: 1,
+              languages: 1,
+              availability: 1,
+            }
+          },
+          { $skip: skip },
+          { $limit: limit }
+        ]);
     
-            const doctors = await this.model.aggregate([
-                {
-                  $match: {
-                    ...(specialization && { specialization }), 
-                    ...(gender && { gender: gender.toString() }), 
-                    ...(language && { languages: language.toString() }), 
-                  }
-                },
-                {
-                  $lookup: {
-                    from: "schedules", 
-                    localField: "_id",
-                    foreignField: "doctorId",
-                    as: "availability",
-                  }
-                },
-                {
-                  $addFields: {
-                    availability: {
-                      $filter: {
-                        input: "$availability",
-                        as: "av",
-                        cond: {
-                          $and: [
-                            { $gte: ["$$av.date", selectedDateISO] },
-                            { $lt: ["$$av.date", nextDayISO] }
-                          ]
-                        }
-                      }
-                    }
-                  }
-                },
-                {
-                  $match: { "availability.0": { $exists: true } }
-                },
-                {
-                  $project: {
-                    _id: 1,
-                    firstName: 1,
-                    lastName: 1,
-                    specialization: 1,
-                    gender: 1,
-                    languages: 1,
-                    availability: 1,
-                  }
-                },
-                { $skip: skip },
-                { $limit: limit }
-              ]);
+        console.log('Doctors with availability:', doctors);
     
-              return {
-                doctors,                 
-                currentPage: parseInt(page),  
-                totalPages: Math.ceil(totalDoctorsCount / limit) 
-              };
+        return {
+          doctors,
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(totalDoctorsCount / limit)
+        };
     
-        } catch (error) {
-            throw new AppError(
-                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-                500
-            );
-        }
+      } catch (error) {
+        throw new AppError(
+          `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          500
+        );
+      }
     }
+  
     
 }
 
