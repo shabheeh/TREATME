@@ -3,7 +3,14 @@ import IPatient, { IPatientsFilter, IPatientsFilterResult } from "../../interfac
 import IPatientRepository from "./interface/IPatientRepository";
 import { AppError } from '../../utils/errors';
 
-
+interface Query {
+    $or?: Array<{
+      firstName?: { $regex: string; $options: string };
+      lastName?: { $regex: string; $options: string };
+      email?: { $regex: string; $options: string };
+      phone?: { $regex: string; $options: string };
+    }>;
+  }
 
 
 class PatientRepository implements IPatientRepository {
@@ -91,7 +98,7 @@ class PatientRepository implements IPatientRepository {
             const { page, limit, search } = filter;
             const skip = (page - 1) * limit;
 
-            const query: any = {}
+            const query: Query = {}
 
             query.$or = [
                 { firstName: { $regex: search, $options: 'i' } },

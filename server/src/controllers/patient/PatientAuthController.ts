@@ -3,7 +3,7 @@ import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
 import { IPatientAuthService, IPatientAuthController } from "../../interfaces/IPatient";
 import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
-import { TokenPayload } from "../../utils/jwt";
+import { ITokenPayload } from "../../utils/jwt";
 
 class PatientAuthController implements IPatientAuthController { 
 
@@ -206,20 +206,20 @@ class PatientAuthController implements IPatientAuthController {
     completeProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            if (!req.user || !(req.user as TokenPayload).email) {
+            if (!req.user || !(req.user as ITokenPayload).email) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
             }
 
             const { patientData } = req.body;
 
-            const { email } = req.user;
+            const { email } = req.user as ITokenPayload;
 
             patientData.email = email
 
             const patient = await this.patientAuthService.completeProfileAndSignUp(patientData)
 
             res.status(200).json({
-                patient
+                patient 
             }) 
   
         } catch (error) { 

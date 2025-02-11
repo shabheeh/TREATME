@@ -1,5 +1,5 @@
-// src/middleware/errorHandler.ts
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
+
+import { Request, Response, ErrorRequestHandler } from 'express';
 import { AppError } from '../utils/errors';
 import logger from '../configs/logger';
 
@@ -7,7 +7,6 @@ export const errorHandler: ErrorRequestHandler = (
     error: Error | AppError,
     _req: Request,
     res: Response,
-    _next: NextFunction
 ): void => {
 
     logger.error(`${error.message} - ${error.stack}`);

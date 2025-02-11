@@ -3,7 +3,7 @@ import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepos
 import bcrypt from 'bcryptjs'
 import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
-import { generateTokens, TokenPayload } from "../../utils/jwt";
+import { generateTokens, ITokenPayload } from "../../utils/jwt";
 
 
 
@@ -38,7 +38,7 @@ class DoctorAuthService implements IDoctorAuthService {
             }
 
 
-            const payload: TokenPayload = {
+            const payload: ITokenPayload = {
                 email: doctor.email,
                 role: 'doctor'
             }

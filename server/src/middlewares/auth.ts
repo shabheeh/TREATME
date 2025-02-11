@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken, TokenPayload } from '../utils/jwt';
+import { verifyAccessToken, ITokenPayload } from '../utils/jwt';
 import logger from '../configs/logger';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-    }
-  }
-} 
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       user?: ITokenPayload;
+//     }
+//   }
+// } 
  
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -22,10 +22,9 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
   
     try {
 
-      const decoded = await verifyAccessToken(token) 
+      const decoded = await verifyAccessToken(token) as ITokenPayload
 
-      req.user = decoded as TokenPayload
-
+      req.user = decoded 
 
       next();
 
@@ -50,14 +49,15 @@ export const authorize = (...roles: string[]) => {
         return
       }
 
-      if (!roles.includes(req.user.role)) {
+      if (!roles.includes((req.user as ITokenPayload)?.role)) {
         res.status(403).json({
           message: `Access Denied`,
         });
-        return
+        return;
       }
-
-      next();
+      
+ 
+      next(); 
 
     } catch (error: unknown) {
 

@@ -10,11 +10,14 @@ const appointmentSchema = new Schema<IAppointment>({
     reason: { type: String, required: true },
     date: { type: Date,  },
     duration: { type: String,  },
-    status: { type: String, required: true }
+    status: { type: String, required: true },
+    fee: { type: Number, required: true },
+    slotId: { type: Types.ObjectId },
+    dayId: { type: Types.ObjectId }
 },
 {
     timestamps: true,
 }
 );
 
-export const AppointmentModal = model<IAppointment>('Appointment', appointmentSchema)
+export const AppointmentModel = model<IAppointment>('Appointment', appointmentSchema)

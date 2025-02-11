@@ -3,18 +3,18 @@ import { Document, ObjectId } from "mongoose";
 import { getDoctorsWithSchedulesQuery, getDoctorsWithSchedulesResult } from "src/repositories/doctor/interfaces/IDoctorRepository";
 
 
-export interface ISlot {
+export interface ISlot extends Document {
     startTime: Date;
     endTime: Date;
     isBooked: boolean;
 }
 
-export interface IDaySchedule {
+export interface IDaySchedule extends Document {
     date: Date;
     slots: ISlot[]
 }
 
-export interface ISchedule {
+export interface ISchedule extends Document {
   doctorId: ObjectId;
   availability: IDaySchedule[];
 }

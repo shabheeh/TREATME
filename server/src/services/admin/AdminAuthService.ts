@@ -1,7 +1,7 @@
 import bcrpyt from 'bcryptjs';
 import logger from '../../configs/logger';
 import IAdminRepository from 'src/repositories/admin/interfaces/IAdminRepository';
-import { generateTokens, TokenPayload } from '../../utils/jwt';
+import { generateTokens, ITokenPayload } from '../../utils/jwt';
 import { IAdminAuthService, SignInAdminResult } from '../../interfaces/IAdmin';
 import { AppError, AuthError, AuthErrorCode } from '../../utils/errors';
 
@@ -33,7 +33,7 @@ class AdminAuthService implements IAdminAuthService {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS)
             }
 
-            const payload: TokenPayload = {
+            const payload: ITokenPayload = {
                 email: admin.email,
                 role: 'admin'
             }

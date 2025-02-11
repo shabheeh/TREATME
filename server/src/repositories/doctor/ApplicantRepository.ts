@@ -5,6 +5,15 @@ import { AppError } from "../../utils/errors";
 import { IApplicantsFilter, IApplicantsFilterResult } from "src/interfaces/IApplicant";
 
 
+interface Query {
+    $or?: Array<{
+      firstName?: { $regex: string; $options: string };
+      lastName?: { $regex: string; $options: string };
+      email?: { $regex: string; $options: string };
+      phone?: { $regex: string; $options: string };
+    }>;
+  }
+
 class ApplicantRepository implements IApplicantRepository {
 
     private readonly model: Model<IApplicant>
@@ -42,14 +51,13 @@ class ApplicantRepository implements IApplicantRepository {
             const { page, limit, search } = filter;
             const skip = (page - 1) * limit;
 
-            const query: any = {}
+            const query: Query = {}
 
             query.$or = [
                 { firstName: { $regex: search, $options: 'i' } },
                 { lastName: { $regex: search, $options: 'i' } },
                 { email: { $regex: search, $options: 'i' } },
                 { phone: { $regex: search, $options: 'i' } }
-
             ]
 
             const [applicants, total] = await Promise.all([

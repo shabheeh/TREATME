@@ -7,6 +7,7 @@ import {
     Typography,
     Box
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 
 type SpecializationCardProps = {
@@ -16,9 +17,17 @@ type SpecializationCardProps = {
   fee: number;
   image: string;
   link: string;
+  id: string
 };
 
-const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, description, note, fee, image, link }) => {
+const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, description, note, fee, image, link, id }) => {
+
+  const navigate = useNavigate()
+
+  const handleGetStarted = () => {
+    navigate(link, { state: { specializationId: id, fee: fee } as { specializationId: string, fee: number}})
+  }
+
   return (
     <Card
       sx={{
@@ -82,7 +91,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, descripti
           Fee: ₹{fee}
         </Typography>
         <Button
-          href={link}
+          onClick={handleGetStarted}
           fullWidth
           sx={{
             borderRadius: '50px',

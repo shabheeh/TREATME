@@ -20,6 +20,8 @@ import doctorService from "../../../services/doctor/doctorService";
 import { IDoctorWithSchedule } from "../../../types/doctor/doctor.types";
 import { toast } from "sonner";
 import Loading from "../../basics/Loading";
+import { useLocation, useNavigate } from "react-router-dom";
+import appointmentService from "../../../services/appointment/appointmentService";
 
 type Gender = "male" | "female" | "any" | "";
 
@@ -45,7 +47,21 @@ const ListDoctors = () => {
   const [doctors, setDoctors] = useState<IDoctorWithSchedule[] | []>([]);
   const [loading, setLoading] = useState(false);
 
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const state = location.state
+
+  console.log('state', state)
+
   useEffect(() => {
+
+    if (!state) {
+      navigate('/visitnow')
+      return
+    }
+
     const query = {
       selectedDate: date || new Date(),
       gender: gender,
@@ -55,9 +71,11 @@ const ListDoctors = () => {
     };
     const fetchDoctors = async () => {
       try {
+        console.log(query)
         setLoading(true);
         const result = await doctorService.getDoctorsWithSchedules(query);
         setDoctors(result.doctors);
+        setPage(result.currentPage)
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
@@ -67,7 +85,7 @@ const ListDoctors = () => {
       }
     };
     fetchDoctors();
-  }, []);
+  }, [gender, language, date]);
 
   const handleGenderChange = (event: React.ChangeEvent<{ value: string }>) => {
     const value = event.target.value as Gender;
@@ -78,6 +96,25 @@ const ListDoctors = () => {
     const value = event.target.value as string;
     setLanguage(value);
   };
+
+  const handleDateChange = (event: React.ChangeEvent<{ value: Date }>) => {
+    const value = event.target.value as Date
+    setDate(value)
+  }
+
+  const handleSlotBooking = async (doctorId: string, dayId: string, slotId: string) => {
+    const appointmentId = state.appointmentId
+    try {
+      const result = await appointmentService.updateAppointment(appointmentId, { doctorId })
+      navigate('/review-appointment', { state: { appointment: result._id, slotId, dayId }})
+    } catch (error) {
+      if(error instanceof Error) {
+        toast.error(error.message)
+      }else {
+        console.error('Something went wrong')
+      }
+    }
+  }
 
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
@@ -95,7 +132,7 @@ const ListDoctors = () => {
             <Close />
           </IconButton>
         </Box>
-        <ProgressBar value={20} />
+        <ProgressBar value={80} />
       </Box>
 
       <Divider sx={{ my: 4 }} />
@@ -163,6 +200,7 @@ const ListDoctors = () => {
             type="date"
             label="Select Date"
             value={date}
+            onChange={handleDateChange}
             // onChange={handleDateChange}
             InputLabelProps={{ shrink: true }}
           />
@@ -175,11 +213,13 @@ const ListDoctors = () => {
       ) : (
         doctors.map((doctor) => (
           <DoctorCard
+            id={doctor._id}
             name={doctor.firstName + " " + doctor.lastName}
             experience={doctor.experience}
             availability={doctor.availability}
             profilePicture={doctor.profilePicture}
             specialties={doctor.specialties}
+            handleSlotClick={handleSlotBooking}
           />
         ))
       )}

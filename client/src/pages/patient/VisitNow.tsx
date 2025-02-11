@@ -108,6 +108,7 @@ const VisitNow = () => {
                   fee={specialization.fee}
                   image={specialization.image}
                   link={`/${(specialization.name).toLowerCase()}/reason`}
+                  id={specialization._id}
                 />
               </Grid>
             ))}

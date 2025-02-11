@@ -13,6 +13,11 @@ import {
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
 import ProgressBar from "../../basics/PrgressBar";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
+import { useLocation, useNavigate } from "react-router-dom";
+import appointmentService from "../../../services/appointment/appointmentService";
+import { toast } from "sonner";
 
 const concerns = [
   "I have been feeling down",
@@ -28,9 +33,41 @@ const concerns = [
 ];
 
 const TherapyReason = () => {
+
   const [selectedConcern, setSelectedConcern] = useState<string>("");
 
-  
+  const navigate = useNavigate()
+  const location = useLocation()
+  const state = location.state
+  const currentPatient = useSelector((state: RootState) => state.user.currentUser)
+
+
+  if (!state) {
+    navigate('/visitnow')
+    return null
+  }
+
+
+  const startAppointment = async() => {
+    if (!currentPatient) return
+    const appointmentData = {
+      patientId: currentPatient._id,
+      specialization: state.specializationId,
+      fee: state.fee,
+      status: 'pending',
+      reason: selectedConcern,
+    }
+      try {
+        const result = await appointmentService.createAppointment(appointmentData)
+        navigate('/review-health-history', { state :{ appointmentId: result._id }})
+      } catch (error) {
+        if(error instanceof Error) {
+          toast.error(error.message)
+        }else {
+          toast.error('Unknown error')
+        }
+      }
+  }
 
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
@@ -105,10 +142,12 @@ const TherapyReason = () => {
 
           <Box display="flex" justifyContent="flex-end" mt={4}>
             <Button 
+              onClick={startAppointment}
               variant="contained" 
               sx={{ py: 1.5, px: 5, borderRadius: 8 }}
               disabled={!selectedConcern} 
             >
+              
               Continue
             </Button>
           </Box>

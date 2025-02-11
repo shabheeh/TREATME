@@ -20,8 +20,6 @@ class AdminDoctorService implements IAdminDoctorService {
 
         try {
 
-
-
             const cloudinaryResponse = await uploadToCloudinary(imageFile, 'ProfilePictures/Doctors');
             const imageUrl = cloudinaryResponse.url;
             const imageId = cloudinaryResponse.publicId
@@ -39,6 +37,7 @@ class AdminDoctorService implements IAdminDoctorService {
             const newDoctor = await this.doctorRepository.createDoctor(doctor)
 
             const { password, ...withoutPassword } = newDoctor;
+            void password;
 
             const html = generateHtml(withoutPassword.email, notHashedPassword)
 

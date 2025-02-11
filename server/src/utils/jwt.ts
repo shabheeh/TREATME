@@ -9,20 +9,23 @@ if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
     throw new Error('JWT secrets are not defined in env');
 }
 
+
 // Types
-export interface TokenPayload {
+export interface ITokenPayload {
     email: string;
     role: 'admin' | 'patient' | 'doctor';
     exp?: number;
     iat?: number;
 }
 
+
+
 interface Tokens {
     accessToken: string;
     refreshToken: string;
 }
 
-export const generateTokens = (payload: TokenPayload): Tokens => { 
+export const generateTokens = (payload: ITokenPayload): Tokens => { 
     try {
         const accessToken = jwt.sign(
             payload,
@@ -71,7 +74,7 @@ export const verifyRefreshToken = <T>(token: string): T => {
 
 export const refreshAccessToken = (refreshToken: string): string => {
     try {
-        const decoded = verifyRefreshToken<TokenPayload>(refreshToken);
+        const decoded = verifyRefreshToken<ITokenPayload>(refreshToken);
 
         const {email, role } = decoded;
         

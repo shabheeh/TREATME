@@ -4,6 +4,16 @@ import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from "src/interfaces/ID
 import { AppError } from "../../utils/errors";
 
 
+interface Query {
+  $or?: Array<{
+    firstName?: { $regex: string; $options: string };
+    lastName?: { $regex: string; $options: string };
+    email?: { $regex: string; $options: string };
+    phone?: { $regex: string; $options: string };
+  }>;
+}
+
+
 class DoctorRepository implements IDoctorRepository {
     
     private readonly model: Model<IDoctor>
@@ -68,7 +78,7 @@ class DoctorRepository implements IDoctorRepository {
             const { page, limit, search } = filter;
             const skip = (page - 1) * limit;
 
-            const query: any = {}
+            const query: Query = {}
 
             query.$or = [
                 { firstName: { $regex: search, $options: 'i' } },
@@ -105,17 +115,14 @@ class DoctorRepository implements IDoctorRepository {
         const skip = (parseInt(page) - 1) * 10;
         const limit = 10;
     
-        // Parse the selected date
         const selectedDateISO = selectedDate ? new Date(selectedDate) : new Date();
     
-        // Count the total number of doctors matching the query
         const totalDoctorsCount = await this.model.countDocuments({
           ...(specialization && { specialization }),
           ...(gender && { gender: gender.toString() }),
           ...(language && { languages: language.toString() }),
         });
-    
-        // Aggregate the doctors and their availability
+ 
         const doctors = await this.model.aggregate([
           {
             $match: {
@@ -135,7 +142,6 @@ class DoctorRepository implements IDoctorRepository {
           {
             $unwind: {
               path: "$schedule",
-              // preserveNullAndEmptyArrays: true 
             }
           },
           {
@@ -145,7 +151,7 @@ class DoctorRepository implements IDoctorRepository {
                   input: "$schedule.availability",
                   as: "av",
                   cond: {
-                    $gte: ["$$av.date", selectedDateISO] // Filter availability dates >= selected date
+                    $gte: ["$$av.date", selectedDateISO] 
                   }
                 }
               }
@@ -154,7 +160,7 @@ class DoctorRepository implements IDoctorRepository {
           {
             $match: {
               $expr: {
-                $gt: [{ $size: "$availability" }, 0] // Only include doctors with future availability
+                $gt: [{ $size: "$availability" }, 0] 
               }
             }
           },
@@ -173,8 +179,7 @@ class DoctorRepository implements IDoctorRepository {
           { $skip: skip },
           { $limit: limit }
         ]);
-    
-        console.log('Doctors with availability:', doctors);
+  
     
         return {
           doctors,

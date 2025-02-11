@@ -11,12 +11,33 @@ class AppointmentRepository implements IAppointmentRepository {
         this.model = model
     }
 
-    async createAppointment(apointmentData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
+    async createAppointment(appointmentData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
         try {
-            const appointment = await this.model.create(apointmentData);
 
-            if (appointment) {
+            
+
+            const appointment = await this.model.create(appointmentData);
+
+            if (!appointment) {
                 throw new AppError('Something went wrong')
+            }
+
+            return appointment
+
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async getAppointmentById(id: string): Promise<Partial<IAppointment>> {
+        try {
+            const appointment = await this.model.findById(id);
+
+            if (!appointment) {
+                throw new AppError('Somethig went Wrong')
             }
             return appointment
         } catch (error) {
@@ -29,6 +50,8 @@ class AppointmentRepository implements IAppointmentRepository {
 
     async updateAppointment(id: string, updateData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
         try {
+
+
             const appointment = await this.model.findOneAndUpdate(
                 { _id: id },
                 { $set: updateData },

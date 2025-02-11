@@ -64,9 +64,6 @@ export function isSameDay(date1: Date | string, date2: Date | string): boolean {
   const d1 = date1 instanceof Date ? date1 : new Date(date1);
   const d2 = date2 instanceof Date ? date2 : new Date(date2);
 
-  console.log('Date 1:', d1);
-  console.log('Date 2:', d2);
-
 
   if (isNaN(d1.getTime()) || isNaN(d2.getTime())) {
     console.error('Invalid date input');

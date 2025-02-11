@@ -10,11 +10,27 @@ import {
 import { ArrowBack, Close } from "@mui/icons-material";
 import ProgressBar from "../../basics/PrgressBar";
 import HealthHistory from "../healthHistory/HealthHistory";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 
 
 const ReviewHealthHistory = () => {
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const state = location.state
+
+  useEffect(() => {
+    if (!state) {
+      navigate('/visitnow')
+      return
+    }
+  }, [state, navigate])
+
+  const handleContinue = async () => {
+    navigate('/review-behavioural-health', { state : state })
+  }
 
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
@@ -26,7 +42,7 @@ const ReviewHealthHistory = () => {
             <Close />
           </IconButton>
         </Box>
-        <ProgressBar value={20} />
+        <ProgressBar value={40} />
       </Box>
 
       <Divider sx={{ my: 4 }} />
@@ -54,6 +70,7 @@ const ReviewHealthHistory = () => {
       <HealthHistory />
       <Box display="flex" justifyContent="flex-end" mt={4}>
             <Button 
+              onClick={handleContinue}
               variant="contained" 
               sx={{ py: 1.5, px: 5, borderRadius: 8 }}
             >

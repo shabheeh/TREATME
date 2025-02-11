@@ -2,15 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import IPatient, { IPatientAccountController, IPatientAccountService } from "src/interfaces/IPatient";
 import { AppError } from "../../utils/errors";
-import { TokenPayload } from "../../utils/jwt";
+import { ITokenPayload } from "src/utils/jwt";
+// import { ITokenPayload } from "../../utils/jwt";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-    }
-  }
-}
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       user?: ITokenPayload;
+//     }
+//   }
+// }
 
 
 class PatientAcccountController implements IPatientAccountController {
@@ -28,7 +29,7 @@ class PatientAcccountController implements IPatientAccountController {
                 throw new AppError('User not authenticated')
             }
 
-            const identifier = req.user.email;
+            const { email } = req.user as ITokenPayload
 
             
 
@@ -44,7 +45,7 @@ class PatientAcccountController implements IPatientAccountController {
             
 
             
-            const updatedData = await this.patientAccountService.updateProfile(identifier, patientData, imageFile)
+            const updatedData = await this.patientAccountService.updateProfile(email, patientData, imageFile)
 
 
             res.status(200).json({

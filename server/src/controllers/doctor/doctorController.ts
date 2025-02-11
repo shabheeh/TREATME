@@ -15,12 +15,14 @@ class DoctorController implements IDoctorController {
     getDoctorsWithSchedules = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const query = {
-                specialization: req.body.specialization,
-                gender: req.body.gender,
-                language: req.body.language,
-                page: req.body.page,
-                selectedDate: req.body.selectedDate || new Date()
+                specialization: req.query.specialization,
+                gender: req.query.gender,
+                language: req.query.language,
+                page: req.query.page,
+                selectedDate: req.query.selectedDate || new Date()
             } as getDoctorsWithSchedulesQuery;
+
+            console.log(query)
 
             const result = await this.doctorService.getDoctorsWithSchedules(query);
 

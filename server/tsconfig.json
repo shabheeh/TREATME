@@ -25,9 +25,12 @@
       "baseUrl": ".",
       "paths": {
       "src/*": ["src/*"],
-      "typeRoots": ["./node_modules/@types", "./src/types"]
+      "typeRoots": ["./node_modules/@types", "./src/types", "./types"]
       },
     },
     "exclude": ["node_modules"],
-    "include": ["./src/**/*.ts"]
+    "include": [
+      "./src/**/*.ts",
+      "types/**/*.d.ts"
+    ]
   } 

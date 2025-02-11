@@ -29,6 +29,12 @@ import BehaviouralHealthRepository from '../../repositories/healthProfile/Behavi
 import { BehaviouralHealthModel } from '../../models/BehaviouralHealth';
 import BehaviouralHealthService from '../../services/healthProfile/BehaviouralHealthService';
 import BehaviouralHealthController from '../../controllers/healthProfile/behaviouralHealthController';
+import AppointmentRepository from '../../repositories/appointment/AppointmentRepository';
+import { AppointmentModel } from '../../models/Appointment';
+import AppointmentController from '../../controllers/appointment/appointmentController';
+import AppointmentService from '../../services/appointment/appointmentService';
+import ScheduleRepository from '../../repositories/doctor/ScheduleRepository';
+import { ScheduleModel } from '../../models/Schedule';
 
 const router = express.Router()
 
@@ -65,6 +71,12 @@ const lifestyleController = new LifestyleController(lifestyleService)
 const behaviouralHealthRepository = new BehaviouralHealthRepository(BehaviouralHealthModel);
 const behavioralHealthService = new BehaviouralHealthService(behaviouralHealthRepository);
 const behaviouralHealController = new BehaviouralHealthController(behavioralHealthService);
+ 
+const scheduleRepository = new ScheduleRepository(ScheduleModel)
+
+const appointmentRepository = new AppointmentRepository(AppointmentModel)
+const appointmentService = new AppointmentService(appointmentRepository, scheduleRepository)
+const appointmentController = new AppointmentController(appointmentService)
 
 router.post('/auth/refresh-token',tokenController.handleRefreshToken)
 router.get('/auth/status', authenticate, checkUserStatus(patientAuthService, doctorAuthService))
@@ -120,6 +132,24 @@ router.patch('/behavioural-health/:id',
     behaviouralHealController.updateBehavouralHealth
 )
 
+router.post('/appointments',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient', 'doctor'),
+    appointmentController.createAppointment
+)
 
+router.get('/appointments/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    appointmentController.getAppointmentById
+)
+
+router.put('/appointments/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient', 'doctor'),
+    appointmentController.updateAppointment
+)
 
 export default router  

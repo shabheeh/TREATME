@@ -17,6 +17,19 @@ import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
+console.log('Memory Usage at Startup:', process.memoryUsage());
+
+// setInterval(() => {
+//     const memoryUsage = process.memoryUsage();
+//     console.log('Memory Usage:', {
+//       rss: `${(memoryUsage.rss / 1024 / 1024).toFixed(2)} MB`,
+//       heapTotal: `${(memoryUsage.heapTotal / 1024 / 1024).toFixed(2)} MB`,
+//       heapUsed: `${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB`,
+//       external: `${(memoryUsage.external / 1024 / 1024).toFixed(2)} MB`,
+//       arrayBuffers: `${(memoryUsage.arrayBuffers / 1024 / 1024).toFixed(2)} MB`
+//     });
+//   }, 10000);
+
 
 const corsOptions = { 
     origin: 'http://localhost:5173', 

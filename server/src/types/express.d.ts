@@ -1,10 +1,10 @@
-import { TokenPayload } from '../utils/jwt'
+import { ITokenPayload } from '../utils/jwt'
 
 
 declare global {
   namespace Express {
     interface Request {
-      user?: TokenPayload;
+      user?: ITokenPayload;
     }
   }
 }

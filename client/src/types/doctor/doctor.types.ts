@@ -9,6 +9,7 @@ export interface ISlot {
 }
 
 export interface IDaySchedule {
+    _id?: string;
     date: Date;
     slots: ISlot[]
 }

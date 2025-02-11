@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import IPatient, { IPatientAuthService, SignInResult, googleSignInResult } from '../../interfaces/IPatient';
 import IPatientRepository from '../../repositories/patient/interface/IPatientRepository';
-import { generateTokens, TokenPayload } from '../../utils/jwt';
+import { generateTokens, ITokenPayload } from '../../utils/jwt';
 import CacheService from '../CacheService';
 import OtpService from '../OtpService';
 import logger from '../../configs/logger';
@@ -130,6 +130,8 @@ class PatientAuthService implements IPatientAuthService {
 
             const { password, ...userWithoutPassword } = newUser;
 
+            void password;
+
             return { newUser: userWithoutPassword };
 
         } catch (error) {
@@ -171,7 +173,7 @@ class PatientAuthService implements IPatientAuthService {
                 throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400)
             }
 
-            const payload: TokenPayload = {
+            const payload: ITokenPayload = {
                 email: patient.email,
                 role: 'patient',
             }
@@ -316,8 +318,8 @@ class PatientAuthService implements IPatientAuthService {
             }
 
 
-            let patient = await this.patientRepository.findPatientByEmail(payload.email)
-            let partialUser = false;
+            const patient = await this.patientRepository.findPatientByEmail(payload.email)
+            const partialUser = false;
 
             if (patient && !patient.isActive) {
                 throw new AuthError(AuthErrorCode.USER_BLOCKED)
@@ -325,7 +327,7 @@ class PatientAuthService implements IPatientAuthService {
 
 
             if(patient) {
-                const jwtPayload: TokenPayload = {
+                const jwtPayload: ITokenPayload = {
                     email: patient.email,
                     role: 'patient',
                 }
@@ -345,7 +347,7 @@ class PatientAuthService implements IPatientAuthService {
 
             await this.cacheService.store(`google:${newPatient.email}`, JSON.stringify(newPatient), 300);
 
-            const jwtPayload: TokenPayload = {
+            const jwtPayload: ITokenPayload = {
                 email: payload.email,
                 role: 'patient'  
             }
