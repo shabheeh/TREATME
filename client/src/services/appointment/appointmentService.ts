@@ -7,7 +7,7 @@ class AppointmentService {
 
     async getAppointment(id: string): Promise<Partial<IAppointmentPopulated>> {
         try {
-            const response = await api.shared.get(`/appointments/:${id}`)
+            const response = await api.shared.get(`/appointments/${id}`)
 
             const { appointment } = response.data;
             return appointment

@@ -6,6 +6,7 @@ class DoctorService {
 
     async getDoctorsWithSchedules({specialization, gender, selectedDate, page, language}: getDoctorWithScheduleQuery): Promise<getDoctorsWithSchedulesResult> {
         try {
+
             const response = await api.doctor.get(`/doctors?spec=${specialization}&gen=${gender}&page=${page}&date=${selectedDate}&lan=${language}`)
 
             const { result } = response.data

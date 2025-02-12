@@ -1,4 +1,4 @@
-import DoctorCard from "../../basics/DoctorCard";
+import DoctorCard from "../../../components/basics/DoctorCard";
 
 import {
   Box,
@@ -7,21 +7,23 @@ import {
   IconButton,
   Divider,
   Link,
-  Select,
   Grid,
   FormControl,
   MenuItem,
   TextField,
+  Card, 
+  CardContent
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
-import ProgressBar from "../../basics/PrgressBar";
+import ProgressBar from "../../../components/basics/PrgressBar";
 import { useEffect, useState } from "react";
 import doctorService from "../../../services/doctor/doctorService";
 import { IDoctorWithSchedule } from "../../../types/doctor/doctor.types";
 import { toast } from "sonner";
-import Loading from "../../basics/Loading";
+import Loading from "../../../components/basics/Loading";
 import { useLocation, useNavigate } from "react-router-dom";
 import appointmentService from "../../../services/appointment/appointmentService";
+import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
 
 type Gender = "male" | "female" | "any" | "";
 
@@ -39,21 +41,21 @@ const LANGUAGES = [
 ]
 
 const ListDoctors = () => {
-  const [date, setDate] = useState<Date | null>(null);
+  const today = new Date().toISOString().split('T')[0]; 
+  const [date, setDate] = useState(today);
   const [gender, setGender] = useState<Gender>("");
   const [language, setLanguage] = useState<string>("");
   const specialization = "679494304a73cf74bf3bd1d8";
   const [page, setPage] = useState<number>(1);
   const [doctors, setDoctors] = useState<IDoctorWithSchedule[] | []>([]);
   const [loading, setLoading] = useState(false);
+  const [exitModalOpen, setExitModalOpen] = useState(false)
 
 
   const location = useLocation()
   const navigate = useNavigate()
 
   const state = location.state
-
-  console.log('state', state)
 
   useEffect(() => {
 
@@ -102,11 +104,11 @@ const ListDoctors = () => {
     setDate(value)
   }
 
-  const handleSlotBooking = async (doctorId: string, dayId: string, slotId: string) => {
+  const handleSlotBooking = async (doctorId: string, dayId: string, slotId: string, date: Date ) => {
     const appointmentId = state.appointmentId
     try {
-      const result = await appointmentService.updateAppointment(appointmentId, { doctorId })
-      navigate('/review-appointment', { state: { appointment: result._id, slotId, dayId }})
+      const result = await appointmentService.updateAppointment(appointmentId, { doctorId, date })
+      navigate('/review-appointment', { state: { appointmentId: result._id, slotId, dayId }})
     } catch (error) {
       if(error instanceof Error) {
         toast.error(error.message)
@@ -114,6 +116,12 @@ const ListDoctors = () => {
         console.error('Something went wrong')
       }
     }
+  }
+
+  const handleExitBooking = () => {
+    setExitModalOpen(false)
+    navigate('/visitnow', { state: {} })
+    return null
   }
 
   return (
@@ -128,7 +136,7 @@ const ListDoctors = () => {
           <Typography variant="h5" fontWeight="bold">
             Schedule Appointment
           </Typography>
-          <IconButton>
+          <IconButton onClick={() => setExitModalOpen(true)}>
             <Close />
           </IconButton>
         </Box>
@@ -201,7 +209,7 @@ const ListDoctors = () => {
             label="Select Date"
             value={date}
             onChange={handleDateChange}
-            // onChange={handleDateChange}
+            inputProps={{ min: today }}
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
@@ -210,6 +218,38 @@ const ListDoctors = () => {
 
       {loading ? (
         <Loading />
+      ) : doctors.length === 0 ? (
+        <Card
+      sx={{
+        maxWidth: '100%',
+        border: '1px solid',
+        borderColor: 'teal',
+        boxShadow: 'none',
+        minHeight: 200,
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+      }}
+    >
+      <CardContent
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          width: '100%',
+          p: 2,
+          flexDirection: 'column'
+        }}
+      >
+        <Typography variant="body1" color="text.secondary" textAlign="center">
+          No doctors Available.
+        </Typography>
+        <Typography variant="body1" color="text.secondary" textAlign="center">
+          Please adjust date, gender, or language.
+        </Typography>
+      </CardContent>
+    </Card>
       ) : (
         doctors.map((doctor) => (
           <DoctorCard
@@ -223,14 +263,18 @@ const ListDoctors = () => {
           />
         ))
       )}
-
-      <Box display="flex" justifyContent="flex-end" mt={4}>
-        <Button variant="contained" sx={{ py: 1.5, px: 5, borderRadius: 8 }}>
-          Continue
-        </Button>
-      </Box>
+      <ConfirmActionModal 
+      open={exitModalOpen}
+      title="Exit Booking"
+      confirmColor="error"
+      description="Are you sure you want to exit this appointment booking?"
+      handleClose={() => setExitModalOpen(false)}
+      handleConfirm={handleExitBooking}
+      cancelText="Continue Booking"
+      confirmText="Exit Booking"
+      />
     </Box>
   );
-};
+}; 
 
 export default ListDoctors;

@@ -34,7 +34,19 @@ class AppointmentRepository implements IAppointmentRepository {
 
     async getAppointmentById(id: string): Promise<Partial<IAppointment>> {
         try {
-            const appointment = await this.model.findById(id);
+            const appointment = await this.model.findById(id)
+            .populate({
+                path: 'specialization',
+                select: 'name'
+            })
+            .populate({
+                path: 'patientId',
+                select: 'firstName lastName profilePicture'
+            })
+            .populate({
+                path: 'doctorId',
+                select: 'firstName lastName profilePicture'
+            })
 
             if (!appointment) {
                 throw new AppError('Somethig went Wrong')

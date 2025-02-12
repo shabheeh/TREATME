@@ -63,7 +63,7 @@ class ScheduleRepository implements IScheduleRepository {
                   'availability.slots._id': slotId 
               },
               { 
-                  $set: { 'availability.$.slots.$[slot].isBooked': !true } 
+                  $set: { 'availability.$.slots.$[slot].isBooked': true } 
               },
               { 
                   arrayFilters: [

@@ -18,8 +18,8 @@ export default interface IAppointment {
 
 export interface IAppointmentPopulated {
     _id: string;
-    patient: IPatient | IDependent;
-    doctor: IDoctor;
+    patientId: IPatient | IDependent;
+    doctorId: IDoctor;
     specialization: ISpecialization;
     reason: string;
     fee: number;

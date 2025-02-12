@@ -4,6 +4,7 @@ import { Document, ObjectId } from "mongoose";
 
 export interface IAppointment extends Document {
     patientId: ObjectId;
+    patientType: 'Patient' | 'Dependent';
     doctorId: ObjectId;
     specialization: ObjectId;
     date: Date;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { 
   Card, 
   CardContent, 
@@ -12,46 +12,51 @@ import {
   TextField 
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
-import ProgressBar from "../../basics/PrgressBar";
+import ProgressBar from "../../../components/basics/PrgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { useLocation, useNavigate } from "react-router-dom";
 import appointmentService from "../../../services/appointment/appointmentService";
 import { toast } from "sonner";
+import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
 
 const concerns = [
-  "I have been feeling down",
-  "I have been feeling worried",
-  "I've been experiencing mood swings",
-  "I am grieving, I lost a loved one",
-  "I have been dealing with stress at work or school",
-  "I have relationship issues",
-  "I have experienced trauma",
-  "I recently had major life changes",
-  "I have not been happy for a long time",
+  "I have panic attacks",
+  "I have been feeling paranoid",
+  "I have been experiencing hallucinations or delusions",
+  "I have been experiencing memory problems",
+  "I have been struggling with substance abuse",
+  "I have been experiencing sleep disturbances",
+  "I have been experiencing post-traumatic stress",
+  "I have been experiencing mood swings or bipolar symptoms",
+  "I have obsessive-compulsive thoughts or behaviors",
   "I am not sure"
 ];
 
-const TherapyReason = () => {
+const PsychiatryReason = () => {
 
   const [selectedConcern, setSelectedConcern] = useState<string>("");
-
+  const [exitModalOpen, setExitModalOpen] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const state = location.state
   const currentPatient = useSelector((state: RootState) => state.user.currentUser)
+  const patient = useSelector((state: RootState) => state.user.patient)
 
 
-  if (!state) {
-    navigate('/visitnow')
-    return null
-  }
+  useEffect(() => {
+    if (!state) {
+      navigate('/visitnow')
+      return
+    }
+  }, [state, navigate])
 
 
   const startAppointment = async() => {
     if (!currentPatient) return
     const appointmentData = {
       patientId: currentPatient._id,
+      patientType: currentPatient._id === patient?._id ? 'Patient' : 'Dependent',
       specialization: state.specializationId,
       fee: state.fee,
       status: 'pending',
@@ -69,13 +74,19 @@ const TherapyReason = () => {
       }
   }
 
+  const handleExitBooking = () => {
+    setExitModalOpen(false)
+    navigate('/visitnow', { state: {} })
+    return null
+  }
+
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
 
       <Box>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h5" fontWeight="bold">Schedule Appointment</Typography>
-          <IconButton>
+          <IconButton onClick={() => setExitModalOpen(true)}>
             <Close />
           </IconButton>
         </Box>
@@ -104,9 +115,8 @@ const TherapyReason = () => {
             Back
           </Link>
 
-          {/* Autocomplete for Concerns */}
           <Typography variant="h6" fontWeight="bold" mb={1}>
-            How can our Therapists help?
+            How can our Psychiatrist help?
           </Typography>
           <Typography variant="body2" color="text.secondary" mb={3}>
             Choose or type a primary concern
@@ -125,7 +135,7 @@ const TherapyReason = () => {
 
           <Box mt={4} color="text.secondary">
             <Typography variant="body2" mb={2}>
-              Our therapists <strong>do not</strong> provide crisis intervention or emergency services.  
+              Our psychiatrist <strong>do not</strong> provide crisis intervention or emergency services.  
               If you are experiencing a crisis, please seek immediate assistance. 
             </Typography>
 
@@ -154,8 +164,18 @@ const TherapyReason = () => {
 
         </CardContent>
       </Card>
+      <ConfirmActionModal 
+      open={exitModalOpen}
+      title="Exit Booking"
+      confirmColor="error"
+      description="Are you sure you want to exit this appointment booking?"
+      handleClose={() => setExitModalOpen(false)}
+      handleConfirm={handleExitBooking}
+      cancelText="Continue Booking"
+      confirmText="Exit Booking"
+      />
     </Box>
   );
 };
 
-export default TherapyReason;
+export default PsychiatryReason;

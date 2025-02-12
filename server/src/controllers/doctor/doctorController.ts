@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import { IDoctorController, IDoctorService } from "../../interfaces/IDoctor";
 import { getDoctorsWithSchedulesQuery } from "../../repositories/doctor/interfaces/IDoctorRepository";
+import { Types } from "mongoose";
 
 
 class DoctorController implements IDoctorController {
@@ -15,14 +16,13 @@ class DoctorController implements IDoctorController {
     getDoctorsWithSchedules = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const query = {
-                specialization: req.query.specialization,
-                gender: req.query.gender,
-                language: req.query.language,
-                page: req.query.page,
-                selectedDate: req.query.selectedDate || new Date()
-            } as getDoctorsWithSchedulesQuery;
+                specialization: new Types.ObjectId(req.query.spec as string),
+                gender: req.query.gen === 'any' ? null : (req.query.gen as string),
+                language: req.query.lan === 'any' ? null : (req.query.lan as string),
+                page: Number(req.query.page), 
+                selectedDate: (req.query.date as string) || new Date()
+            } as unknown as getDoctorsWithSchedulesQuery;
 
-            console.log(query)
 
             const result = await this.doctorService.getDoctorsWithSchedules(query);
 

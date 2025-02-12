@@ -142,8 +142,8 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
             }}
           >
             <Avatar
-              src={currentPatient?.profilePicture ? currentPatient.profilePicture : "/api/placeholder/48/48"}
-              alt={currentPatient?.firstName}
+              src={patient?.profilePicture ? patient.profilePicture : "/api/placeholder/48/48"}
+              alt={patient?.firstName}
               sx={{
                 width: 48,
                 height: 48,
@@ -169,7 +169,6 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
               </Typography>
             </Box>
           </ListItemButton>
-          {/* Dependents Profile */}
           {loading ? (
             <>
               {[...Array(3)].map((_, index) => (
@@ -184,7 +183,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
             </>
           ) : (
             dependents
-              .filter(dependent => dependent._id !== currentPatient?._id) // Filter out the current patient if they are a dependent
+              .filter(dependent => dependent._id !== currentPatient?._id) 
               .map(dependent => (
                 <ListItemButton
                   key={dependent._id}

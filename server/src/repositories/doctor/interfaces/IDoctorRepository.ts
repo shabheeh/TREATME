@@ -1,13 +1,14 @@
+import { ObjectId } from "mongoose";
 import IDoctor, { IDoctorsFilter, IDoctorsFilterResult, ISchedule} from "src/interfaces/IDoctor";
 
 
 export interface getDoctorsWithSchedulesQuery {
-    specialization: string,
-    gender: 'male' | 'female';
-    language: string;
-    selectedDate: Date;
-    page: string
-}
+    specialization: ObjectId;
+    gender: string | null;
+    language: string | null;
+    page: number;
+    selectedDate: Date | string;
+  }
 
 export interface IDoctorWithSchedule extends IDoctor {
     availability: ISchedule,

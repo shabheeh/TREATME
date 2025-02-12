@@ -10,12 +10,13 @@ import LayoutAccount from '../Layouts/patient/LayoutAccount';
 import MyAccount from '../pages/patient/MyAccount';
 import Family from '../pages/patient/Family';
 import HealthProfile from '../pages/patient/HealthProfile';
-import TherapyReason from '../components/patient/appointment/TherapyReason';
+import TherapyReason from '../pages/patient/appointment/TherapyReason';
 import LayoutAppointment from '../Layouts/patient/LayoutAppointment';
-import ReviewBehaviouralHealth from '../components/patient/appointment/ReviewBehaviouralHealth';
-import ReviewHealthHistory from '../components/patient/appointment/ReviewHealthHistory';
-import ListDoctors from '../components/patient/appointment/ListDoctors';
-import AppointmentBookingPage from '../components/patient/appointment/Payment';
+import ReviewBehaviouralHealth from '../pages/patient/appointment/ReviewBehaviouralHealth';
+import ReviewHealthHistory from '../pages/patient/appointment/ReviewHealthHistory';
+import ListDoctors from '../pages/patient/appointment/ListDoctors';
+import AppointmentBookingPage from '../pages/patient/appointment/Payment';
+import BookingConfirmation from '../pages/patient/appointment/BookingConfirmed';
 
 
 export const patientRoutes = [
@@ -58,8 +59,9 @@ export const patientRoutes = [
   <Route path='therapy/reason' element={<TherapyReason /> } />
   <Route path='review-behavioural-health' element={<ReviewBehaviouralHealth />} />,
   <Route path='review-health-history' element={<ReviewHealthHistory />} />,
-  <Route path='doctors' element={<ListDoctors />} />
-  <Route path='/review-appointment' element={<AppointmentBookingPage />} />
+  <Route path='doctors' element={<ListDoctors />} />,
+  <Route path='/review-appointment' element={<AppointmentBookingPage />} />,
+  <Route path='confirmed' element={<BookingConfirmation /> } />,
 
 </Route>,
   

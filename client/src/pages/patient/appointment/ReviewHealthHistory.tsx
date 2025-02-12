@@ -6,22 +6,20 @@ import {
   IconButton, 
   Divider, 
   Link, 
-
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
-import ProgressBar from "../../basics/PrgressBar";
-import BehavioralHealth from "../behaviouralHealth/BehaviouralHealth";
+import ProgressBar from "../../../components/basics/PrgressBar";
+import HealthHistory from "../../../components/patient/healthHistory/HealthHistory";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
 
 
 
-
-const ReviewBehaviouralHealth = () => {
-  
+const ReviewHealthHistory = () => {
+  const [exitModalOpen, setExitModalOpen] = useState(false)
   const location = useLocation();
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
   const state = location.state
 
   useEffect(() => {
@@ -32,7 +30,13 @@ const ReviewBehaviouralHealth = () => {
   }, [state, navigate])
 
   const handleContinue = async () => {
-    navigate('/doctors', { state: state })
+    navigate('/review-behavioural-health', { state : state })
+  }
+
+  const handleExitBooking = () => {
+    setExitModalOpen(false)
+    navigate('/visitnow', { state: {} })
+    return null
   }
 
   return (
@@ -40,17 +44,17 @@ const ReviewBehaviouralHealth = () => {
 
       <Box>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h5" fontWeight="bold">Schedule Appointment</Typography>
-          <IconButton>
+          <Typography variant="h6" fontWeight="bold">Schedule Appointment</Typography>
+          <IconButton onClick={() => setExitModalOpen(true)}>
             <Close />
           </IconButton>
         </Box>
-        <ProgressBar value={60} />
+        <ProgressBar value={40} />
       </Box>
 
       <Divider sx={{ my: 4 }} />
       <Link 
-            href="/review-health-history"  
+            href="/therapy/reason"  
             sx={{ 
               display: "flex", 
               alignItems: "center", 
@@ -65,23 +69,33 @@ const ReviewBehaviouralHealth = () => {
             <ArrowBack fontSize="small" sx={{ mr: 1 }} />
             Back
           </Link>
-      <Box sx={{ my: 2}}>
-            <Typography variant="h5" fontWeight='bold' color="grayText">
+        <Box sx={{ my: 2}}>
+            <Typography variant="h5" fontWeight='bold' color="primary">
                 Let's Review your Health Profile
             </Typography>
         </Box>
-      <BehavioralHealth />
+      <HealthHistory />
       <Box display="flex" justifyContent="flex-end" mt={4}>
             <Button 
-            onClick={handleContinue}
+              onClick={handleContinue}
               variant="contained" 
               sx={{ py: 1.5, px: 5, borderRadius: 8 }}
             >
               Continue
             </Button>
           </Box>
+          <ConfirmActionModal 
+            open={exitModalOpen}
+            title="Exit Booking"
+            confirmColor="error"
+            description="Are you sure you want to exit this appointment booking?"
+            handleClose={() => setExitModalOpen(false)}
+            handleConfirm={handleExitBooking}
+            cancelText="Continue Booking"
+            confirmText="Exit Booking"
+            />
     </Box>
   );
 };
 
-export default ReviewBehaviouralHealth;
+export default ReviewHealthHistory;

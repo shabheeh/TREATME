@@ -33,17 +33,15 @@ class AppointmentService implements IAppointmentService {
     async updateAppointment(id: string, updateData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
         try {
             
-            const doctorId = updateData.doctorId
-            const dayId = updateData.dayId
-            const slotId = updateData.slotId;
+            const { dayId, slotId, ...updateFields } = updateData;
 
-
-            if(doctorId && slotId && dayId) {
-                await this.scheduleRepo.updateBookingStatus(doctorId, dayId, slotId)
+            if (updateFields.doctorId && slotId && dayId) {
+                await this.scheduleRepo.updateBookingStatus(updateFields.doctorId, dayId, slotId);
             }
 
-            const appointment = await this.appointmentRepo.updateAppointment(id, { doctorId: doctorId })
+            const appointment = await this.appointmentRepo.updateAppointment(id, updateFields);
             return appointment;
+
         } catch (error) {
             logger.error('Error updating appointment', error);
             if (error instanceof AppError) {

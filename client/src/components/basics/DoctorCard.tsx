@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { formatMonthDay, formatTime, getDayName } from '../../utils/dateUtils';
 import { IDaySchedule } from '../../types/doctor/doctor.types';
+import { filterAvailability } from '../../helpers/filterAvailability';
 
 
 
@@ -34,7 +35,7 @@ interface ProviderCardProps {
   profilePicture: string;
   experience: number;
   availability: IDaySchedule[];
-  handleSlotClick: (id: string, dayId: string, slotId: string ) => void
+  handleSlotClick: (id: string, dayId: string, slotId: string, date: Date ) => void
 };
 
 
@@ -48,9 +49,14 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
   handleSlotClick
 }) => {
 
-  const [selectedSlot, setSelectedSlot] = useState(null)
+  const [filteredAvailability, setFilteredAvailability] = useState<IDaySchedule[]>(availability)
 
   
+
+  useEffect(() => {
+   setFilteredAvailability(filterAvailability(availability))
+  }, [availability])
+
   
   return (
 
@@ -105,13 +111,13 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
       }}
     >
       <Grid container spacing={1}>
-        {availability &&
-          availability.slice(0, 2).map((day, index) => (
+        {filteredAvailability &&
+          filteredAvailability.slice(0, 2).map((day, index) => (
             <Grid
               item
               xs={12}
               key={index}
-              sx={{ display: 'flex', flexDirection: 'column', minHeight: 80 }} // Fixed height for each day
+              sx={{ display: 'flex', flexDirection: 'column', minHeight: 80 }} 
             >
               <Grid container direction="row" spacing={1} alignItems="center">
                 <Grid item>
@@ -131,20 +137,20 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
               </Grid>
 
               <Grid container direction="row" spacing={1}>
-                {day.slots.slice(0, 3).map((slot, slotIndex) => (
+              {day.slots.slice(0, 3).map((slot, slotIndex) => (
+                !slot.isBooked && (
                   <Grid item key={slotIndex} xs={3}>
                     <TimeChip
                       label={formatTime(slot.startTime)}
                       size="small"
-                      onClick={() => handleSlotClick(id, day._id!, slot._id!)}
+                      onClick={() => handleSlotClick(id, day._id!, slot._id!, slot.startTime!)}
                       sx={{
-                        backgroundColor: slot === selectedSlot ? 'primary.main' : 'inherit',
-                        color: slot === selectedSlot ? 'white' : 'primary.main',
                         ':hover': { backgroundColor: 'teal', color: 'white' },
                       }}
                     />
                   </Grid>
-                ))}
+                )
+              ))}
 
                 {day.slots.length > 3 && (
                   <Grid item xs={3}>
@@ -181,7 +187,6 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
 </Card>
   );
 };
-
 
 
 export default DoctorCard;

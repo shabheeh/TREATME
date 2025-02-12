@@ -30,6 +30,8 @@ class AppointmentController implements IAppointmentController {
 
     getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
+
+
             const { id } = req.params;
 
             if (!id) {

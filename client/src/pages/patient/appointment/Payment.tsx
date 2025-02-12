@@ -16,16 +16,18 @@ import {
   ArrowBack as ArrowBackIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
-import ProgressBar from '../../basics/PrgressBar';
+import ProgressBar from '../../../components/basics/PrgressBar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import appointmentService from '../../../services/appointment/appointmentService';
 import { toast } from 'sonner';
 import { IAppointmentPopulated } from '../../../types/appointment/appointment.types';
-import { formatMonthDay } from '../../../utils/dateUtils';
+import { formatMonthDay, formatTime } from '../../../utils/dateUtils';
+import ConfirmActionModal from '../../../components/basics/ConfirmActionModal';
 
 const AppointmentDetailsPage = () => {
   const [appointment, setAppointment] = useState<Partial<IAppointmentPopulated> | null>(null);
-  const [loading, setLoading] = useState(true); // Start loading as true
+  const [loading, setLoading] = useState(true);
+  const [exitModalOpen, setExitModalOpen] = useState(false)
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
@@ -55,16 +57,25 @@ const AppointmentDetailsPage = () => {
 
   const handlePaymentClick = async () => {
     try {
-      const response = await appointmentService.updateAppointment(
+      await appointmentService.updateAppointment(
         state.appointmentId,
         { 
           status: 'confirmed',
           dayId: state.dayId, 
-          slotId: state.slotId 
+          slotId: state.slotId,
+          doctorId: appointment?.doctorId?._id,
         })
+        navigate('/confirmed', { state: state })
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unknown Error')
     }
+  }
+
+
+  const handleExitBooking = () => {
+    setExitModalOpen(false)
+    navigate('/visitnow', { state: {} })
+    return null
   }
 
   if (loading) {
@@ -80,7 +91,7 @@ const AppointmentDetailsPage = () => {
             <Typography variant="h5" fontWeight="bold">
               Schedule Appointment
             </Typography>
-            <IconButton onClick={() => navigate('/visitnow')}>
+            <IconButton onClick={() => setExitModalOpen(true)}>
               <CloseIcon />
             </IconButton>
           </Box>
@@ -258,7 +269,7 @@ const AppointmentDetailsPage = () => {
           <Typography variant="h5" fontWeight="bold">
             Schedule Appointment
           </Typography>
-          <IconButton onClick={() => navigate('/visitnow')}>
+          <IconButton>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -288,24 +299,24 @@ const AppointmentDetailsPage = () => {
       </Box>
       <Grid container direction="row" spacing={1}>
         <Grid item xs={12} sm={6}>
-          <Card variant="outlined" sx={{ mb: 2 }}>
+        <Card variant="outlined" sx={{ mb: 2, border: '1px solid teal' }}>
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
                   <Typography variant="h6">Appointment Summary</Typography>
-                  <Typography variant="body1">{formatMonthDay(appointment?.date)}</Typography>
+                  <Typography variant="body1">{formatMonthDay(appointment?.date)} {formatTime(appointment?.date)}</Typography>
                 </Box>
               </Box>
               <Divider sx={{ my: 2 }} />
               <Box display="flex" alignItems="center" mb={3}>
                 <Avatar
-                  src={appointment?.doctor?.profilePicture}
-                  alt={`${appointment?.doctor?.firstName} ${appointment?.doctor?.lastName}`}
+                  src={appointment?.doctorId?.profilePicture}
+                  alt={`${appointment?.doctorId?.firstName} ${appointment?.doctorId?.lastName}`}
                   sx={{ width: 50, height: 50, mr: 2 }}
                 />
                 <Box>
                   <Typography variant="subtitle1">
-                    Dr. {appointment?.doctor?.firstName} {appointment?.doctor?.lastName}
+                    Dr. {appointment?.doctorId?.firstName} {appointment?.doctorId?.lastName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {appointment?.specialization?.name}
@@ -332,12 +343,12 @@ const AppointmentDetailsPage = () => {
                 <Typography sx={{ fontWeight: 500, fontSize: 13 }}>Patient</Typography>
                 <Box display="flex" alignItems="center">
                   <Avatar
-                    src={appointment?.patient?.profilePicture}
-                    alt={`${appointment?.patient?.firstName} ${appointment?.patient?.lastName}`}
+                    src={appointment?.patientId?.profilePicture}
+                    alt={`${appointment?.patientId?.firstName} ${appointment?.patientId?.lastName}`}
                     sx={{ mr: 2 }}
                   />
                   <Typography>
-                    {appointment?.patient?.firstName} {appointment?.patient?.lastName}
+                    {appointment?.patientId?.firstName} {appointment?.patientId?.lastName}
                   </Typography>
                 </Box>
               </Box>
@@ -346,7 +357,7 @@ const AppointmentDetailsPage = () => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Box display='flex' flexDirection='column' gap={1}>
-            <Card variant="outlined">
+          <Card variant="outlined" sx={{ border: '1px solid teal' }}>
               <CardContent>
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   Payment Details
@@ -377,7 +388,7 @@ const AppointmentDetailsPage = () => {
                   }}
                 >
                   <Typography>Amount Due</Typography>
-                  <Typography>${appointment?.fee.toFixed(2)}</Typography>
+                  <Typography>₹{appointment?.fee.toFixed(2)}</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
                   You will not be charged any additional fee after your consultation.
@@ -387,6 +398,7 @@ const AppointmentDetailsPage = () => {
             <Box>
               <Button 
                 fullWidth
+                onClick={handlePaymentClick}
                 variant='contained'
                 sx={{ p: 2 }}
               >
@@ -396,6 +408,16 @@ const AppointmentDetailsPage = () => {
           </Box>
         </Grid>
       </Grid>
+      <ConfirmActionModal 
+      open={exitModalOpen}
+      title="Exit Booking"
+      confirmColor="error"
+      description="Are you sure you want to exit this appointment booking?"
+      handleClose={() => setExitModalOpen(false)}
+      handleConfirm={handleExitBooking}
+      cancelText="Continue Booking"
+      confirmText="Exit Booking"
+      />
     </Box>
   );
 };

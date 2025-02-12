@@ -110,12 +110,13 @@ class DoctorRepository implements IDoctorRepository {
 
     async getDoctorsWithSchedules(query: getDoctorsWithSchedulesQuery): Promise<getDoctorsWithSchedulesResult> {
       try {
-        const { specialization, gender, language, page = '1', selectedDate } = query;
+        const { specialization, gender, language, page = 1, selectedDate } = query;
     
-        const skip = (parseInt(page) - 1) * 10;
+        const skip = (page - 1) * 10;
         const limit = 10;
     
         const selectedDateISO = selectedDate ? new Date(selectedDate) : new Date();
+        
     
         const totalDoctorsCount = await this.model.countDocuments({
           ...(specialization && { specialization }),
@@ -126,7 +127,7 @@ class DoctorRepository implements IDoctorRepository {
         const doctors = await this.model.aggregate([
           {
             $match: {
-              ...(specialization && { specialization }),
+              ...(specialization && { specialization: specialization }),
               ...(gender && { gender: gender.toString() }),
               ...(language && { languages: language.toString() }),
             }
@@ -183,7 +184,7 @@ class DoctorRepository implements IDoctorRepository {
     
         return {
           doctors,
-          currentPage: parseInt(page),
+          currentPage: page,
           totalPages: Math.ceil(totalDoctorsCount / limit)
         };
     

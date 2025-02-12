@@ -56,11 +56,11 @@ export default function ScheduleManagement() {
         const scheduleResponse: ISchedule | null = await scheduleService.getSchedule(doctor._id);
         if (scheduleResponse && scheduleResponse.availability) {
           const scheduleWithDayjsDates = scheduleResponse.availability.map((avail: IDaySchedule) => ({
-            date: new Date(avail.date), // Convert to Date
+            date: new Date(avail.date), 
             slots: avail.slots.map((slot: ISlot) => ({
               ...slot,
-              startTime: new Date(slot.startTime), // Convert to Date
-              endTime: new Date(slot.endTime) // Convert to Date
+              startTime: new Date(slot.startTime), 
+              endTime: new Date(slot.endTime) 
             }))
           }));
           setSchedules(scheduleWithDayjsDates);
@@ -87,72 +87,75 @@ export default function ScheduleManagement() {
 
   const addTimeSlot = async () => {
     if (!newTimeSlot.startTime) return;
-    
-    const startTime = newTimeSlot.startTime.toDate(); // Convert to Date
-    const specialization = doctor?.specialization?.name || 'default';
-    const slotDuration = SPECIALIZATION_DURATION[specialization] || SPECIALIZATION_DURATION['default'];
-    const endTime = newTimeSlot.startTime.add(slotDuration, 'minute').toDate(); // Convert to Date
-    
+  
+    const specialization = doctor?.specialization?.name || 'Default';
+    const slotDuration = SPECIALIZATION_DURATION[specialization] || SPECIALIZATION_DURATION['Default'];
+  
+
+    const startTime = dayjs(selectedDate).set('hour', newTimeSlot.startTime.hour()).set('minute', newTimeSlot.startTime.minute()).toDate();
+    const endTime = dayjs(startTime).add(slotDuration, 'minute').toDate();
+  
     if (dayjs(selectedDate).isSame(today, 'day')) {
-      const currentTime = dayjs(); 
+      const currentTime = dayjs();
       if (newTimeSlot.startTime.isBefore(currentTime)) {
         toast.warning('Cannot set a slot time that passed today');
         return;
       }
     }
-    
+  
     const existingAvailability = schedules.find(avail => dayjs(avail.date).isSame(selectedDate, 'day'));
     const existingSlots = existingAvailability ? existingAvailability.slots : [];
-    
+  
     const isDuplicateStartTime = existingSlots.some(slot => 
       dayjs(slot.startTime).isSame(startTime)
     );
-    
+  
     if (isDuplicateStartTime) {
       toast.warning('A time slot with this start time already exists');
       return;
     }
-    
+  
     const isOverlapping = existingSlots.some(slot => 
       (dayjs(startTime).isBetween(slot.startTime, slot.endTime) ||
        dayjs(endTime).isBetween(slot.startTime, slot.endTime) ||
        (dayjs(slot.startTime).isBetween(startTime, endTime))
       )
     );
-    
+  
     if (isOverlapping) {
       toast.warning('Time slot overlaps with an existing slot');
       return;
     }
-    
+  
     const newSlot: ISlot = {
       startTime,
       endTime,
       isBooked: false
     };
-    
+  
     const updatedSchedules = schedules.map(avail => 
       dayjs(avail.date).isSame(selectedDate, 'day') 
         ? { ...avail, slots: [...avail.slots, newSlot].sort((a, b) => dayjs(a.startTime).diff(dayjs(b.startTime))) }
         : avail
     );
-    
+  
     if (!existingAvailability) {
       updatedSchedules.push({ date: selectedDate.toDate(), slots: [newSlot] });
     }
-    
+  
     try {
       if (!doctor) return;
       const result = await scheduleService.updateSchedule(doctor._id, { availability: updatedSchedules });
-      const formatedResult = result.availability.map((avail: IDaySchedule) => ({
-        date: new Date(avail.date), // Convert to Date
+      const formattedResult = result.availability.map((avail: IDaySchedule) => ({
+        date: new Date(avail.date),
         slots: avail.slots.map((slot: ISlot) => ({
           ...slot,
-          startTime: new Date(slot.startTime), // Convert to Date
-          endTime: new Date(slot.endTime) // Convert to Date
+          startTime: new Date(slot.startTime), 
+          endTime: new Date(slot.endTime) 
         }))
       }));
-      setSchedules(formatedResult);
+      setSchedules(formattedResult);
+      toast.success('Time slot added successfully');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong');
     } finally {

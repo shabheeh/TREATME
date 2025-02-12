@@ -4,7 +4,16 @@ import IAppointment from "../interfaces/IAppointment";
 
 
 const appointmentSchema = new Schema<IAppointment>({
-    patientId: { type: Types.ObjectId, ref: 'Patient', required: true },
+    patientId: { 
+        type: Types.ObjectId, 
+        required: true,
+        refPath: 'patientType', 
+        },
+    patientType: { 
+        type: String,
+        enum: ['Patient', 'Dependent'],
+        required: true,
+    },
     doctorId: { type: Types.ObjectId, ref: 'Doctor'},
     specialization: { type: Types.ObjectId, ref: 'Specialization', required: true },
     reason: { type: String, required: true },
