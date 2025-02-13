@@ -76,7 +76,7 @@ const BehavioralHealth = () => {
 
   useEffect(() => {
     fetchMentalHealth();
-  }, []);
+  }, [currentPatient]);
 
   const fetchMentalHealth = async () => {
     if (!currentPatient) return 

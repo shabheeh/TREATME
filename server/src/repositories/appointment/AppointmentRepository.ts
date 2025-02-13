@@ -40,11 +40,11 @@ class AppointmentRepository implements IAppointmentRepository {
                 select: 'name'
             })
             .populate({
-                path: 'patientId',
+                path: 'patient',
                 select: 'firstName lastName profilePicture'
             })
             .populate({
-                path: 'doctorId',
+                path: 'doctor',
                 select: 'firstName lastName profilePicture'
             })
 
@@ -75,6 +75,44 @@ class AppointmentRepository implements IAppointmentRepository {
             }
             return appointment;
 
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async getAppointmentsByPatientId(patientId: string): Promise<IAppointment[]> {
+        try {
+            const appointments = await this.model.find({ patient: patientId})
+            
+            return appointments;
+
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async getAppointmentsByDoctorId(doctorId: string): Promise<IAppointment[]> {
+        try {
+            const appointments = await this.model.find({ doctor: doctorId });
+            return appointments;
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async getAppointments(): Promise<IAppointment[]> {
+        try {
+            const appointments = await this.model.find()
+            return appointments
         } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,

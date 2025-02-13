@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import { IAppointmentController, IAppointmentService } from "../../interfaces/IAppointment";
 import { BadRequestError } from "../../utils/errors";
+import { ITokenPayload } from "src/utils/jwt";
 
 
 class AppointmentController implements IAppointmentController {
@@ -31,7 +32,6 @@ class AppointmentController implements IAppointmentController {
     getAppointmentById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-
             const { id } = req.params;
 
             if (!id) {
@@ -58,15 +58,51 @@ class AppointmentController implements IAppointmentController {
                 throw new BadRequestError('Bad Request: Missing info')
             }
 
-            const appointment = await this.appointmentService.updateAppointment(id, updateData);
+            const { dayId, slotId, ...otherFields } = updateData;
+
+            const appointment = await this.appointmentService.updateAppointment(id, otherFields, dayId, slotId);
 
             res.status(200).json({ appointment })
 
         } catch (error) {
             logger.error('Failed to update appointment')
+            next(error) 
+        }
+    }
+
+    getAppointmentsByUserId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id } = req.params;
+            const { role } = req.user as ITokenPayload;
+
+            if (!id || !role) {
+                throw new BadRequestError('Bad Request: Missing information')
+            }
+
+            const appointments = await this.appointmentService.getAppointmentsByUserId(id, role)
+            
+            console.log(appointments)
+
+            res.status(200).json({ appointments })
+
+
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : 'Controller Error: getAppointmentByUserId');
             next(error)
         }
     }
-}
+
+    getAppointments = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const appointments = await this.appointmentService.getAppointments();
+            res.status(200).json({ appointments })
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : 'Controller Error: getAppointments');
+            next(error)
+        }
+    }
+
+    
+} 
 
 export default AppointmentController;

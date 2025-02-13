@@ -139,7 +139,7 @@ router.post('/appointments',
     appointmentController.createAppointment
 )
 
-router.get('/appointments/:id',
+router.get('/appointment/:id',
     authenticate,
     isUserActive(patientAuthService, doctorAuthService),
     appointmentController.getAppointmentById
@@ -150,6 +150,19 @@ router.put('/appointments/:id',
     isUserActive(patientAuthService, doctorAuthService),
     authorize('patient', 'doctor'),
     appointmentController.updateAppointment
+)
+
+router.get('/appointments/:id', 
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('patient', 'doctor'),
+    appointmentController.getAppointmentsByUserId
+)
+
+router.get('/appointments',
+    authenticate,
+    authorize('admin'),
+    appointmentController.getAppointments
 )
 
 export default router  

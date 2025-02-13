@@ -17,6 +17,7 @@ import ReviewHealthHistory from '../pages/patient/appointment/ReviewHealthHistor
 import ListDoctors from '../pages/patient/appointment/ListDoctors';
 import AppointmentBookingPage from '../pages/patient/appointment/Payment';
 import BookingConfirmation from '../pages/patient/appointment/BookingConfirmed';
+import Appointments from '../pages/patient/appointment/Appointments';
 
 
 export const patientRoutes = [
@@ -75,6 +76,7 @@ export const patientRoutes = [
   >
     <Route path="visitnow" element={<VisiitNow />} />
     <Route path='health-profile' element={<HealthProfile />} />
+    <Route path='appointments' element={<Appointments />} />
   </Route>
 ];
 

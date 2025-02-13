@@ -3,7 +3,6 @@ import DoctorCard from "../../../components/basics/DoctorCard";
 import {
   Box,
   Typography,
-  Button,
   IconButton,
   Divider,
   Link,
@@ -42,7 +41,7 @@ const LANGUAGES = [
 
 const ListDoctors = () => {
   const today = new Date().toISOString().split('T')[0]; 
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState<Date | string>(today);
   const [gender, setGender] = useState<Gender>("");
   const [language, setLanguage] = useState<string>("");
   const specialization = "679494304a73cf74bf3bd1d8";
@@ -87,7 +86,7 @@ const ListDoctors = () => {
       }
     };
     fetchDoctors();
-  }, [gender, language, date]);
+  }, [gender, language, date, navigate, page, state]);
 
   const handleGenderChange = (event: React.ChangeEvent<{ value: string }>) => {
     const value = event.target.value as Gender;
@@ -99,15 +98,15 @@ const ListDoctors = () => {
     setLanguage(value);
   };
 
-  const handleDateChange = (event: React.ChangeEvent<{ value: Date }>) => {
-    const value = event.target.value as Date
-    setDate(value)
-  }
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setDate(value);
+  };
 
-  const handleSlotBooking = async (doctorId: string, dayId: string, slotId: string, date: Date ) => {
+  const handleSlotBooking = async (doctor: string, dayId: string, slotId: string, date: Date ) => {
     const appointmentId = state.appointmentId
     try {
-      const result = await appointmentService.updateAppointment(appointmentId, { doctorId, date })
+      const result = await appointmentService.updateAppointment(appointmentId, { doctor, date })
       navigate('/review-appointment', { state: { appointmentId: result._id, slotId, dayId }})
     } catch (error) {
       if(error instanceof Error) {

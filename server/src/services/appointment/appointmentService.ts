@@ -4,6 +4,7 @@ import logger from "../../configs/logger";
 import IAppointment, { IAppointmentService } from "../../interfaces/IAppointment";
 import IAppointmentRepository from "../../repositories/appointment/interfaces/IAppointmentService";
 import { AppError } from "../../utils/errors";
+import { ObjectId } from "mongoose";
 
 
 
@@ -30,16 +31,15 @@ class AppointmentService implements IAppointmentService {
         return appointment;
     }
 
-    async updateAppointment(id: string, updateData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
+    async updateAppointment(id: string, updateData: Partial<IAppointment>, dayId?: ObjectId, slotId?: ObjectId): Promise<Partial<IAppointment>> {
         try {
             
-            const { dayId, slotId, ...updateFields } = updateData;
 
-            if (updateFields.doctorId && slotId && dayId) {
-                await this.scheduleRepo.updateBookingStatus(updateFields.doctorId, dayId, slotId);
+            if (updateData.doctor && slotId && dayId) {
+                await this.scheduleRepo.updateBookingStatus(updateData.doctor, dayId, slotId);
             }
 
-            const appointment = await this.appointmentRepo.updateAppointment(id, updateFields);
+            const appointment = await this.appointmentRepo.updateAppointment(id, updateData);
             return appointment;
 
         } catch (error) {
@@ -51,6 +51,47 @@ class AppointmentService implements IAppointmentService {
                 `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
                 500
             ); 
+        }
+    }
+
+    async getAppointmentsByUserId(id: string, role: string): Promise<IAppointment[]> {
+        try {
+            let appointments: IAppointment[] = []
+
+            if (role === 'patient') {
+                appointments = await this.appointmentRepo.getAppointmentsByPatientId(id)
+            } else if (role === 'doctor') {
+                appointments = await this.appointmentRepo.getAppointmentsByDoctorId(id)
+            }
+
+            return appointments;
+
+        } catch (error) {
+            logger.error(`Error getting appointments with ${role} id`, error);
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            ); 
+        }
+    }
+
+    async getAppointments(): Promise<IAppointment[]> {
+        try {
+            const appointments = await this.appointmentRepo.getAppointments();
+
+            return appointments;
+        } catch (error) {
+            logger.error(`Error getting appointments for admin`, error);
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
         }
     }
 }

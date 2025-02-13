@@ -20,6 +20,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import appointmentService from '../../../services/appointment/appointmentService';
 import BookingConfirmedSkeleton from '../../../components/patient/BookingConfirmationSkelton';
+import { formatMonthDay, formatTime } from '../../../utils/dateUtils';
 
 const BookingConfirmation = () => {
 
@@ -32,7 +33,7 @@ const BookingConfirmation = () => {
 
     useEffect(() => {
         if (!state) {
-          navigate('/visitnow');
+          navigate('/visitnow', { state: {} });
           return;
         }
         const fetchAppointment = async () => {
@@ -48,6 +49,18 @@ const BookingConfirmation = () => {
         fetchAppointment();
       }, [state, navigate]);
 
+      useEffect(() => {
+        const handlePopState = () => {
+          console.log('Popstate event triggered: Clearing state');
+          navigate(location.pathname, { state: {} });
+        };
+
+        window.addEventListener('popstate', handlePopState);
+    
+        return () => {
+          window.removeEventListener('popstate', handlePopState);
+        };
+      }, [navigate, location]);
       
       if (loading) {
         return <BookingConfirmedSkeleton />
@@ -55,14 +68,6 @@ const BookingConfirmation = () => {
 
   const appointmentDetails = {
 
-    patient: {
-      name: "John Smith",
-      dateOfBirth: "05/15/1985",
-      email: "john.smith@email.com",
-      phone: "(555) 123-4567",
-      insurance: "BlueCross BlueShield",
-      memberId: "BCB123456789"
-    },
     provider: {
       name: "Dr. Sarah Thompson",
       specialty: "Mental Health Counseling",
@@ -98,12 +103,12 @@ const BookingConfirmation = () => {
         <Paper elevation={0} variant="outlined" sx={{ p: 3, mb: 1, border: '1px solid teal' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <Avatar
-            src={appointmentDetails.provider.image}
+            src={appointment?.doctor?.profilePicture}
             sx={{ width: 60, height: 60, mr: 2 }}
           />
           <Box>
             <Typography variant="h6">
-              {appointmentDetails.provider.name}
+              {appointment?.doctor?.firstName} { appointment?.doctor?.lastName}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {appointmentDetails.provider.specialty}
@@ -116,13 +121,13 @@ const BookingConfirmation = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <CalendarIcon sx={{ mr: 2, color: 'primary.main' }} />
-            <Typography>{appointmentDetails.appointment.date}</Typography>
+            <Typography>{ appointment?.date && formatMonthDay(appointment?.date)}</Typography>
           </Box>
           
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <TimeIcon sx={{ mr: 2, color: 'primary.main' }} />
             <Typography>
-              {appointmentDetails.appointment.time} ({appointmentDetails.appointment.duration})
+              { appointment?.date &&  formatTime(appointment?.date)} ({appointmentDetails.appointment.duration})
             </Typography>
           </Box>
           

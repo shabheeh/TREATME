@@ -63,7 +63,8 @@ const AppointmentDetailsPage = () => {
           status: 'confirmed',
           dayId: state.dayId, 
           slotId: state.slotId,
-          doctorId: appointment?.doctorId?._id,
+          doctor: appointment?.doctor?._id,
+          paymentStatus: 'paid'
         })
         navigate('/confirmed', { state: state })
     } catch (error) {
@@ -304,19 +305,19 @@ const AppointmentDetailsPage = () => {
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
                   <Typography variant="h6">Appointment Summary</Typography>
-                  <Typography variant="body1">{formatMonthDay(appointment?.date)} {formatTime(appointment?.date)}</Typography>
+                  <Typography variant="body1">{ appointment.date && formatMonthDay(appointment?.date)} { appointment.date &&  formatTime(appointment?.date)}</Typography>
                 </Box>
               </Box>
               <Divider sx={{ my: 2 }} />
               <Box display="flex" alignItems="center" mb={3}>
                 <Avatar
-                  src={appointment?.doctorId?.profilePicture}
-                  alt={`${appointment?.doctorId?.firstName} ${appointment?.doctorId?.lastName}`}
+                  src={appointment?.doctor?.profilePicture}
+                  alt={`${appointment?.doctor?.firstName} ${appointment?.doctor?.lastName}`}
                   sx={{ width: 50, height: 50, mr: 2 }}
                 />
                 <Box>
                   <Typography variant="subtitle1">
-                    Dr. {appointment?.doctorId?.firstName} {appointment?.doctorId?.lastName}
+                    Dr. {appointment?.doctor?.firstName} {appointment?.doctor?.lastName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {appointment?.specialization?.name}
@@ -343,12 +344,12 @@ const AppointmentDetailsPage = () => {
                 <Typography sx={{ fontWeight: 500, fontSize: 13 }}>Patient</Typography>
                 <Box display="flex" alignItems="center">
                   <Avatar
-                    src={appointment?.patientId?.profilePicture}
-                    alt={`${appointment?.patientId?.firstName} ${appointment?.patientId?.lastName}`}
+                    src={appointment?.patient?.profilePicture}
+                    alt={`${appointment?.patient?.firstName}`}
                     sx={{ mr: 2 }}
                   />
                   <Typography>
-                    {appointment?.patientId?.firstName} {appointment?.patientId?.lastName}
+                    {appointment?.patient?.firstName} {appointment?.patient?.lastName}
                   </Typography>
                 </Box>
               </Box>
@@ -388,7 +389,7 @@ const AppointmentDetailsPage = () => {
                   }}
                 >
                   <Typography>Amount Due</Typography>
-                  <Typography>₹{appointment?.fee.toFixed(2)}</Typography>
+                  <Typography>₹{ appointment.fee && appointment?.fee.toFixed(2)}</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
                   You will not be charged any additional fee after your consultation.

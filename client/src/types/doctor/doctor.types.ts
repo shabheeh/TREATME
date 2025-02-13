@@ -77,7 +77,7 @@ export interface getDoctorWithScheduleQuery {
     gender: 'male' | 'female' | 'any' | '';
     language: string,
     page: number;
-    selectedDate: Date;
+    selectedDate: Date | string;
 }
 
 export interface getDoctorsWithSchedulesResult {

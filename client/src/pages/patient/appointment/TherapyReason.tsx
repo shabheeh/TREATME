@@ -55,7 +55,7 @@ const TherapyReason = () => {
   const startAppointment = async() => {
     if (!currentPatient) return
     const appointmentData = {
-      patientId: currentPatient._id,
+      patient: currentPatient._id,
       patientType: currentPatient._id === patient?._id ? 'Patient' : 'Dependent',
       specialization: state.specializationId,
       fee: state.fee,
