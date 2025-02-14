@@ -21,6 +21,8 @@ const appointmentSchema = new Schema<IAppointment>({
     duration: { type: String,  },
     status: { type: String, required: true },
     fee: { type: Number, required: true },
+    dayId: { type: Types.ObjectId },
+    slotId: { type: Types.ObjectId },
 },
 {
     timestamps: true,

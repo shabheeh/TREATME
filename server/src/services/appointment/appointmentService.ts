@@ -4,7 +4,6 @@ import logger from "../../configs/logger";
 import IAppointment, { IAppointmentService } from "../../interfaces/IAppointment";
 import IAppointmentRepository from "../../repositories/appointment/interfaces/IAppointmentService";
 import { AppError } from "../../utils/errors";
-import { ObjectId } from "mongoose";
 
 
 
@@ -31,12 +30,12 @@ class AppointmentService implements IAppointmentService {
         return appointment;
     }
 
-    async updateAppointment(id: string, updateData: Partial<IAppointment>, dayId?: ObjectId, slotId?: ObjectId): Promise<Partial<IAppointment>> {
+    async updateAppointment(id: string, updateData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
         try {
             
 
-            if (updateData.doctor && slotId && dayId) {
-                await this.scheduleRepo.updateBookingStatus(updateData.doctor, dayId, slotId);
+            if (updateData.doctor && updateData.slotId && updateData.dayId) {
+                await this.scheduleRepo.updateBookingStatus(updateData.doctor,  updateData.dayId, updateData.slotId);
             }
 
             const appointment = await this.appointmentRepo.updateAppointment(id, updateData);

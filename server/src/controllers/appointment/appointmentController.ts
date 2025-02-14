@@ -58,9 +58,9 @@ class AppointmentController implements IAppointmentController {
                 throw new BadRequestError('Bad Request: Missing info')
             }
 
-            const { dayId, slotId, ...otherFields } = updateData;
+            
 
-            const appointment = await this.appointmentService.updateAppointment(id, otherFields, dayId, slotId);
+            const appointment = await this.appointmentService.updateAppointment(id, updateData,);
 
             res.status(200).json({ appointment })
 
@@ -80,8 +80,7 @@ class AppointmentController implements IAppointmentController {
             }
 
             const appointments = await this.appointmentService.getAppointmentsByUserId(id, role)
-            
-            console.log(appointments)
+        
 
             res.status(200).json({ appointments })
 

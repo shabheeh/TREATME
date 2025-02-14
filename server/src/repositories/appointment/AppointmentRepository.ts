@@ -86,6 +86,18 @@ class AppointmentRepository implements IAppointmentRepository {
     async getAppointmentsByPatientId(patientId: string): Promise<IAppointment[]> {
         try {
             const appointments = await this.model.find({ patient: patientId})
+            .populate({
+                path: 'specialization',
+                select: 'name'
+            })
+            .populate({
+                path: 'patient',
+                select: 'firstName lastName profilePicture'
+            })
+            .populate({
+                path: 'doctor',
+                select: 'firstName lastName profilePicture'
+            })
             
             return appointments;
 
@@ -99,7 +111,19 @@ class AppointmentRepository implements IAppointmentRepository {
 
     async getAppointmentsByDoctorId(doctorId: string): Promise<IAppointment[]> {
         try {
-            const appointments = await this.model.find({ doctor: doctorId });
+            const appointments = await this.model.find({ doctor: doctorId })
+            .populate({
+                path: 'specialization',
+                select: 'name'
+            })
+            .populate({
+                path: 'patient',
+                select: 'firstName lastName profilePicture'
+            })
+            .populate({
+                path: 'doctor',
+                select: 'firstName lastName profilePicture'
+            })
             return appointments;
         } catch (error) {
             throw new AppError(
@@ -112,6 +136,18 @@ class AppointmentRepository implements IAppointmentRepository {
     async getAppointments(): Promise<IAppointment[]> {
         try {
             const appointments = await this.model.find()
+            .populate({
+                path: 'specialization',
+                select: 'name'
+            })
+            .populate({
+                path: 'patient',
+                select: 'firstName lastName profilePicture'
+            })
+            .populate({
+                path: 'doctor',
+                select: 'firstName lastName profilePicture'
+            })
             return appointments
         } catch (error) {
             throw new AppError(

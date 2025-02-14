@@ -15,6 +15,7 @@ export interface IAppointment extends Document {
     slotId: ObjectId;
     dayId: ObjectId;
     paymentStatus: 'pending' | 'paid'
+
 }
 
 export default IAppointment
@@ -23,7 +24,7 @@ export default IAppointment
 export interface IAppointmentService {
     createAppointment(appointmentData: Partial<IAppointment>): Promise<Partial<IAppointment>>
     getAppointmentById(id: string): Promise<Partial<IAppointment>>
-    updateAppointment(id: string, updateData: Partial<IAppointment>, dayId?: ObjectId, slotId?: ObjectId): Promise<Partial<IAppointment>>
+    updateAppointment(id: string, updateData: Partial<IAppointment>): Promise<Partial<IAppointment>>
     getAppointmentsByUserId(id: string, role: string): Promise<IAppointment[]>
     getAppointments(): Promise<IAppointment[]>
 }

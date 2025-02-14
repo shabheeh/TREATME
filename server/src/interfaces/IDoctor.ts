@@ -4,6 +4,7 @@ import { getDoctorsWithSchedulesQuery, getDoctorsWithSchedulesResult } from "src
 
 
 export interface ISlot extends Document {
+    _id: ObjectId;
     startTime: Date;
     endTime: Date;
     isBooked: boolean;

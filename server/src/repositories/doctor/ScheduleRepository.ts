@@ -35,8 +35,6 @@ class ScheduleRepository implements IScheduleRepository {
                 { new: true, upsert: true }
             ) 
 
-
-
             if (!updatedSchedule) {
                 throw new AppError('Something went wrong')
             }
@@ -52,39 +50,62 @@ class ScheduleRepository implements IScheduleRepository {
     }
 
     async updateBookingStatus(doctorId: ObjectId, dayId: ObjectId, slotId: ObjectId): Promise<void> {
-      try {
-          console.log('called update');
-  
-        
-          const updateResult = await this.model.updateOne(
-              { 
-                  doctorId: doctorId,
-                  'availability._id': dayId,
-                  'availability.slots._id': slotId 
-              },
-              { 
-                  $set: { 'availability.$.slots.$[slot].isBooked': true } 
-              },
-              { 
-                  arrayFilters: [
-                      { 'slot._id': slotId } 
-                  ] 
-              }
-          );
-  
-          if (updateResult.matchedCount === 0) {
-              throw new AppError('No matching document found to update');
-          }
-  
-          console.log('Slot updated successfully');
+        try {
 
-      } catch (error) {
-          throw new AppError(
-              `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-              500
-          );
-      }
-  }
+            const document = await this.model.findOne(
+                {
+                    doctorId: doctorId,
+                    'availability._id': dayId,
+                    'availability.slots._id': slotId
+                },
+                { 'availability.$.slots.$': 1 }
+            );
+    
+            if (!document) {
+                throw new AppError('No matching document found to update');
+            }
+    
+            const slotIndex = document.availability[0].slots.findIndex(slot => slot._id === slotId);
+
+            if (slotIndex === -1) {
+              throw new AppError('Slot not found');
+            }
+        
+            const currentIsBooked = document.availability[0].slots[slotIndex].isBooked;
+    
+            if (currentIsBooked === undefined) {
+                throw new AppError('Slot not found');
+            }
+
+            const updateResult = await this.model.updateOne(
+                {
+                    doctorId: doctorId,
+                    'availability._id': dayId,
+                    'availability.slots._id': slotId
+                },
+                {
+                    $set: { 'availability.$.slots.$[slot].isBooked': !currentIsBooked }
+                },
+                {
+                    arrayFilters: [
+                        { 'slot._id': slotId }
+                    ]
+                }
+            );
+    
+            if (updateResult.matchedCount === 0) {
+                throw new AppError('No matching document found to update');
+            }
+    
+            console.log('Slot updated successfully');
+    
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
     
 }
 

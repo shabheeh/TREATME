@@ -91,7 +91,6 @@ export default function ScheduleManagement() {
     const specialization = doctor?.specialization?.name || 'Default';
     const slotDuration = SPECIALIZATION_DURATION[specialization] || SPECIALIZATION_DURATION['Default'];
   
-
     const startTime = dayjs(selectedDate).set('hour', newTimeSlot.startTime.hour()).set('minute', newTimeSlot.startTime.minute()).toDate();
     const endTime = dayjs(startTime).add(slotDuration, 'minute').toDate();
   
@@ -193,18 +192,9 @@ export default function ScheduleManagement() {
     }
   };
 
-  const generateWeekDates = () => {
-    const dates = [];
-    for (let i = 0; i < 7; i++) {
-      const date = today.add(i, 'day');
-      dates.push(date);
-    }
-    return dates;
-  };
-
-  const renderWeeklySchedule = () => {
-    return generateWeekDates().map((date) => {
-      const daySchedule = schedules.find(avail => dayjs(avail.date).isSame(date, 'day'));
+  const renderSchedule = () => {
+    return schedules.map((daySchedule) => {
+      const date = dayjs(daySchedule.date);
       const isToday = date.isSame(today, 'day');
       return (
         <Grid item xs={12} key={date.format('YYYY-MM-DD')} sx={{ mb: 2 }}>
@@ -229,7 +219,7 @@ export default function ScheduleManagement() {
               Add Slot
             </Button>
           </Box>
-          {daySchedule?.slots.length ? (
+          {daySchedule.slots.length ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {daySchedule.slots.map((slot) => (
                 <Box 
@@ -282,7 +272,7 @@ export default function ScheduleManagement() {
           <Grid item xs={12} md={8}>
             <Paper variant="outlined" sx={{ p: 2 }}>
               <Grid container spacing={2}>
-                {renderWeeklySchedule()}
+                {renderSchedule()}
               </Grid>
             </Paper>
           </Grid>
@@ -290,9 +280,12 @@ export default function ScheduleManagement() {
             <Paper variant="outlined" sx={{ p: 2 }}>
               <DateCalendar
                 value={selectedDate}
-                onChange={(newValue) => setSelectedDate(newValue as Dayjs)}
+                onChange={(newValue) => {
+                  setSelectedDate(newValue as Dayjs);
+                  setIsAddSlotDialogOpen(true);
+                }}
                 minDate={today}
-                maxDate={today.add(7, 'day')}
+                maxDate={today.add(20, 'day')}
               />
             </Paper>
           </Grid>

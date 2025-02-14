@@ -35,11 +35,10 @@ const Appointments = () => {
         fetchAppointments()
     }, [currnetPatient])
 
-    const upcoming = appointments.filter(appointment => appointment.status === 'confirmed')
+    // const upcoming = appointments.filter(appointment => appointment.status === 'confirmed')
     // const requested = appointments.filter(appointment => appointment.status === 'requested')
     // const completed = appointments.filter(appointment => appointment.status === 'completed')
 
-    console.log(appointments)
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -48,7 +47,7 @@ const Appointments = () => {
   const tabContent = [
     {
         title: 'Upcoming',
-        component: <Upcoming appointments={upcoming} />,
+        component: <Upcoming appointments={appointments} />,
     },
     {
         title: 'Requested',

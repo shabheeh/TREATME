@@ -50,6 +50,7 @@ export const CustomTabs: React.FC<CustomTabsProps> = ({ value, onChange, tabCont
       variant="fullWidth"
       indicatorColor="primary"
       textColor="primary"
+      sx={{ mx: 6 }}
     >
       {tabContent.map((tab, index) => (
         <StyledTab
@@ -79,7 +80,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...o
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3, boxShadow: 'none' }}>
+        <Box sx={{ mx: 10, p: 3, boxShadow: 'none' }}>
           {children}
         </Box>
       )}
