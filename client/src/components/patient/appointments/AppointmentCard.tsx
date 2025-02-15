@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Typography, 
@@ -12,6 +12,7 @@ import {
 import { IDependent, IPatient } from '../../../types/patient/patient.types';
 import { IDoctor } from '../../../types/doctor/doctor.types';
 import { formatMonthDay, formatTime, getDayName } from '../../../utils/dateUtils';
+import RescheduleModal from './RescheduleModal';
 
 
 interface AppointmentCardProps {
@@ -24,7 +25,9 @@ interface AppointmentCardProps {
     reason: string;
 }
 
-const AppointmentCard: React.FC<AppointmentCardProps> = ({ id,  doctor, date, specialization, fee, reason }) => {
+const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, specialization }) => {
+
+  const [isRescheduleModalOPen, setRescheduleModalOpen] = useState(false)
 
   return (
     <Card
@@ -47,7 +50,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id,  doctor, date, sp
             mb: 2
           }}
         >
-          {/* Doctor Info */}
+         
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar
               src={doctor.profilePicture}
@@ -73,7 +76,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id,  doctor, date, sp
             <Button 
               variant="outlined"
               size="small"
+              onClick={() => setRescheduleModalOpen(true)}
               sx={{ 
+                
                 borderRadius: 4,
                 backgroundColor: '#ffffdd',
                 borderColor: '#e6e6b8',
@@ -147,6 +152,11 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id,  doctor, date, sp
         </Box>
         
       </Box>
+      <RescheduleModal 
+      open={isRescheduleModalOPen}
+      doctorId={doctor._id}
+      onClose={() => setRescheduleModalOpen(false)}
+      />
     </Card>
   );
 };

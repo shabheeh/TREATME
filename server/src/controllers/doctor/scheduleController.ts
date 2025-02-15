@@ -9,7 +9,7 @@ class ScheduleController implements IScheduleController {
 
     constructor(scheduleService: IScheduleService) {
         this.scheduleService = scheduleService
-    }
+    } 
 
     getSchedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
@@ -45,6 +45,7 @@ class ScheduleController implements IScheduleController {
             next(error)
         }
     }
+
 }
 
 

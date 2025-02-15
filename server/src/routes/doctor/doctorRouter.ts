@@ -91,4 +91,10 @@ router.get('/doctors',
     doctorController.getDoctorsWithSchedules
 )
 
+router.get('/:id/schedules',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    scheduleController.getSchedule
+)
+
 export default router

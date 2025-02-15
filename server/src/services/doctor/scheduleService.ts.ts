@@ -53,6 +53,7 @@ class ScheduleService implements IScheduleService {
             ); 
         }
     }
+
 }
 
 export default ScheduleService

@@ -1,4 +1,4 @@
-import { Model, ObjectId } from "mongoose";
+import { Model, ObjectId, Types } from "mongoose";
 import IScheduleRepository from "./interfaces/IScheduleRepository";
 import { ISchedule } from "../../interfaces/IDoctor";
 import { AppError } from "../../utils/errors";
@@ -9,13 +9,36 @@ class ScheduleRepository implements IScheduleRepository {
 
     constructor(model: Model<ISchedule>) {
         this.model = model
-    }
+    } 
 
     async findSchedule(doctorId: string): Promise<ISchedule | null> {
         try {
-            const schedule = await this.model.findOne({ doctorId })
 
-            return schedule
+            const date = new Date()
+            
+            const schedule = await this.model.aggregate([
+                {
+                  $match: {
+                    doctorId: new Types.ObjectId(doctorId),
+                    'availability.date': { $gte: date }
+                  }
+                },
+                {
+                  $project: {
+                    doctorId: 1,
+                    availability: {
+                      $filter: {
+                        input: '$availability',
+                        as: 'av',
+                        cond: { $gte: ['$$av.date', date] }
+                      }
+                    }
+                  }
+                }
+            ]);
+
+
+            return schedule[0];
 
         } catch (error) {
             throw new AppError(
@@ -24,6 +47,8 @@ class ScheduleRepository implements IScheduleRepository {
             );
         }
     }
+
+
 
     async updateSchedule(doctorId: string, updateData: Partial<ISchedule>): Promise<ISchedule> {
         try {
@@ -106,6 +131,7 @@ class ScheduleRepository implements IScheduleRepository {
             );
         }
     }
+
     
 }
 

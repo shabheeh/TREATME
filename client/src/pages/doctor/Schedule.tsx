@@ -193,67 +193,78 @@ export default function ScheduleManagement() {
   };
 
   const renderSchedule = () => {
-    return schedules.map((daySchedule) => {
-      const date = dayjs(daySchedule.date);
-      const isToday = date.isSame(today, 'day');
+    if ( schedules.length === 0) {
       return (
-        <Grid item xs={12} key={date.format('YYYY-MM-DD')} sx={{ mb: 2 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
-            mb: 1 
-          }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: isToday ? 'bold' : 'normal' }}>
-              {date.format('ddd, MMM D')}
-              {isToday && <span style={{ marginLeft: '8px', color: 'teal' }}>Today</span>}
-            </Typography>
-            <Button 
-              startIcon={<AddIcon />} 
-              size="small"
-              onClick={() => {
-                setSelectedDate(date);
-                setIsAddSlotDialogOpen(true);
-              }}
-            >
-              Add Slot
-            </Button>
-          </Box>
-          {daySchedule.slots.length ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {daySchedule.slots.map((slot) => (
-                <Box 
-                  key={slot._id} 
-                  sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'space-between',
-                    backgroundColor: 'rgba(0,0,0,0.05)',
-                    p: 1,
-                    borderRadius: 1
-                  }}
-                >
-                  <Typography variant="body2">
-                    {`${formatTime(slot.startTime)} to ${formatTime(slot.endTime)}`}
-                  </Typography>
-                  <IconButton 
-                    size="small" 
-                    onClick={() => removeTimeSlot(date, slot._id!)}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              ))}
+        <Box sx={{ m: 2, color: 'GrayText' }}>
+          <Typography variant='h6'>
+            Setup you daily schedules
+          </Typography>
+        </Box>
+      )
+    } else {
+      return schedules.map((daySchedule) => {
+        const date = dayjs(daySchedule.date);
+        const isToday = date.isSame(today, 'day');
+        return (
+          <Grid item xs={12} key={date.format('YYYY-MM-DD')} sx={{ mb: 2 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              mb: 1 
+            }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: isToday ? 'bold' : 'normal' }}>
+                {date.format('ddd, MMM D')}
+                {isToday && <span style={{ marginLeft: '8px', color: 'teal' }}>Today</span>}
+              </Typography>
+              <Button 
+                startIcon={<AddIcon />} 
+                size="small"
+                onClick={() => {
+                  setSelectedDate(date);
+                  setIsAddSlotDialogOpen(true);
+                }}
+              >
+                Add Slot
+              </Button>
             </Box>
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              Not Scheduled
-            </Typography>
-          )}
-        </Grid>
-      );
-    });
-  };
+            {daySchedule.slots.length ? (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {daySchedule.slots.map((slot) => (
+                  <Box 
+                    key={slot._id} 
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'space-between',
+                      backgroundColor: 'rgba(0,0,0,0.05)',
+                      p: 1,
+                      borderRadius: 1
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {`${formatTime(slot.startTime)} to ${formatTime(slot.endTime)}`}
+                    </Typography>
+                    <IconButton 
+                      size="small" 
+                      onClick={() => removeTimeSlot(date, slot._id!)}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                Not Scheduled
+              </Typography>
+            )}
+          </Grid>
+        );
+      });
+    };
+    }
+    
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>

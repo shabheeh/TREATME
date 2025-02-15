@@ -57,6 +57,9 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
    setFilteredAvailability(filterAvailability(availability))
   }, [availability])
 
+  console.log(availability, 'doctorCard')
+  console.log(filteredAvailability, 'filetered')
+
   
   return (
 

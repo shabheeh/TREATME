@@ -20,6 +20,7 @@ const Appointments = () => {
     const [appointments, setAppointments] = useState<IAppointmentPopulated[] | []>([])
     const [loading, setLoading] = useState(true)
 
+
     useEffect(() => {
         if (!currnetPatient) return
         const fetchAppointments = async () => {
@@ -58,7 +59,6 @@ const Appointments = () => {
         component: <div>tab 3</div>,
     },
   ];
-
 
   return (
     <Card sx={{ boxShadow: 0 }}>
