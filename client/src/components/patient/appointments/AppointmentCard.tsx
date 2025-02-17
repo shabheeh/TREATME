@@ -1,64 +1,67 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  Avatar, 
+import {
+  Box,
+  Typography,
+  Card,
+  Avatar,
   Button,
   Divider,
-  Grid
+  Grid,
 } from '@mui/material';
 
 import { IDependent, IPatient } from '../../../types/patient/patient.types';
 import { IDoctor } from '../../../types/doctor/doctor.types';
 import { formatMonthDay, formatTime, getDayName } from '../../../utils/dateUtils';
 import RescheduleModal from './RescheduleModal';
-
+import CancelAppointmentModal from './CancelAppointmentModal ';
 
 interface AppointmentCardProps {
-    id: string;
-    patient: IPatient | IDependent;
-    doctor: IDoctor;
-    date: Date;
-    specialization: string;
-    fee: number;
-    reason: string;
+  id: string;
+  patient: IPatient | IDependent;
+  doctor: IDoctor;
+  date: Date;
+  specialization: string;
+  fee: number;
+  reason: string;
+  onReschedule: () => void;
 }
 
-const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, specialization }) => {
-
-  const [isRescheduleModalOPen, setRescheduleModalOpen] = useState(false)
+const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, doctor, date, specialization, onReschedule }) => {
+  const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [isCancelModalOpen, setCancelModalOpen] = useState(false)
 
   return (
     <Card
-      variant="outlined" 
-      sx={{ 
-        maxWidth: "90%", 
+      variant="outlined"
+      sx={{
+        maxWidth: { xs: '100%', sm: '90%' },
         borderRadius: 2,
         borderColor: 'teal',
         overflow: 'visible',
         mx: 'auto',
-    
+        my: 2,
+        p: { xs: 1, sm: 2 }
       }}
     >
-      <Box sx={{ p: 2 }}>
-        <Box 
-          sx={{ 
-            display: 'flex', 
+      <Box sx={{ p: { xs: 1, sm: 2} }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row'},
             justifyContent: 'space-between',
             alignItems: 'center',
-            mb: 2
+            mb: 2,
+            gap: { xs: 2, sm: 0 }
           }}
         >
-         
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar
               src={doctor.profilePicture}
               alt={doctor.firstName}
-              sx={{ 
-                width: 48, 
+              sx={{
+                width: 48,
                 height: 48,
-                border: '2px solid #eaeaea'
+                border: '2px solid #eaeaea',
               }}
             />
             <Box>
@@ -71,14 +74,12 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, special
             </Box>
           </Box>
 
-
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button 
+          <Box sx={{ display: 'flex', gap: 1, mt: { xs: 2, sm: 0} }}>
+            <Button
               variant="outlined"
               size="small"
               onClick={() => setRescheduleModalOpen(true)}
-              sx={{ 
-                
+              sx={{
                 borderRadius: 4,
                 backgroundColor: '#ffffdd',
                 borderColor: '#e6e6b8',
@@ -86,16 +87,18 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, special
                 textTransform: 'none',
                 '&:hover': {
                   backgroundColor: '#ffffe0',
-                  borderColor: '#d6d6a8'
-                }
+                  borderColor: '#d6d6a8',
+                },
               }}
             >
               RESCHEDULE
             </Button>
-            <Button 
+            <Button
+              onClick={() => setCancelModalOpen(true)}
+
               variant="outlined"
               size="small"
-              sx={{ 
+              sx={{
                 borderRadius: 4,
                 backgroundColor: '#ffe0e0',
                 borderColor: '#ffb3b3',
@@ -103,8 +106,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, special
                 textTransform: 'none',
                 '&:hover': {
                   backgroundColor: '#ffe6e6',
-                  borderColor: '#ffacac'
-                }
+                  borderColor: '#ffacac',
+                },
               }}
             >
               CANCEL
@@ -116,15 +119,15 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, special
 
         <Box sx={{ pt: 1 }}>
           <Grid container spacing={1} sx={{ textAlign: 'center' }}>
-            <Grid item xs={3}>
+            <Grid item xs={6} sm={3}>
               <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
                 DATE
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500,  }}>
-                {formatMonthDay(date)} { getDayName(date)}
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                {formatMonthDay(date)} {getDayName(date)}
               </Typography>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={6} sm={3}>
               <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
                 TIME
               </Typography>
@@ -132,7 +135,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, special
                 {formatTime(date)}
               </Typography>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={6} sm={3}>
               <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
                 TYPE
               </Typography>
@@ -140,23 +143,30 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ doctor, date, special
                 {specialization}
               </Typography>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={6} sm={3}>
               <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase' }}>
                 MODE
               </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    vidoe call
-                </Typography>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                Video Call
+              </Typography>
             </Grid>
           </Grid>
         </Box>
-        
       </Box>
-      <RescheduleModal 
-      open={isRescheduleModalOPen}
-      doctorId={doctor._id}
-      onClose={() => setRescheduleModalOpen(false)}
+      <RescheduleModal
+        open={isRescheduleModalOpen}
+        appointmentId={id}
+        doctorId={doctor._id}
+        onClose={() => setRescheduleModalOpen(false)}
+        onReschedule={onReschedule}
       />
+
+        <CancelAppointmentModal 
+          open={isCancelModalOpen}
+          onClose={() => setCancelModalOpen(false)}
+          appointment={ {id, doctor: doctor.firstName + ' ' + doctor.lastName, date }}
+        />
     </Card>
   );
 };

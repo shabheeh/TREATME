@@ -7,7 +7,6 @@ import {
   Divider, 
   IconButton,
   Grid,
-  Link,
   Avatar,
   Button,
   Skeleton,
@@ -28,6 +27,7 @@ const AppointmentDetailsPage = () => {
   const [appointment, setAppointment] = useState<Partial<IAppointmentPopulated> | null>(null);
   const [loading, setLoading] = useState(true);
   const [exitModalOpen, setExitModalOpen] = useState(false)
+  const [isPaymentLoading, setPaymentLoading] = useState(false)
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
@@ -57,6 +57,7 @@ const AppointmentDetailsPage = () => {
 
   const handlePaymentClick = async () => {
     try {
+      setPaymentLoading(true)
       await appointmentService.updateAppointment(
         state.appointmentId,
         { 
@@ -69,6 +70,8 @@ const AppointmentDetailsPage = () => {
         navigate('/confirmed', { state: state })
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unknown Error')
+    } finally {
+      setPaymentLoading(false)
     }
   }
 
@@ -77,6 +80,10 @@ const AppointmentDetailsPage = () => {
     setExitModalOpen(false)
     navigate('/visitnow', { state: {} })
     return null
+  }
+
+  const handleBack = () => {
+    navigate(-1)
   }
 
   if (loading) {
@@ -99,22 +106,22 @@ const AppointmentDetailsPage = () => {
           <ProgressBar value={100} />
         </Box>
         <Divider sx={{ my: 4 }} />
-        <Link
-          href="/review-health-history"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            color: "primary.main",
-            mb: 3,
-            fontSize: "16px",
-            fontWeight: "bold",
-            textDecoration: "none",
-            ":hover": { textDecoration: "underline" },
-          }}
-        >
-          <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
-          Back
-        </Link>
+        <Button
+      onClick={handleBack}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        color: 'primary.main',
+        mb: 3,
+        fontSize: '16px',
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        ':hover': { textDecoration: 'underline' },
+      }}
+    >
+      <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
+      Back
+    </Button>
         <Box sx={{ my: 2 }}>
           <Typography variant="h5" fontWeight="bold" color="grayText">
             Review and Book Appointment
@@ -210,54 +217,6 @@ const AppointmentDetailsPage = () => {
     );
   }
 
-  if (!appointment) {
-    return (
-      <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
-        <Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={3}
-          >
-            <Typography variant="h5" fontWeight="bold">
-              Schedule Appointment
-            </Typography>
-            <IconButton onClick={() => navigate('/visitnow')}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <ProgressBar value={100} />
-        </Box>
-        <Divider sx={{ my: 4 }} />
-        <Link
-          href="/review-health-history"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            color: "primary.main",
-            mb: 3,
-            fontSize: "16px",
-            fontWeight: "bold",
-            textDecoration: "none",
-            ":hover": { textDecoration: "underline" },
-          }}
-        >
-          <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
-          Back
-        </Link>
-        <Box sx={{ my: 2 }}>
-          <Typography variant="h5" fontWeight="bold" color="grayText">
-            Review and Book Appointment
-          </Typography>
-        </Box>
-        <Typography variant="body1" color="text.secondary" sx={{ my: 2 }}>
-          No appointment found. Please try again.
-        </Typography>
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
       <Box>
@@ -270,35 +229,37 @@ const AppointmentDetailsPage = () => {
           <Typography variant="h5" fontWeight="bold">
             Schedule Appointment
           </Typography>
-          <IconButton>
+          <IconButton onClick={() => setExitModalOpen(true)}>
             <CloseIcon />
           </IconButton>
         </Box>
         <ProgressBar value={100} />
       </Box>
       <Divider sx={{ my: 4 }} />
-      <Link
-        href="/review-health-history"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          color: "primary.main",
-          mb: 3,
-          fontSize: "16px",
-          fontWeight: "bold",
-          textDecoration: "none",
-          ":hover": { textDecoration: "underline" },
-        }}
-      >
-        <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
-        Back
-      </Link>
+      <Button
+      onClick={handleBack}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        color: 'primary.main',
+        mb: 3,
+        fontSize: '16px',
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        ':hover': { textDecoration: 'underline' },
+      }}
+    >
+      <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
+      Back
+    </Button>
       <Box sx={{ my: 2 }}>
         <Typography variant="h5" fontWeight="bold" color="grayText">
           Review and Book Appointment
         </Typography>
       </Box>
-      <Grid container direction="row" spacing={1}>
+
+        { appointment ? (
+        <Grid container direction="row" spacing={1}>
         <Grid item xs={12} sm={6}>
         <Card variant="outlined" sx={{ mb: 2, border: '1px solid teal' }}>
             <CardContent>
@@ -398,6 +359,8 @@ const AppointmentDetailsPage = () => {
             </Card>
             <Box>
               <Button 
+                loading={isPaymentLoading}
+                disabled={isPaymentLoading}
                 fullWidth
                 onClick={handlePaymentClick}
                 variant='contained'
@@ -409,6 +372,12 @@ const AppointmentDetailsPage = () => {
           </Box>
         </Grid>
       </Grid>
+      ) : (
+        <Typography variant="body1" color="text.secondary" sx={{ my: 2 }}>
+          No appointment found. Please try again.
+        </Typography>
+      )}
+      
       <ConfirmActionModal 
       open={exitModalOpen}
       title="Exit Booking"

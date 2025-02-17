@@ -1,4 +1,4 @@
-export const generateHtml = (email: string, password: string): string => {
+export const generateWelcomeDoctorHtml = (email: string, password: string): string => {
     return `
     <!DOCTYPE html>
     <html>

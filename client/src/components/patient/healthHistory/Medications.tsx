@@ -171,7 +171,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
                     sx={{ 
                       borderBottom: "1px solid #e0e0e0",
                       py: 1,
-                      viewTransitionName: `medication-${medication._id}` // Add transition name
+                      viewTransitionName: `medication-${medication._id}`
                     }}
                   >
                   <Grid item xs={4}>
@@ -205,7 +205,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
 
         <Box 
               sx={{ 
-                viewTransitionName: 'medication-form' // Add transition name for the form
+                viewTransitionName: 'medication-form' 
               }}
             >
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>

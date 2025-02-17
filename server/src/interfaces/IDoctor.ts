@@ -21,6 +21,7 @@ export interface ISchedule extends Document {
 }
 
 export default interface IDoctor extends Document {
+    _id: ObjectId;
     email: string;
     password: string;
     firstName: string;

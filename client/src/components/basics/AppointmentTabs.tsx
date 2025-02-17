@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, Tab, styled, Box } from '@mui/material';
+import { Tabs, Tab, styled, Box, useMediaQuery, useTheme } from '@mui/material';
 
 interface TabContent {
   title: string;
@@ -26,11 +26,14 @@ const StyledTab = styled(Tab)(({ theme }) => ({
   },
   boxShadow: 'none',
   border: 'none',
+  [theme.breakpoints.down('sm')]: {
+    fontSize: theme.typography.pxToRem(16),
+  },
 }));
 
-const StyledTabs = styled(Tabs)({
+const StyledTabs = styled(Tabs)(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'space-between', 
+  justifyContent: 'space-between',
   borderBottom: '1px solid #e0e4e8',
   '& .MuiTabs-indicator': {
     backgroundColor: 'teal',
@@ -39,18 +42,25 @@ const StyledTabs = styled(Tabs)({
     display: 'flex',
     justifyContent: 'space-between',
   },
-});
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    borderBottom: 'none',
+  },
+}));
 
 export const CustomTabs: React.FC<CustomTabsProps> = ({ value, onChange, tabContent }) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <StyledTabs
       value={value}
       onChange={onChange}
       aria-label="tabs"
-      variant="fullWidth"
+      variant={isSmallScreen ? 'scrollable' : 'fullWidth'}
       indicatorColor="primary"
       textColor="primary"
-      sx={{ mx: 6 }}
+      sx={{ mx: isSmallScreen ? 2 : 6 }}
     >
       {tabContent.map((tab, index) => (
         <StyledTab
@@ -71,6 +81,9 @@ interface TabPanelProps {
 }
 
 export const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <div
       role="tabpanel"
@@ -80,7 +93,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...o
       {...other}
     >
       {value === index && (
-        <Box sx={{ mx: 10, p: 3, boxShadow: 'none' }}>
+        <Box sx={{ mx: isSmallScreen ? 2 : 10, p: 3, boxShadow: 'none' }}>
           {children}
         </Box>
       )}

@@ -7,6 +7,7 @@ import appointmentService from '../../../services/appointment/appointmentService
 import { IAppointmentPopulated } from '../../../types/appointment/appointment.types';
 import { RootState } from '../../../redux/app/store';
 import { useSelector } from 'react-redux';
+import Loading from '../../../components/basics/Loading';
 
 
 
@@ -20,23 +21,25 @@ const Appointments = () => {
     const [appointments, setAppointments] = useState<IAppointmentPopulated[] | []>([])
     const [loading, setLoading] = useState(true)
 
+    const fetchAppointments = async () => {
+      try {
+        if (!currnetPatient) return
+          const appointments = await appointmentService.getAppointmentsForUser(currnetPatient._id)
+          setAppointments(appointments)
+      } catch (error) {
+          toast.error(error instanceof Error ? error.message : "Someting went wrong")
+      }finally {
+          setLoading(false)
+      }
+  }
 
     useEffect(() => {
-        if (!currnetPatient) return
-        const fetchAppointments = async () => {
-            try {
-                const appointments = await appointmentService.getAppointmentsForUser(currnetPatient._id)
-                setAppointments(appointments)
-            } catch (error) {
-                toast.error(error instanceof Error ? error.message : "Someting went wrong")
-            }finally {
-                setLoading(false)
-            }
-        }
+        
         fetchAppointments()
     }, [currnetPatient])
 
-    // const upcoming = appointments.filter(appointment => appointment.status === 'confirmed')
+
+    const upcoming = appointments.filter(appointment => appointment.status === 'confirmed')
     // const requested = appointments.filter(appointment => appointment.status === 'requested')
     // const completed = appointments.filter(appointment => appointment.status === 'completed')
 
@@ -48,7 +51,7 @@ const Appointments = () => {
   const tabContent = [
     {
         title: 'Upcoming',
-        component: <Upcoming appointments={appointments} />,
+        component: <Upcoming appointments={upcoming} onReschedule={fetchAppointments}/>,
     },
     {
         title: 'Requested',
@@ -65,7 +68,7 @@ const Appointments = () => {
       <CustomTabs value={value} onChange={handleChange} tabContent={tabContent} />
       {tabContent.map((tab, index) => (
         <TabPanel key={index} value={value} index={index}>
-          {tab.component}
+          { loading ? <Loading /> : tab.component}
         </TabPanel>
       ))}
     </Card>

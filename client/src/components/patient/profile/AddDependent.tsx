@@ -18,6 +18,7 @@ import dependentService from "../../../services/dependent/dependentService";
 interface IFormInputs {
     firstName: string;
     lastName: string;
+    email: string;
     relationship: string;
     gender: 'male' | 'female' | '';
     dateOfBirth: string;
@@ -58,6 +59,7 @@ const AddDependent: React.FC<AddDependentProps> = ({
         defaultValues: {
             firstName: '',
             lastName: '',
+            email: patient?.email,
             dateOfBirth: '',
             gender: '',
             relationship: '',  
@@ -98,6 +100,7 @@ const AddDependent: React.FC<AddDependentProps> = ({
             const formData = new FormData() 
             formData.append('firstName', data.firstName);
             formData.append('lastName', data.lastName);
+            formData.append('email', data.email)
             formData.append('relationship', data.relationship);
             formData.append('gender', data.gender);
             formData.append('dateOfBirth', data.dateOfBirth);

@@ -12,7 +12,6 @@ import {
   CheckCircle as CheckCircleIcon,
   CalendarMonth as CalendarIcon,
   AccessTime as TimeIcon,
-  Email as EmailIcon,
 } from '@mui/icons-material';
 import { IAppointmentPopulated } from '../../../types/appointment/appointment.types';
 import { useEffect, useState } from 'react';
@@ -21,7 +20,7 @@ import { toast } from 'sonner';
 import appointmentService from '../../../services/appointment/appointmentService';
 import BookingConfirmedSkeleton from '../../../components/patient/BookingConfirmationSkelton';
 import { formatMonthDay, formatTime } from '../../../utils/dateUtils';
-
+import { FaHouseMedical } from "react-icons/fa6";
 const BookingConfirmation = () => {
 
     const [appointment, setAppointment] = useState<Partial<IAppointmentPopulated> | null>(null)
@@ -52,7 +51,7 @@ const BookingConfirmation = () => {
       useEffect(() => {
         const handlePopState = () => {
           console.log('Popstate event triggered: Clearing state');
-          navigate(location.pathname, { state: {} });
+          navigate('/visitnow', { state: {} });
         };
 
         window.addEventListener('popstate', handlePopState);
@@ -185,16 +184,18 @@ const BookingConfirmation = () => {
 
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
         <Button 
+          onClick={() => navigate('/appointments', { state: {}})}
           variant="contained" 
-          startIcon={<EmailIcon />}
-        >
-          View Email Confirmation
-        </Button>
-        <Button 
-          variant="outlined" 
           startIcon={<CalendarIcon />}
         >
-          Add to Calendar
+         Upcoming Appointments
+        </Button>
+        <Button 
+        onClick={() => navigate('/visitnow', { state: {}})}
+          variant="outlined" 
+          startIcon={<FaHouseMedical />}
+        >
+          Back to Home
         </Button>
       </Box>
     </Box>

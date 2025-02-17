@@ -1,14 +1,15 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { IAppointmentPopulated } from '../../../types/appointment/appointment.types'
 import React from 'react'
 import AppointmentCard from './AppointmentCard'
 import Loading from '../../basics/Loading'
 
 interface UpcomingProps {
-    appointments: IAppointmentPopulated[] | []
+    appointments: IAppointmentPopulated[] | [];
+    onReschedule: () => void
 }
 
-const Upcoming: React.FC<UpcomingProps> = ({ appointments }) => {
+const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
 
   if (!appointments) {
     return <Loading />
@@ -16,8 +17,25 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments }) => {
  
   return (
     <Box>
-        {appointments.map(appointment => (
-            <AppointmentCard 
+      {appointments.length === 0 ? (
+        <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
+      >
+        <Typography>
+          No upcoming appointments
+        </Typography>
+      </Box>
+      ) : (
+        appointments.map(appointment => (
+          <AppointmentCard
+            key={appointment._id}
             doctor={appointment.doctor}
             specialization={appointment.specialization.name}
             date={appointment.date}
@@ -25,11 +43,12 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments }) => {
             id={appointment._id}
             fee={appointment.fee}
             patient={appointment.patient}
-            />
-        ))}
-        
+            onReschedule={onReschedule}
+          />
+        ))
+      )}
     </Box>
-  )
+  );
 }
 
 export default Upcoming

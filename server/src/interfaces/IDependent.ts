@@ -5,6 +5,7 @@ export default interface IDependent extends Document {
     firstName: string;
     lastName: string;
     primaryUserId: ObjectId;
+    email: string;
     gender: 'male' | 'female';
     relationship: string;
     dateOfBirth: Date;

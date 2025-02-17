@@ -6,12 +6,11 @@ import {
   Typography, 
   Button, 
   IconButton, 
-  Divider, 
-  Link, 
+  Divider,  
   Autocomplete, 
   TextField 
 } from "@mui/material";
-import { ArrowBack, Close } from "@mui/icons-material";
+import { ArrowBack as ArrowBackIcon, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
@@ -80,6 +79,10 @@ const TherapyReason = () => {
     return null
   }
 
+  const handleBack = () => {
+    navigate('/visitnow', { state: {} })
+  }
+
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
 
@@ -98,22 +101,22 @@ const TherapyReason = () => {
       <Card elevation={0} sx={{ borderRadius: 3, p: 2 }}>
         <CardContent sx={{ p: 3 }}>
 
-          <Link 
-            href="#"  
-            sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              color: "primary.main", 
-              mb: 3, 
-              fontSize: "16px",
-              fontWeight: "bold",
-              textDecoration: "none",
-              ":hover": { textDecoration: "underline" }
-            }}
-          >
-            <ArrowBack fontSize="small" sx={{ mr: 1 }} />
-            Back
-          </Link>
+        <Button
+      onClick={handleBack}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        color: 'primary.main',
+        mb: 3,
+        fontSize: '16px',
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        ':hover': { textDecoration: 'underline' },
+      }}
+    >
+      <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
+      Back
+    </Button>
 
           <Typography variant="h6" fontWeight="bold" mb={1}>
             How can our Therapists help?

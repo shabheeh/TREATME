@@ -5,7 +5,7 @@ import logger from "../../configs/logger";
 import { IAdminDoctorService } from "src/interfaces/IAdmin";
 import { AppError } from "../../utils/errors";
 import { sendEmail } from "../../utils/mailer";
-import { generateHtml } from "../../helpers/htmlGenerator";
+import { generateWelcomeDoctorHtml } from "../../helpers/welcomeDoctor";
 import { uploadToCloudinary } from "../../utils/uploadImage";
 
 class AdminDoctorService implements IAdminDoctorService {
@@ -39,7 +39,7 @@ class AdminDoctorService implements IAdminDoctorService {
             const { password, ...withoutPassword } = newDoctor;
             void password;
 
-            const html = generateHtml(withoutPassword.email, notHashedPassword)
+            const html = generateWelcomeDoctorHtml(withoutPassword.email, notHashedPassword)
 
             await sendEmail(withoutPassword.email, 'Welcome to Treamtme', undefined, html)
 

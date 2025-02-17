@@ -134,7 +134,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                   pb: 1,
                   pt: 0,
                   backgroundColor: "#F5F5F5",
-                  display: { xs: "none", sm: "flex" }, // Hide on small screens
+                  display: { xs: "none", sm: "flex" }, 
                 }}
               >
                 <Grid item xs={12} sm={4}>
@@ -160,7 +160,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
               </Grid>
               {allergies.map((allergy, index) => (
                 <React.Fragment key={index}>
-                  {/* Desktop View */}
+      
                   <Grid
                     container
                     spacing={2}
@@ -168,7 +168,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                       borderBottom: "1px solid #e0e0e0",
                       py: 1,
                       alignItems: "center",
-                      display: { xs: "none", sm: "flex" }, // Hide on small screens
+                      display: { xs: "none", sm: "flex" }, 
                     }}
                   >
                     <Grid item xs={12} sm={4}>
@@ -192,10 +192,10 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                     </Grid>
                   </Grid>
 
-                  {/* Mobile View */}
+    
                   <Box
                     sx={{
-                      display: { xs: "block", sm: "none" }, // Show only on small screens
+                      display: { xs: "block", sm: "none" }, 
                       borderBottom: "1px solid #e0e0e0",
                       py: 2,
                     }}

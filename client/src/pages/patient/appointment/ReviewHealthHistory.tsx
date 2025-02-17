@@ -4,8 +4,7 @@ import {
   Typography, 
   Button, 
   IconButton, 
-  Divider, 
-  Link, 
+  Divider,  
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
@@ -39,6 +38,10 @@ const ReviewHealthHistory = () => {
     return null
   }
 
+  const handleBack = () => {
+    navigate(-1)
+  }
+
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", p: 3 }}>
 
@@ -53,22 +56,23 @@ const ReviewHealthHistory = () => {
       </Box>
 
       <Divider sx={{ my: 4 }} />
-      <Link 
-            href="/therapy/reason"  
-            sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              color: "primary.main", 
-              mb: 3, 
-              fontSize: "16px",
-              fontWeight: "bold",
-              textDecoration: "none",
-              ":hover": { textDecoration: "underline" }
-            }}
-          >
-            <ArrowBack fontSize="small" sx={{ mr: 1 }} />
-            Back
-          </Link>
+      <Button
+      onClick={handleBack}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        color: 'primary.main',
+        mb: 3,
+        fontSize: '16px',
+        fontWeight: 'bold',
+        textDecoration: 'none',
+        ':hover': { textDecoration: 'underline' },
+      }}
+    >
+      <ArrowBack fontSize="small" sx={{ mr: 1 }} />
+      Back
+    </Button>
+
         <Box sx={{ my: 2}}>
             <Typography variant="h5" fontWeight='bold' color="primary">
                 Let's Review your Health Profile

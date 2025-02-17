@@ -76,43 +76,54 @@ class ScheduleRepository implements IScheduleRepository {
 
     async updateBookingStatus(doctorId: ObjectId, dayId: ObjectId, slotId: ObjectId): Promise<void> {
         try {
+            
+            console.log(doctorId, dayId, slotId, 'hello')
 
             const document = await this.model.findOne(
                 {
                     doctorId: doctorId,
                     'availability._id': dayId,
                     'availability.slots._id': slotId
-                },
-                { 'availability.$.slots.$': 1 }
+                }
             );
     
             if (!document) {
                 throw new AppError('No matching document found to update');
             }
     
-            const slotIndex = document.availability[0].slots.findIndex(slot => slot._id === slotId);
 
-            if (slotIndex === -1) {
-              throw new AppError('Slot not found');
+            const day = document.availability.find(day => 
+                day._id && day._id.toString() === dayId.toString()
+            );
+            
+            if (!day) {
+                throw new AppError('Day not found');
             }
-        
-            const currentIsBooked = document.availability[0].slots[slotIndex].isBooked;
     
-            if (currentIsBooked === undefined) {
+            const slot = day.slots.find(slot => 
+                slot._id && slot._id.toString() === slotId.toString()
+            );
+            
+            if (!slot) {
                 throw new AppError('Slot not found');
             }
-
+    
+            const currentIsBooked = slot.isBooked;
+            if (currentIsBooked === undefined) {
+                throw new AppError('Slot booking status not found');
+            }
+    
             const updateResult = await this.model.updateOne(
                 {
                     doctorId: doctorId,
-                    'availability._id': dayId,
-                    'availability.slots._id': slotId
+                    'availability._id': dayId
                 },
                 {
-                    $set: { 'availability.$.slots.$[slot].isBooked': !currentIsBooked }
+                    $set: { 'availability.$[day].slots.$[slot].isBooked': !currentIsBooked }
                 },
                 {
                     arrayFilters: [
+                        { 'day._id': dayId },
                         { 'slot._id': slotId }
                     ]
                 }

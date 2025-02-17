@@ -114,7 +114,7 @@ const ApplicantDetails: React.FC = () => {
       </Typography>
 
   <Grid container spacing={4}>
-    {/* Personal Information Section */}
+
     <Grid item xs={12} md={6}>
       <Typography  sx={{ fontWeight: "bold", fontSize: "18px", mb: 2, display: "flex", alignItems: "center" }}>
         <Badge sx={{ mr: 1 }} />
@@ -153,7 +153,6 @@ const ApplicantDetails: React.FC = () => {
       </Box>
     </Grid>
 
-    {/* Documents Section */}
     <Grid item xs={12} md={6}>
     <Typography  sx={{ fontWeight: "bold", fontSize: "18px", mb: 2, display: "flex", alignItems: "center" }}>
 

@@ -1,5 +1,5 @@
 import { Model } from "mongoose";
-import IAppointment from "../../interfaces/IAppointment";
+import IAppointment, { IAppointmentPopulated } from "../../interfaces/IAppointment";
 import IAppointmentRepository from "./interfaces/IAppointmentService";
 import { AppError } from "../../utils/errors";
 
@@ -32,7 +32,7 @@ class AppointmentRepository implements IAppointmentRepository {
         }
     }
 
-    async getAppointmentById(id: string): Promise<Partial<IAppointment>> {
+    async getAppointmentById(id: string): Promise<Partial<IAppointmentPopulated>> {
         try {
             const appointment = await this.model.findById(id)
             .populate({
@@ -41,17 +41,18 @@ class AppointmentRepository implements IAppointmentRepository {
             })
             .populate({
                 path: 'patient',
-                select: 'firstName lastName profilePicture'
+                select: 'firstName lastName profilePicture  email'
             })
             .populate({
                 path: 'doctor',
-                select: 'firstName lastName profilePicture'
+                select: 'firstName lastName profilePicture email'
             })
 
             if (!appointment) {
                 throw new AppError('Somethig went Wrong')
             }
-            return appointment
+            return appointment as unknown as IAppointmentPopulated;
+
         } catch (error) {
             throw new AppError(
                 `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,

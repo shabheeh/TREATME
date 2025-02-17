@@ -17,7 +17,7 @@ import { filterAvailability } from '../../helpers/filterAvailability';
 
 
 
-const TimeChip = styled(Chip)(({ theme }) => ({
+export const TimeChip = styled(Chip)(({ theme }) => ({
   borderRadius: '50px',
   border: `1px solid ${theme.palette.primary.main}`,
   backgroundColor: 'transparent',
