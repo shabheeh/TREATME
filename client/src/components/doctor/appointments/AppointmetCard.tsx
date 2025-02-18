@@ -14,6 +14,7 @@ import { IDoctor } from '../../../types/doctor/doctor.types';
 import { formatMonthDay, formatTime, getDayName } from '../../../utils/dateUtils';
 import RescheduleModal from '../../basics/appointments/RescheduleModal';
 import CancelAppointmentModal from '../../basics/appointments/CancelAppointmentModal ';
+import { calculateAge } from '../../../helpers/ageCalculator';
 
 interface AppointmentCardProps {
   id: string;
@@ -30,9 +31,9 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, patient, doctor, 
   const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [isCancelModalOpen, setCancelModalOpen] = useState(false)
 
-
   const doctorName = doctor.firstName + ' ' + doctor.lastName
   const patientName = patient.firstName + ' ' + patient.lastName
+
 
   return (
     <Card
@@ -60,8 +61,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, patient, doctor, 
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar
-              src={doctor.profilePicture}
-              alt={doctor.firstName}
+              src={patient.profilePicture}
+              alt={patient.firstName}
               sx={{
                 width: 48,
                 height: 48,
@@ -70,10 +71,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, patient, doctor, 
             />
             <Box>
               <Typography variant="h6" sx={{ fontWeight: 500 }}>
-                Dr. {doctor.firstName} {doctor.lastName}
+                {patient.firstName} {patient.lastName}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {specialization}
+                {calculateAge(patient.dateOfBirth)}
               </Typography>
             </Box>
           </Box>
@@ -171,7 +172,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, patient, doctor, 
           onClose={() => setCancelModalOpen(false)}
           appointment={ {id, doctor: doctorName, patient: patientName, date }}
           onReschedule={onReschedule}
-
+        
         />
     </Card>
   );

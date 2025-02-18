@@ -17,7 +17,7 @@ import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 
-console.log('Memory Usage at Startup:', process.memoryUsage());
+// console.log('Memory Usage at Startup:', process.memoryUsage());
 
 // setInterval(() => {
 //     const memoryUsage = process.memoryUsage();

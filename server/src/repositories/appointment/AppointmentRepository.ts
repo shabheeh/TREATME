@@ -41,11 +41,11 @@ class AppointmentRepository implements IAppointmentRepository {
             })
             .populate({
                 path: 'patient',
-                select: 'firstName lastName profilePicture  email'
+                select: '-password'
             })
             .populate({
                 path: 'doctor',
-                select: 'firstName lastName profilePicture email'
+                select: '-password'
             })
 
             if (!appointment) {
@@ -93,11 +93,11 @@ class AppointmentRepository implements IAppointmentRepository {
             })
             .populate({
                 path: 'patient',
-                select: 'firstName lastName profilePicture'
+                select: '-password'
             })
             .populate({
                 path: 'doctor',
-                select: 'firstName lastName profilePicture'
+                select: '-password'
             })
             
             return appointments;
@@ -119,11 +119,11 @@ class AppointmentRepository implements IAppointmentRepository {
             })
             .populate({
                 path: 'patient',
-                select: 'firstName lastName profilePicture'
+                select: '-password'
             })
             .populate({
                 path: 'doctor',
-                select: 'firstName lastName profilePicture'
+                select: '-password'
             })
             return appointments;
         } catch (error) {

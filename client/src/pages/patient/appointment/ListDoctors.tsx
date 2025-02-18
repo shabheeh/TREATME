@@ -17,12 +17,14 @@ import { ArrowBack, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
 import { useEffect, useState } from "react";
 import doctorService from "../../../services/doctor/doctorService";
-import { IDoctorWithSchedule } from "../../../types/doctor/doctor.types";
+import { IDoctor, IDoctorWithSchedule } from "../../../types/doctor/doctor.types";
 import { toast } from "sonner";
 import Loading from "../../../components/basics/Loading";
-import { useLocation, useNavigate } from "react-router-dom";
-import appointmentService from "../../../services/appointment/appointmentService";
+import { useNavigate } from "react-router-dom";
 import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
+import { resetAppointment, updateAppointment,  } from "../../../redux/features/appointment/appointmentSlice";
 
 type Gender = "male" | "female" | "any" | "";
 
@@ -44,21 +46,20 @@ const ListDoctors = () => {
   const [date, setDate] = useState<Date | string>(today);
   const [gender, setGender] = useState<Gender>("");
   const [language, setLanguage] = useState<string>("");
-  const specialization = "679494304a73cf74bf3bd1d8";
   const [page, setPage] = useState<number>(1);
   const [doctors, setDoctors] = useState<IDoctorWithSchedule[] | []>([]);
   const [loading, setLoading] = useState(false);
   const [exitModalOpen, setExitModalOpen] = useState(false)
 
+  const appointmentData = useSelector((state: RootState) => state.appointment.appointmentData)
+ 
 
-  const location = useLocation()
   const navigate = useNavigate()
-
-  const state = location.state
+  const dispatch = useDispatch()
 
   useEffect(() => {
 
-    if (!state) {
+    if (!appointmentData || !appointmentData.specialization) {
       navigate('/visitnow')
       return
     }
@@ -67,12 +68,11 @@ const ListDoctors = () => {
       selectedDate: date || new Date(),
       gender: gender,
       language: language,
-      specialization: specialization,
+      specialization: appointmentData.specialization,
       page: page,
     };
     const fetchDoctors = async () => {
       try {
-        console.log(query)
         setLoading(true);
         const result = await doctorService.getDoctorsWithSchedules(query);
         setDoctors(result.doctors);
@@ -86,7 +86,7 @@ const ListDoctors = () => {
       }
     };
     fetchDoctors();
-  }, [gender, language, date, navigate, page, state]);
+  }, [gender, language, date, navigate, page, appointmentData]);
 
   const handleGenderChange = (event: React.ChangeEvent<{ value: string }>) => {
     const value = event.target.value as Gender;
@@ -103,24 +103,23 @@ const ListDoctors = () => {
     setDate(value);
   };
 
-  const handleSlotBooking = async (doctor: string, dayId: string, slotId: string, date: Date ) => {
-    const appointmentId = state.appointmentId
-    try {
-      const result = await appointmentService.updateAppointment(appointmentId, { doctor, date })
-      navigate('/review-appointment', { state: { appointmentId: result._id, slotId, dayId }})
-    } catch (error) {
-      if(error instanceof Error) {
-        toast.error(error.message)
-      }else {
-        console.error('Something went wrong')
-      }
-    }
+  const handleSlotBooking = async (doctor: IDoctor, dayId: string, slotId: string, date: Date ) => {
+
+    dispatch(updateAppointment({ 
+      doctor: doctor._id, 
+      dayId,
+      slotId,
+      date
+    }))
+
+    navigate('/review-appointment')
+    
   }
 
   const handleExitBooking = () => {
     setExitModalOpen(false)
-    navigate('/visitnow', { state: {} })
-    return null
+    navigate('/visitnow',)
+    dispatch(resetAppointment())
   }
 
   const handleBack = () => {
@@ -256,12 +255,8 @@ const ListDoctors = () => {
       ) : (
         doctors.map((doctor) => (
           <DoctorCard
-            id={doctor._id}
-            name={doctor.firstName + " " + doctor.lastName}
-            experience={doctor.experience}
+            doctor={doctor}
             availability={doctor.availability}
-            profilePicture={doctor.profilePicture}
-            specialties={doctor.specialties}
             handleSlotClick={handleSlotBooking}
           />
         ))

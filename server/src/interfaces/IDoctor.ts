@@ -85,9 +85,12 @@ export interface IScheduleController {
 }
 
 export interface IDoctorService {
+  getDoctor(id: string): Promise<IDoctor>
   getDoctorsWithSchedules(query: getDoctorsWithSchedulesQuery): Promise<getDoctorsWithSchedulesResult>;
 }
 
 export interface IDoctorController {
   getDoctorsWithSchedules(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
+
 }

@@ -5,6 +5,7 @@ import { ISpecialization } from "../specialization/specialization.types";
 export default interface IAppointment {
     _id: string;
     patient: string;
+    patientType: 'Patient' | 'Dependent';
     doctor: string;
     specialization: string,
     reason: string,
@@ -20,6 +21,7 @@ export default interface IAppointment {
 export interface IAppointmentPopulated {
     _id: string;
     patient: IPatient | IDependent;
+    patientType: 'Patient' | 'Dependent';
     doctor: IDoctor;
     specialization: ISpecialization;
     reason: string;

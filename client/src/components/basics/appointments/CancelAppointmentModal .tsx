@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   Box,
@@ -12,20 +12,26 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { formatTime } from '../../../utils/dateUtils';
 import appointmentService from '../../../services/appointment/appointmentService';
 import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/app/store';
 
 interface CancelAppointmentModalProps {
     open: boolean;
     onClose: () => void;
+    onReschedule: () => void;
     appointment: {
         id: string,
         date: Date,
         doctor: string;
+        patient: string;
     };
 
 }
 
-const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, onClose, appointment }) => {
-  
+const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, onClose, appointment, onReschedule }) => {
+
+  const patient = useSelector((state: RootState) => state.user.patient)
+  const [loading, setLoading] = useState(false)
 
   const formattedDate = new Date(appointment.date).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -36,6 +42,7 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, o
   
   const handleCancel = async () => {
     try {
+      setLoading(true)
         await appointmentService.updateAppointment(appointment.id, {
             status: 'cancelled'
         })
@@ -43,7 +50,10 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, o
     } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Someting went wrong')
     }finally {
+       setLoading(false)
         onClose();
+        onReschedule()
+        
     }
     
     
@@ -95,9 +105,17 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, o
           <Typography variant="body1">
             Time: {formatTime(appointment.date)}
           </Typography>
-          <Typography variant="body1">
-            Doctor: {appointment?.doctor || ''}
-          </Typography>
+          { patient ? ( 
+              <Typography variant="body1">
+              Doctor: {appointment?.doctor || ''}
+            </Typography> 
+          ) : (
+            <Typography variant="body1">
+              Patient: {appointment?.patient || ''}
+            </Typography> 
+          )
+
+                  }
         </Box>
         
         {/* <Divider sx={{ my: 3 }} />
@@ -127,6 +145,8 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, o
             Keep Appointment
           </Button>
           <Button 
+            loading={loading}
+            disabled={loading}
             onClick={handleCancel} 
             variant="contained" 
             color="error"
@@ -141,18 +161,3 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({ open, o
 
 export default CancelAppointmentModal;
 
-// Example usage:
-// const [openCancelModal, setOpenCancelModal] = useState(false);
-// const selectedAppointment = {
-//   id: 'appt123',
-//   date: '2024-12-26',
-//   time: '10:00 AM',
-//   doctorName: 'Dr. Smith'
-// };
-// 
-// <CancelAppointmentModal
-//   open={openCancelModal}
-//   onClose={() => setOpenCancelModal(false)}
-//   appointment={selectedAppointment}
-//   onConfirmCancel={(data) => handleCancelAppointment(data)}
-// />

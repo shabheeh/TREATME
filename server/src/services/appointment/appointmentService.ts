@@ -60,6 +60,7 @@ class AppointmentService implements IAppointmentService {
             } else if (appointment.status === 'cancelled') {
                 const appointmentData = await this.getAppointmentById(id)
                 if (appointmentData && appointmentData.doctor && appointmentData.dayId && appointmentData.slotId) {
+                    
                     await this.scheduleRepo.updateBookingStatus(appointmentData.doctor._id, appointmentData.dayId, appointmentData.slotId)
                 }
             }
@@ -80,6 +81,7 @@ class AppointmentService implements IAppointmentService {
 
     async getAppointmentsByUserId(id: string, role: string): Promise<IAppointment[]> {
         try {
+
             let appointments: IAppointment[] = []
 
             if (role === 'patient') {

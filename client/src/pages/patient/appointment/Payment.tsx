@@ -16,58 +16,77 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import ProgressBar from '../../../components/basics/PrgressBar';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import appointmentService from '../../../services/appointment/appointmentService';
 import { toast } from 'sonner';
-import { IAppointmentPopulated } from '../../../types/appointment/appointment.types';
 import { formatMonthDay, formatTime } from '../../../utils/dateUtils';
 import ConfirmActionModal from '../../../components/basics/ConfirmActionModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetAppointment } from '../../../redux/features/appointment/appointmentSlice';
+import { RootState } from '../../../redux/app/store';
+import { IDoctor } from '../../../types/doctor/doctor.types';
+import { ISpecialization } from '../../../types/specialization/specialization.types';
+import specializationService from '../../../services/specialization/specializationService';
+import doctorService from '../../../services/doctor/doctorService';
+
 
 const AppointmentDetailsPage = () => {
-  const [appointment, setAppointment] = useState<Partial<IAppointmentPopulated> | null>(null);
   const [loading, setLoading] = useState(true);
   const [exitModalOpen, setExitModalOpen] = useState(false)
   const [isPaymentLoading, setPaymentLoading] = useState(false)
-  const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state;
+  const [doctor, setDoctor] = useState<IDoctor | null>(null)
+  const [specialization, setSpecialization] = useState<ISpecialization | null>(null)
 
+  const currentPatient = useSelector((state: RootState) => state.user.currentUser)
+  const appointmentData = useSelector((state: RootState) => state.appointment.appointmentData);
+  const dispatch = useDispatch()
+
+  
+  
   useEffect(() => {
-    if (!state) {
-      navigate('/visitnow');
-      return;
-    }
-    const fetchAppointment = async () => {
+    const fetchData = async () => {
+      setLoading(true)
+      if (!appointmentData || !appointmentData.doctor || !appointmentData.specialization) {
+        navigate('/visitnow');
+        return;
+      }
+  
       try {
-        const appointment = await appointmentService.getAppointment(state.appointmentId);
-        setAppointment(appointment);
+        const specialization = await specializationService.getSpecializationById(appointmentData.specialization);
+        const doctor = await doctorService.getDoctor(appointmentData.doctor);
+  
+        setDoctor(doctor);
+        setSpecialization(specialization)
+        
       } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error('Something went wrong');
-        }
+        toast.error(error instanceof Error ? error.message : 'Someting went wrong')
       } finally {
-        setLoading(false); 
+        setLoading(false)
       }
     };
-    fetchAppointment();
-  }, [state, navigate]);
+  
+    fetchData();
+  }, [appointmentData, navigate]); 
+  
 
+  
 
   const handlePaymentClick = async () => {
     try {
+      if (!appointmentData) {
+        return
+      }
+      const updatedAppointment = {
+        ...appointmentData,
+        status: 'confirmed',
+        paymentStatus: 'paid',
+      };
+
       setPaymentLoading(true)
-      await appointmentService.updateAppointment(
-        state.appointmentId,
-        { 
-          status: 'confirmed',
-          dayId: state.dayId, 
-          slotId: state.slotId,
-          doctor: appointment?.doctor?._id,
-          paymentStatus: 'paid'
-        })
-        navigate('/confirmed', { state: state })
+      const result = await appointmentService.createAppointment(updatedAppointment)
+        navigate('/confirmed', { state: { appointmentId: result._id }})
+        dispatch(resetAppointment())
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unknown Error')
     } finally {
@@ -78,8 +97,8 @@ const AppointmentDetailsPage = () => {
 
   const handleExitBooking = () => {
     setExitModalOpen(false)
-    navigate('/visitnow', { state: {} })
-    return null
+    navigate('/visitnow',)
+    dispatch(resetAppointment())
   }
 
   const handleBack = () => {
@@ -258,7 +277,7 @@ const AppointmentDetailsPage = () => {
         </Typography>
       </Box>
 
-        { appointment ? (
+        { appointmentData && doctor && specialization ? (
         <Grid container direction="row" spacing={1}>
         <Grid item xs={12} sm={6}>
         <Card variant="outlined" sx={{ mb: 2, border: '1px solid teal' }}>
@@ -266,25 +285,25 @@ const AppointmentDetailsPage = () => {
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
                   <Typography variant="h6">Appointment Summary</Typography>
-                  <Typography variant="body1">{ appointment.date && formatMonthDay(appointment?.date)} { appointment.date &&  formatTime(appointment?.date)}</Typography>
+                  <Typography variant="body1">{ appointmentData.date && formatMonthDay(appointmentData?.date)} { appointmentData.date &&  formatTime(appointmentData?.date)}</Typography>
                 </Box>
               </Box>
               <Divider sx={{ my: 2 }} />
               <Box display="flex" alignItems="center" mb={3}>
                 <Avatar
-                  src={appointment?.doctor?.profilePicture}
-                  alt={`${appointment?.doctor?.firstName} ${appointment?.doctor?.lastName}`}
+                  src={doctor.profilePicture}
+                  alt={`${doctor.firstName}`}
                   sx={{ width: 50, height: 50, mr: 2 }}
                 />
                 <Box>
                   <Typography variant="subtitle1">
-                    Dr. {appointment?.doctor?.firstName} {appointment?.doctor?.lastName}
+                    Dr. {doctor.firstName} {doctor.lastName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {appointment?.specialization?.name}
+                    {specialization?.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {appointment?.reason}
+                    {appointmentData?.reason}
                   </Typography>
                 </Box>
               </Box>
@@ -305,12 +324,12 @@ const AppointmentDetailsPage = () => {
                 <Typography sx={{ fontWeight: 500, fontSize: 13 }}>Patient</Typography>
                 <Box display="flex" alignItems="center">
                   <Avatar
-                    src={appointment?.patient?.profilePicture}
-                    alt={`${appointment?.patient?.firstName}`}
+                    src={currentPatient?.profilePicture}
+                    alt={`${currentPatient?.firstName}`}
                     sx={{ mr: 2 }}
                   />
                   <Typography>
-                    {appointment?.patient?.firstName} {appointment?.patient?.lastName}
+                    {currentPatient?.firstName} {currentPatient?.lastName}
                   </Typography>
                 </Box>
               </Box>
@@ -350,7 +369,7 @@ const AppointmentDetailsPage = () => {
                   }}
                 >
                   <Typography>Amount Due</Typography>
-                  <Typography>₹{ appointment.fee && appointment?.fee.toFixed(2)}</Typography>
+                  <Typography>₹{ appointmentData.fee && appointmentData?.fee.toFixed(2)}</Typography>
                 </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
                   You will not be charged any additional fee after your consultation.

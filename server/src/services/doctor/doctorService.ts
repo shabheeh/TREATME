@@ -1,5 +1,5 @@
 import logger from "../../configs/logger";
-import { IDoctorService } from "../../interfaces/IDoctor";
+import IDoctor, { IDoctorService } from "../../interfaces/IDoctor";
 import IDoctorRepository, { getDoctorsWithSchedulesQuery, getDoctorsWithSchedulesResult } from "src/repositories/doctor/interfaces/IDoctorRepository";
 import { AppError } from "../../utils/errors";
 
@@ -10,6 +10,11 @@ class DoctorService implements IDoctorService {
 
     constructor(doctorRepo: IDoctorRepository) {
         this.doctorRepo = doctorRepo
+    }
+
+    async getDoctor(id: string): Promise<IDoctor> {
+        const doctor = await this.doctorRepo.findDoctorById(id)
+        return doctor
     }
 
     async getDoctorsWithSchedules(query: getDoctorsWithSchedulesQuery): Promise<getDoctorsWithSchedulesResult> {

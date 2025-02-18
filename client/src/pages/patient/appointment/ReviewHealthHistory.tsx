@@ -9,33 +9,36 @@ import {
 import { ArrowBack, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
 import HealthHistory from "../../../components/patient/healthHistory/HealthHistory";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
+import { resetAppointment } from "../../../redux/features/appointment/appointmentSlice";
 
 
 
 const ReviewHealthHistory = () => {
   const [exitModalOpen, setExitModalOpen] = useState(false)
-  const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state
+  const dispatch = useDispatch()
+  const appointmentData = useSelector((state: RootState) => state.appointment.appointmentData)
 
   useEffect(() => {
-    if (!state) {
+    if (!appointmentData) {
       navigate('/visitnow')
       return
     }
-  }, [state, navigate])
+  }, [appointmentData, navigate])
 
   const handleContinue = async () => {
-    navigate('/review-behavioural-health', { state : state })
+    navigate('/review-behavioural-health')
   }
 
   const handleExitBooking = () => {
     setExitModalOpen(false)
-    navigate('/visitnow', { state: {} })
-    return null
+    navigate('/visitnow',)
+    dispatch(resetAppointment())
   }
 
   const handleBack = () => {

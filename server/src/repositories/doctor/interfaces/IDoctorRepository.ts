@@ -26,6 +26,7 @@ export interface getDoctorsWithSchedulesResult {
 interface IDoctorRepository {
     createDoctor(doctor:Partial<IDoctor>): Promise<IDoctor>;
     findDoctorByEmail(email: string): Promise<IDoctor | null>;
+    findDoctorById(email: string): Promise<IDoctor>;
     updateDoctor(id: string, updateData: Partial<IDoctor>): Promise<IDoctor>;
     getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult>;
     getDoctorsWithSchedules(query: getDoctorsWithSchedulesQuery): Promise<getDoctorsWithSchedulesResult>

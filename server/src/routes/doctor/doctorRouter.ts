@@ -91,6 +91,12 @@ router.get('/doctors',
     doctorController.getDoctorsWithSchedules
 )
 
+router.get('/doctors/:id', 
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    doctorController.getDoctor
+)
+
 router.get('/:id/schedules',
     authenticate,
     isUserActive(patientAuthService, doctorAuthService),

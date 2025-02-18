@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '@mui/material';
-import { CustomTabs, TabPanel } from '../../../components/basics/appointments/AppointmentTabs'; 
-import Upcoming from '../../../components/basics/appointments/Upcoming';
+import { CustomTabs, TabPanel } from '../../components/basics/appointments/AppointmentTabs'; 
+import Upcoming from '../../components/basics/appointments/Upcoming';
 import { toast } from 'sonner';
-import appointmentService from '../../../services/appointment/appointmentService';
-import { IAppointmentPopulated } from '../../../types/appointment/appointment.types';
-import { RootState } from '../../../redux/app/store';
+import appointmentService from '../../services/appointment/appointmentService';
+import { IAppointmentPopulated } from '../../types/appointment/appointment.types';
+import { RootState } from '../../redux/app/store';
 import { useSelector } from 'react-redux';
-import Loading from '../../../components/basics/Loading';
+import Loading from '../../components/basics/Loading';
 
 
 
@@ -15,14 +15,14 @@ import Loading from '../../../components/basics/Loading';
 
 const Appointments = () => {
     const [value, setValue] = useState(0);
-    const currnetPatient = useSelector((state: RootState) => state.user.currentUser)
+    const doctor = useSelector((state: RootState) => state.user.doctor)
     const [appointments, setAppointments] = useState<IAppointmentPopulated[] | []>([])
     const [loading, setLoading] = useState(true)
 
     const fetchAppointments = async () => {
       try {
-        if (!currnetPatient) return
-          const appointments = await appointmentService.getAppointmentsForUser(currnetPatient._id)
+        if (!doctor) return
+          const appointments = await appointmentService.getAppointmentsForUser(doctor._id)
           setAppointments(appointments)
       } catch (error) {
           toast.error(error instanceof Error ? error.message : "Someting went wrong")
@@ -34,7 +34,7 @@ const Appointments = () => {
     useEffect(() => {
         
         fetchAppointments()
-    }, [currnetPatient])
+    }, [doctor])
 
 
     const upcoming = appointments.filter(appointment => appointment.status === 'confirmed')

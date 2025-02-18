@@ -144,7 +144,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
         handleSave();
     };
 
-    
+    const today = new Date().toISOString().split('T')[0];
 
     return (
         <Box 
@@ -286,6 +286,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
                         label="Date of Birth"
                         type="date"
                         variant="outlined"
+                        inputProps={{ max: today }}
                         InputLabelProps={{ shrink: true }}
                         error={!!errors.dateOfBirth}
                         helperText={errors.dateOfBirth?.message}

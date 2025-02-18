@@ -1,8 +1,26 @@
-import { getDoctorsWithSchedulesResult, getDoctorWithScheduleQuery } from "../../types/doctor/doctor.types";
+import { getDoctorsWithSchedulesResult, getDoctorWithScheduleQuery, IDoctor } from "../../types/doctor/doctor.types";
 import { api } from "../../utils/axiosInterceptor";
 
 
 class DoctorService {
+
+    async getDoctor(id: string): Promise<IDoctor> {
+        try {
+            const response = await api.doctor.get(`/doctors/${id}`);
+            const { doctor } = response.data;
+            return doctor;
+        } catch (error: unknown) {
+        
+            if (error instanceof Error) {
+                console.error(`Error fetching doctor: ${error.message}`, error);
+                throw new Error(error.message)
+            }
+        
+            console.error(`Unknown error`, error);
+            throw new Error(`Something went error`)
+            
+        }
+    }
 
     async getDoctorsWithSchedules({specialization, gender, selectedDate, page, language}: getDoctorWithScheduleQuery): Promise<getDoctorsWithSchedulesResult> {
         try {
@@ -14,7 +32,7 @@ class DoctorService {
         } catch (error: unknown) {
         
             if (error instanceof Error) {
-                console.error(`Error updating schedule: ${error.message}`, error);
+                console.error(`Error fetching doctors with schedule: ${error.message}`, error);
                 throw new Error(error.message)
             }
         

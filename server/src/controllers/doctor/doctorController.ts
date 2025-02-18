@@ -3,6 +3,7 @@ import logger from "../../configs/logger";
 import { IDoctorController, IDoctorService } from "../../interfaces/IDoctor";
 import { getDoctorsWithSchedulesQuery } from "../../repositories/doctor/interfaces/IDoctorRepository";
 import { Types } from "mongoose";
+import { BadRequestError } from "../../utils/errors";
 
 
 class DoctorController implements IDoctorController {
@@ -11,6 +12,23 @@ class DoctorController implements IDoctorController {
 
     constructor(doctorService: IDoctorService) {
         this.doctorService = doctorService
+    }
+
+    getDoctor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id } = req.params;
+            if (!id) {
+                throw new BadRequestError('Bad Request: Missing info')
+            }
+
+            const doctor = await this.doctorService.getDoctor(id)
+
+            res.status(200).json({ doctor })
+
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : 'Controller: getDoctor');
+            next(error)
+        }
     }
 
     getDoctorsWithSchedules = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

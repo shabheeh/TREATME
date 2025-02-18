@@ -38,8 +38,8 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({ name, descripti
         justifyContent: 'space-between',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease',
         "&:hover": {
-          transform: 'scale(1.01)',
-          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
+          transform: 'scale(1.00)',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)',
         },
       }}
     >

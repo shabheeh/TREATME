@@ -20,8 +20,10 @@ import { IDaySchedule, ISlot } from '../../../types/doctor/doctor.types';
 import { toast } from 'sonner';
 import { filterAvailability } from '../../../helpers/filterAvailability';
 import { formatTime } from '../../../utils/dateUtils';
-import { TimeChip } from '../../basics/DoctorCard';
+import { TimeChip } from '../DoctorCard';
 import appointmentService from '../../../services/appointment/appointmentService';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/app/store';
 
 interface RescheduleModalProps {
   open: boolean;
@@ -40,6 +42,9 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
   const [dayId, setDayId] = useState<string | null>(null)
   const [slotId, setSlotId] = useState<string | null>(null)
   const [date, setDate] = useState<Date | null>(null)
+  const [isSumitting, setSubmitting] = useState(false)
+
+  const patient = useSelector((state: RootState) => state.user.patient)
 
 
   useEffect(() => {
@@ -47,7 +52,12 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
       setLoading(true);
       try {
         const schedule = await scheduleService.getSchedule(doctorId);
-        setAvailability(filterAvailability(schedule.availability));
+        if(schedule?.availability .length) {
+          setAvailability(filterAvailability(schedule.availability));
+        }else {
+        setAvailability([])
+
+        }
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Something went wrong');
       } finally {
@@ -75,7 +85,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
         toast.error('Please select a valid date and time');
         return;
       }
-
+      setSubmitting(true)
       await appointmentService.updateAppointment(appointmentId, {
         doctor: doctorId,
         dayId,
@@ -85,9 +95,11 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
 
       toast.success('Reschedule request submitted successfully');
       onClose();
-      onReschedule()
+      onReschedule();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to reschedule appointment');
+    }finally {
+      setSubmitting(false)
     }
   };
 
@@ -185,18 +197,20 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
             </Paper>
           </Grid>
         </Grid>
-        <Alert severity="info" sx={{ mb: 3 }}>
+          { patient &&         
+          <Alert severity="info" sx={{ mb: 3 }}>
           Please note that rescheduling is not guaranteed and subject to availability. We will confirm your new
           appointment time via email.
-        </Alert>
+        </Alert>}
         <Box display="flex" justifyContent="flex-end" gap={2}>
           <Button onClick={onClose} color="inherit">
             Cancel
           </Button>
           <Button
+            loading={isSumitting}
             onClick={handleSubmit}
             variant="contained"
-            disabled={slots.length === 0}
+            disabled={slots.length === 0 || isSumitting}
           >
             Request Reschedule
           </Button>

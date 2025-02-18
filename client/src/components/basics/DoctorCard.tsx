@@ -11,7 +11,7 @@ import {
   styled
 } from '@mui/material';
 import { formatMonthDay, formatTime, getDayName } from '../../utils/dateUtils';
-import { IDaySchedule } from '../../types/doctor/doctor.types';
+import { IDaySchedule, IDoctor } from '../../types/doctor/doctor.types';
 import { filterAvailability } from '../../helpers/filterAvailability';
 
 
@@ -29,23 +29,15 @@ export const TimeChip = styled(Chip)(({ theme }) => ({
 
 
 interface ProviderCardProps {
-  id: string
-  name: string;
-  specialties: string[];
-  profilePicture: string;
-  experience: number;
+  doctor: IDoctor;
   availability: IDaySchedule[];
-  handleSlotClick: (id: string, dayId: string, slotId: string, date: Date ) => void
+  handleSlotClick: (doctor: IDoctor, dayId: string, slotId: string, date: Date ) => void
 };
 
 
 const DoctorCard: React.FC<ProviderCardProps> = ({
-  id,
-  name,
-  specialties,
-  profilePicture,
+  doctor,
   availability,
-  experience,
   handleSlotClick
 }) => {
 
@@ -56,9 +48,6 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
   useEffect(() => {
    setFilteredAvailability(filterAvailability(availability))
   }, [availability])
-
-  console.log(availability, 'doctorCard')
-  console.log(filteredAvailability, 'filetered')
 
   
   return (
@@ -76,7 +65,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
   <CardContent sx={{ display: 'flex', justifyContent: 'space-between', p: 2 }}>
     <Box sx={{ display: 'flex', gap: 2, flex: 1 }}>
       <Avatar
-        src={profilePicture}
+        src={doctor.profilePicture}
         sx={{
           width: 70,
           height: 70,
@@ -94,13 +83,13 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
             mb: 0.5,
           }}
         >
-          Dr. {name}
+          Dr. {doctor.firstName} {doctor.lastName}
         </Link>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <Typography sx={{ fontSize: '14px', color: 'GrayText' }}>
-            {specialties.join(' ')}
+            {doctor.specialties.join(' ')}
           </Typography>
-          <Typography color="text.secondary">{experience}</Typography>
+          <Typography color="text.secondary">{doctor.experience}</Typography>
         </Box>
       </Box>
     </Box>
@@ -146,7 +135,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                     <TimeChip
                       label={formatTime(slot.startTime)}
                       size="small"
-                      onClick={() => handleSlotClick(id, day._id!, slot._id!, slot.startTime!)}
+                      onClick={() => handleSlotClick(doctor, day._id!, slot._id!, slot.startTime!)}
                       sx={{
                         ':hover': { backgroundColor: 'teal', color: 'white' },
                       }}
@@ -174,7 +163,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
 
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
         <Link
-          href="#"
+          href={`/doctors/${doctor._id}`}
           underline="hover"
           sx={{
             color: 'primary.main',

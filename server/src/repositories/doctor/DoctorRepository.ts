@@ -48,6 +48,24 @@ class DoctorRepository implements IDoctorRepository {
         }
     }
 
+    async findDoctorById(id: string): Promise<IDoctor> {
+      try {
+          const doctor = await this.model.findById(id)
+              .populate('specialization')
+              .lean();
+
+          if (!doctor) {
+            throw new AppError('Something went wrong')
+          }    
+          return doctor;
+      } catch (error) {
+          throw new AppError(
+              `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+              500
+          );
+      }
+  }
+
     async updateDoctor(id: string, updateData: Partial<IDoctor>): Promise<IDoctor> {
         try {
             const updatedDoctor = await this.model.findOneAndUpdate(

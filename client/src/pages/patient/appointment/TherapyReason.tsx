@@ -12,12 +12,11 @@ import {
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { useLocation, useNavigate } from "react-router-dom";
-import appointmentService from "../../../services/appointment/appointmentService";
-import { toast } from "sonner";
 import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
+import { resetAppointment, updateAppointment, updateStep } from "../../../redux/features/appointment/appointmentSlice";
 
 const concerns = [
   "I have been feeling down",
@@ -42,6 +41,7 @@ const TherapyReason = () => {
   const currentPatient = useSelector((state: RootState) => state.user.currentUser)
   const patient = useSelector((state: RootState) => state.user.patient)
 
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (!state) {
@@ -51,32 +51,26 @@ const TherapyReason = () => {
   }, [state, navigate])
 
 
-  const startAppointment = async() => {
-    if (!currentPatient) return
-    const appointmentData = {
-      patient: currentPatient._id,
-      patientType: currentPatient._id === patient?._id ? 'Patient' : 'Dependent',
-      specialization: state.specializationId,
-      fee: state.fee,
-      status: 'pending',
+  const startAppointment = () => {
+    dispatch(updateAppointment({
+      patient: currentPatient?._id,
       reason: selectedConcern,
-    }
-      try {
-        const result = await appointmentService.createAppointment(appointmentData)
-        navigate('/review-health-history', { state :{ appointmentId: result._id }})
-      } catch (error) {
-        if(error instanceof Error) {
-          toast.error(error.message)
-        }else {
-          toast.error('Unknown error')
-        }
-      }
+      specialization: state.specializationId,
+      status: 'pending',
+      fee: state.fee,
+      patientType: currentPatient?._id === patient?._id ? 'Patient' : 'Dependent'
+
+    }))
+
+    dispatch(updateStep(2))
+    navigate('/review-health-history')
+
   }
 
   const handleExitBooking = () => {
     setExitModalOpen(false)
     navigate('/visitnow', { state: {} })
-    return null
+    dispatch(resetAppointment())
   }
 
   const handleBack = () => {
