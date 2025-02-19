@@ -30,7 +30,7 @@ import specializationService from '../../../services/specialization/specializati
 import doctorService from '../../../services/doctor/doctorService';
 
 
-const AppointmentDetailsPage = () => {
+const Payment = () => {
   const [loading, setLoading] = useState(true);
   const [exitModalOpen, setExitModalOpen] = useState(false)
   const [isPaymentLoading, setPaymentLoading] = useState(false)
@@ -411,4 +411,4 @@ const AppointmentDetailsPage = () => {
   );
 };
 
-export default AppointmentDetailsPage;
+export default Payment;

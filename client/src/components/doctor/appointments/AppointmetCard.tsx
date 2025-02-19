@@ -15,6 +15,7 @@ import { formatMonthDay, formatTime, getDayName } from '../../../utils/dateUtils
 import RescheduleModal from '../../basics/appointments/RescheduleModal';
 import CancelAppointmentModal from '../../basics/appointments/CancelAppointmentModal ';
 import { calculateAge } from '../../../helpers/ageCalculator';
+import { useNavigate } from 'react-router-dom';
 
 interface AppointmentCardProps {
   id: string;
@@ -31,8 +32,14 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, patient, doctor, 
   const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [isCancelModalOpen, setCancelModalOpen] = useState(false)
 
+  const navigate = useNavigate()
+
   const doctorName = doctor.firstName + ' ' + doctor.lastName
   const patientName = patient.firstName + ' ' + patient.lastName
+
+  const viewHealthProfile = () => {
+    navigate('/doctor/patients/health', { state: { patient }})
+  }
 
 
   return (
@@ -74,8 +81,23 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({ id, patient, doctor, 
                 {patient.firstName} {patient.lastName}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {calculateAge(patient.dateOfBirth)}
+                Age: {calculateAge(patient.dateOfBirth)}
               </Typography>
+              <Typography
+                variant="body1"
+                onClick={viewHealthProfile}
+                sx={{
+                  fontSize: 12,
+                  color: 'teal',
+                  cursor: 'pointer',
+                  ':hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                View Health Profile
+              </Typography>
+
             </Box>
           </Box>
 

@@ -48,7 +48,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate  }) => 
 
   const updateMedications = async (updatedMedications: IMedication[]) => {
     if (!currentPatient?._id) {
-      toast.error('No patient selected');
+      toast.error('Something went wrong');
       return;
     }
 

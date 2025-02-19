@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Card } from '@mui/material';
-import { CustomTabs, TabPanel } from '../../components/basics/Tabs'; 
-import HealthHistory from '../../components/patient/healthHistory/HealthHistory';
-import Lifestyle from '../../components/patient/lifestyle/Lifestyle';
-import FamilyHistory from '../../components/patient/familyHistory/FamilyHistory';
-import BehavioralHealth from '../../components/patient/behaviouralHealth/BehaviouralHealth';
+import { CustomTabs, TabPanel } from '../../basics/Tabs'; 
+import HealthHistory from '../../patient/healthHistory/HealthHistory';
+import Lifestyle from '../../patient/lifestyle/Lifestyle';
+import FamilyHistory from '../../patient/familyHistory/FamilyHistory';
+import BehavioralHealth from '../../patient/behaviouralHealth/BehaviouralHealth';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/app/store';
+import { RootState } from '../../../redux/app/store';
 
 
  

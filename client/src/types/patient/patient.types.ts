@@ -34,6 +34,7 @@ export interface IDependent {
     primaryUserId: string;
     firstName: string;
     lastName: string;
+    email: string;
     gender: 'male' | 'female';
     relationship: string;
     dateOfBirth: string;

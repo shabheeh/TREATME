@@ -1,5 +1,8 @@
 import { Document } from 'mongoose';
 import { Request, Response, NextFunction } from 'express';
+import { IHealthHistory } from './IHealthHistory';
+import { IBehaviouralHealth } from './IBehaviouralHealth';
+import { ILifestyle } from './ILifestyle';
 export interface Address {
   city: string;
   landmark: string;
@@ -88,9 +91,12 @@ export interface IPatientAuthController {
 
 export interface IPatientAccountService {
   updateProfile(identifier: string, patientData: Partial<IPatient>, imageFile: Express.Multer.File | undefined): Promise<IPatient | null>
+  getHealthProfile(id: string): Promise<{ healtHistory: IHealthHistory | null, behaviouralHealth: IBehaviouralHealth | null, lifestyle: ILifestyle | null }>
 }
 
 export interface IPatientAccountController {
   updateProfile(req: Request, res: Response, next: NextFunction): Promise<void>
+  getHealthProfile(req: Request, res: Response, next: NextFunction): Promise<void>
+
 }
 

@@ -15,7 +15,7 @@ import LayoutAppointment from '../Layouts/patient/LayoutAppointment';
 import ReviewBehaviouralHealth from '../pages/patient/appointment/ReviewBehaviouralHealth';
 import ReviewHealthHistory from '../pages/patient/appointment/ReviewHealthHistory';
 import ListDoctors from '../pages/patient/appointment/ListDoctors';
-import AppointmentBookingPage from '../pages/patient/appointment/Payment';
+import Payment from '../pages/patient/appointment/Payment';
 import BookingConfirmation from '../pages/patient/appointment/BookingConfirmed';
 import Appointments from '../pages/patient/appointment/Appointments';
 import DoctorView from '../components/basics/appointments/DoctorView';
@@ -63,7 +63,7 @@ export const patientRoutes = [
   <Route path='review-health-history' element={<ReviewHealthHistory />} />,
   <Route path='doctors' element={<ListDoctors />} />,
   <Route path='doctors/:id' element={<DoctorView />} />,
-  <Route path='/review-appointment' element={<AppointmentBookingPage />} />,
+  <Route path='review-appointment' element={<Payment />} />,
   <Route path='confirmed' element={<BookingConfirmation /> } />,
 
 </Route>,

@@ -8,6 +8,7 @@ import { Dashboard } from '../pages/doctor/Dashboard';
 import RegisterForm from '../components/doctor/RegisterForm';
 import Schedule from '../pages/doctor/Schedule';
 import Appointments from '../pages/doctor/Appointments';
+import PatientProfile from '../pages/doctor/PatientProfile';
 
 
 export const doctorRoutes = [
@@ -33,6 +34,7 @@ export const doctorRoutes = [
     <Route path="" element={<Dashboard />} />
     <Route path='appointments' element={<Appointments />} />
     <Route path='schedules' element={ <Schedule /> } />
+    <Route path='patients/health' element={<PatientProfile /> } />
     
   </Route>
 ];

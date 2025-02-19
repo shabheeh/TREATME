@@ -41,7 +41,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
   } = useForm<IAllergy>({
     defaultValues: {
       allergicTo: '',
-      Severity: '',
+      severity: '',
       reaction: ''
     }
   });
@@ -175,7 +175,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                       <Typography variant="body1">{allergy.allergicTo}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography variant="body1">{allergy.Severity}</Typography>
+                      <Typography variant="body1">{allergy.severity}</Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
                       <Typography variant="body1">{allergy.reaction}</Typography>
@@ -211,7 +211,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                       Severity
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 2 }}>
-                      {allergy.Severity}
+                      {allergy.severity}
                     </Typography>
 
                     <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
@@ -265,7 +265,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                 helperText={errors.allergicTo?.message}
               />
               <Controller
-                name="Severity"
+                name="severity"
                 control={control}
                 defaultValue=""
                 rules={{
@@ -279,8 +279,8 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                     value={field.value}
                     onChange={field.onChange}
                     sx={{ width: { xs: "100%", sm: "20%" } }}
-                    error={!!errors.Severity}
-                    helperText={errors.Severity?.message}
+                    error={!!errors.severity}
+                    helperText={errors.severity?.message}
                   >
                     {severity.map((option, idx) => (
                       <MenuItem key={idx} value={option}>

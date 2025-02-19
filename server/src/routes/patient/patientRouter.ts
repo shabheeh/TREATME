@@ -21,6 +21,12 @@ import DependentController from "../../controllers/dependent/dependentController
 import DoctorRepository from "../../repositories/doctor/DoctorRepository";
 import { DoctorModel } from "../../models/Doctor";
 import DoctorAuthService from "../../services/doctor/authService";
+import HealthHistoryRepository from "../../repositories/healthProfile/HealthHistoryRepository";
+import { HealthHistoryModel } from "../../models/HealthHistory";
+import BehaviouralHealthRepository from "../../repositories/healthProfile/BehaviouralHealthRepository";
+import { BehaviouralHealthModel } from "../../models/BehaviouralHealth";
+import LifestyleRepository from "../../repositories/healthProfile/LifestyleRepository";
+import { LifestyleModel } from "../../models/Lifestyle";
 
 
 const router = express.Router(); 
@@ -35,7 +41,15 @@ const patientAuthService = new PatientAuthService(patientRepository, otpService,
 const patientAuthController = new PatientAuthController(patientAuthService, otpService);
 
 // patient account di
-const patientAccountService = new PatientAcccountService(patientRepository);
+const healthHistoryRepository = new HealthHistoryRepository(HealthHistoryModel);
+const behaviouralHealthRepository = new BehaviouralHealthRepository(BehaviouralHealthModel);
+const lifestyleRepository = new LifestyleRepository(LifestyleModel)
+const patientAccountService = new PatientAcccountService(
+    patientRepository,
+    healthHistoryRepository,
+    behaviouralHealthRepository,
+    lifestyleRepository
+);
 const patientAccountController = new PatientAcccountController(patientAccountService)
 
 // dependent di
@@ -108,7 +122,12 @@ router.delete('/dependents/:id',
     dependentController.deleteDependent
 )
 
-
+router.get('/health/:id',
+    authenticate,
+    isUserActive(patientAuthService, doctorAuthService),
+    authorize('doctor'),
+    patientAccountController.getHealthProfile
+)
 
 router.use(errors());
 

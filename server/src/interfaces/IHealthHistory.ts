@@ -9,7 +9,7 @@ export interface IMedication {
 
 export interface IAllergy {
     allergicTo: string;
-    Severity: string;
+    severity: string;
     reaction: string;
     reportedBy: string;
 }

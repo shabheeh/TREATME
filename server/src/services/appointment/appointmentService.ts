@@ -24,8 +24,24 @@ class AppointmentService implements IAppointmentService {
     }
 
     async createAppointment(appointmentData: Partial<IAppointment>): Promise<Partial<IAppointment>> {
-        const appointment = await this.appointmentRepo.createAppointment(appointmentData);
-        return appointment;
+        try {
+            if (appointmentData.doctor && appointmentData.slotId && appointmentData.dayId) {
+                
+                await this.scheduleRepo.updateBookingStatus(appointmentData.doctor,  appointmentData.dayId, appointmentData.slotId);
+            }
+            const appointment = await this.appointmentRepo.createAppointment(appointmentData);
+
+            return appointment;
+        } catch (error) {
+            logger.error('Error creating appointment', error);
+            if (error instanceof AppError) {
+                throw error; 
+            }
+            throw new AppError(
+                `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );  
+        }
     }
 
     async getAppointmentById(id: string): Promise<Partial<IAppointmentPopulated>> {
@@ -40,12 +56,12 @@ class AppointmentService implements IAppointmentService {
             if (updateData.doctor && updateData.slotId && updateData.dayId) {
                 const existingAppointment = await this.appointmentRepo.getAppointmentById(id)
                 if(existingAppointment.dayId && existingAppointment.slotId) {
-                    await this.scheduleRepo.updateBookingStatus(updateData.doctor, existingAppointment.dayId, existingAppointment.slotId);
+                    await this.scheduleRepo.toggleBookingStatus(updateData.doctor, existingAppointment.dayId, existingAppointment.slotId);
                 }
                 await this.scheduleRepo.updateBookingStatus(updateData.doctor,  updateData.dayId, updateData.slotId);
             }
 
-            const appointment = await this.appointmentRepo.updateAppointment(id, updateData);
+            const appointment = await this.appointmentRepo.updateAppointment(id, updateData);   
 
             if (appointment.status === 'confirmed') {
                 const appointmentData = await this.getAppointmentById(id)
@@ -61,7 +77,7 @@ class AppointmentService implements IAppointmentService {
                 const appointmentData = await this.getAppointmentById(id)
                 if (appointmentData && appointmentData.doctor && appointmentData.dayId && appointmentData.slotId) {
                     
-                    await this.scheduleRepo.updateBookingStatus(appointmentData.doctor._id, appointmentData.dayId, appointmentData.slotId)
+                    await this.scheduleRepo.toggleBookingStatus(appointmentData.doctor._id, appointmentData.dayId, appointmentData.slotId)
                 }
             }
 

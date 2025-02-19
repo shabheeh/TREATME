@@ -15,10 +15,10 @@ const MedicationSchema = new Schema<IMedication>({
   frequency: { type: String, required: true },
   reportedBy: { type: String, required: true },
 }); 
-
+ 
 const AllergySchema = new Schema<IAllergy>({
   allergicTo: { type: String, required: true },
-  Severity: { type: String, required: true },
+  severity: { type: String, required: true },
   reaction: { type: String, required: true },
   reportedBy: { type: String, required: true },
 });

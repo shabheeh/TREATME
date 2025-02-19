@@ -9,7 +9,7 @@ export interface IMedication {
 export interface IAllergy {
     _id: string;
     allergicTo: string;
-    Severity: string;
+    severity: string;
     reaction: string;
     reportedBy: string;
 }
@@ -72,7 +72,7 @@ export interface ILifestyle {
 
 
 export interface IBehaviouralHealth {
-    _id: string;
+    _id?: string;
     conditions: string[];
     anxietyLevel: number;
     depressionLevel: number;

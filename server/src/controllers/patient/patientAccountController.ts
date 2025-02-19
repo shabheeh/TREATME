@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import IPatient, { IPatientAccountController, IPatientAccountService } from "src/interfaces/IPatient";
-import { AppError } from "../../utils/errors";
+import { AppError, BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
 // import { ITokenPayload } from "../../utils/jwt";
 
@@ -56,6 +56,24 @@ class PatientAcccountController implements IPatientAccountController {
 
         } catch (error) {
             logger.error('error updating profile', error)
+            next(error)
+        }
+    }
+
+    getHealthProfile = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const { id } = req.params;
+            if (!id) {
+                throw new BadRequestError('Bad Request: Missing info');
+            }
+            const result = await this.patientAccountService.getHealthProfile(id)
+            res.status(200).json({
+                healthHistory: result.healtHistory,
+                behaviouralHealth: result.behaviouralHealth,
+                lifestyle: result.lifestyle
+            })
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : 'Controller: getHealthProfile')
             next(error)
         }
     }

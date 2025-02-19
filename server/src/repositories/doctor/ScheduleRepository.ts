@@ -76,9 +76,7 @@ class ScheduleRepository implements IScheduleRepository {
 
     async updateBookingStatus(doctorId: ObjectId, dayId: ObjectId, slotId: ObjectId): Promise<void> {
         try {
-            
-            console.log(doctorId, dayId, slotId, 'hello')
-
+        
             const document = await this.model.findOne(
                 {
                     doctorId: doctorId,
@@ -88,7 +86,7 @@ class ScheduleRepository implements IScheduleRepository {
             );
     
             if (!document) {
-                throw new AppError('No matching document found to update');
+                throw new AppError('Something went wrong');
             }
     
 
@@ -105,12 +103,77 @@ class ScheduleRepository implements IScheduleRepository {
             );
             
             if (!slot) {
-                throw new AppError('Slot not found');
+                throw new AppError('Something went wrong');
+            }
+    
+            const currentIsBooked = slot.isBooked;
+            if (currentIsBooked === true) {
+                throw new AppError('Slot is Already Booked');
+            }
+    
+            const updateResult = await this.model.updateOne(
+                {
+                    doctorId: doctorId,
+                    'availability._id': dayId
+                },
+                {
+                    $set: { 'availability.$[day].slots.$[slot].isBooked': true }
+                },
+                {
+                    arrayFilters: [
+                        { 'day._id': dayId },
+                        { 'slot._id': slotId }
+                    ]
+                }
+            );
+    
+            if (updateResult.matchedCount === 0) {
+                throw new AppError('Unknown error');
+            }
+    
+        } catch (error) {
+            throw new AppError(
+                `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                500
+            );
+        }
+    }
+
+    async toggleBookingStatus(doctorId: ObjectId, dayId: ObjectId, slotId: ObjectId): Promise<void> {
+        try {
+        
+            const document = await this.model.findOne(
+                {
+                    doctorId: doctorId,
+                    'availability._id': dayId,
+                    'availability.slots._id': slotId
+                }
+            );
+    
+            if (!document) {
+                throw new AppError('Something went wrong');
+            }
+    
+
+            const day = document.availability.find(day => 
+                day._id && day._id.toString() === dayId.toString()
+            );
+            
+            if (!day) {
+                throw new AppError('Day not found');
+            }
+    
+            const slot = day.slots.find(slot => 
+                slot._id && slot._id.toString() === slotId.toString()
+            );
+            
+            if (!slot) {
+                throw new AppError('Something went wrong');
             }
     
             const currentIsBooked = slot.isBooked;
             if (currentIsBooked === undefined) {
-                throw new AppError('Slot booking status not found');
+                throw new AppError('Someting went wrong');
             }
     
             const updateResult = await this.model.updateOne(
@@ -130,10 +193,8 @@ class ScheduleRepository implements IScheduleRepository {
             );
     
             if (updateResult.matchedCount === 0) {
-                throw new AppError('No matching document found to update');
+                throw new AppError('Unknown error');
             }
-    
-            console.log('Slot updated successfully');
     
         } catch (error) {
             throw new AppError(
@@ -142,7 +203,6 @@ class ScheduleRepository implements IScheduleRepository {
             );
         }
     }
-
     
 }
 

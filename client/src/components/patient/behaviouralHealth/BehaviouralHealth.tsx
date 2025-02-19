@@ -72,7 +72,7 @@ const BehavioralHealth = () => {
   const [behaviouralHealth, setBehaviouralHealth] = useState<IBehaviouralHealth | null>(null);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState<Partial<IBehaviouralHealth>>({});
+  const [editedData, setEditedData] = useState<IBehaviouralHealth>({});
 
   useEffect(() => {
     fetchMentalHealth();
@@ -84,7 +84,20 @@ const BehavioralHealth = () => {
     try {
       const result = await healthProfileService.getBehaviouralHealth(currentPatient._id)
       setBehaviouralHealth(result);
+      if (!result) {
+        setEditedData({
+          conditions: [],
+          anxietyLevel: 0,
+          depressionLevel: 0,
+          stressLevel: 0,
+          therapyStatus: '',
+          supportSystem: [],
+          copingMechanisms: [],
+        });
+      } else {
       setEditedData(result);
+
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Someting went wrong')
     } finally {
@@ -114,7 +127,7 @@ const BehavioralHealth = () => {
     const updatedItems = currentItems.includes(item)
       ? currentItems.filter(i => i !== item)
       : [...currentItems, item];
-    
+
     setEditedData(prev => ({
       ...prev,
       [array]: updatedItems
@@ -150,12 +163,13 @@ const BehavioralHealth = () => {
                 <Chip
                   label={condition}
                   onClick={() => isEditing && handleArrayToggle('conditions', condition)}
-                  color={ editedData && editedData.conditions?.includes(condition) ? "primary" : "default"}
+                  color={editedData?.conditions?.includes(condition) ? "primary" : "default"}
                   sx={{ opacity: !isEditing && !behaviouralHealth?.conditions?.includes(condition) ? 0.5 : 1 }}
                 />
               </Grid>
             ))}
           </Grid>
+          
         </Grid>
         <Grid item xs={12} md={6}>
           <Typography variant="h6" sx={{ mb: 2 }}>Current Assessment</Typography>
@@ -166,7 +180,7 @@ const BehavioralHealth = () => {
               <Slider
                 value={ editedData && isEditing ? editedData[level] : behaviouralHealth?.[level]}
                 min={0}
-                max={10}
+                max={5}
                 step={1}
                 marks
                 valueLabelDisplay="auto"

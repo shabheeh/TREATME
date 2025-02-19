@@ -56,6 +56,7 @@ export default function ScheduleManagement() {
         const scheduleResponse: ISchedule | null = await scheduleService.getSchedule(doctor._id);
         if (scheduleResponse && scheduleResponse.availability) {
           const scheduleWithDayjsDates = scheduleResponse.availability.map((avail: IDaySchedule) => ({
+            _id: avail._id,
             date: new Date(avail.date), 
             slots: avail.slots.map((slot: ISlot) => ({
               ...slot,
@@ -87,13 +88,16 @@ export default function ScheduleManagement() {
 
   const addTimeSlot = async () => {
     if (!newTimeSlot.startTime) return;
-  
+
     const specialization = doctor?.specialization?.name || 'Default';
     const slotDuration = SPECIALIZATION_DURATION[specialization] || SPECIALIZATION_DURATION['Default'];
-  
-    const startTime = dayjs(selectedDate).set('hour', newTimeSlot.startTime.hour()).set('minute', newTimeSlot.startTime.minute()).toDate();
+
+    const startTime = dayjs(selectedDate)
+      .set('hour', newTimeSlot.startTime.hour())
+      .set('minute', newTimeSlot.startTime.minute())
+      .toDate();
     const endTime = dayjs(startTime).add(slotDuration, 'minute').toDate();
-  
+
     if (dayjs(selectedDate).isSame(today, 'day')) {
       const currentTime = dayjs();
       if (newTimeSlot.startTime.isBefore(currentTime)) {
@@ -101,58 +105,67 @@ export default function ScheduleManagement() {
         return;
       }
     }
-  
-    const existingAvailability = schedules.find(avail => dayjs(avail.date).isSame(selectedDate, 'day'));
+
+    const existingAvailability = schedules.find((avail) => dayjs(avail.date).isSame(selectedDate, 'day'));
     const existingSlots = existingAvailability ? existingAvailability.slots : [];
-  
-    const isDuplicateStartTime = existingSlots.some(slot => 
-      dayjs(slot.startTime).isSame(startTime)
-    );
-  
+
+    const isDuplicateStartTime = existingSlots.some((slot) => dayjs(slot.startTime).isSame(startTime));
     if (isDuplicateStartTime) {
       toast.warning('A time slot with this start time already exists');
       return;
     }
-  
-    const isOverlapping = existingSlots.some(slot => 
-      (dayjs(startTime).isBetween(slot.startTime, slot.endTime) ||
-       dayjs(endTime).isBetween(slot.startTime, slot.endTime) ||
-       (dayjs(slot.startTime).isBetween(startTime, endTime))
-      )
+
+    const isOverlapping = existingSlots.some(
+      (slot) =>
+        dayjs(startTime).isBetween(slot.startTime, slot.endTime) ||
+        dayjs(endTime).isBetween(slot.startTime, slot.endTime) ||
+        dayjs(slot.startTime).isBetween(startTime, endTime),
     );
-  
     if (isOverlapping) {
       toast.warning('Time slot overlaps with an existing slot');
       return;
     }
-  
+
     const newSlot: ISlot = {
+
       startTime,
       endTime,
-      isBooked: false
+      isBooked: false,
     };
-  
-    const updatedSchedules = schedules.map(avail => 
-      dayjs(avail.date).isSame(selectedDate, 'day') 
-        ? { ...avail, slots: [...avail.slots, newSlot].sort((a, b) => dayjs(a.startTime).diff(dayjs(b.startTime))) }
-        : avail
-    );
-  
+
+    const updatedSchedules = schedules.map((avail) => {
+      if (dayjs(avail.date).isSame(selectedDate, 'day')) {
+
+        return {
+          ...avail,
+          slots: [...avail.slots, newSlot].sort((a, b) => dayjs(a.startTime).diff(dayjs(b.startTime))),
+        };
+      }
+      return avail;
+    });
+
     if (!existingAvailability) {
-      updatedSchedules.push({ date: selectedDate.toDate(), slots: [newSlot] });
+      updatedSchedules.push({
+        date: selectedDate.toDate(),
+        slots: [newSlot],
+      });
     }
-  
+
     try {
       if (!doctor) return;
+
       const result = await scheduleService.updateSchedule(doctor._id, { availability: updatedSchedules });
+
       const formattedResult = result.availability.map((avail: IDaySchedule) => ({
+        _id: avail._id, 
         date: new Date(avail.date),
         slots: avail.slots.map((slot: ISlot) => ({
           ...slot,
-          startTime: new Date(slot.startTime), 
-          endTime: new Date(slot.endTime) 
-        }))
+          startTime: new Date(slot.startTime),
+          endTime: new Date(slot.endTime),
+        })),
       }));
+
       setSchedules(formattedResult);
       toast.success('Time slot added successfully');
     } catch (error) {
@@ -170,10 +183,10 @@ export default function ScheduleManagement() {
         toast.error('No availability found for the selected date');
         return;
       }
-      const updatedSlots = existingAvailability.slots.filter(slot => slot._id !== slotId);
+      const updatedSlots = existingAvailability.slots.filter((slot) => slot._id !== slotId);
       const updatedAvailability: IDaySchedule = {
-        date: existingAvailability.date,
-        slots: updatedSlots
+        ...existingAvailability, 
+        slots: updatedSlots,
       };
       const updatedSchedules = schedules.map(avail =>
         dayjs(avail.date).isSame(date, 'day') ? updatedAvailability : avail

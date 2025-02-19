@@ -15,28 +15,24 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
-import scheduleService from '../../../services/doctor/scheduleService';
-import { IDaySchedule, ISlot } from '../../../types/doctor/doctor.types';
+import { IDaySchedule, IDoctor, ISlot } from '../../../types/doctor/doctor.types';
 import { toast } from 'sonner';
-import { filterAvailability } from '../../../helpers/filterAvailability';
 import { formatTime } from '../../../utils/dateUtils';
 import { TimeChip } from '../DoctorCard';
-import appointmentService from '../../../services/appointment/appointmentService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/app/store';
 
 interface RescheduleModalProps {
   open: boolean;
   onClose: () => void;
-  appointmentId: string,
-  doctorId: string;
-  onReschedule: () => void
+  doctor: IDoctor;
+  availability: IDaySchedule[];
+  handleSlotClick: (doctor: IDoctor, dayId: string, slotId: string, date: Date ) => void
 }
 
-const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appointmentId, doctorId, onReschedule }) => {
+const RequestModal: React.FC<RescheduleModalProps> = ({ open, onClose, doctor, availability, handleSlotClick }) => {
   const today = dayjs();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(today);
-  const [availability, setAvailability] = useState<IDaySchedule[]>([]);
   const [slots, setSlots] = useState<ISlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [dayId, setDayId] = useState<string | null>(null)
@@ -47,27 +43,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
   const patient = useSelector((state: RootState) => state.user.patient)
 
 
-  useEffect(() => {
-    const getSchedule = async () => {
-      setLoading(true);
-      try {
-        const schedule = await scheduleService.getSchedule(doctorId);
-        if(schedule?.availability .length) {
-          setAvailability(filterAvailability(schedule.availability));
-        }else {
-        setAvailability([])
-
-        }
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Something went wrong');
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (open) {
-      getSchedule();
-    }
-  }, [open, doctorId]);
+  
 
   useEffect(() => {
     const selectedDay = availability.find((day) =>
@@ -86,16 +62,10 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
         return;
       }
       setSubmitting(true)
-      await appointmentService.updateAppointment(appointmentId, {
-        doctor: doctorId,
-        dayId,
-        slotId,
-        date
-      })
-
+      handleSlotClick(doctor, dayId, slotId, date)
+      
       toast.success('Reschedule request submitted successfully');
       onClose();
-      onReschedule();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to reschedule appointment');
     }finally {
@@ -123,7 +93,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography id="reschedule-modal-title" variant="h6" component="h2">
-            Reschedule Appointment
+            Dr. {doctor.firstName} { doctor.lastName}'s  Visiting Hours
           </Typography>
           <IconButton onClick={onClose} size="small">
             <CloseIcon />
@@ -212,7 +182,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
             variant="contained"
             disabled={slotId === null || isSumitting}
           >
-            Reschedule
+            Request Reschedule
           </Button>
         </Box>
       </Box>
@@ -221,4 +191,4 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({ open, onClose, appoin
   );
 };
 
-export default RescheduleModal;
+export default RequestModal;
