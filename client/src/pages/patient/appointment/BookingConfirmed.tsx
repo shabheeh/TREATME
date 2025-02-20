@@ -1,72 +1,74 @@
-
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Divider, 
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
   Button,
   Avatar,
   Grid
-} from '@mui/material';
-import { 
+} from "@mui/material";
+import {
   CheckCircle as CheckCircleIcon,
   CalendarMonth as CalendarIcon,
-  AccessTime as TimeIcon,
-} from '@mui/icons-material';
-import { IAppointmentPopulated } from '../../../types/appointment/appointment.types';
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import appointmentService from '../../../services/appointment/appointmentService';
-import BookingConfirmedSkeleton from '../../../components/patient/BookingConfirmationSkelton';
-import { formatMonthDay, formatTime } from '../../../utils/dateUtils';
+  AccessTime as TimeIcon
+} from "@mui/icons-material";
+import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import appointmentService from "../../../services/appointment/appointmentService";
+import BookingConfirmedSkeleton from "../../../components/patient/BookingConfirmationSkelton";
+import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { FaHouseMedical } from "react-icons/fa6";
 const BookingConfirmation = () => {
+  const [appointment, setAppointment] =
+    useState<Partial<IAppointmentPopulated> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const [appointment, setAppointment] = useState<Partial<IAppointmentPopulated> | null>(null)
-    const [loading, setLoading] = useState(true) 
-    const location = useLocation()
-    const navigate = useNavigate()
+  const state = location.state;
 
-    const state = location.state;
-
-    useEffect(() => {
-        if (!state) {
-          navigate('/visitnow', { state: {} });
-          return;
-        }
-        const fetchAppointment = async () => {
-          try {
-            const appointment = await appointmentService.getAppointment(state.appointmentId);
-            setAppointment(appointment);
-          } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Something went wrong')
-          } finally {
-            setLoading(false); 
-          }
-        };
-        fetchAppointment();
-      }, [state, navigate]);
-
-      useEffect(() => {
-        const handlePopState = () => {
-          console.log('Popstate event triggered: Clearing state');
-          navigate('/visitnow', { state: {} });
-        };
-
-        window.addEventListener('popstate', handlePopState);
-    
-        return () => {
-          window.removeEventListener('popstate', handlePopState);
-        };
-      }, [navigate, location]);
-      
-      if (loading) {
-        return <BookingConfirmedSkeleton />
+  useEffect(() => {
+    if (!state) {
+      navigate("/visitnow", { state: {} });
+      return;
+    }
+    const fetchAppointment = async () => {
+      try {
+        const appointment = await appointmentService.getAppointment(
+          state.appointmentId
+        );
+        setAppointment(appointment);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      } finally {
+        setLoading(false);
       }
+    };
+    fetchAppointment();
+  }, [state, navigate]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      console.log("Popstate event triggered: Clearing state");
+      navigate("/visitnow", { state: {} });
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate, location]);
+
+  if (loading) {
+    return <BookingConfirmedSkeleton />;
+  }
 
   const appointmentDetails = {
-
     provider: {
       name: "Dr. Sarah Thompson",
       specialty: "Mental Health Counseling",
@@ -86,113 +88,127 @@ const BookingConfirmation = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 1000, margin: 'auto', p: 3, pt: 1 }}>
-      <Box sx={{ textAlign: 'center', mb: 4, color: 'teal' }}>
-        <CheckCircleIcon 
-          
-          sx={{ fontSize: 64, mb: 2, color: "teal"  }} 
-        />
+    <Box sx={{ maxWidth: 1000, margin: "auto", p: 3, pt: 1 }}>
+      <Box sx={{ textAlign: "center", mb: 4, color: "teal" }}>
+        <CheckCircleIcon sx={{ fontSize: 64, mb: 2, color: "teal" }} />
         <Typography variant="h4" gutterBottom>
           Booking Confirmed!
         </Typography>
       </Box>
 
       <Grid container direction="row" spacing={1}>
-        <Grid item xs={12} sm={6}> 
-        <Paper elevation={0} variant="outlined" sx={{ p: 3, mb: 1, border: '1px solid teal' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Avatar
-            src={appointment?.doctor?.profilePicture}
-            sx={{ width: 60, height: 60, mr: 2 }}
-          />
-          <Box>
-            <Typography variant="h6">
-              {appointment?.doctor?.firstName} { appointment?.doctor?.lastName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {appointmentDetails.provider.specialty}
-            </Typography>
-          </Box>
-        </Box>
-        
-        <Divider sx={{ my: 2 }} />
+        <Grid item xs={12} sm={6}>
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{ p: 3, mb: 1, border: "1px solid teal" }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Avatar
+                src={appointment?.doctor?.profilePicture}
+                sx={{ width: 60, height: 60, mr: 2 }}
+              />
+              <Box>
+                <Typography variant="h6">
+                  {appointment?.doctor?.firstName}{" "}
+                  {appointment?.doctor?.lastName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {appointmentDetails.provider.specialty}
+                </Typography>
+              </Box>
+            </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CalendarIcon sx={{ mr: 2, color: 'primary.main' }} />
-            <Typography>{ appointment?.date && formatMonthDay(appointment?.date)}</Typography>
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <TimeIcon sx={{ mr: 2, color: 'primary.main' }} />
-            <Typography>
-              { appointment?.date &&  formatTime(appointment?.date)} ({appointmentDetails.appointment.duration})
-            </Typography>
-          </Box>
-          
-        </Box>
-      </Paper>
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <CalendarIcon sx={{ mr: 2, color: "primary.main" }} />
+                <Typography>
+                  {appointment?.date && formatMonthDay(appointment?.date)}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <TimeIcon sx={{ mr: 2, color: "primary.main" }} />
+                <Typography>
+                  {appointment?.date && formatTime(appointment?.date)} (
+                  {appointmentDetails.appointment.duration})
+                </Typography>
+              </Box>
+            </Box>
+          </Paper>
         </Grid>
 
-        <Grid item xs={12} sm={6}> 
-        <Paper elevation={0} variant="outlined" sx={{ p: 3, mb: 1, border: '1px solid teal' }}>
-        <Typography variant="h6" gutterBottom>
-          Payment Details
-        </Typography>
+        <Grid item xs={12} sm={6}>
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{ p: 3, mb: 1, border: "1px solid teal" }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Payment Details
+            </Typography>
 
-        <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 2 }} />
 
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography color="text.secondary">Amount Paid</Typography>
-          <Typography>${appointmentDetails.payment.amount}</Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography color="text.secondary">Payment Method</Typography>
-          <Typography>{appointmentDetails.payment.method}</Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography color="text.secondary">Status</Typography>
-          <Typography color="success.main">{appointmentDetails.payment.status}</Typography>
-        </Box>
-      </Paper>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+            >
+              <Typography color="text.secondary">Amount Paid</Typography>
+              <Typography>${appointmentDetails.payment.amount}</Typography>
+            </Box>
+
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
+            >
+              <Typography color="text.secondary">Payment Method</Typography>
+              <Typography>{appointmentDetails.payment.method}</Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography color="text.secondary">Status</Typography>
+              <Typography color="success.main">
+                {appointmentDetails.payment.status}
+              </Typography>
+            </Box>
+          </Paper>
         </Grid>
+      </Grid>
 
-        </Grid>
-  
-      <Paper 
-        elevation={0} 
-        variant="outlined" 
-        sx={{ 
-          p: 3, 
+      <Paper
+        elevation={0}
+        variant="outlined"
+        sx={{
+          p: 3,
           mb: 3,
-          border: '1px solid teal' 
+          border: "1px solid teal"
         }}
       >
         <Typography variant="h6" gutterBottom>
           Next Steps
         </Typography>
         <Typography variant="body2" paragraph>
-          You will receive a confirmation email with appointment details and instructions for joining the video consultation.
+          You will receive a confirmation email with appointment details and
+          instructions for joining the video consultation.
         </Typography>
         <Typography variant="body2">
-          Please join the video consultation 5 minutes before the scheduled time to ensure a smooth start.
+          Please join the video consultation 5 minutes before the scheduled time
+          to ensure a smooth start.
         </Typography>
       </Paper>
 
-      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
-        <Button 
-          onClick={() => navigate('/appointments', { state: {}})}
-          variant="contained" 
+      <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+        <Button
+          onClick={() => navigate("/appointments", { state: {} })}
+          variant="contained"
           startIcon={<CalendarIcon />}
         >
-         Upcoming Appointments
+          Upcoming Appointments
         </Button>
-        <Button 
-        onClick={() => navigate('/visitnow', { state: {}})}
-          variant="outlined" 
+        <Button
+          onClick={() => navigate("/visitnow", { state: {} })}
+          variant="outlined"
           startIcon={<FaHouseMedical />}
         >
           Back to Home

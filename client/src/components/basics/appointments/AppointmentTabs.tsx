@@ -1,5 +1,5 @@
-import React from 'react';
-import { Tabs, Tab, styled, Box, useMediaQuery, useTheme } from '@mui/material';
+import React from "react";
+import { Tabs, Tab, styled, Box, useMediaQuery, useTheme } from "@mui/material";
 
 interface TabContent {
   title: string;
@@ -12,52 +12,56 @@ interface CustomTabsProps {
 }
 
 const StyledTab = styled(Tab)(({ theme }) => ({
-  textTransform: 'none',
+  textTransform: "none",
   fontWeight: theme.typography.fontWeightBold,
   fontSize: theme.typography.pxToRem(20),
   flex: 1,
   color: theme.palette.text.secondary,
-  '&.Mui-selected': {
+  "&.Mui-selected": {
+    color: theme.palette.primary.main
+  },
+  "&:hover": {
     color: theme.palette.primary.main,
+    opacity: 1
   },
-  '&:hover': {
-    color: theme.palette.primary.main,
-    opacity: 1,
-  },
-  boxShadow: 'none',
-  border: 'none',
-  [theme.breakpoints.down('sm')]: {
-    fontSize: theme.typography.pxToRem(16),
-  },
+  boxShadow: "none",
+  border: "none",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: theme.typography.pxToRem(16)
+  }
 }));
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
-  borderBottom: '1px solid #e0e4e8',
-  '& .MuiTabs-indicator': {
-    backgroundColor: 'teal',
+  display: "flex",
+  justifyContent: "space-between",
+  borderBottom: "1px solid #e0e4e8",
+  "& .MuiTabs-indicator": {
+    backgroundColor: "teal"
   },
-  '& .MuiTabs-flexContainer': {
-    display: 'flex',
-    justifyContent: 'space-between',
+  "& .MuiTabs-flexContainer": {
+    display: "flex",
+    justifyContent: "space-between"
   },
-  [theme.breakpoints.down('sm')]: {
-    flexDirection: 'column',
-    borderBottom: 'none',
-  },
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+    borderBottom: "none"
+  }
 }));
 
-export const CustomTabs: React.FC<CustomTabsProps> = ({ value, onChange, tabContent }) => {
+export const CustomTabs: React.FC<CustomTabsProps> = ({
+  value,
+  onChange,
+  tabContent
+}) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <StyledTabs
       value={value}
       onChange={onChange}
       aria-label="tabs"
-      variant={isSmallScreen ? 'scrollable' : 'fullWidth'}
+      variant={isSmallScreen ? "scrollable" : "fullWidth"}
       indicatorColor="primary"
       textColor="primary"
       sx={{ mx: isSmallScreen ? 2 : 6 }}
@@ -80,9 +84,14 @@ interface TabPanelProps {
   index: number;
 }
 
-export const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => {
+export const TabPanel: React.FC<TabPanelProps> = ({
+  children,
+  value,
+  index,
+  ...other
+}) => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <div
@@ -93,7 +102,7 @@ export const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...o
       {...other}
     >
       {value === index && (
-        <Box sx={{ mx: isSmallScreen ? 2 : 10, p: 3, boxShadow: 'none' }}>
+        <Box sx={{ mx: isSmallScreen ? 2 : 10, p: 3, boxShadow: "none" }}>
           {children}
         </Box>
       )}

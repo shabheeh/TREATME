@@ -5,6 +5,6 @@ export const validateSpecialization = celebrate({
     name: Joi.string().min(4).max(15).required(),
     description: Joi.string().min(30).required(),
     note: Joi.string().required(),
-    fee: Joi.number().required()
+    fee: Joi.number().required(),
   }),
 });

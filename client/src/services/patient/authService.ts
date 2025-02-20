@@ -2,33 +2,48 @@ import { api } from "../../utils/axiosInterceptor";
 // import {  } from "../../types/auth/auth.types";
 import { IPatient } from "../../types/patient/patient.types";
 import TokenManager from "../../utils/TokenMangager";
-import log from 'loglevel'
+import log from "loglevel";
 import { store } from "../../redux/app/store";
-import { setAuthState, signIn, signOut } from "../../redux/features/auth/authSlice";
+import {
+  setAuthState,
+  signIn,
+  signOut
+} from "../../redux/features/auth/authSlice";
 import { setTempUser } from "../../redux/features/auth/tempSlice";
-import { clearUser, setCurrentPatient, setPatient } from "../../redux/features/user/userSlice";
+import {
+  clearUser,
+  setCurrentPatient,
+  setPatient
+} from "../../redux/features/user/userSlice";
 
-
-type SignInResult = { patient: IPatient } ;
-type MockSignUpResult = { status: number, message: string } 
-type GoogleSignInResult = { PartialUser: boolean }
-type VerifyOtpSignUpResult = void 
-type verifyEmailResult = { patient: IPatient } 
-type verifyOtpForgotPasswordResult = { email: string } 
-
+type SignInResult = { patient: IPatient };
+type MockSignUpResult = { status: number; message: string };
+type GoogleSignInResult = { PartialUser: boolean };
+type VerifyOtpSignUpResult = void;
+type verifyEmailResult = { patient: IPatient };
+type verifyOtpForgotPasswordResult = { email: string };
 
 interface IAuthServicePatient {
-    sendOtp(credentials: { email: string, password: string }): Promise<MockSignUpResult>
-    signIn(credentials: { email: string; password: string }): Promise<SignInResult>;
-    signOut(): Promise<void>;
-    verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult>
-    googleSignIn(credential: string): Promise<GoogleSignInResult>
-    verifyEmail(email: string): Promise<verifyEmailResult>
-    verifyOtpForgotPassword(email: string, otp: string): Promise<verifyOtpForgotPasswordResult>
-    resetPassword(id: string, password: string): Promise<void >;
-    signUp(patientData: Partial<IPatient>): Promise<void>;
-    completeProfile(patientData: Partial<IPatient>): Promise<void >;
-    resendOtpForgotPassword(email: string): Promise<void>
+  sendOtp(credentials: {
+    email: string;
+    password: string;
+  }): Promise<MockSignUpResult>;
+  signIn(credentials: {
+    email: string;
+    password: string;
+  }): Promise<SignInResult>;
+  signOut(): Promise<void>;
+  verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult>;
+  googleSignIn(credential: string): Promise<GoogleSignInResult>;
+  verifyEmail(email: string): Promise<verifyEmailResult>;
+  verifyOtpForgotPassword(
+    email: string,
+    otp: string
+  ): Promise<verifyOtpForgotPasswordResult>;
+  resetPassword(id: string, password: string): Promise<void>;
+  signUp(patientData: Partial<IPatient>): Promise<void>;
+  completeProfile(patientData: Partial<IPatient>): Promise<void>;
+  resendOtpForgotPassword(email: string): Promise<void>;
 }
 
 class AuthServicePatient implements IAuthServicePatient {
@@ -38,310 +53,284 @@ class AuthServicePatient implements IAuthServicePatient {
     this.tokenManager = tokenManager;
   }
 
-  async sendOtp(credentials: { email: string; password: string; }): Promise<MockSignUpResult> {
-      try {
-        const response = await api.patient.post('/auth/send-otp/', credentials)
-        const tempUser = {
-          email: credentials.email
-        }
-        
-        store.dispatch(setTempUser({ tempUser }))
-        const { message, status } = response.data;
-        return { message, status}
-        
+  async sendOtp(credentials: {
+    email: string;
+    password: string;
+  }): Promise<MockSignUpResult> {
+    try {
+      const response = await api.patient.post("/auth/send-otp/", credentials);
+      const tempUser = {
+        email: credentials.email
+      };
+
+      store.dispatch(setTempUser({ tempUser }));
+      const { message, status } = response.data;
+      return { message, status };
     } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`SignInUser failed: ${error.message}`, error);
 
-        if (error instanceof Error) {
-          log.error(`SignInUser failed: ${error.message}`, error);
-    
-          throw new Error(error.message)
-        }
-    
-        log.error(`Unknown error occurred during sign-in`, error);
-        throw new Error("An unknown error occurred" )
+        throw new Error(error.message);
+      }
 
+      log.error(`Unknown error occurred during sign-in`, error);
+      throw new Error("An unknown error occurred");
     }
   }
 
-  async verifyOtpSignUp(email: string, otp: string): Promise<VerifyOtpSignUpResult> {
+  async verifyOtpSignUp(
+    email: string,
+    otp: string
+  ): Promise<VerifyOtpSignUpResult> {
     try {
-
-      await api.patient.post("/auth/verify-otp", { email, otp })
+      await api.patient.post("/auth/verify-otp", { email, otp });
 
       const tempUser = {
         email
-      }
+      };
 
-      store.dispatch(setTempUser({tempUser}))
-
+      store.dispatch(setTempUser({ tempUser }));
     } catch (error: unknown) {
-
       if (error instanceof Error) {
         log.error(`otp verification failed: ${error.message}`, error);
-        throw new Error('invlid otp')
+        throw new Error("invlid otp");
       }
-  
+
       log.error(`Unknown error occurred during otp verification`, error);
-      throw new Error('invlid otp')
+      throw new Error("invlid otp");
     }
   }
 
-  async signUp(patientData: Partial<IPatient>): Promise<void > {
+  async signUp(patientData: Partial<IPatient>): Promise<void> {
     try {
-      await api.patient.post('/auth/signup', patientData)
-
+      await api.patient.post("/auth/signup", patientData);
     } catch (error: unknown) {
-
       if (error instanceof Error) {
         log.error(`error user signup: ${error.message}`, error);
-  
-        throw new Error(error.message)
 
+        throw new Error(error.message);
       }
-  
-      log.error(`Unknown error occurred during otp verification`, error);
-      throw new Error("An unknown error occurred" )
 
+      log.error(`Unknown error occurred during otp verification`, error);
+      throw new Error("An unknown error occurred");
     }
   }
 
-
-
-  async signIn(credentials: { email: string; password: string }): Promise<SignInResult> {
+  async signIn(credentials: {
+    email: string;
+    password: string;
+  }): Promise<SignInResult> {
     try {
-    
-
       const response = await api.patient.post("/auth/signin", credentials);
 
       const { accessToken, patient } = response.data;
 
       this.tokenManager.setToken(accessToken);
 
+      store.dispatch(
+        signIn({
+          email: patient.email,
+          role: "patient",
+          token: accessToken
+        })
+      );
 
-      store.dispatch(signIn({
-        email: patient.email,
-        role: 'patient',
-        token: accessToken,
-      }))
+      store.dispatch(setPatient(patient));
 
-      store.dispatch(setPatient(patient))
-      
-      store.dispatch(setCurrentPatient(patient))
+      store.dispatch(setCurrentPatient(patient));
 
       return patient;
-
     } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`SignInUser failed: ${error.message}`, error);
 
-        if (error instanceof Error) {
-          log.error(`SignInUser failed: ${error.message}`, error);
-    
-          throw new Error(error.message)
-
-        }
-
-        log.error(`Unknown error occurred during sign-in`, error);
-        throw new Error("An unknown error occurred" )
-
-
+        throw new Error(error.message);
       }
-    }
 
+      log.error(`Unknown error occurred during sign-in`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
 
   async signOut(): Promise<void> {
     try {
-
       await api.patient.post("/auth/signout");
 
       this.tokenManager.clearToken();
-      store.dispatch(clearUser())
-      store.dispatch(signOut())
-
+      store.dispatch(clearUser());
+      store.dispatch(signOut());
     } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`SignInUser failed: ${error.message}`, error);
 
-        if (error instanceof Error) {
-
-          log.error(`SignInUser failed: ${error.message}`, error);
-    
-          throw new Error(error.message)
-
-        }
-
-        log.error(`Unknown error occurred during sign-in`, error);
-        throw new Error("An unknown error occurred" )
-
+        throw new Error(error.message);
       }
+
+      log.error(`Unknown error occurred during sign-in`, error);
+      throw new Error("An unknown error occurred");
     }
+  }
 
-    async googleSignIn(credential: string): Promise<GoogleSignInResult> {
-      try {
-        const response = await api.patient.post('/auth/google', { credential })
+  async googleSignIn(credential: string): Promise<GoogleSignInResult> {
+    try {
+      const response = await api.patient.post("/auth/google", { credential });
 
-        const { patient, accessToken, partialUser  } = response.data;
+      const { patient, accessToken, partialUser } = response.data;
 
-        this.tokenManager.setToken(accessToken);
+      this.tokenManager.setToken(accessToken);
 
-        console.log(response.data)
+      console.log(response.data);
 
-        if(partialUser) {
-
-          store.dispatch(setTempUser({
+      if (partialUser) {
+        store.dispatch(
+          setTempUser({
             tempUser: patient
-          }))
+          })
+        );
 
-          store.dispatch(signIn({
+        store.dispatch(
+          signIn({
             email: patient.email,
-            role: 'patient',
+            role: "patient",
             token: accessToken,
             isAuthenticated: false
-          }))
+          })
+        );
 
-          return partialUser
-        }
+        return partialUser;
+      }
 
-        store.dispatch(signIn({
+      store.dispatch(
+        signIn({
           email: patient.email,
-          role: 'patient',
-          token: accessToken,
-        }))
+          role: "patient",
+          token: accessToken
+        })
+      );
 
-        store.dispatch(setPatient(patient))
+      store.dispatch(setPatient(patient));
 
-        return partialUser
+      return partialUser;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`google sign in failed: ${error.message}`, error);
 
-
-        } catch (error: unknown) {
-
-          if (error instanceof Error) {
-  
-            log.error(`google sign in failed: ${error.message}`, error);
-      
-            throw new Error(error.message)
-
-          }
-  
-          log.error(`Unknown error occurred during google sign-in`, error);
-          throw new Error("An unknown error occurred" )
-
-        }
+        throw new Error(error.message);
       }
 
-      async verifyEmail (email: string): Promise<verifyEmailResult> {
-        try {
+      log.error(`Unknown error occurred during google sign-in`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
 
-          console.log(email)
+  async verifyEmail(email: string): Promise<verifyEmailResult> {
+    try {
+      console.log(email);
 
-          const response = await api.patient.post('/auth/forgot-password/verify-email', { email });
-          
-          store.dispatch(setTempUser({ tempUser: response.data.patient }))
+      const response = await api.patient.post(
+        "/auth/forgot-password/verify-email",
+        { email }
+      );
 
-          return { patient: response.data.patient };
-      
-        } catch (error: unknown) {
+      store.dispatch(setTempUser({ tempUser: response.data.patient }));
 
-          if (error instanceof Error) {
-  
-            log.error(`Error when otp sending: ${error.message}`, error);
-      
-            throw new Error(error.message)
+      return { patient: response.data.patient };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`Error when otp sending: ${error.message}`, error);
 
-          }
-  
-          log.error(`Unknown error occurred during sending otp`, error);
-          throw new Error("An unknown error occurred" )
-
-        }
+        throw new Error(error.message);
       }
 
-      async verifyOtpForgotPassword(email: string, otp: string): Promise<verifyOtpForgotPasswordResult> {
-        try {
-          await api.patient.post("/auth/forgot-password/verify-otp", { email, otp })
-    
-          return {
-            email
-          }
-    
-        } catch (error: unknown) {
-    
-          if (error instanceof Error) {
-            log.error(`otp verification failed: ${error.message}`, error);
-      
-            throw new Error(error.message)
-          }
-      
-          log.error(`Unknown error occurred during otp verification`, error);
-          throw new Error('something went wrong')
-        }
+      log.error(`Unknown error occurred during sending otp`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
+
+  async verifyOtpForgotPassword(
+    email: string,
+    otp: string
+  ): Promise<verifyOtpForgotPasswordResult> {
+    try {
+      await api.patient.post("/auth/forgot-password/verify-otp", {
+        email,
+        otp
+      });
+
+      return {
+        email
+      };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`otp verification failed: ${error.message}`, error);
+
+        throw new Error(error.message);
       }
 
-      async resetPassword(id: string, password: string): Promise<void > {
-        try {
-          await api.patient.patch('/auth/reset-password', {id, password})
-        } catch (error) {
-          if (error instanceof Error) {
-            log.error(`otp verification failed: ${error.message}`, error);
-      
-            throw new Error(error.message)
+      log.error(`Unknown error occurred during otp verification`, error);
+      throw new Error("something went wrong");
+    }
+  }
 
-          }
-      
-          log.error(`Unknown error occurred during otp verification`, error);
-          throw new Error("An unknown error occurred" )
+  async resetPassword(id: string, password: string): Promise<void> {
+    try {
+      await api.patient.patch("/auth/reset-password", { id, password });
+    } catch (error) {
+      if (error instanceof Error) {
+        log.error(`otp verification failed: ${error.message}`, error);
 
-        }
+        throw new Error(error.message);
       }
 
+      log.error(`Unknown error occurred during otp verification`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
 
-      async completeProfile(patientData: Partial<IPatient>): Promise<void > {
-        try {
-          const response = await api.patient.post('/auth/complete-profile', { patientData })
+  async completeProfile(patientData: Partial<IPatient>): Promise<void> {
+    try {
+      const response = await api.patient.post("/auth/complete-profile", {
+        patientData
+      });
 
-          const { patient } = response.data
+      const { patient } = response.data;
 
-          console.log( 'pateientesfsdfsd', patient)
+      console.log("pateientesfsdfsd", patient);
 
-          store.dispatch(setAuthState())
-          store.dispatch(setPatient(patient))
+      store.dispatch(setAuthState());
+      store.dispatch(setPatient(patient));
+    } catch (error) {
+      console.error(`Unknown error occurred during completing profile`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
 
-        } catch (error) {
-          console.error(`Unknown error occurred during completing profile`, error);
-          throw new Error("An unknown error occurred" )
-        }
+  async resendOtp(email: string): Promise<void> {
+    try {
+      await api.patient.post("/auth/resend-otp", { email });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`otp sending failed: ${error.message}`, error);
       }
 
+      log.error(`Unknown error occurred durin resenging otp`, error);
+    }
+  }
 
-      async resendOtp(email: string): Promise<void> {
-        try {
-
-          await api.patient.post('/auth/resend-otp', { email })
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            log.error(`otp sending failed: ${error.message}`, error);
-    
-          }
-      
-          log.error(`Unknown error occurred durin resenging otp`, error);
-
-        }
+  async resendOtpForgotPassword(email: string): Promise<void> {
+    try {
+      await api.patient.post("/auth/forgot-password/resend-otp", { email });
+    } catch (error) {
+      if (error instanceof Error) {
+        log.error(`otp sending failed: ${error.message}`, error);
       }
 
-      async resendOtpForgotPassword(email: string): Promise<void> {
-        try {
-
-          await api.patient.post('/auth/forgot-password/resend-otp', { email })
-        } catch (error) {
-          if (error instanceof Error) {
-            log.error(`otp sending failed: ${error.message}`, error);
-    
-          }
-      
-          log.error(`Unknown error occurred durin resenging otp`, error);
-
-        }
-      }
-
+      log.error(`Unknown error occurred durin resenging otp`, error);
+    }
+  }
 }
 
-const tokenManager = new TokenManager()
-const authServicePatient = new AuthServicePatient(tokenManager)
+const tokenManager = new TokenManager();
+const authServicePatient = new AuthServicePatient(tokenManager);
 
 export default authServicePatient;

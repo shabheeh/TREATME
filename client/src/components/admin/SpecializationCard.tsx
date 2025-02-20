@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardContent,
@@ -6,8 +5,7 @@ import {
   Button,
   Typography,
   Box
-} from '@mui/material';
-
+} from "@mui/material";
 
 type SpecializationCardProps = {
   id: string;
@@ -18,87 +16,123 @@ type SpecializationCardProps = {
   image: string;
 };
 
-const SpecializationCard: React.FC<SpecializationCardProps> = ({ id, name, description, note, fee, image }) => {
-return (
-  <Card
-    sx={{
-      width: 280,
-      height: 500,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-      "&:hover": {
-        transform: 'scale(1.01)',
-        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.25)',
-      },
-    }}
-  >
-    <CardMedia
-      component="img"
-      height="140"
-      image={image}
-      alt={`${name} image`}
-    />
-    <CardContent
+const SpecializationCard: React.FC<SpecializationCardProps> = ({
+  id,
+  name,
+  description,
+  note,
+  fee,
+  image
+}) => {
+  return (
+    <Card
       sx={{
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
+        width: 280,
+        height: 500,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        "&:hover": {
+          transform: "scale(1.01)",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)"
+        }
       }}
     >
-      <Box>
-        <Typography
-          gutterBottom
-          component="div"
-          sx={{ fontWeight: 700, fontSize: '1.1rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', py: 0 }}
-        >
-          {name}
-        </Typography>
-        <Typography
-          gutterBottom
-          component="div"
-          sx={{ fontWeight: 500, fontSize: '1rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }}
-        >
-          {description}
-        </Typography>
-      </Box>
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Typography
-          variant="body2"
-          sx={{ color: 'text.secondary', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3 }}
-        >
-          {note}
-        </Typography>
-      </Box>
-    </CardContent>
-    <Box sx={{ display: 'flex', flexDirection: 'column', my: 2, mx: 2 }}>
-      <Typography
-        gutterBottom
-        component="div"
-        sx={{ fontWeight: 500, fontSize: '1rem', mb: 1 }}
-      >
-        Fee: ₹{fee}
-      </Typography>
-      <Button
-        fullWidth
-        href={`/admin/specializations/edit/${id}`}
+      <CardMedia
+        component="img"
+        height="140"
+        image={image}
+        alt={`${name} image`}
+      />
+      <CardContent
         sx={{
-          borderRadius: '50px',
-          "&:hover": {
-            transform: 'scale(1.0)',
-            boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.25)',
-          },
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between"
         }}
-        variant="outlined"
-        size="large"
       >
-        Edit
-      </Button>
-    </Box>
-  </Card>
-);
+        <Box>
+          <Typography
+            gutterBottom
+            component="div"
+            sx={{
+              fontWeight: 700,
+              fontSize: "1.1rem",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              py: 0
+            }}
+          >
+            {name}
+          </Typography>
+          <Typography
+            gutterBottom
+            component="div"
+            sx={{
+              fontWeight: 500,
+              fontSize: "1rem",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2
+            }}
+          >
+            {description}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between"
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3
+            }}
+          >
+            {note}
+          </Typography>
+        </Box>
+      </CardContent>
+      <Box sx={{ display: "flex", flexDirection: "column", my: 2, mx: 2 }}>
+        <Typography
+          gutterBottom
+          component="div"
+          sx={{ fontWeight: 500, fontSize: "1rem", mb: 1 }}
+        >
+          Fee: ₹{fee}
+        </Typography>
+        <Button
+          fullWidth
+          href={`/admin/specializations/edit/${id}`}
+          sx={{
+            borderRadius: "50px",
+            "&:hover": {
+              transform: "scale(1.0)",
+              boxShadow: "0px 2px 2px rgba(0, 0, 0, 0.25)"
+            }
+          }}
+          variant="outlined"
+          size="large"
+        >
+          Edit
+        </Button>
+      </Box>
+    </Card>
+  );
 };
 
 export default SpecializationCard;

@@ -1,5 +1,10 @@
-export const generateBookingConfirmationHtml = (doctor: string, patient: string, date: string, time: string): string => {
-    return `
+export const generateBookingConfirmationHtml = (
+  doctor: string,
+  patient: string,
+  date: string,
+  time: string
+): string => {
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -89,5 +94,4 @@ export const generateBookingConfirmationHtml = (doctor: string, patient: string,
     </body>
     </html>
     `;
-  };
-  
+};

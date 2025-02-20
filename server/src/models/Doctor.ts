@@ -1,8 +1,5 @@
 import { Schema, model } from 'mongoose';
-import IDoctor from '../interfaces/IDoctor'; 
-
-
-
+import IDoctor from '../interfaces/IDoctor';
 
 const doctorSchema = new Schema<IDoctor>(
   {
@@ -12,7 +9,11 @@ const doctorSchema = new Schema<IDoctor>(
     lastName: { type: String, required: true, trim: true },
     phone: { type: String, required: true, trim: true },
     gender: { type: String, enum: ['male', 'female'], required: true },
-    specialization: { type: Schema.Types.ObjectId, ref: 'Specialization', required: true },
+    specialization: {
+      type: Schema.Types.ObjectId,
+      ref: 'Specialization',
+      required: true,
+    },
     specialties: { type: [String], default: [] },
     languages: { type: [String], default: [] },
     registerNo: { type: String, required: true, unique: true },
@@ -20,13 +21,11 @@ const doctorSchema = new Schema<IDoctor>(
     biography: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
     profilePicture: { type: String, required: true },
-    imagePublicId: { type: String, required: true }
-
+    imagePublicId: { type: String, required: true },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
-); 
-
+);
 
 export const DoctorModel = model<IDoctor>('Doctor', doctorSchema);

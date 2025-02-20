@@ -7,7 +7,12 @@ import ForgotPassword from "../../components/patient/auth/ForgotPassword";
 import Otp from "../../components/patient/auth/Otp";
 import CompleteProfile from "../../components/patient/auth/CompleteProfile";
 
-type Steps = "signin" | "forgot-password" | "verfy-otp" | "reset-password" | "complete-profile";
+type Steps =
+  | "signin"
+  | "forgot-password"
+  | "verfy-otp"
+  | "reset-password"
+  | "complete-profile";
 
 const SignInFlow: React.FC = () => {
   const [step, setStep] = useState<Steps>("signin");
@@ -26,15 +31,23 @@ const SignInFlow: React.FC = () => {
     <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
       <Navbar />
       {step === "signin" && (
-        <SignIn 
+        <SignIn
           onForgotPassword={goToForgotPassword}
           onCompleteProfile={goToCompleteProfile}
         />
       )}
-      { step === "forgot-password" && <ForgotPassword onVerifyEmail={gotVerifyOtp} /> }
-      { step === "verfy-otp" && <Otp isVerifyEmail={false} onVerifySignIn={goToRestPassword} /> }
-      { step === "reset-password" && <ResetPassword onResetPassword={goToSignIn} /> }
-      { step === "complete-profile" && <CompleteProfile isPartialUser={partialUser} /> }
+      {step === "forgot-password" && (
+        <ForgotPassword onVerifyEmail={gotVerifyOtp} />
+      )}
+      {step === "verfy-otp" && (
+        <Otp isVerifyEmail={false} onVerifySignIn={goToRestPassword} />
+      )}
+      {step === "reset-password" && (
+        <ResetPassword onResetPassword={goToSignIn} />
+      )}
+      {step === "complete-profile" && (
+        <CompleteProfile isPartialUser={partialUser} />
+      )}
     </Box>
   );
 };

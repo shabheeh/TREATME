@@ -1,12 +1,18 @@
-import { AppBar, Box, Toolbar, Button, IconButton, Avatar } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Button,
+  IconButton,
+  Avatar
+} from "@mui/material";
 import { useSelector } from "react-redux";
-import logoNavbar from '../../assets/logo.navbar.svg';
+import logoNavbar from "../../assets/logo.navbar.svg";
 import { RootState } from "../../redux/app/store";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import React from "react";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
-
 
 interface NavbarProps {
   onProfileClick: () => void;
@@ -14,12 +20,12 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
-  const doctor = useSelector((state: RootState) => state.user.doctor)
-  const navigate = useNavigate()
+  const doctor = useSelector((state: RootState) => state.user.doctor);
+  const navigate = useNavigate();
 
   const handleLogoClick = () => {
-    navigate('/doctor')
-  }
+    navigate("/doctor");
+  };
 
   return (
     <AppBar
@@ -31,21 +37,21 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
       }}
     >
       <Toolbar sx={{ padding: "0.5rem 1rem" }}>
-      <IconButton
-            onClick={onMenuClick}
-            sx={{ 
-              display: { xs: 'flex', lg: 'none' }, 
-              mr: 2,
-              color: 'white'
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <img 
-            src={logoNavbar} 
-            alt="Logo" 
-            style={{ height: '25px', cursor: 'pointer' }} 
+        <IconButton
+          onClick={onMenuClick}
+          sx={{
+            display: { xs: "flex", lg: "none" },
+            mr: 2,
+            color: "white"
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+          <img
+            src={logoNavbar}
+            alt="Logo"
+            style={{ height: "25px", cursor: "pointer" }}
             onClick={handleLogoClick}
           />
         </Box>
@@ -54,7 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
             sx={{
               display: "flex",
               alignItems: "center",
-              ml: "auto",
+              ml: "auto"
             }}
           >
             <Button
@@ -73,11 +79,11 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
                 src={doctor?.profilePicture}
                 sx={{
                   width: 32,
-                  height: 32, 
-                  fontSize: 14, 
+                  height: 32,
+                  fontSize: 14
                 }}
               >
-                {doctor?.firstName?.[0]} 
+                {doctor?.firstName?.[0]}
               </Avatar>
             </Button>
           </Box>

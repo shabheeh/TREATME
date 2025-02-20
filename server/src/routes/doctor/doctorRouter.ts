@@ -1,15 +1,15 @@
 import express from 'express';
-import multer from "multer";
-import ApplicantController from '../../controllers/applicant/applicantController'
-import { ApplicantModel } from '../../models/Applicant'
-import ApplicantRepository from '../../repositories/doctor/ApplicantRepository'
-import ApplicantService from '../../services/applicant/applicantService'
-import { authenticate, authorize } from '../../middlewares/auth'
-import DoctorRepository from '../../repositories/doctor/DoctorRepository'
-import { DoctorModel } from '../../models/Doctor'
-import DoctorAuthService from '../../services/doctor/authService'
-import DoctorAuthController from '../../controllers/doctor/authController'
-import { signinValidation } from '../../validators/signInValidator'
+import multer from 'multer';
+import ApplicantController from '../../controllers/applicant/applicantController';
+import { ApplicantModel } from '../../models/Applicant';
+import ApplicantRepository from '../../repositories/doctor/ApplicantRepository';
+import ApplicantService from '../../services/applicant/applicantService';
+import { authenticate, authorize } from '../../middlewares/auth';
+import DoctorRepository from '../../repositories/doctor/DoctorRepository';
+import { DoctorModel } from '../../models/Doctor';
+import DoctorAuthService from '../../services/doctor/authService';
+import DoctorAuthController from '../../controllers/doctor/authController';
+import { signinValidation } from '../../validators/signInValidator';
 import { validateApplicant } from '../../validators/applicantValidator';
 import { convertFormData } from '../../middlewares/convertFormData';
 import { isUserActive } from '../../middlewares/checkUserStatus';
@@ -26,20 +26,24 @@ import DoctorService from '../../services/doctor/doctorService';
 import DoctorController from '../../controllers/doctor/doctorController';
 
 // applicant di
-const applicantRepository = new ApplicantRepository(ApplicantModel)
-const applicantService = new ApplicantService(applicantRepository)
-const applicantController = new ApplicantController(applicantService)
+const applicantRepository = new ApplicantRepository(ApplicantModel);
+const applicantService = new ApplicantService(applicantRepository);
+const applicantController = new ApplicantController(applicantService);
 
 // doctor auth di
 const doctorRepository = new DoctorRepository(DoctorModel);
 const doctorAuthService = new DoctorAuthService(doctorRepository);
-const doctorAuthController = new DoctorAuthController(doctorAuthService) 
+const doctorAuthController = new DoctorAuthController(doctorAuthService);
 
 // patient di for middleware
 const patientRepository = new PatientRepository(PatientModel);
-const cacheService = new CacheService()
-const otpService = new OtpService(cacheService)
-const patientAuthService = new PatientAuthService(patientRepository, otpService, cacheService)
+const cacheService = new CacheService();
+const otpService = new OtpService(cacheService);
+const patientAuthService = new PatientAuthService(
+  patientRepository,
+  otpService,
+  cacheService
+);
 
 // schedule di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
@@ -50,57 +54,77 @@ const scheduleController = new ScheduleController(scheduleService);
 const doctorService = new DoctorService(doctorRepository);
 const doctorController = new DoctorController(doctorService);
 
-
-
-const router = express.Router()
+const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/applicants',  
-    upload.fields([
-        { name: "idProof", maxCount: 1 },
-        { name: "resume", maxCount: 1 },
-    ]),
-    convertFormData,
-    validateApplicant, 
-    applicantController.createApplicant)
+router.post(
+  '/applicants',
+  upload.fields([
+    { name: 'idProof', maxCount: 1 },
+    { name: 'resume', maxCount: 1 },
+  ]),
+  convertFormData,
+  validateApplicant,
+  applicantController.createApplicant
+);
 
-router.get('/applicants', authenticate, authorize('admin'), applicantController.getApplicants)
-router.get('/applicants/:id', authenticate, authorize('admin'), applicantController.getApplicant)
-router.delete('/applicants/:id', authenticate, authorize('admin'), applicantController.deleteApplicant)
+router.get(
+  '/applicants',
+  authenticate,
+  authorize('admin'),
+  applicantController.getApplicants
+);
+router.get(
+  '/applicants/:id',
+  authenticate,
+  authorize('admin'),
+  applicantController.getApplicant
+);
+router.delete(
+  '/applicants/:id',
+  authenticate,
+  authorize('admin'),
+  applicantController.deleteApplicant
+);
 
-router.post('/auth/signin', signinValidation, doctorAuthController.signIn)
-router.post('/auth/signout', doctorAuthController.signOut)
+router.post('/auth/signin', signinValidation, doctorAuthController.signIn);
+router.post('/auth/signout', doctorAuthController.signOut);
 
-router.get('/schedules/:id',
-    authenticate,
-    isUserActive(patientAuthService, doctorAuthService),
-    scheduleController.getSchedule
-)
+router.get(
+  '/schedules/:id',
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  scheduleController.getSchedule
+);
 
-router.patch('/schedules/:id', 
-    authenticate, 
-    isUserActive(patientAuthService, doctorAuthService),
-    authorize('doctor'),
-    scheduleController.updateSchedule
-)
+router.patch(
+  '/schedules/:id',
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  authorize('doctor'),
+  scheduleController.updateSchedule
+);
 
-router.get('/doctors', 
-    authenticate,
-    isUserActive(patientAuthService, doctorAuthService),
-    doctorController.getDoctorsWithSchedules
-)
+router.get(
+  '/doctors',
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  doctorController.getDoctorsWithSchedules
+);
 
-router.get('/doctors/:id', 
-    authenticate,
-    isUserActive(patientAuthService, doctorAuthService),
-    doctorController.getDoctor
-)
+router.get(
+  '/doctors/:id',
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  doctorController.getDoctor
+);
 
-router.get('/:id/schedules',
-    authenticate,
-    isUserActive(patientAuthService, doctorAuthService),
-    scheduleController.getSchedule
-)
+router.get(
+  '/:id/schedules',
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  scheduleController.getSchedule
+);
 
-export default router
+export default router;

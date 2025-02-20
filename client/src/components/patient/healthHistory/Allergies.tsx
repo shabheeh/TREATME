@@ -1,54 +1,59 @@
 import React, { useState } from "react";
-import { Box, Typography, Stack, Button, TextField, Grid, IconButton, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  Button,
+  TextField,
+  Grid,
+  IconButton,
+  MenuItem
+} from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 import { IAllergy, IHealthHistory } from "../../../types/patient/health.types";
 import { useForm, Controller } from "react-hook-form";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import ConfirmActionModal from "../../basics/ConfirmActionModal";
-
 
 interface AllergiesProps {
   allergies: IAllergy[];
-  onUpdate: (healthHistory: IHealthHistory) => void
+  onUpdate: (healthHistory: IHealthHistory) => void;
 }
 
-const severity = [
-    'Mild',
-    'Moderate',
-    'Severe',
-    'Not Sure'
-];
+const severity = ["Mild", "Moderate", "Severe", "Not Sure"];
 
-
-
-const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
-  const [showAllergyInputs, setShowAllergyInputs] = useState(allergies.length > 0);
+const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
+  const [showAllergyInputs, setShowAllergyInputs] = useState(
+    allergies.length > 0
+  );
   const [loading, setLoading] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [allergyToRemove, setAllergyToRemove] = useState<IAllergy | null>(null)
-  
-  const currentPatient = useSelector((state: RootState) => state.user.currentUser);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [allergyToRemove, setAllergyToRemove] = useState<IAllergy | null>(null);
 
-  const { 
-    register, 
+  const currentPatient = useSelector(
+    (state: RootState) => state.user.currentUser
+  );
+
+  const {
+    register,
     handleSubmit,
     control,
     reset,
     formState: { errors }
   } = useForm<IAllergy>({
     defaultValues: {
-      allergicTo: '',
-      severity: '',
-      reaction: ''
+      allergicTo: "",
+      severity: "",
+      reaction: ""
     }
   });
 
   const updateAllegies = async (updatedAllergies: IAllergy[]) => {
     if (!currentPatient?._id) {
-      toast.error('No patient selected');
+      toast.error("No patient selected");
       return;
     }
 
@@ -56,24 +61,21 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
     try {
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
-        'allergies',
+        "allergies",
         updatedAllergies
       );
-      onUpdate(result)
+      onUpdate(result);
 
-
-      toast.success('Allergies updated successfully');
-
+      toast.success("Allergies updated successfully");
     } catch (error) {
-        if(error instanceof Error) {
-            toast.error(error.message)
-        }else {
-            toast.error('Something went wrong');
-        }
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       setLoading(false);
-      setModalOpen(false)
-
+      setModalOpen(false);
     }
   };
 
@@ -84,16 +86,19 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
   };
 
   const handleRemoveMedication = () => {
-    if (!allergyToRemove) return
+    if (!allergyToRemove) return;
     const updatedAllergies = allergies.filter(
-      allergy => allergy._id !== allergyToRemove._id
+      (allergy) => allergy._id !== allergyToRemove._id
     );
     updateAllegies(updatedAllergies);
   };
 
-
   return (
-    <Box sx={{ width: "90%", mb: 2 }} component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box
+      sx={{ width: "90%", mb: 2 }}
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       {allergies.length === 0 && (
         <Typography variant="body1" sx={{ mb: 2 }}>
           Do you have any allergies or sensitivities to drugs?
@@ -104,14 +109,18 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
         <Stack direction="row" spacing={2}>
           <Button
             variant={showAllergyInputs ? "contained" : "outlined"}
-            startIcon={showAllergyInputs ? <CheckCircle /> : <RadioButtonUnchecked />}
+            startIcon={
+              showAllergyInputs ? <CheckCircle /> : <RadioButtonUnchecked />
+            }
             onClick={() => setShowAllergyInputs(true)}
           >
             Yes
           </Button>
           <Button
             variant={showAllergyInputs ? "outlined" : "contained"}
-            startIcon={showAllergyInputs ? <RadioButtonUnchecked /> : <CheckCircle />}
+            startIcon={
+              showAllergyInputs ? <RadioButtonUnchecked /> : <CheckCircle />
+            }
             onClick={() => setShowAllergyInputs(false)}
           >
             No
@@ -134,7 +143,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                   pb: 1,
                   pt: 0,
                   backgroundColor: "#F5F5F5",
-                  display: { xs: "none", sm: "flex" }, 
+                  display: { xs: "none", sm: "flex" }
                 }}
               >
                 <Grid item xs={12} sm={4}>
@@ -160,7 +169,6 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
               </Grid>
               {allergies.map((allergy, index) => (
                 <React.Fragment key={index}>
-      
                   <Grid
                     container
                     spacing={2}
@@ -168,17 +176,23 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                       borderBottom: "1px solid #e0e0e0",
                       py: 1,
                       alignItems: "center",
-                      display: { xs: "none", sm: "flex" }, 
+                      display: { xs: "none", sm: "flex" }
                     }}
                   >
                     <Grid item xs={12} sm={4}>
-                      <Typography variant="body1">{allergy.allergicTo}</Typography>
+                      <Typography variant="body1">
+                        {allergy.allergicTo}
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography variant="body1">{allergy.severity}</Typography>
+                      <Typography variant="body1">
+                        {allergy.severity}
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={3}>
-                      <Typography variant="body1">{allergy.reaction}</Typography>
+                      <Typography variant="body1">
+                        {allergy.reaction}
+                      </Typography>
                     </Grid>
                     <Grid item xs={12} sm={2} sx={{ textAlign: "center" }}>
                       <IconButton
@@ -192,12 +206,11 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                     </Grid>
                   </Grid>
 
-    
                   <Box
                     sx={{
-                      display: { xs: "block", sm: "none" }, 
+                      display: { xs: "block", sm: "none" },
                       borderBottom: "1px solid #e0e0e0",
-                      py: 2,
+                      py: 2
                     }}
                   >
                     <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
@@ -240,21 +253,23 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
           )}
 
           {allergies.length > 0 && (
-            <Typography sx={{ fontWeight: 600 }}>Add other Allergies</Typography>
+            <Typography sx={{ fontWeight: 600 }}>
+              Add other Allergies
+            </Typography>
           )}
 
           <Box>
             <Box
               sx={{
                 display: "flex",
-                flexDirection: { xs: "column", sm: "row" }, 
+                flexDirection: { xs: "column", sm: "row" },
                 gap: 2,
-                mt: 4,
+                mt: 4
               }}
             >
               <TextField
                 {...register("allergicTo", {
-                  required: "Name is required",
+                  required: "Name is required"
                 })}
                 placeholder="E.g. Penicillin, amoxicillin"
                 fullWidth
@@ -269,7 +284,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                 control={control}
                 defaultValue=""
                 rules={{
-                  required: "Field is required",
+                  required: "Field is required"
                 }}
                 render={({ field }) => (
                   <TextField
@@ -292,7 +307,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
               />
               <TextField
                 {...register("reaction", {
-                  required: "Field is required",
+                  required: "Field is required"
                 })}
                 placeholder="E.g. Rashes, itchy"
                 fullWidth
@@ -313,8 +328,8 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate  }) => {
                   height: "50px",
                   backgroundColor: "#05998c",
                   "&:hover": {
-                    backgroundColor: "#008080",
-                  },
+                    backgroundColor: "#008080"
+                  }
                 }}
               >
                 Save

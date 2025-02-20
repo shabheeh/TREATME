@@ -23,7 +23,8 @@ const Unauthorized: React.FC = () => {
       <div className="absolute bottom-8 text-center">
         <button
           onClick={handleBack}
-          className="ml-4 text-sm text-gray-500 uppercase hover:underline tracking-wider ">
+          className="ml-4 text-sm text-gray-500 uppercase hover:underline tracking-wider "
+        >
           Back
         </button>
       </div>

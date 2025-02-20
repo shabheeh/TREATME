@@ -1,5 +1,8 @@
-export const generateWelcomeDoctorHtml = (email: string, password: string): string => {
-    return `
+export const generateWelcomeDoctorHtml = (
+  email: string,
+  password: string
+): string => {
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -75,5 +78,4 @@ export const generateWelcomeDoctorHtml = (email: string, password: string): stri
     </body>
     </html>
     `;
-  };
-  
+};

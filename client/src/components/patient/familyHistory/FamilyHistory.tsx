@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -10,49 +10,53 @@ import {
   Button,
   Collapse,
   IconButton,
-  FormControl,
-} from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
-import healthProfileService from '../../../services/healthProfile/healthProfileServices';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/app/store';
-import Loading from '../../basics/Loading';
-import { IFamilyHistory } from '../../../types/patient/health.types';
-import { toast } from 'sonner';
+  FormControl
+} from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
+import healthProfileService from "../../../services/healthProfile/healthProfileServices";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
+import Loading from "../../basics/Loading";
+import { IFamilyHistory } from "../../../types/patient/health.types";
+import { toast } from "sonner";
 
 const HEALTH_CONDITIONS = [
-  'Diabetes',
-  'Heart Disease',
-  'High Blood Pressure',
-  'Cancer',
-  'Asthma',
-  'Mental Health Conditions',
-  'Stroke',
-  'Kidney Disease',
-  'Thyroid Disease',
-  'Arthritis',
-  "Alzheimer's Disease",
+  "Diabetes",
+  "Heart Disease",
+  "High Blood Pressure",
+  "Cancer",
+  "Asthma",
+  "Mental Health Conditions",
+  "Stroke",
+  "Kidney Disease",
+  "Thyroid Disease",
+  "Arthritis",
+  "Alzheimer's Disease"
 ];
 
 const RELATIONSHIPS = [
-  'Mother',
-  'Father',
-  'Sister',
-  'Brother',
-  'Grandmother (Maternal)',
-  'Grandmother (Paternal)',
-  'Grandfather (Maternal)',
-  'Grandfather (Paternal)',
-  'Aunt',
-  'Uncle',
+  "Mother",
+  "Father",
+  "Sister",
+  "Brother",
+  "Grandmother (Maternal)",
+  "Grandmother (Paternal)",
+  "Grandfather (Maternal)",
+  "Grandfather (Paternal)",
+  "Aunt",
+  "Uncle"
 ];
 
 const FamilyHistory = () => {
-  const currentPatient = useSelector((state: RootState) => state.user.currentUser);
+  const currentPatient = useSelector(
+    (state: RootState) => state.user.currentUser
+  );
   const [familyHistory, setFamilyHistory] = useState<IFamilyHistory[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCondition, setSelectedCondition] = useState<string | null>(null);
-  const [relationship, setRelationship] = useState('');
+  const [selectedCondition, setSelectedCondition] = useState<string | null>(
+    null
+  );
+  const [relationship, setRelationship] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -60,11 +64,17 @@ const FamilyHistory = () => {
       if (!currentPatient) return;
       try {
         setLoading(true);
-        const result = await healthProfileService.getHealthHistory(currentPatient._id);
+        const result = await healthProfileService.getHealthHistory(
+          currentPatient._id
+        );
 
         setFamilyHistory(result?.familyHistory || []);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to fetch health history');
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch health history"
+        );
         setFamilyHistory([]);
       } finally {
         setLoading(false);
@@ -74,13 +84,13 @@ const FamilyHistory = () => {
   }, [currentPatient]);
 
   const isConditionSelected = (condition: string) => {
-    return familyHistory.some(history => history.condition === condition);
+    return familyHistory.some((history) => history.condition === condition);
   };
 
   const handleConditionClick = (condition: string) => {
     if (!isConditionSelected(condition)) {
       setSelectedCondition(condition);
-      setRelationship('');
+      setRelationship("");
     }
   };
 
@@ -93,19 +103,23 @@ const FamilyHistory = () => {
         ...familyHistory,
         {
           condition: selectedCondition,
-          relationship: relationship.trim(),
-        },
+          relationship: relationship.trim()
+        }
       ];
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
-        'familyHistory',
+        "familyHistory",
         updatedHistory
       );
       setFamilyHistory(result.familyHistory);
       setSelectedCondition(null);
-      setRelationship('');
+      setRelationship("");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update health history');
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to update health history"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -115,28 +129,35 @@ const FamilyHistory = () => {
     try {
       if (!currentPatient) return;
       const updatedHistory: IFamilyHistory[] = familyHistory.filter(
-        history => history.condition !== conditionToRemove
+        (history) => history.condition !== conditionToRemove
       );
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
-        'familyHistory',
+        "familyHistory",
         updatedHistory
       );
       setFamilyHistory(result.familyHistory);
     } catch (error) {
       console.error(error);
-      toast.error(error instanceof Error ? error.message : 'Failed to update health history');
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to update health history"
+      );
     }
   };
 
   if (loading) return <Loading />;
 
   return (
-    <Paper elevation={0} sx={{ p: 3, bgcolor: 'background.default' }}>
-      <Typography variant="h5" sx={{ mb: 1, color: 'primary.main', fontWeight: 600 }}>
+    <Paper elevation={0} sx={{ p: 3, bgcolor: "background.default" }}>
+      <Typography
+        variant="h5"
+        sx={{ mb: 1, color: "primary.main", fontWeight: 600 }}
+      >
         Family Health History
       </Typography>
-      <Typography variant="subtitle1" sx={{ mb: 3, color: 'text.secondary' }}>
+      <Typography variant="subtitle1" sx={{ mb: 3, color: "text.secondary" }}>
         Does anyone in your family have the following conditions?
       </Typography>
       {familyHistory.length > 0 && (
@@ -151,7 +172,7 @@ const FamilyHistory = () => {
                   label={`${history.condition} - ${history.relationship}`}
                   onDelete={() => handleRemoveHistory(history.condition)}
                   color="primary"
-                  sx={{ bgcolor: 'primary.light' }}
+                  sx={{ bgcolor: "primary.light" }}
                 />
               </Grid>
             ))}
@@ -164,26 +185,28 @@ const FamilyHistory = () => {
             <Chip
               label={condition}
               onClick={() => handleConditionClick(condition)}
-              color={isConditionSelected(condition) ? 'primary' : 'default'}
+              color={isConditionSelected(condition) ? "primary" : "default"}
               sx={{
-                '&:hover': {
+                "&:hover": {
                   bgcolor: isConditionSelected(condition)
-                    ? 'primary.dark'
-                    : 'action.hover',
-                },
+                    ? "primary.dark"
+                    : "action.hover"
+                }
               }}
             />
           </Grid>
         ))}
       </Grid>
       <Collapse in={!!selectedCondition}>
-        <Box sx={{
-          p: 2,
-          bgcolor: 'background.paper',
-          borderRadius: 1,
-          border: 1,
-          borderColor: 'divider',
-        }}>
+        <Box
+          sx={{
+            p: 2,
+            bgcolor: "background.paper",
+            borderRadius: 1,
+            border: 1,
+            borderColor: "divider"
+          }}
+        >
           <Typography variant="subtitle2" sx={{ mb: 2 }}>
             Who has {selectedCondition}?
           </Typography>
@@ -207,14 +230,14 @@ const FamilyHistory = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Box sx={{ display: 'flex', gap: 1 }}>
+              <Box sx={{ display: "flex", gap: 1 }}>
                 <Button
                   variant="contained"
                   onClick={handleSave}
                   disabled={!relationship || isSubmitting}
                   fullWidth
                 >
-                  {isSubmitting ? 'Saving...' : 'Save'}
+                  {isSubmitting ? "Saving..." : "Save"}
                 </Button>
                 <IconButton
                   size="small"

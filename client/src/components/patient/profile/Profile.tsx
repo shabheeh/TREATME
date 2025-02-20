@@ -10,7 +10,7 @@ type ProfileProps = {
 
 const Profile: React.FC<ProfileProps> = ({
   handleEditProfile,
-  handleEditAddress,
+  handleEditAddress
 }) => {
   const patient = useSelector((state: RootState) => state.user.patient);
   const currentPatient = useSelector(
@@ -24,7 +24,7 @@ const Profile: React.FC<ProfileProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          mb: 4,
+          mb: 4
         }}
       >
         <Avatar
@@ -34,7 +34,7 @@ const Profile: React.FC<ProfileProps> = ({
             width: 100,
             height: 100,
             mb: 2,
-            border: "3px solid primary.main",
+            border: "3px solid primary.main"
           }}
         />
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
@@ -48,18 +48,17 @@ const Profile: React.FC<ProfileProps> = ({
       <Grid container spacing={6}>
         <Grid item xs={12} md={currentPatient?._id !== patient?._id ? 8 : 6}>
           <Box>
-          <Box 
-            sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', mb: 2, 
-                borderBottom: '1px solid grey', 
-                pb: 1,
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+                borderBottom: "1px solid grey",
+                pb: 1
               }}
-                >
-              <Typography variant="h6">
-                Personal Information
-              </Typography>
+            >
+              <Typography variant="h6">Personal Information</Typography>
               <Button variant="text" onClick={handleEditProfile}>
                 Edit
               </Button>
@@ -85,16 +84,17 @@ const Profile: React.FC<ProfileProps> = ({
         {currentPatient?._id === patient?._id && (
           <Grid item xs={12} md={6}>
             <Box>
-            <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', mb: 2, 
-                borderBottom: '1px solid grey', 
-                pb: 1 }}
-                >
-                <Typography variant="h6">
-                  Address
-                </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                  borderBottom: "1px solid grey",
+                  pb: 1
+                }}
+              >
+                <Typography variant="h6">Address</Typography>
                 <Button variant="text" onClick={handleEditAddress}>
                   Edit
                 </Button>

@@ -11,13 +11,13 @@ import {
   ListItemIcon,
   ListItemText,
   Avatar,
-  Divider,
+  Divider
 } from "@mui/material";
 import {
   MdClose,
   MdManageAccounts,
   MdLogout,
-  MdHelpOutline,
+  MdHelpOutline
 } from "react-icons/md";
 import { RootState } from "../../redux/app/store";
 import authServicePatient from "../../services/patient/authService";
@@ -31,26 +31,22 @@ interface ProfileDialogProps {
 }
 
 const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
+  const doctor = useSelector((state: RootState) => state.user.doctor);
 
-
-  const doctor = useSelector((state: RootState) => state.user.doctor)
-  
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
-      await authServicePatient.signOut()
-      navigate('/doctor/signin')
+      await authServicePatient.signOut();
+      navigate("/doctor/signin");
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message)
-      }else {
-        toast.error('Something went wrong')
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong");
       }
     }
-  }
-
-
+  };
 
   return (
     <Dialog
@@ -61,8 +57,8 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
           borderRadius: "24px",
           width: "100%",
           maxWidth: "400px",
-          margin: "16px",
-        },
+          margin: "16px"
+        }
       }}
     >
       <Box
@@ -71,10 +67,9 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
           justifyContent: "flex-end",
           alignItems: "center",
           py: 1,
-          px: 3,
+          px: 3
         }}
       >
-
         <IconButton
           onClick={onClose}
           size="small"
@@ -82,8 +77,8 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
             p: 1,
             borderRadius: "50%",
             "&:hover": {
-              bgcolor: "grey.100",
-            },
+              bgcolor: "grey.100"
+            }
           }}
         >
           <MdClose className="h-5 w-5 text-gray-600" />
@@ -96,27 +91,31 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
         <Box sx={{ px: 0, py: 2 }}>
           <ListItem sx={{ px: 4, py: 2 }}>
             <Avatar
-              src={ doctor?.profilePicture ? doctor.profilePicture : "/api/placeholder/48/48" }
-              alt={ doctor?.firstName }
+              src={
+                doctor?.profilePicture
+                  ? doctor.profilePicture
+                  : "/api/placeholder/48/48"
+              }
+              alt={doctor?.firstName}
               sx={{
                 width: 48,
                 height: 48,
-                mr: 2,
+                mr: 2
               }}
             />
             <Box>
               <Typography
                 sx={{
                   fontWeight: 500,
-                  color: "grey.800",
+                  color: "grey.800"
                 }}
               >
-                { doctor?.firstName } { doctor?.lastName }
+                {doctor?.firstName} {doctor?.lastName}
               </Typography>
               <Typography
                 sx={{
                   color: "grey.500",
-                  fontSize: "0.875rem",
+                  fontSize: "0.875rem"
                 }}
               >
                 {doctor?.registerNo}
@@ -134,9 +133,9 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
               px: 5,
               py: 1.5,
               "&:hover": {
-                bgcolor: "grey.50",
+                bgcolor: "grey.50"
               },
-              transition: "background-color 0.2s",
+              transition: "background-color 0.2s"
             }}
           >
             <ListItemIcon sx={{ minWidth: "35px" }}>
@@ -147,7 +146,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
                 <Typography
                   sx={{
                     color: "grey.700",
-                    fontWeight: 500,
+                    fontWeight: 500
                   }}
                 >
                   Manage Account
@@ -162,9 +161,9 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
               px: 5,
               py: 1.5,
               "&:hover": {
-                bgcolor: "grey.50",
+                bgcolor: "grey.50"
               },
-              transition: "background-color 0.2s",
+              transition: "background-color 0.2s"
             }}
           >
             <ListItemIcon sx={{ minWidth: "35px" }}>
@@ -175,7 +174,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
                 <Typography
                   sx={{
                     color: "grey.700",
-                    fontWeight: 500,
+                    fontWeight: 500
                   }}
                 >
                   Sign Out
@@ -191,9 +190,9 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
               px: 5,
               py: 1.5,
               "&:hover": {
-                bgcolor: "grey.50",
+                bgcolor: "grey.50"
               },
-              transition: "background-color 0.2s",
+              transition: "background-color 0.2s"
             }}
           >
             <ListItemIcon sx={{ minWidth: "35px" }}>
@@ -204,7 +203,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
                 <Typography
                   sx={{
                     color: "grey.700",
-                    fontWeight: 500,
+                    fontWeight: 500
                   }}
                 >
                   Help & Support

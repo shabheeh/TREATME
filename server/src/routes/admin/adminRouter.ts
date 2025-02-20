@@ -17,36 +17,40 @@ import AdminPatientsController from '../../controllers/admin/adminPatientsContro
 
 import { authenticate } from '../../middlewares/auth';
 
-const adminRepository = new AdminRespository(AdminModel)
-const adminAuthService = new AdminAuthService(adminRepository)
-const adminAuthController = new AdminAuthController(adminAuthService)
+const adminRepository = new AdminRespository(AdminModel);
+const adminAuthService = new AdminAuthService(adminRepository);
+const adminAuthController = new AdminAuthController(adminAuthService);
 
-const doctorRepository = new DoctorRepository(DoctorModel)
+const doctorRepository = new DoctorRepository(DoctorModel);
 const adminDoctorService = new AdminDoctorService(doctorRepository);
-const adminDoctorController = new AdminDoctorController(adminDoctorService)
+const adminDoctorController = new AdminDoctorController(adminDoctorService);
 
 const userRepository = new UserRepository(PatientModel);
 const adminPatientsService = new AdminPatientsService(userRepository);
-const adminPatientsController = new AdminPatientsController(adminPatientsService)
+const adminPatientsController = new AdminPatientsController(
+  adminPatientsService
+);
 
-
-const router = express.Router()
+const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+router.post('/auth/signin', signinValidation, adminAuthController.signInAdmin);
 
-router.post('/auth/signin', signinValidation, adminAuthController.signInAdmin)
+router.get('/doctors', authenticate, adminDoctorController.getDoctors);
+router.post(
+  '/doctors',
+  authenticate,
+  upload.single('profilePicture'),
+  // validateDoctor,
+  adminDoctorController.createDoctor
+);
 
-router.get('/doctors', authenticate, adminDoctorController.getDoctors)
-router.post('/doctors', authenticate, upload.single('profilePicture'), 
-    // validateDoctor, 
-    adminDoctorController.createDoctor
-)
+router.get('/patients', authenticate, adminPatientsController.getPatients);
+router.patch(
+  '/patients/:id',
+  authenticate,
+  adminPatientsController.togglePatientActivityStatus
+);
 
-router.get("/patients", authenticate, adminPatientsController.getPatients)
-router.patch('/patients/:id', authenticate, adminPatientsController.togglePatientActivityStatus)
-
-
-
-
-export default router 
+export default router;

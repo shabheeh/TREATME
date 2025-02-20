@@ -6,7 +6,7 @@ import {
   Button,
   Grid,
   Card,
-  CardMedia,
+  CardMedia
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
@@ -14,9 +14,9 @@ import log from "loglevel";
 import { toast } from "sonner";
 import specializationService from "../../services/specialization/specializationService";
 import { useNavigate } from "react-router-dom";
-import Cropper  from "react-cropper";
+import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
-import type { ReactCropperElement } from 'react-cropper';
+import type { ReactCropperElement } from "react-cropper";
 
 interface FormInputs {
   name: string;
@@ -31,23 +31,22 @@ const AddSpecialization = () => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors }
   } = useForm<FormInputs>({
     defaultValues: {
       name: "",
       description: "",
       note: "",
       fee: null,
-      image: null,
-    },
+      image: null
+    }
   });
-
 
   const navigate = useNavigate();
   const cropperRef = useRef<ReactCropperElement>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [isCropped, setIsCropped] = useState(false); 
-  const [loading, setLoading] = useState(false)
+  const [isCropped, setIsCropped] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -65,11 +64,11 @@ const AddSpecialization = () => {
         croppedCanvas.toBlob((blob) => {
           if (blob) {
             const file = new File([blob], "cropped-image.png", {
-              type: "image/png",
+              type: "image/png"
             });
-            setValue("image", file); 
-            setCroppedImage(croppedCanvas.toDataURL()); 
-            setIsCropped(true); 
+            setValue("image", file);
+            setCroppedImage(croppedCanvas.toDataURL());
+            setIsCropped(true);
           }
         });
       }
@@ -77,7 +76,6 @@ const AddSpecialization = () => {
   };
 
   const onSubmit = async (data: FormInputs) => {
-
     data.fee = Number(data.fee);
 
     if (!data.image) {
@@ -90,13 +88,15 @@ const AddSpecialization = () => {
       toast.error("Image must be smaller than 5 MB");
       return;
     }
-    if (!["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)) {
+    if (
+      !["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)
+    ) {
       toast.error("Only image files are allowed");
       return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
@@ -115,13 +115,11 @@ const AddSpecialization = () => {
       toast.success("Specialization added successfully!");
 
       navigate("/admin/specializations");
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       if (error instanceof Error) {
-
         toast.error(`Error: ${error.message}`);
-       
       } else {
         toast.error("An unknown error occurred");
       }
@@ -137,7 +135,7 @@ const AddSpecialization = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "center"
         }}
       >
         <Container
@@ -147,10 +145,18 @@ const AddSpecialization = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
-          <Box sx={{ width: "90%", my: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Box
+            sx={{
+              width: "90%",
+              my: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
             <Card sx={{ maxWidth: 600, maxHeight: 400, my: 5 }}>
               {croppedImage && !isCropped ? (
                 <Cropper
@@ -161,7 +167,11 @@ const AddSpecialization = () => {
                   ref={cropperRef}
                 />
               ) : (
-                <CardMedia component="img" height="140" image={croppedImage || undefined} />
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={croppedImage || undefined}
+                />
               )}
             </Card>
             {croppedImage && !isCropped && (
@@ -173,9 +183,18 @@ const AddSpecialization = () => {
                 Crop Image
               </Button>
             )}
-            <Button component="label" variant="outlined" startIcon={<PhotoCamera />}>
+            <Button
+              component="label"
+              variant="outlined"
+              startIcon={<PhotoCamera />}
+            >
               Upload Photo
-              <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageChange}
+              />
             </Button>
           </Box>
           <Box sx={{ width: "90%", my: 2 }}>
@@ -184,8 +203,8 @@ const AddSpecialization = () => {
                 required: "Name is required",
                 pattern: {
                   value: /^[A-Z][a-zA-Z' -]*$/,
-                  message: "Please enter a valid Name",
-                },
+                  message: "Please enter a valid Name"
+                }
               })}
               fullWidth
               label="Name"
@@ -196,7 +215,9 @@ const AddSpecialization = () => {
           </Box>
           <Box sx={{ width: "90%", my: 2 }}>
             <TextField
-              {...register("description", { required: "Description is required" })}
+              {...register("description", {
+                required: "Description is required"
+              })}
               fullWidth
               label="Description"
               variant="outlined"
@@ -212,8 +233,8 @@ const AddSpecialization = () => {
                     required: "Note is required",
                     minLength: {
                       value: 30,
-                      message: "Note should be at least 30 characters",
-                    },
+                      message: "Note should be at least 30 characters"
+                    }
                   })}
                   fullWidth
                   label="Note"
@@ -232,8 +253,8 @@ const AddSpecialization = () => {
                 required: "Fee is required",
                 min: {
                   value: 2,
-                  message: "Fee must be a valid amount",
-                },
+                  message: "Fee must be a valid amount"
+                }
               })}
               fullWidth
               type="number"
@@ -243,33 +264,34 @@ const AddSpecialization = () => {
               helperText={errors.fee?.message}
             />
           </Box>
-          <Box sx={{
-            width: '60%',
-            display: 'flex',
-            gap: 2,
-          }}>
-          <Button
-            loading={loading}
-            disabled={loading}
-            fullWidth
-            type="submit"
-            variant="contained"
-            sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              gap: 2
+            }}
           >
-            Add Specialization
-          </Button>
-          <Button
-            loading={loading}
-            disabled={loading}
-            fullWidth
-            type="submit"
-            variant="outlined"
-            sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
-          >
-            Cancel
-          </Button>
+            <Button
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              type="submit"
+              variant="contained"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Add Specialization
+            </Button>
+            <Button
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              type="submit"
+              variant="outlined"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Cancel
+            </Button>
           </Box>
-          
         </Container>
       </Container>
     </Box>

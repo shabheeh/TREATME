@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  Avatar, Box, Divider, Grid, IconButton, List, ListItem, 
-  ListItemIcon, ListItemText, Typography, Chip
-} from '@mui/material';
-import { 
+import React, { useEffect, useState } from "react";
+import {
+  Avatar,
+  Box,
+  Divider,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Chip
+} from "@mui/material";
+import {
   Edit as EditIcon,
   Medication as MedicationIcon,
   Warning as WarningIcon,
@@ -13,30 +22,33 @@ import {
   FitnessCenter as FitnessCenterIcon,
   People as PeopleIcon,
   FamilyRestroom as FamilyIcon
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
-import { calculateAge } from '../../helpers/ageCalculator';
+import { calculateAge } from "../../helpers/ageCalculator";
 
-import accountService from '../../services/patient/accountService';
-import { useLocation } from 'react-router-dom';
-import { IDependent, IPatient } from '../../types/patient/patient.types';
-import { IBehaviouralHealth, IHealthHistory, ILifestyle } from '../../types/patient/health.types';
-import { formatMonthDay } from '../../utils/dateUtils';
-
+import accountService from "../../services/patient/accountService";
+import { useLocation } from "react-router-dom";
+import { IDependent, IPatient } from "../../types/patient/patient.types";
+import {
+  IBehaviouralHealth,
+  IHealthHistory,
+  ILifestyle
+} from "../../types/patient/health.types";
+import { formatMonthDay } from "../../utils/dateUtils";
 
 const PatientProfile: React.FC = () => {
-
-
-  const location = useLocation()
-  const patient = location.state.patient as IPatient | IDependent
-  const [healthHistory, setHealtHistory] = useState<IHealthHistory | null>(null)
-  const [behaviouralHealth, setBehaviouralHealth] = useState<IBehaviouralHealth | null>(null);
-  const [lifestyle, setLifestyle] = useState<ILifestyle | null>(null)
+  const location = useLocation();
+  const patient = location.state.patient as IPatient | IDependent;
+  const [healthHistory, setHealtHistory] = useState<IHealthHistory | null>(
+    null
+  );
+  const [behaviouralHealth, setBehaviouralHealth] =
+    useState<IBehaviouralHealth | null>(null);
+  const [lifestyle, setLifestyle] = useState<ILifestyle | null>(null);
 
   useEffect(() => {
-
     if (!patient._id) {
-      return 
+      return;
     }
 
     const fetchHealtProfile = async () => {
@@ -44,54 +56,75 @@ const PatientProfile: React.FC = () => {
       setHealtHistory(result.healthHistory);
       setBehaviouralHealth(result.behaviouralHealth);
       setLifestyle(result.lifestyle);
+    };
+
+    fetchHealtProfile();
+  }, [patient]);
+
+  const lifestyleQuestions = [
+    {
+      id: "doExercise",
+      question: "Do you exercise regularly (at least 3 times a week)?",
+      answer:
+        lifestyle && lifestyle.doExercise !== undefined
+          ? lifestyle.doExercise
+          : null
+    },
+    {
+      id: "sleepSevenPlusHrs",
+      question: "Do you get at least 7 hours of sleep most nights?",
+      answer:
+        lifestyle && lifestyle.sleepSevenPlusHrs !== undefined
+          ? lifestyle.sleepSevenPlusHrs
+          : null
+    },
+    {
+      id: "doSmoke",
+      question: "Do you smoke or use tobacco products?",
+      answer:
+        lifestyle && lifestyle.doSmoke !== undefined ? lifestyle.doSmoke : null
+    },
+    {
+      id: "doAlcohol",
+      question: "Do you consume alcohol more than twice a week?",
+      answer:
+        lifestyle && lifestyle.doAlcohol !== undefined
+          ? lifestyle.doAlcohol
+          : null
+    },
+    {
+      id: "followDietPlan",
+      question: "Do you follow a balanced diet with fruits and vegetables?",
+      answer:
+        lifestyle && lifestyle.followDietPlan !== undefined
+          ? lifestyle.followDietPlan
+          : null
+    },
+    {
+      id: "highStress",
+      question: "Do you regularly experience high levels of stress?",
+      answer:
+        lifestyle && lifestyle.highStress !== undefined
+          ? lifestyle.highStress
+          : null
+    },
+    {
+      id: "doMeditate",
+      question: "Do you practice meditation or mindfulness?",
+      answer:
+        lifestyle && lifestyle.doMeditate !== undefined
+          ? lifestyle.doMeditate
+          : null
+    },
+    {
+      id: "vaccinatedCovid19",
+      question: "Have you been vaccinated against COVID-19?",
+      answer:
+        lifestyle && lifestyle.vaccinatedCovid19 !== undefined
+          ? lifestyle.vaccinatedCovid19
+          : null
     }
-
-    fetchHealtProfile()
-  }, [patient])
-
-
-  const lifestyleQuestions = ([
-    {
-      id: 'doExercise',
-      question: 'Do you exercise regularly (at least 3 times a week)?',
-      answer: lifestyle && lifestyle.doExercise !== undefined ? lifestyle.doExercise : null,
-    },
-    {
-      id: 'sleepSevenPlusHrs',
-      question: 'Do you get at least 7 hours of sleep most nights?',
-      answer: lifestyle && lifestyle.sleepSevenPlusHrs !== undefined ? lifestyle.sleepSevenPlusHrs : null,
-    },
-    {
-      id: 'doSmoke',
-      question: 'Do you smoke or use tobacco products?',
-      answer: lifestyle && lifestyle.doSmoke !== undefined ? lifestyle.doSmoke : null,
-    },
-    {
-      id: 'doAlcohol',
-      question: 'Do you consume alcohol more than twice a week?',
-      answer: lifestyle && lifestyle.doAlcohol !== undefined ? lifestyle.doAlcohol : null,
-    },
-    {
-      id: 'followDietPlan',
-      question: 'Do you follow a balanced diet with fruits and vegetables?',
-      answer: lifestyle && lifestyle.followDietPlan !== undefined ? lifestyle.followDietPlan : null,
-    },
-    {
-      id: 'highStress',
-      question: 'Do you regularly experience high levels of stress?',
-      answer: lifestyle && lifestyle.highStress !== undefined ? lifestyle.highStress : null,
-    },
-    {
-      id: 'doMeditate',
-      question: 'Do you practice meditation or mindfulness?',
-      answer: lifestyle && lifestyle.doMeditate !== undefined ? lifestyle.doMeditate : null,
-    },
-    {
-      id: 'vaccinatedCovid19',
-      question: 'Have you been vaccinated against COVID-19?',
-      answer: lifestyle && lifestyle.vaccinatedCovid19 !== undefined ? lifestyle.vaccinatedCovid19 : null,
-    },
-  ]);
+  ];
 
   return (
     <Box sx={{ maxWidth: "90%", margin: "0 auto", p: 2 }}>
@@ -103,7 +136,7 @@ const PatientProfile: React.FC = () => {
           alignItems: "center",
           border: "1px solid #e0e0e0",
           borderRadius: 2,
-          overflow: "hidden",
+          overflow: "hidden"
         }}
       >
         <Avatar
@@ -134,7 +167,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden",
+              overflow: "hidden"
             }}
           >
             <Box
@@ -143,7 +176,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "center"
               }}
             >
               <Typography variant="h6">Current Medications</Typography>
@@ -220,7 +253,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden",
+              overflow: "hidden"
             }}
           >
             <Box
@@ -229,7 +262,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "center"
               }}
             >
               <Typography variant="h6">Allergic to</Typography>
@@ -245,7 +278,7 @@ const PatientProfile: React.FC = () => {
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      alignItems: "flex-start",
+                      alignItems: "flex-start"
                     }}
                   >
                     <Box sx={{ display: "flex", width: "100%", mb: 0.5 }}>
@@ -260,7 +293,7 @@ const PatientProfile: React.FC = () => {
                       sx={{
                         width: "100%",
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: "space-between"
                       }}
                     >
                       <Typography variant="body2" color="text.secondary">
@@ -274,7 +307,7 @@ const PatientProfile: React.FC = () => {
                               ? "error.main"
                               : allergy.severity === "Moderate"
                                 ? "warning.main"
-                                : "info.main",
+                                : "info.main"
                         }}
                       >
                         Severity: {allergy.severity}
@@ -301,7 +334,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden",
+              overflow: "hidden"
             }}
           >
             <Box
@@ -310,7 +343,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "center"
               }}
             >
               <Typography variant="h6">Family History</Typography>
@@ -318,19 +351,19 @@ const PatientProfile: React.FC = () => {
             <List>
               {healthHistory?.familyHistory.map((history, idx) => (
                 <>
-                <ListItem key={idx}>
-                  <ListItemIcon>
-                    <FamilyIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={history.condition} />
-                  <Typography variant="body2" color="text.secondary">
-                    {history.relationship}
-                  </Typography>
-                </ListItem>
-                {idx !== healthHistory.familyHistory.length - 1 && <Divider />}
-
+                  <ListItem key={idx}>
+                    <ListItemIcon>
+                      <FamilyIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={history.condition} />
+                    <Typography variant="body2" color="text.secondary">
+                      {history.relationship}
+                    </Typography>
+                  </ListItem>
+                  {idx !== healthHistory.familyHistory.length - 1 && (
+                    <Divider />
+                  )}
                 </>
-
               ))}
               {healthHistory?.familyHistory.length === 0 && (
                 <ListItem>
@@ -343,15 +376,13 @@ const PatientProfile: React.FC = () => {
           </Box>
         </Grid>
 
-        
-
         {/* Medical Conditions */}
         <Grid item xs={12} md={6}>
           <Box
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden",
+              overflow: "hidden"
             }}
           >
             <Box
@@ -360,7 +391,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "center"
               }}
             >
               <Typography variant="h6">Medical conditions</Typography>
@@ -368,19 +399,19 @@ const PatientProfile: React.FC = () => {
             <List>
               {healthHistory?.healthConditions.map((condition, idx) => (
                 <>
-                <ListItem key={idx}>
-                  <ListItemIcon>
-                    <FamilyIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={condition.condition} />
-                  {/* <Typography variant="body2" color="text.secondary">
+                  <ListItem key={idx}>
+                    <ListItemIcon>
+                      <FamilyIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={condition.condition} />
+                    {/* <Typography variant="body2" color="text.secondary">
                   {condition.reportedBy}
                 </Typography> */}
-                </ListItem>
-                {idx !== healthHistory.healthConditions.length - 1 && <Divider />}
-
+                  </ListItem>
+                  {idx !== healthHistory.healthConditions.length - 1 && (
+                    <Divider />
+                  )}
                 </>
-
               ))}
               {healthHistory?.familyHistory.length === 0 && (
                 <ListItem>
@@ -404,7 +435,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden",
+              overflow: "hidden"
             }}
           >
             <Box
@@ -413,206 +444,259 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
+                alignItems: "center"
               }}
             >
               <Typography variant="h6">Lifestyle</Typography>
             </Box>
             <List>
-              
-              { lifestyleQuestions.map((question, idx) => (
+              {lifestyleQuestions.map((question, idx) => (
                 <>
-                <ListItem key={idx}>
-                <ListItemText primary={question.question} />
-                <Typography variant="body1" color='gray'>
-                  { question.answer !== null ? question.answer ? 'Yes' : 'No' : 'nill'}
-                  </Typography>
-              </ListItem>
-              {idx !== lifestyleQuestions.length - 1 && <Divider />}
-
-              </>
+                  <ListItem key={idx}>
+                    <ListItemText primary={question.question} />
+                    <Typography variant="body1" color="gray">
+                      {question.answer !== null
+                        ? question.answer
+                          ? "Yes"
+                          : "No"
+                        : "nill"}
+                    </Typography>
+                  </ListItem>
+                  {idx !== lifestyleQuestions.length - 1 && <Divider />}
+                </>
               ))}
-              
             </List>
           </Box>
         </Grid>
 
-{/* Behavioural Health */}
-<Grid item xs={12} md={6}>
-        <Box
-  sx={{
-    border: "1px solid #e0e0e0",
-    borderRadius: 2,
-    overflow: "hidden",
-  }}
->
-  <Box
-    sx={{
-      backgroundColor: "#f5f5f5",
-      p: 2,
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    }}
-  >
-    <Typography variant="h6">Behavioral Health</Typography>
-  </Box>
-  {behaviouralHealth ? (
-    <List>
-      <ListItem>
-        <ListItemIcon>
-          <PsychologyIcon />
-        </ListItemIcon>
-        <ListItemText 
-          primary="Mental Health Conditions" 
-          secondary={behaviouralHealth.conditions.length > 0 
-            ? behaviouralHealth.conditions.join(", ") 
-            : "None recorded"} 
-        />
-      </ListItem>
-      <Divider />
+        {/* Behavioural Health */}
+        <Grid item xs={12} md={6}>
+          <Box
+            sx={{
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              overflow: "hidden"
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: "#f5f5f5",
+                p: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
+            >
+              <Typography variant="h6">Behavioral Health</Typography>
+            </Box>
+            {behaviouralHealth ? (
+              <List>
+                <ListItem>
+                  <ListItemIcon>
+                    <PsychologyIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Mental Health Conditions"
+                    secondary={
+                      behaviouralHealth.conditions.length > 0
+                        ? behaviouralHealth.conditions.join(", ")
+                        : "None recorded"
+                    }
+                  />
+                </ListItem>
+                <Divider />
 
-      <ListItem>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="body2" color="text.secondary">Anxiety</Typography>
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-                {[1, 2, 3, 4, 5].map((level) => (
-                  <Box
-                    key={level}
-                    sx={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      mx: 0.5,
-                      bgcolor: level <= behaviouralHealth.anxietyLevel ? "warning.main" : "grey.300",
-                    }}
+                <ListItem>
+                  <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                      <Box sx={{ textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Anxiety
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            mt: 1
+                          }}
+                        >
+                          {[1, 2, 3, 4, 5].map((level) => (
+                            <Box
+                              key={level}
+                              sx={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: "50%",
+                                mx: 0.5,
+                                bgcolor:
+                                  level <= behaviouralHealth.anxietyLevel
+                                    ? "warning.main"
+                                    : "grey.300"
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Box sx={{ textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Depression
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            mt: 1
+                          }}
+                        >
+                          {[1, 2, 3, 4, 5].map((level) => (
+                            <Box
+                              key={level}
+                              sx={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: "50%",
+                                mx: 0.5,
+                                bgcolor:
+                                  level <= behaviouralHealth.depressionLevel
+                                    ? "error.main"
+                                    : "grey.300"
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Box sx={{ textAlign: "center" }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Stress
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            mt: 1
+                          }}
+                        >
+                          {[1, 2, 3, 4, 5].map((level) => (
+                            <Box
+                              key={level}
+                              sx={{
+                                width: 12,
+                                height: 12,
+                                borderRadius: "50%",
+                                mx: 0.5,
+                                bgcolor:
+                                  level <= behaviouralHealth.stressLevel
+                                    ? "info.main"
+                                    : "grey.300"
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </ListItem>
+                <Divider />
+
+                <ListItem>
+                  <ListItemIcon>
+                    <EventIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Last Episode Date"
+                    secondary={
+                      behaviouralHealth.lastEpisodeDate &&
+                      formatMonthDay(behaviouralHealth.lastEpisodeDate)
+                    }
                   />
-                ))}
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="body2" color="text.secondary">Depression</Typography>
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-                {[1, 2, 3, 4, 5].map((level) => (
-                  <Box
-                    key={level}
-                    sx={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      mx: 0.5,
-                      bgcolor: level <= behaviouralHealth.depressionLevel ? "error.main" : "grey.300",
-                    }}
+                </ListItem>
+                <Divider />
+
+                <ListItem>
+                  <ListItemIcon>
+                    <HealingIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Therapy Status"
+                    secondary={behaviouralHealth.therapyStatus}
                   />
-                ))}
-              </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="body2" color="text.secondary">Stress</Typography>
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-                {[1, 2, 3, 4, 5].map((level) => (
-                  <Box
-                    key={level}
-                    sx={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: "50%",
-                      mx: 0.5,
-                      bgcolor: level <= behaviouralHealth.stressLevel ? "info.main" : "grey.300",
-                    }}
+                </ListItem>
+                <Divider />
+
+                <ListItem>
+                  <ListItemIcon>
+                    <FitnessCenterIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Coping Mechanisms"
+                    secondary={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 0.5,
+                          mt: 0.5
+                        }}
+                      >
+                        {behaviouralHealth.copingMechanisms.map(
+                          (mechanism, idx) => (
+                            <Chip
+                              key={idx}
+                              label={mechanism}
+                              size="small"
+                              variant="outlined"
+                              color="primary"
+                            />
+                          )
+                        )}
+                      </Box>
+                    }
                   />
-                ))}
+                </ListItem>
+                <Divider />
+
+                <ListItem>
+                  <ListItemIcon>
+                    <PeopleIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Support System"
+                    secondary={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 0.5,
+                          mt: 0.5
+                        }}
+                      >
+                        {behaviouralHealth.supportSystem.map((support, idx) => (
+                          <Chip
+                            key={idx}
+                            label={support}
+                            size="small"
+                            variant="outlined"
+                            color="success"
+                          />
+                        ))}
+                      </Box>
+                    }
+                  />
+                </ListItem>
+              </List>
+            ) : (
+              <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
+                <Typography variant="body2" color="text.secondary">
+                  No behavioral health information recorded
+                </Typography>
               </Box>
-            </Box>
-          </Grid>
+            )}
+          </Box>
         </Grid>
-      </ListItem>
-      <Divider />
-
-      <ListItem>
-        <ListItemIcon>
-          <EventIcon />
-        </ListItemIcon>
-        <ListItemText 
-          primary="Last Episode Date" 
-          secondary={ behaviouralHealth.lastEpisodeDate && formatMonthDay(behaviouralHealth.lastEpisodeDate)}
-        />
-      </ListItem>
-      <Divider />
-
-      <ListItem>
-        <ListItemIcon>
-          <HealingIcon />
-        </ListItemIcon>
-        <ListItemText 
-          primary="Therapy Status" 
-          secondary={behaviouralHealth.therapyStatus} 
-        />
-      </ListItem>
-      <Divider />
-
-      <ListItem>
-        <ListItemIcon>
-          <FitnessCenterIcon />
-        </ListItemIcon>
-        <ListItemText 
-          primary="Coping Mechanisms" 
-          secondary={
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
-              {behaviouralHealth.copingMechanisms.map((mechanism, idx) => (
-                <Chip 
-                  key={idx} 
-                  label={mechanism} 
-                  size="small" 
-                  variant="outlined" 
-                  color="primary"
-                />
-              ))}
-            </Box>
-          } 
-        />
-      </ListItem>
-      <Divider />
-
-      <ListItem>
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText 
-          primary="Support System" 
-          secondary={
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}>
-              {behaviouralHealth.supportSystem.map((support, idx) => (
-                <Chip 
-                  key={idx} 
-                  label={support} 
-                  size="small" 
-                  variant="outlined" 
-                  color="success"
-                />
-              ))}
-            </Box>
-          } 
-        />
-      </ListItem>
-    </List>
-  ) : (
-    <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
-      <Typography variant="body2" color="text.secondary">
-        No behavioral health information recorded
-      </Typography>
-    </Box>
-  )}
-</Box>
-        </Grid>
-        
-        
       </Grid>
     </Box>
   );

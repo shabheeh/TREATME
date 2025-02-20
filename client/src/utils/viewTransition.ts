@@ -1,5 +1,3 @@
-
-
 export const transitionStyles = `
   @keyframes fade-in {
     from { opacity: 0; transform: scale(0.95); }
@@ -23,10 +21,11 @@ export const transitionStyles = `
   }
 `;
 
-export const startViewTransition = async (callback: () => void | Promise<void>) => {
+export const startViewTransition = async (
+  callback: () => void | Promise<void>
+) => {
   if (!document.startViewTransition) {
     return callback();
   }
   return document.startViewTransition(callback);
 };
-

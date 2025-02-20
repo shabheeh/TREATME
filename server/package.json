@@ -2,12 +2,15 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "dev": "ts-node-dev --respawn src/app.ts",
-    "build": "tsc",
-    "start": "node dist/app.js",
-    "lint": "eslint ."
-  },
+"scripts": {
+"dev": "ts-node-dev --respawn src/app.ts",
+"build": "tsc",
+"start": "node dist/app.js",
+"lint": "eslint .",
+"lint:fix": "eslint . --fix",
+"format": "prettier --write .",
+"validate": "npm run lint && npm run format"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -48,7 +51,10 @@
     "@types/nodemailer": "^6.4.17",
     "@types/passport-google-oauth20": "^2.0.16",
     "eslint": "^9.20.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
     "globals": "^15.14.0",
+    "prettier": "^3.5.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.24.0"

@@ -1,13 +1,12 @@
-
-import PatientsList from '../../components/admin/PatientsList'
+import PatientsList from "../../components/admin/PatientsList";
 
 const Patients = () => {
   return (
     <>
-    <div>Patients</div>
-    <PatientsList />
+      <div>Patients</div>
+      <PatientsList />
     </>
-  )
-}
+  );
+};
 
-export default Patients
+export default Patients;

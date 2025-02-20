@@ -12,13 +12,13 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
 import {
   CalendarMonth,
   Videocam,
   AccessTime,
-  ExpandMore,
+  ExpandMore
 } from "@mui/icons-material";
 
 import CircleIcon from "@mui/icons-material/Circle";
@@ -42,8 +42,8 @@ const LandingPage = () => {
         "Chronic Hives",
         "Psoriasis",
         "Skin Pigmentation Disorders",
-        "Fungal Skin Infections",
-      ],
+        "Fungal Skin Infections"
+      ]
     },
     {
       title: "Urgent Care",
@@ -53,8 +53,8 @@ const LandingPage = () => {
         "Infections",
         "Allergies",
         "UTI",
-        "fever",
-      ],
+        "fever"
+      ]
     },
     {
       title: "Therapy",
@@ -68,8 +68,8 @@ const LandingPage = () => {
         "Phobias",
         "Anger Management",
         "Life Transitions Support",
-        "Self-Esteem Issues",
-      ],
+        "Self-Esteem Issues"
+      ]
     },
     {
       title: "Psychiatry",
@@ -83,59 +83,57 @@ const LandingPage = () => {
         "Trauma & PTSD",
         "Personality Disorders",
         "Panic Disorders",
-        "Stress-Related Psychosomatic Conditions",
-      ],
-    },
+        "Stress-Related Psychosomatic Conditions"
+      ]
+    }
   ];
 
   const steps = [
     {
       icon: <CalendarMonth sx={{ fontSize: 48, color: "teal" }} />,
       title: "Book Appointment",
-      description: "Choose your specialist and select a convenient time slot",
+      description: "Choose your specialist and select a convenient time slot"
     },
     {
       icon: <Videocam sx={{ fontSize: 48, color: "teal" }} />,
       title: "Virtual Consultation",
       description:
-        "Connect with your healthcare provider through secure video call",
+        "Connect with your healthcare provider through secure video call"
     },
     {
       icon: <AccessTime sx={{ fontSize: 48, color: "teal" }} />,
       title: "Follow-up Care",
-      description: "Get prescriptions and follow-up care as needed",
-    },
+      description: "Get prescriptions and follow-up care as needed"
+    }
   ];
 
   const faqs = [
     {
       question: "How much does a consultation cost?",
       answer:
-        "Consultation fees vary by specialist and service You can see the exact cost before booking your appointment.",
+        "Consultation fees vary by specialist and service You can see the exact cost before booking your appointment."
     },
     {
       question: "How long are the appointments?",
       answer:
-        "Initial consultations typically last 30-45 minutes, while follow-up appointments are usually 15-20 minutes. Duration may vary based on your specific needs.",
+        "Initial consultations typically last 30-45 minutes, while follow-up appointments are usually 15-20 minutes. Duration may vary based on your specific needs."
     },
     {
       question: "Can I get prescriptions through TreatMe?",
       answer:
-        "Yes, our licensed healthcare providers can prescribe medications when appropriate. Prescriptions are sent directly to your Medication section on the app.",
+        "Yes, our licensed healthcare providers can prescribe medications when appropriate. Prescriptions are sent directly to your Medication section on the app."
     },
     {
       question: "Is my information secure?",
       answer:
-        "Yes, we maintain strict HIPAA compliance and use enterprise-grade encryption to protect your personal health information.",
-    },
+        "Yes, we maintain strict HIPAA compliance and use enterprise-grade encryption to protect your personal health information."
+    }
   ];
 
   return (
     <Box>
-      
-        <Navbar />  
+      <Navbar />
 
-    
       <Box sx={{ bgcolor: "white", color: "teal" }}>
         <Container maxWidth="xl" disableGutters>
           <Grid container alignItems="center">
@@ -152,20 +150,20 @@ const LandingPage = () => {
                 Connect with top healthcare providers from the comfort of your
                 home. Quality care, when you need it most.
               </Typography>
-              <Link to={'/signin'}>
-              <Button
-                variant="contained"
-                size="large"
-                sx={{
-                  bgcolor: "white",
-                  color: "teal",
-                  "&:hover": { bgcolor: "grey.100" },
-                  borderRadius: 28,
-                  px: 4,
-                }}
-              >
-                Book Now
-              </Button>
+              <Link to={"/signin"}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: "white",
+                    color: "teal",
+                    "&:hover": { bgcolor: "grey.100" },
+                    borderRadius: 28,
+                    px: 4
+                  }}
+                >
+                  Book Now
+                </Button>
               </Link>
             </Grid>
             <Grid
@@ -189,8 +187,8 @@ const LandingPage = () => {
                     background:
                       "linear-gradient(90deg, rgba(255,255,255,5.95) 0%, rgba(255,255,255,0.5) 25%, rgba(255,255,255,0) 100%)",
                     zIndex: 1,
-                    pointerEvents: "none",
-                  },
+                    pointerEvents: "none"
+                  }
                 }}
               >
                 <Box
@@ -201,7 +199,7 @@ const LandingPage = () => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    display: "block",
+                    display: "block"
                   }}
                 />
               </Box>
@@ -209,7 +207,6 @@ const LandingPage = () => {
           </Grid>
         </Container>
       </Box>
-
 
       <Box sx={{ py: 10, bgcolor: "background.paper" }}>
         <Container maxWidth="xl">
@@ -239,7 +236,6 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-     
       <Box sx={{ py: 10, bgcolor: "grey.50" }}>
         <Container maxWidth="xl">
           <Typography
@@ -279,7 +275,6 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      
       <Box sx={{ py: 10, bgcolor: "white" }}>
         <Container maxWidth="xl" sx={{ alignItems: "start" }}>
           <Typography
@@ -296,8 +291,8 @@ const LandingPage = () => {
                 key={index}
                 sx={{
                   "&:not(:last-child)": { mb: 2 },
-                  boxShadow: "none", 
-                  border: "none", 
+                  boxShadow: "none",
+                  border: "none"
                 }}
               >
                 <AccordionSummary expandIcon={<ExpandMore />}>
@@ -314,13 +309,11 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-    
       <Box sx={{ bgcolor: "grey.900", color: "white", py: 6 }}>
         <Container maxWidth="xl">
           <Grid container spacing={4}>
             <Grid item xs={12} md={3}>
               <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-       
                 <TiPlus size={30} />
                 <Typography variant="h6" sx={{ ml: 1 }}>
                   TreatMe
@@ -334,16 +327,16 @@ const LandingPage = () => {
             {[
               {
                 title: "Services",
-                items: ["Dermatology", "Urgent Care", "Therapy", "Psychiatry"],
+                items: ["Dermatology", "Urgent Care", "Therapy", "Psychiatry"]
               },
               {
                 title: "Company",
-                items: ["About Us", "Contact", "Privacy Policy"],
+                items: ["About Us", "Contact", "Privacy Policy"]
               },
               {
                 title: "Contact",
-                items: ["support@treatme.com", "1-800-TREATME", "Mon-Sun 24/7"],
-              },
+                items: ["support@treatme.com", "1-800-TREATME", "Mon-Sun 24/7"]
+              }
             ].map((section, index) => (
               <Grid item xs={12} md={3} key={index}>
                 <Typography variant="h6" gutterBottom>
@@ -366,7 +359,7 @@ const LandingPage = () => {
               pt: 4,
               borderTop: 1,
               borderColor: "grey.800",
-              textAlign: "center",
+              textAlign: "center"
             }}
           >
             <Typography color="grey.400">

@@ -1,11 +1,11 @@
-import logger from "../configs/logger";
-import { getEmailTransporter } from "..//configs/nodemailer";
+import logger from '../configs/logger';
+import { getEmailTransporter } from '..//configs/nodemailer';
 
 export const sendEmail = async (
   to: string,
   subject: string,
-  text?: string, 
-  html?: string  
+  text?: string,
+  html?: string
 ): Promise<void> => {
   try {
     const emailTransporter = getEmailTransporter();
@@ -18,14 +18,13 @@ export const sendEmail = async (
       from: process.env.EMAIL_USER,
       to,
       subject,
-      text, 
+      text,
       html,
     });
 
     logger.info(`Email sent to ${to} with subject "${subject}"`);
-
   } catch (error) {
-    console.error("Failed to send email:", error);
-    throw new Error("Failed to send email");
+    console.error('Failed to send email:', error);
+    throw new Error('Failed to send email');
   }
 };

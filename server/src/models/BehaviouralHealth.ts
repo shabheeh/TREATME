@@ -1,16 +1,17 @@
-import { Schema, Types, model } from "mongoose";
-import { IBehaviouralHealth } from "src/interfaces/IBehaviouralHealth";
+import { Schema, Types, model } from 'mongoose';
+import { IBehaviouralHealth } from 'src/interfaces/IBehaviouralHealth';
 
-const behaviourHealthSchema = new Schema<IBehaviouralHealth>({
-    patientId: { 
-        type: Types.ObjectId, 
-        required: true,
-        refPath: 'patientType', 
-        },
+const behaviourHealthSchema = new Schema<IBehaviouralHealth>(
+  {
+    patientId: {
+      type: Types.ObjectId,
+      required: true,
+      refPath: 'patientType',
+    },
     patientType: {
-        type: String,
-        enum: ['Patient', 'Dependent'],
-        required: true,
+      type: String,
+      enum: ['Patient', 'Dependent'],
+      required: true,
     },
     conditions: { type: [String], required: true },
     anxietyLevel: { type: Number, required: true },
@@ -20,12 +21,13 @@ const behaviourHealthSchema = new Schema<IBehaviouralHealth>({
     supportSystem: { type: [String], required: true },
     copingMechanisms: { type: [String], required: true },
     lastEpisodeDate: { type: Date, optional: true },
-},
-{
+  },
+  {
     timestamps: true,
-}
+  }
 );
 
-export const BehaviouralHealthModel = model<IBehaviouralHealth>('BehaviouralHealth', behaviourHealthSchema);
-
-
+export const BehaviouralHealthModel = model<IBehaviouralHealth>(
+  'BehaviouralHealth',
+  behaviourHealthSchema
+);

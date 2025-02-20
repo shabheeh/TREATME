@@ -1,55 +1,50 @@
-
 import { api } from "../../utils/axiosInterceptor";
 import TokenManager from "../../utils/TokenMangager";
 import { store } from "../../redux/app/store";
 import { signIn } from "../../redux/features/auth/authSlice";
 
-
-
-
 class AuthServiceAdmin {
+  private tokenManager: TokenManager;
 
-    private tokenManager: TokenManager
+  constructor(tokenManager: TokenManager) {
+    this.tokenManager = tokenManager;
+  }
 
-    constructor(tokenManager: TokenManager) {
-        this.tokenManager = tokenManager
+  async signIn(email: string, password: string): Promise<void> {
+    try {
+      const response = await api.admin.post("/auth/signin", {
+        email,
+        password
+      });
+
+      if ("error" in response) {
+        throw new Error(`Something went wrong`);
+      }
+
+      const { admin, accessToken } = response.data;
+
+      this.tokenManager.setToken(accessToken);
+
+      store.dispatch(
+        signIn({
+          email: admin.email,
+          role: "admin",
+          token: accessToken
+        })
+      );
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`error user signup: ${error.message}`);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error occurred during otp verification`, error);
+      throw new Error(`Something went error`);
     }
-
-
-    async signIn(email: string, password: string): Promise<void> {
-        try {
-            const response = await api.admin.post('/auth/signin', { email, password });
-
-            if ('error' in response) {
-                throw new Error(`Something went wrong`)
-            }
-
-            const { admin, accessToken } = response.data
-
-            this.tokenManager.setToken(accessToken)
-
-            store.dispatch(signIn({
-                email: admin.email,
-                role: 'admin',
-                token: accessToken
-            }))
-
-        } catch (error: unknown) {
-        
-            if (error instanceof Error) {
-            console.error(`error user signup: ${error.message}`);
-            throw new Error(error.message)
-            }
-          
-            console.error(`Unknown error occurred during otp verification`, error);
-            throw new Error(`Something went error`)
-
-              
-        }
-    }
+  }
 }
 
 const tokenManager = new TokenManager();
 const authServiceAdmin = new AuthServiceAdmin(tokenManager);
 
-export default authServiceAdmin
+export default authServiceAdmin;

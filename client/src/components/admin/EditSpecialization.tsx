@@ -6,7 +6,7 @@ import {
   Button,
   Grid,
   Card,
-  CardMedia,
+  CardMedia
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
@@ -28,25 +28,26 @@ interface FormInputs {
 
 const EditSpecialization = () => {
   const { id } = useParams<{ id: string }>();
-  const [specialization, setSpecialization] = useState<ISpecialization | null>(null);
-  const [loading, setLoading] = useState(false)
+  const [specialization, setSpecialization] = useState<ISpecialization | null>(
+    null
+  );
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-
     const fetchSpecialization = async () => {
       try {
-        const specialization = await specializationService.getSpecializationById(id!);
-        setSpecialization(specialization)
-        setInitialImage(specialization.image); 
+        const specialization =
+          await specializationService.getSpecializationById(id!);
+        setSpecialization(specialization);
+        setInitialImage(specialization.image);
 
         reset({
-            name: specialization.name,
-            description: specialization.description,
-            note: specialization.note,
-            fee: specialization.fee,
-            image: null, 
-          });
-
+          name: specialization.name,
+          description: specialization.description,
+          note: specialization.note,
+          fee: specialization.fee,
+          image: null
+        });
       } catch (error) {
         log.error("Error fetching specialization", error);
         toast.error("Failed to load specialization details");
@@ -58,22 +59,21 @@ const EditSpecialization = () => {
     }
   }, [id]);
 
-
   const {
     register,
     handleSubmit,
     // watch,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors }
   } = useForm<FormInputs>({
     defaultValues: {
       name: specialization?.name || "",
       description: specialization?.description || "",
       note: specialization?.note || "",
       fee: specialization?.fee || null,
-      image:  null,
-    },
+      image: null
+    }
   });
 
   // const image = watch("image");
@@ -81,9 +81,8 @@ const EditSpecialization = () => {
   const cropperRef = useRef<HTMLImageElement>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [isCropped, setIsCropped] = useState(false);
-  const [initialImage, setInitialImage] = useState<string | null>(null); 
+  const [initialImage, setInitialImage] = useState<string | null>(null);
 
-  
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
@@ -100,11 +99,11 @@ const EditSpecialization = () => {
         croppedCanvas.toBlob((blob) => {
           if (blob) {
             const file = new File([blob], "cropped-image.png", {
-              type: "image/png",
+              type: "image/png"
             });
-            setValue("image", file); 
-            setCroppedImage(croppedCanvas.toDataURL()); 
-            setIsCropped(true); 
+            setValue("image", file);
+            setCroppedImage(croppedCanvas.toDataURL());
+            setIsCropped(true);
           }
         });
       }
@@ -112,9 +111,7 @@ const EditSpecialization = () => {
   };
 
   const onSubmit = async (data: FormInputs) => {
-    
     data.fee = Number(data.fee);
-
 
     if (data.image && data.image instanceof File) {
       const { size, type } = data.image;
@@ -122,14 +119,16 @@ const EditSpecialization = () => {
         toast.error("Image must be smaller than 5 MB");
         return;
       }
-      if (!["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)) {
+      if (
+        !["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)
+      ) {
         toast.error("Only image files are allowed");
         return;
       }
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
@@ -145,10 +144,10 @@ const EditSpecialization = () => {
       toast.success("Specialization updated successfully!");
       navigate("/admin/specializations");
 
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       if (error instanceof Error) {
-        setLoading(false)
+        setLoading(false);
         toast.error(`Error: ${error.message}`);
       } else {
         toast.error("An unknown error occurred");
@@ -165,7 +164,7 @@ const EditSpecialization = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "center"
         }}
       >
         <Container
@@ -175,10 +174,18 @@ const EditSpecialization = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
-          <Box sx={{ width: "90%", my: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <Box
+            sx={{
+              width: "90%",
+              my: 2,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
             <Card sx={{ maxWidth: 600, maxHeight: 400, my: 5 }}>
               {croppedImage && !isCropped ? (
                 <Cropper
@@ -205,9 +212,18 @@ const EditSpecialization = () => {
                 Crop Image
               </Button>
             )}
-            <Button component="label" variant="outlined" startIcon={<PhotoCamera />}>
+            <Button
+              component="label"
+              variant="outlined"
+              startIcon={<PhotoCamera />}
+            >
               Upload Photo
-              <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageChange}
+              />
             </Button>
           </Box>
           <Box sx={{ width: "90%", my: 2 }}>
@@ -216,8 +232,8 @@ const EditSpecialization = () => {
                 required: "Name is required",
                 pattern: {
                   value: /^[A-Z][a-zA-Z' -]*$/,
-                  message: "Please enter a valid Name",
-                },
+                  message: "Please enter a valid Name"
+                }
               })}
               fullWidth
               label="Name"
@@ -229,7 +245,9 @@ const EditSpecialization = () => {
           </Box>
           <Box sx={{ width: "90%", my: 2 }}>
             <TextField
-              {...register("description", { required: "Description is required" })}
+              {...register("description", {
+                required: "Description is required"
+              })}
               fullWidth
               InputLabelProps={{ shrink: true }}
               label="Description"
@@ -246,8 +264,8 @@ const EditSpecialization = () => {
                     required: "Note is required",
                     minLength: {
                       value: 30,
-                      message: "Note should be at least 30 characters",
-                    },
+                      message: "Note should be at least 30 characters"
+                    }
                   })}
                   fullWidth
                   label="Note"
@@ -267,8 +285,8 @@ const EditSpecialization = () => {
                 required: "Fee is required",
                 min: {
                   value: 2,
-                  message: "Fee must be a valid amount",
-                },
+                  message: "Fee must be a valid amount"
+                }
               })}
               fullWidth
               type="number"

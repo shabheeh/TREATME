@@ -1,294 +1,315 @@
-import { NextFunction, Request, Response } from "express";
-import OtpService from "../../services/OtpService";
-import logger from "../../configs/logger";
-import { IPatientAuthService, IPatientAuthController } from "../../interfaces/IPatient";
-import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
-import { ITokenPayload } from "../../utils/jwt";
+import { NextFunction, Request, Response } from 'express';
+import OtpService from '../../services/OtpService';
+import logger from '../../configs/logger';
+import {
+  IPatientAuthService,
+  IPatientAuthController,
+} from '../../interfaces/IPatient';
+import { AuthError, AuthErrorCode, BadRequestError } from '../../utils/errors';
+import { ITokenPayload } from '../../utils/jwt';
 
-class PatientAuthController implements IPatientAuthController { 
+class PatientAuthController implements IPatientAuthController {
+  private patientAuthService: IPatientAuthService;
+  private otpService: OtpService;
 
-    private patientAuthService: IPatientAuthService;
-    private otpService: OtpService;
+  constructor(patientAuthService: IPatientAuthService, otpService: OtpService) {
+    this.patientAuthService = patientAuthService;
+    this.otpService = otpService;
+  }
 
-    constructor(patientAuthService: IPatientAuthService, otpService: OtpService) {
-        this.patientAuthService = patientAuthService; 
-        this.otpService = otpService;
+  sendOtp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email, password }: { email: string; password: string } = req.body;
+
+      await this.patientAuthService.sendOtp(email, password);
+
+      const otp = await this.otpService.getOTP(email, 'signup');
+
+      res.status(200).json({
+        message: `A verification OTP has been sent to ${email}`,
+        otp,
+      });
+    } catch (error) {
+      next(error);
     }
+  };
 
-    sendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { email, password }: { email: string; password: string } = req.body;
+  verifyOtp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email, otp }: { email: string; otp: string } = req.body;
 
-            await this.patientAuthService.sendOtp(email, password)
-            
-            const otp = await this.otpService.getOTP(email, 'signup');
-    
-            res.status(200).json({
-                message: `A verification OTP has been sent to ${email}`,
-                otp 
-            });
-    
-        } catch (error) {
-            next(error)
-        } 
+      await this.patientAuthService.verifyOtp(email, otp);
+
+      res.status(200).json({
+        message: 'OTP verified successfully',
+        email,
+      });
+    } catch (error) {
+      logger.error('error verifying otp', error);
+      next(error);
     }
-    
-    verifyOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            
-            const { email, otp }: { email: string; otp: string } = req.body;
-            
-            await this.patientAuthService.verifyOtp(email, otp)
-    
-            res.status(200).json({
-                message: 'OTP verified successfully',
-                email
-            });
-    
-        } catch (error) {
-            logger.error('error verifying otp', error)
-            next(error)
+  };
 
-        }
+  signup = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const userData = req.body;
+
+      await this.patientAuthService.signup(userData);
+
+      res.status(201).json({
+        message: 'User signed up successfully',
+      });
+    } catch (error) {
+      logger.error('error signup', error);
+      next(error);
     }
-    
-    signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
+  };
 
+  signin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email, password }: { email: string; password: string } = req.body;
 
+      const result = await this.patientAuthService.signin(email, password);
 
-            const userData = req.body; 
+      if ('googleUser' in result) {
+        res.status(202).json(result.message);
+        return;
+      }
 
-    
-            await this.patientAuthService.signup(userData)
-    
-            res.status(201).json({
-                message: "User signed up successfully"
-            });
-    
-        } catch (error) {
-            logger.error('error signup', error)
-            next(error)
+      const { accessToken, refreshToken, patient } = result;
 
-        }
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.status(200).json({
+        accessToken,
+        patient,
+      });
+    } catch (error) {
+      logger.error('error signin', error);
+      next(error);
     }
+  };
 
-    signin = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { email, password }: { email: string, password: string } = req.body
+  sendOtpForgotPassowrd = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email } = req.body;
 
-            const result = await this.patientAuthService.signin(email, password)
+      const user = await this.patientAuthService.sendOtpForgotPassword(email);
 
-            if("googleUser" in result) {
-                res.status(202).json(result.message);
-                return
-            }
-
-            const { accessToken, refreshToken, patient } = result;
-
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: "lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000, 
-            })
-
-            res.status(200).json({
-                accessToken, 
-                patient
-            });
-
-        } catch (error) {
-            logger.error('error signin', error)
-            next(error)
-
-        }
+      res.status(200).json({
+        user,
+      });
+    } catch (error) {
+      logger.error('error sedning otp fogotpassword', error);
+      next(error);
     }
+  };
 
-    sendOtpForgotPassowrd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
+  verifyOtpForgotPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email, otp } = req.body;
 
-            const { email } = req.body;
+      await this.patientAuthService.verifyOtpForgotPassword(email, otp);
 
-            const user = await this.patientAuthService.sendOtpForgotPassword(email);
-
-            res.status(200).json({
-                user
-            })
-            
-            
-        } catch (error) {
-            logger.error('error sedning otp fogotpassword', error)
-            next(error)
-        }
+      res.status(200).json({
+        messge: 'OTP verified successfully',
+      });
+    } catch (error) {
+      logger.error('error veriying otp forgotpassword', error);
+      next(error);
     }
+  };
 
-    verifyOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { email, otp } = req.body;
+  resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { id, password } = req.body;
 
-            await this.patientAuthService.verifyOtpForgotPassword(email, otp);
+      await this.patientAuthService.resetPassword(id, password);
 
-
-            res.status(200).json({
-                messge: "OTP verified successfully"
-            })
-
-        } catch (error) {
-            logger.error('error veriying otp forgotpassword', error)
-            next(error)
-        }
+      res.status(200).json({
+        message: 'Password reset successfully',
+      });
+    } catch (error) {
+      logger.error('error reset password', error);
+      next(error);
     }
+  };
 
-    resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { id, password } = req.body;
+  googleSignIn = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { credential } = req.body;
 
-            await this.patientAuthService.resetPassword(id, password);
+      const result = await this.patientAuthService.googleSignIn(credential);
 
-            res.status(200).json({
-                message: 'Password reset successfully'
-            })
-        } catch (error) {
-            logger.error('error reset password', error)
-            next(error)
-        }
+      if (!result.partialUser) {
+        const { patient, accessToken, refreshToken, partialUser } = result;
+
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(200).json({
+          patient,
+          accessToken,
+          partialUser,
+        });
+        return;
+      }
+
+      const { newPatient, accessToken, refreshToken, partialUser } = result;
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.status(200).json({
+        patient: newPatient,
+        accessToken,
+        partialUser,
+      });
+    } catch (error) {
+      logger.error('Error during Google authentication:', error);
+      next(error);
     }
+  };
 
-    googleSignIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { credential } = req.body;
+  completeProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      if (!req.user || !(req.user as ITokenPayload).email) {
+        throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+      }
 
-            const result = await this.patientAuthService.googleSignIn(credential)
+      const { patientData } = req.body;
 
-            if(!result.partialUser) {
+      const { email } = req.user as ITokenPayload;
 
-                const { patient, accessToken, refreshToken, partialUser } = result
+      patientData.email = email;
 
+      const patient =
+        await this.patientAuthService.completeProfileAndSignUp(patientData);
 
-                res.cookie("refreshToken", refreshToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: "lax",
-                    maxAge: 7 * 24 * 60 * 60 * 1000, 
-                })
-
-                res.status(200).json({
-                    patient,
-                    accessToken,
-                    partialUser
-                })
-                return
-            }
-
-            const { newPatient, accessToken, refreshToken, partialUser } = result;
-
-            res.cookie("refreshToken", refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: "lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000, 
-            })
-
-
-            res.status(200).json({
-                patient: newPatient,
-                accessToken,
-                partialUser 
-            })
-
-        } catch (error) {
-            logger.error('Error during Google authentication:', error);
-            next(error)
-        }
+      res.status(200).json({
+        patient,
+      });
+    } catch (error) {
+      logger.error('Error during Google authentication singup:', error);
+      next(error);
     }
+  };
 
-    completeProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
+  resendOtp = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email } = req.body;
 
-            if (!req.user || !(req.user as ITokenPayload).email) {
-                throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
-            }
+      if (!email) {
+        throw new BadRequestError('No email not provided');
+      }
 
-            const { patientData } = req.body;
+      await this.patientAuthService.resendOtp(email);
 
-            const { email } = req.user as ITokenPayload;
-
-            patientData.email = email
-
-            const patient = await this.patientAuthService.completeProfileAndSignUp(patientData)
-
-            res.status(200).json({
-                patient 
-            }) 
-  
-        } catch (error) { 
-            logger.error('Error during Google authentication singup:', error);
-            next(error)
-        }
-    } 
-
-    resendOtp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { email } = req.body
-
-            if (!email) {
-                throw new BadRequestError('No email not provided')
-            }
-
-            await this.patientAuthService.resendOtp(email)
-
-            res.status(200).json({
-                message: 'otp resent successfully'
-            })
-
-        } catch (error) {
-            logger.error('controller: Error resending otp:', error);
-            next(error)
-        }
+      res.status(200).json({
+        message: 'otp resent successfully',
+      });
+    } catch (error) {
+      logger.error('controller: Error resending otp:', error);
+      next(error);
     }
+  };
 
-    resendOtpForgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            const { email } = req.body
+  resendOtpForgotPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { email } = req.body;
 
-            if (!email) {
-                throw new BadRequestError('No email not provided')
-            }
+      if (!email) {
+        throw new BadRequestError('No email not provided');
+      }
 
-            await this.patientAuthService.resendOtpForgotPassword(email)
+      await this.patientAuthService.resendOtpForgotPassword(email);
 
-            res.status(200).json({
-                message: 'otp resent successfully'
-            })
-
-        } catch (error) {
-            logger.error('controller: Error resending otp:', error);
-            next(error)
-        }
+      res.status(200).json({
+        message: 'otp resent successfully',
+      });
+    } catch (error) {
+      logger.error('controller: Error resending otp:', error);
+      next(error);
     }
+  };
 
-    signOut = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
-        try {
-            
-            res.clearCookie("refreshToken", {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: "lax",
-            });
+  signOut = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+      });
 
-            res.status(200).json({
-                message: 'user signed out successfully'
-            })
-
-
-        } catch (error) {
-            logger.error('controller: Error resending otp:', error);
-            next(error)
-        }
+      res.status(200).json({
+        message: 'user signed out successfully',
+      });
+    } catch (error) {
+      logger.error('controller: Error resending otp:', error);
+      next(error);
     }
-    
-} 
- 
- 
+  };
+}
+
 export default PatientAuthController;

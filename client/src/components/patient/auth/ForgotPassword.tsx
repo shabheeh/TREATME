@@ -4,7 +4,7 @@ import {
   Typography,
   TextField,
   Link,
-  Button,
+  Button
   // Divider,
 } from "@mui/material";
 
@@ -16,37 +16,35 @@ import { useState } from "react";
 
 type ForgotPasswordProps = {
   onVerifyEmail: () => void;
-}
+};
 
 const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }
   } = useForm<{ email: string }>({
     defaultValues: {
-      email: "",
-    },
+      email: ""
+    }
   });
 
   const [loading, setLoading] = useState(false);
 
-
   const onSubmit = async ({ email }: { email: string }) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const result = await authServicePatient.verifyEmail(email);
-    if ('user' in result) {
-          onVerifyEmail()
-    }
-    setLoading(false)
-
-    } catch (error) {
-      setLoading(false)
-      if(error instanceof Error) {
-        toast.error(error.message)
+      if ("user" in result) {
+        onVerifyEmail();
       }
-      log.error('error during verifying email', error)
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+      log.error("error during verifying email", error);
     }
   };
 
@@ -59,7 +57,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "center"
         }}
       >
         <Typography
@@ -71,7 +69,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 2,
+            marginBottom: 2
           }}
         >
           Forgot Password
@@ -84,7 +82,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
           color="secondary"
           sx={{
             marginTop: 2,
-            marginBottom: 10,
+            marginBottom: 10
           }}
         >
           Enter the reagisterd email to sent an otp to reset password
@@ -96,7 +94,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
           <TextField
@@ -104,8 +102,8 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
               required: "Email is required",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address",
-              },
+                message: "Invalid email address"
+              }
             })}
             label="Email"
             variant="outlined"
@@ -124,13 +122,12 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
           </Button>
           {/* <Divider sx={{ mt: 5, width: "100%" }}>Or</Divider> */}
 
-          
           <Typography
             variant="body2"
             sx={{ mt: 5, mb: 5, textAlign: "center", color: "gray" }}
           >
             Don’t have an account?{" "}
-            <Link href="/signup" underline="hover" sx={{ color: "teal", }}>
+            <Link href="/signup" underline="hover" sx={{ color: "teal" }}>
               Sign up here
             </Link>
           </Typography>

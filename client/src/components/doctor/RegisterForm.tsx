@@ -5,7 +5,7 @@ import {
   Button,
   Grid,
   Chip,
-  MenuItem,
+  MenuItem
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import log from "loglevel";
@@ -62,7 +62,7 @@ const licensedStates = [
   "Uttar Pradesh",
   "Uttarakhand",
   "West Bengal",
-  "Medical Council of India (NMC)",
+  "Medical Council of India (NMC)"
 ];
 
 const languageOptions = [
@@ -75,7 +75,7 @@ const languageOptions = [
   "Urdu",
   "Bengali",
   "Gujarati",
-  "Punjabi",
+  "Punjabi"
 ];
 
 const RegisterForm = () => {
@@ -85,7 +85,7 @@ const RegisterForm = () => {
     control,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors }
   } = useForm<SignupFormInputs>({
     defaultValues: {
       firstName: "",
@@ -99,14 +99,16 @@ const RegisterForm = () => {
       registerNo: "",
       workingTwoHrs: null,
       idProof: null,
-      resume: null,
-    },
+      resume: null
+    }
   });
 
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [specializations, setSpecializations] = useState<ISpecialization[] | []>([]);
+  const [specializations, setSpecializations] = useState<
+    ISpecialization[] | []
+  >([]);
 
   useEffect(() => {
     const fetchSpecializations = async () => {
@@ -150,16 +152,14 @@ const RegisterForm = () => {
       "image/png",
       "image/webp",
       "image/jpg",
-      "application/pdf",
+      "application/pdf"
     ];
     const maxSize = 5 * 1024 * 1024;
-
 
     const idProofFile = data.idProof?.[0] || null;
     const resumeFile = data.resume?.[0] || null;
 
-    console.log(idProofFile, 'idprrof')
-
+    console.log(idProofFile, "idprrof");
 
     if (!idProofFile) {
       toast.error("ID Proof is required");
@@ -196,11 +196,10 @@ const RegisterForm = () => {
       formData.append("registerNo", data.registerNo);
       formData.append("specialization", data.specialization);
       formData.append("languages", JSON.stringify(data.languages));
-      formData.append("workingTwoHrs", data.workingTwoHrs || 'No');
-      formData.append("licensedState", data.licensedState)
+      formData.append("workingTwoHrs", data.workingTwoHrs || "No");
+      formData.append("licensedState", data.licensedState);
       formData.append("idProof", idProofFile);
       formData.append("resume", resumeFile);
-      
 
       await applicantService.createApplicant(formData);
       toast.success("Registered successfully!");
@@ -208,7 +207,6 @@ const RegisterForm = () => {
       navigate("/doctor-recruitement");
 
       setLoading(false);
-
     } catch (error) {
       setLoading(false);
       if (error instanceof Error) {
@@ -231,7 +229,7 @@ const RegisterForm = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
           <Container
@@ -241,7 +239,7 @@ const RegisterForm = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "center"
             }}
           >
             <Box sx={{ width: "90%", my: 2 }}>
@@ -252,8 +250,8 @@ const RegisterForm = () => {
                       required: "First Name is required",
                       pattern: {
                         value: /^[A-Z][a-zA-Z' -]*$/,
-                        message: "Please enter a valid First Name",
-                      },
+                        message: "Please enter a valid First Name"
+                      }
                     })}
                     fullWidth
                     label="First Name"
@@ -268,8 +266,8 @@ const RegisterForm = () => {
                       required: "Last Name is required",
                       pattern: {
                         value: /^[A-Z][a-zA-Z' -]*$/,
-                        message: "Please enter a valid Last Name",
-                      },
+                        message: "Please enter a valid Last Name"
+                      }
                     })}
                     fullWidth
                     label="Last Name"
@@ -289,8 +287,8 @@ const RegisterForm = () => {
                       required: "Email is required",
                       pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
+                        message: "Invalid email address"
+                      }
                     })}
                     fullWidth
                     label="Email"
@@ -305,8 +303,8 @@ const RegisterForm = () => {
                       required: "Phone Number is required",
                       pattern: {
                         value: /^[2-9]\d{9}$/,
-                        message: "Please enter a valid Phone Number",
-                      },
+                        message: "Please enter a valid Phone Number"
+                      }
                     })}
                     fullWidth
                     type="tel"
@@ -327,8 +325,8 @@ const RegisterForm = () => {
                       required: "Experience is required",
                       min: {
                         value: 2,
-                        message: "Experience Must be more than 1",
-                      },
+                        message: "Experience Must be more than 1"
+                      }
                     })}
                     fullWidth
                     type="number"
@@ -341,7 +339,7 @@ const RegisterForm = () => {
                 <Grid item xs={6}>
                   <TextField
                     {...register("registerNo", {
-                      required: "Registration number is required",
+                      required: "Registration number is required"
                     })}
                     fullWidth
                     label="Medical Registration Number"
@@ -358,7 +356,7 @@ const RegisterForm = () => {
                 <Grid item xs={6}>
                   <TextField
                     {...register("specialization", {
-                      required: "Specialization is required",
+                      required: "Specialization is required"
                     })}
                     select
                     fullWidth
@@ -402,7 +400,7 @@ const RegisterForm = () => {
                             mt: 2,
                             display: "flex",
                             flexWrap: "wrap",
-                            gap: 1,
+                            gap: 1
                           }}
                         >
                           {field.value.map((lang) => (
@@ -425,7 +423,7 @@ const RegisterForm = () => {
                 <Grid item xs={6}>
                   <TextField
                     {...register("licensedState", {
-                      required: "This field is required",
+                      required: "This field is required"
                     })}
                     select
                     fullWidth
@@ -444,7 +442,7 @@ const RegisterForm = () => {
                 <Grid item xs={6}>
                   <TextField
                     {...register("workingTwoHrs", {
-                      required: "This field is required",
+                      required: "This field is required"
                     })}
                     fullWidth
                     select
@@ -468,7 +466,7 @@ const RegisterForm = () => {
                     fullWidth
                     inputProps={{
                       accept:
-                        "image/jpeg, image/png, image/webp, image/jpg, application/pdf",
+                        "image/jpeg, image/png, image/webp, image/jpg, application/pdf"
                     }}
                     label="Upload ID Proof"
                     variant="outlined"
@@ -479,7 +477,7 @@ const RegisterForm = () => {
                       "Only images or PDFs are allowed"
                     }
                     {...register("idProof", {
-                      required: "ID Proof is required",
+                      required: "ID Proof is required"
                     })}
                   />
                 </Grid>
@@ -487,18 +485,20 @@ const RegisterForm = () => {
                   <TextField
                     type="file"
                     fullWidth
-                    inputProps={{accept:
-                      "image/jpeg, image/png, image/webp, image/jpg, application/pdf",
+                    inputProps={{
+                      accept:
+                        "image/jpeg, image/png, image/webp, image/jpg, application/pdf"
                     }}
                     label="Upload Resume"
                     variant="outlined"
                     error={!!errors.resume}
                     InputLabelProps={{ shrink: true }}
                     helperText={
-                      errors.resume?.message || "Only images or PDFs are allowed"
+                      errors.resume?.message ||
+                      "Only images or PDFs are allowed"
                     }
                     {...register("resume", {
-                      required: "Resume is required",
+                      required: "Resume is required"
                     })}
                   />
                 </Grid>

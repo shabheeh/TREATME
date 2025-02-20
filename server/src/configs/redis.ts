@@ -1,8 +1,8 @@
 import { createClient } from 'redis';
 
 const redisClient = createClient({
-    url: process.env.REDIS_URL!,
-    legacyMode: false
+  url: process.env.REDIS_URL!,
+  legacyMode: false,
 });
 
 redisClient.connect().catch(console.error);

@@ -5,7 +5,7 @@ import PinInput from "react-pin-input";
 import SignupPath from "./SignupPath";
 // import { IUser } from "../../types/user/authTypes";
 import authServicePatient from "../../../services/patient/authService";
-import { useSelector } from 'react-redux' 
+import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { toast } from "sonner";
 
@@ -17,26 +17,28 @@ interface OtpPageProps {
 
 interface OtpFormValues {
   otp: string;
-
 }
 
-const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySignIn }) => {
+const Otp: React.FC<OtpPageProps> = ({
+  isVerifyEmail,
+  onVerifySignUp,
+  onVerifySignIn
+}) => {
   const [seconds, setSeconds] = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(true);
   const [loading, setLoading] = useState(false);
 
-
-  const tempUser = useSelector((state:RootState) => state.tempUser.tempUser)
+  const tempUser = useSelector((state: RootState) => state.tempUser.tempUser);
 
   const {
     handleSubmit,
     control,
     setValue,
-    formState: { errors },
+    formState: { errors }
   } = useForm<OtpFormValues>({
     defaultValues: {
-      otp: "",
-    },
+      otp: ""
+    }
   });
 
   useEffect(() => {
@@ -49,60 +51,60 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
     }
   }, [isTimerActive, seconds]);
 
-  const handleResendOtp = async() => {
+  const handleResendOtp = async () => {
     setSeconds(30);
     setIsTimerActive(true);
     try {
-      if(isVerifyEmail) {
-        if (!tempUser?.email) {
-          throw new Error('somethig went wrong please try again')
-        }
-        await authServicePatient.resendOtp(tempUser.email)
-      }else {
-        if (!tempUser?.email) {
-          throw new Error('somethig went wrong please try again')
-        }
-        await authServicePatient.resendOtpForgotPassword(tempUser?.email)
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message)
-      }
-      console.log(error)
-    }
-
-  };
-
-  const onSubmit = async(data: OtpFormValues) => {
-    try {
-      setLoading(true)
       if (isVerifyEmail) {
         if (!tempUser?.email) {
-          throw new Error('somethig went wrong please try again')
+          throw new Error("somethig went wrong please try again");
         }
-        await authServicePatient.verifyOtpSignUp(tempUser.email, data.otp)
-        if(onVerifySignUp) {
-          onVerifySignUp()
-        }
-      }else {
+        await authServicePatient.resendOtp(tempUser.email);
+      } else {
         if (!tempUser?.email) {
-          throw new Error('somethig went wrong please try again')
+          throw new Error("somethig went wrong please try again");
         }
-        await authServicePatient.verifyOtpForgotPassword(tempUser.email, data.otp)
-        if(onVerifySignIn) {
-          onVerifySignIn()
-        }
+        await authServicePatient.resendOtpForgotPassword(tempUser?.email);
       }
-      setLoading(false)
     } catch (error) {
-      setLoading(false)
       if (error instanceof Error) {
-        toast.error(error.message)
+        toast.error(error.message);
       }
-      console.log(error)
+      console.log(error);
     }
+  };
 
-    
+  const onSubmit = async (data: OtpFormValues) => {
+    try {
+      setLoading(true);
+      if (isVerifyEmail) {
+        if (!tempUser?.email) {
+          throw new Error("somethig went wrong please try again");
+        }
+        await authServicePatient.verifyOtpSignUp(tempUser.email, data.otp);
+        if (onVerifySignUp) {
+          onVerifySignUp();
+        }
+      } else {
+        if (!tempUser?.email) {
+          throw new Error("somethig went wrong please try again");
+        }
+        await authServicePatient.verifyOtpForgotPassword(
+          tempUser.email,
+          data.otp
+        );
+        if (onVerifySignIn) {
+          onVerifySignIn();
+        }
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+      console.log(error);
+    }
   };
 
   return (
@@ -114,7 +116,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "center"
         }}
       >
         <Typography
@@ -126,7 +128,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 2,
+            marginBottom: 2
           }}
         >
           {isVerifyEmail ? "Verify your Email" : "Forgot Password"}
@@ -139,87 +141,83 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
           color="secondary"
           sx={{
             marginTop: 2,
-            marginBottom: 10,
+            marginBottom: 10
           }}
         >
           {isVerifyEmail ? <SignupPath step={2} /> : ""}
           Please enter the OTP sent to your email
         </Typography>
         <Container
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
           sx={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
           {errors.otp && (
-              <Typography color="error" sx={{ mt: -5, mb: 2 }}>
-                {errors.otp.message}
-              </Typography>
-            )}
+            <Typography color="error" sx={{ mt: -5, mb: 2 }}>
+              {errors.otp.message}
+            </Typography>
+          )}
 
- 
-          
-            <Controller
-              
-              
-              name="otp"
-              control={control}
-              rules={{
-                required: "OTP is required",
-                minLength: { value: 6, message: "OTP must be 6 digits" },
-                maxLength: { value: 6, message: "OTP must be 6 digits" },
-              }}
-              render={({ field }) => (
-                <PinInput
-                  length={6}
-                  initialValue=""
-                  onChange={(value) => field.onChange(value)}
-                  type="numeric"
-                  inputMode="number"
-                  style={{
-                    marginTop: "5px",
-                    paddingBottom: "50px",
-                    display: "flex",
-                    gap: "15px",
-                  }}
-                  inputStyle={{
-                    borderColor: errors.otp ? "red" : "gray",
-                    borderWidth: "2px",
-                    width: "50px",
-                    height: "50px",
-                    textAlign: "center",
-                  }}
-                  inputFocusStyle={{
-                    borderColor: "teal",
-                    borderWidth: "2px",
-                  }}
-                  onComplete={(value) => setValue("otp", value)}
-                  autoSelect={true}
-                  regexCriteria={/^[0-9]*$/}
-                />
-              )}
-            />
-            
-            <Button
-              loading={loading}
-              disabled={loading}
-              type="submit"
-              variant="contained"
-              sx={{ py: 1, width: "80%", fontSize: "1rem" }}
-            >
-              Continue
-            </Button>
+          <Controller
+            name="otp"
+            control={control}
+            rules={{
+              required: "OTP is required",
+              minLength: { value: 6, message: "OTP must be 6 digits" },
+              maxLength: { value: 6, message: "OTP must be 6 digits" }
+            }}
+            render={({ field }) => (
+              <PinInput
+                length={6}
+                initialValue=""
+                onChange={(value) => field.onChange(value)}
+                type="numeric"
+                inputMode="number"
+                style={{
+                  marginTop: "5px",
+                  paddingBottom: "50px",
+                  display: "flex",
+                  gap: "15px"
+                }}
+                inputStyle={{
+                  borderColor: errors.otp ? "red" : "gray",
+                  borderWidth: "2px",
+                  width: "50px",
+                  height: "50px",
+                  textAlign: "center"
+                }}
+                inputFocusStyle={{
+                  borderColor: "teal",
+                  borderWidth: "2px"
+                }}
+                onComplete={(value) => setValue("otp", value)}
+                autoSelect={true}
+                regexCriteria={/^[0-9]*$/}
+              />
+            )}
+          />
+
+          <Button
+            loading={loading}
+            disabled={loading}
+            type="submit"
+            variant="contained"
+            sx={{ py: 1, width: "80%", fontSize: "1rem" }}
+          >
+            Continue
+          </Button>
           <Typography
             variant="body2"
             sx={{
               mt: 1,
               m: 5,
               textAlign: "center",
-              color: "gray",
+              color: "gray"
             }}
           >
             Didn't receive the OTP?{" "}
@@ -228,7 +226,7 @@ const Otp: React.FC<OtpPageProps> = ({ isVerifyEmail, onVerifySignUp, onVerifySi
               underline="none"
               sx={{
                 color: "teal",
-                cursor: isTimerActive ? "wait" : "pointer",
+                cursor: isTimerActive ? "wait" : "pointer"
               }}
               onClick={handleResendOtp}
               disabled={isTimerActive}
