@@ -1,10 +1,10 @@
-import logger from '../../configs/logger';
+import logger from "../../configs/logger";
 import {
   IHealthHistory,
   IHealthHistoryService,
-} from '../../interfaces/IHealthHistory';
-import IHealthHistoryRepository from '../../repositories/healthProfile/interface/IHealthHistoryRepository';
-import { AppError } from '../../utils/errors';
+} from "../../interfaces/IHealthHistory";
+import IHealthHistoryRepository from "../../repositories/healthProfile/interface/IHealthHistoryRepository";
+import { AppError } from "../../utils/errors";
 
 class HealthHistoryService implements IHealthHistoryService {
   private healthHistoryRepo: IHealthHistoryRepository;
@@ -20,12 +20,12 @@ class HealthHistoryService implements IHealthHistoryService {
 
       return healthHistory;
     } catch (error) {
-      logger.error('Failded to update healt history', error);
+      logger.error("Failded to update healt history", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -42,17 +42,17 @@ class HealthHistoryService implements IHealthHistoryService {
       );
 
       if (!updateData) {
-        throw new AppError('Failed update Health history');
+        throw new AppError("Failed update Health history");
       }
 
       return updatedData;
     } catch (error) {
-      logger.error('Failded to update healt history', error);
+      logger.error("Failded to update healt history", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

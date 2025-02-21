@@ -8,7 +8,7 @@ import { api } from "../../utils/axiosInterceptor";
 class HealthProfileService {
   async getHealthHistory(id: string): Promise<IHealthHistory> {
     try {
-      const response = await api.shared.get(`/health-history/${id}`);
+      const response = await api.get(`/health-history/${id}`);
 
       const { healthHistory } = response.data;
 
@@ -33,7 +33,7 @@ class HealthProfileService {
     newValue: IHealthHistory[typeof field]
   ) {
     try {
-      const response = await api.shared.patch(`/health-history/${patientId}`, {
+      const response = await api.patch(`/health-history/${patientId}`, {
         [field]: newValue
       });
 
@@ -56,7 +56,7 @@ class HealthProfileService {
 
   async getLifestyle(patientId: string): Promise<ILifestyle> {
     try {
-      const response = await api.shared.get(`/lifestyle/${patientId}`);
+      const response = await api.get(`/lifestyle/${patientId}`);
       const { lifestyle } = response.data;
       return lifestyle;
     } catch (error: unknown) {
@@ -75,10 +75,7 @@ class HealthProfileService {
     updateData: Partial<ILifestyle>
   ): Promise<ILifestyle> {
     try {
-      const response = await api.shared.patch(
-        `/lifestyle/${patientId}`,
-        updateData
-      );
+      const response = await api.patch(`/lifestyle/${patientId}`, updateData);
 
       const { lifestyle } = response.data;
       return lifestyle;
@@ -95,7 +92,7 @@ class HealthProfileService {
 
   async getBehaviouralHealth(patientId: string): Promise<IBehaviouralHealth> {
     try {
-      const response = await api.shared.get(`/behavioural-health/${patientId}`);
+      const response = await api.get(`/behavioural-health/${patientId}`);
       const { behavioralHealth } = response.data;
       return behavioralHealth;
     } catch (error: unknown) {
@@ -117,10 +114,9 @@ class HealthProfileService {
     updateData: Partial<IBehaviouralHealth>
   ): Promise<IBehaviouralHealth> {
     try {
-      const response = await api.shared.patch(
-        `/behavioural-health/${patientId}`,
-        { updateData }
-      );
+      const response = await api.patch(`/behavioural-health/${patientId}`, {
+        updateData
+      });
 
       const { behavioralHealth } = response.data;
       return behavioralHealth;

@@ -1,4 +1,4 @@
-import IAdmin from 'src/interfaces/IAdmin';
+import IAdmin from "src/interfaces/IAdmin";
 
 interface IAdminRepository {
   findAdminById(id: string): Promise<IAdmin | null>;

@@ -1,7 +1,7 @@
-import { IBehaviouralHealth } from '../../interfaces/IBehaviouralHealth';
-import IBehaviouralHealthRepository from './interface/IBehaviouralHealthRepository';
-import { Model } from 'mongoose';
-import { AppError } from '../../utils/errors';
+import { IBehaviouralHealth } from "../../interfaces/IBehaviouralHealth";
+import IBehaviouralHealthRepository from "./interface/IBehaviouralHealthRepository";
+import { Model } from "mongoose";
+import { AppError } from "../../utils/errors";
 
 class BehaviouralHealthRepository implements IBehaviouralHealthRepository {
   private readonly model: Model<IBehaviouralHealth>;
@@ -18,7 +18,7 @@ class BehaviouralHealthRepository implements IBehaviouralHealthRepository {
       return behaviouralHealth;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -37,7 +37,7 @@ class BehaviouralHealthRepository implements IBehaviouralHealthRepository {
       return behaviouralHealth;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

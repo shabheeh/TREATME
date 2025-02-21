@@ -1,5 +1,5 @@
-import { model, Schema } from 'mongoose';
-import ISpecialization from 'src/interfaces/ISpecilazation';
+import { model, Schema } from "mongoose";
+import ISpecialization from "src/interfaces/ISpecilazation";
 
 const specializationSchema = new Schema<ISpecialization>(
   {
@@ -16,6 +16,6 @@ const specializationSchema = new Schema<ISpecialization>(
 );
 
 export const SpecializationModel = model<ISpecialization>(
-  'Specialization',
+  "Specialization",
   specializationSchema
 );

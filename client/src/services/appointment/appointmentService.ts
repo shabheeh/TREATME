@@ -8,7 +8,7 @@ class AppointmentService {
     appointmentData: Partial<IAppointment>
   ): Promise<Partial<IAppointment>> {
     try {
-      const response = await api.shared.post("/appointments", {
+      const response = await api.post("/appointments", {
         appointmentData
       });
       const { appointment } = response.data;
@@ -26,7 +26,7 @@ class AppointmentService {
 
   async getAppointment(id: string): Promise<Partial<IAppointmentPopulated>> {
     try {
-      const response = await api.shared.get(`/appointment/${id}`);
+      const response = await api.get(`/appointment/${id}`);
 
       const { appointment } = response.data;
       return appointment;
@@ -43,7 +43,7 @@ class AppointmentService {
 
   async getAppointments(): Promise<IAppointmentPopulated[]> {
     try {
-      const response = await api.shared.get(`/appointments`);
+      const response = await api.get(`/appointments`);
 
       const { appointments } = response.data;
 
@@ -61,7 +61,7 @@ class AppointmentService {
 
   async getAppointmentsForUser(id: string): Promise<IAppointmentPopulated[]> {
     try {
-      const response = await api.shared.get(`/appointments/${id}`);
+      const response = await api.get(`/appointments/${id}`);
       const { appointments } = response.data;
       return appointments;
     } catch (error: unknown) {
@@ -80,7 +80,7 @@ class AppointmentService {
     updateData: Partial<IAppointment>
   ): Promise<Partial<IAppointment>> {
     try {
-      const response = await api.shared.put(`/appointments/${id}`, {
+      const response = await api.put(`/appointments/${id}`, {
         updateData
       });
       const { appointment } = response.data;

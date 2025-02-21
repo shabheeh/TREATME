@@ -1,16 +1,16 @@
-import { Schema, model, Types } from 'mongoose';
-import { ILifestyle } from '../interfaces/ILifestyle';
+import { Schema, model, Types } from "mongoose";
+import { ILifestyle } from "../interfaces/ILifestyle";
 
 const lifestyleSchema = new Schema<ILifestyle>(
   {
     patientId: {
       type: Types.ObjectId,
       required: true,
-      refPath: 'patientType',
+      refPath: "patientType",
     },
     patientType: {
       type: String,
-      enum: ['Patient', 'Dependent'],
+      enum: ["Patient", "Dependent"],
       required: true,
     },
     sleepSevenPlusHrs: { type: Boolean, required: true },
@@ -28,4 +28,4 @@ const lifestyleSchema = new Schema<ILifestyle>(
   }
 );
 
-export const LifestyleModel = model<ILifestyle>('Lifestyle', lifestyleSchema);
+export const LifestyleModel = model<ILifestyle>("Lifestyle", lifestyleSchema);

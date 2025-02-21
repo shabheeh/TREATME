@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongoose';
-import { ISchedule } from '../../../interfaces/IDoctor';
+import { ObjectId } from "mongoose";
+import { ISchedule } from "../../../interfaces/IDoctor";
 
 interface IScheduleRepository {
   findSchedule(doctorId: string): Promise<ISchedule | null>;
@@ -9,13 +9,13 @@ interface IScheduleRepository {
   ): Promise<ISchedule>;
   updateBookingStatus(
     doctorId: ObjectId,
-    dayId: ObjectId,
-    slotId: ObjectId
+    dayId: string,
+    slotId: string
   ): Promise<void>;
   toggleBookingStatus(
     doctorId: ObjectId,
-    dayId: ObjectId,
-    slotId: ObjectId
+    dayId: string,
+    slotId: string
   ): Promise<void>;
 }
 

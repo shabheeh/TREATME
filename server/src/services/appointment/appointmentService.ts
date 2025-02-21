@@ -1,14 +1,14 @@
-import IScheduleRepository from 'src/repositories/doctor/interfaces/IScheduleRepository';
-import logger from '../../configs/logger';
+import IScheduleRepository from "src/repositories/doctor/interfaces/IScheduleRepository";
+import logger from "../../configs/logger";
 import IAppointment, {
   IAppointmentPopulated,
   IAppointmentService,
-} from '../../interfaces/IAppointment';
-import IAppointmentRepository from '../../repositories/appointment/interfaces/IAppointmentService';
-import { AppError } from '../../utils/errors';
-import { generateBookingConfirmationHtml } from '../../helpers/bookingConfirmationHtml';
-import { extractDate, extractTime } from '../../utils/dateUtils';
-import { sendEmail } from '../../utils/mailer';
+} from "../../interfaces/IAppointment";
+import IAppointmentRepository from "../../repositories/appointment/interfaces/IAppointmentService";
+import { AppError } from "../../utils/errors";
+import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
+import { extractDate, extractTime } from "../../utils/dateUtils";
+import { sendEmail } from "../../utils/mailer";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
@@ -23,140 +23,171 @@ class AppointmentService implements IAppointmentService {
   }
 
   async createAppointment(
-    appointmentData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>> {
+    appointmentData: IAppointment
+  ): Promise<IAppointmentPopulated> {
     try {
-      if (
-        appointmentData.doctor &&
-        appointmentData.slotId &&
-        appointmentData.dayId
-      ) {
-        await this.scheduleRepo.updateBookingStatus(
-          appointmentData.doctor,
-          appointmentData.dayId,
-          appointmentData.slotId
-        );
+      const { doctor, slotId, dayId } = appointmentData;
+
+      // Update booking status
+      if (doctor && slotId && dayId) {
+        await this.scheduleRepo.updateBookingStatus(doctor, dayId, slotId);
       }
+
+      // Create the appointment
       const appointment =
         await this.appointmentRepo.createAppointment(appointmentData);
 
-      return appointment;
+      const populatedAppointment =
+        await this.appointmentRepo.getAppointmentById(
+          appointment._id as string
+        );
+
+      // Send booking confirmation email to patient
+      if (
+        populatedAppointment.status === "confirmed" &&
+        populatedAppointment.doctor &&
+        populatedAppointment.patient &&
+        populatedAppointment.date
+      ) {
+        const { firstName: doctorFirstName, lastName: doctorLastName } =
+          populatedAppointment.doctor;
+        const {
+          firstName: patientFirstName,
+          lastName: patientLastName,
+          email: patientEmail,
+        } = populatedAppointment.patient;
+
+        const date = extractDate(populatedAppointment.date);
+        const time = extractTime(populatedAppointment.date);
+        const html = generateBookingConfirmationHtml(
+          `${doctorFirstName} ${doctorLastName}`,
+          `${patientFirstName} ${patientLastName}`,
+          date,
+          time
+        );
+        await sendEmail(patientEmail, "Booking Confirmation", undefined, html);
+      }
+
+      return populatedAppointment;
     } catch (error) {
-      logger.error('Error creating appointment', error);
+      logger.error("Error creating appointment", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
   async getAppointmentById(
-    id: string
+    appointmentId: string
   ): Promise<Partial<IAppointmentPopulated>> {
-    const appointment = await this.appointmentRepo.getAppointmentById(id);
+    const appointment =
+      await this.appointmentRepo.getAppointmentById(appointmentId);
     return appointment;
   }
 
   async updateAppointment(
-    id: string,
+    appointmentId: string,
     updateData: Partial<IAppointment>
   ): Promise<Partial<IAppointment>> {
     try {
-      if (updateData.doctor && updateData.slotId && updateData.dayId) {
-        const existingAppointment =
-          await this.appointmentRepo.getAppointmentById(id);
+      const { doctor, slotId, dayId, status } = updateData;
+
+      // Fetch the existing appointment
+      const existingAppointment =
+        await this.appointmentRepo.getAppointmentById(appointmentId);
+
+      // Handle slot booking status updates
+      if (doctor && slotId && dayId) {
         if (existingAppointment.dayId && existingAppointment.slotId) {
           await this.scheduleRepo.toggleBookingStatus(
-            updateData.doctor,
+            doctor,
             existingAppointment.dayId,
             existingAppointment.slotId
           );
         }
-        await this.scheduleRepo.updateBookingStatus(
-          updateData.doctor,
-          updateData.dayId,
-          updateData.slotId
-        );
+        await this.scheduleRepo.updateBookingStatus(doctor, dayId, slotId);
       }
 
-      const appointment = await this.appointmentRepo.updateAppointment(
-        id,
+      // Update the appointment
+      const updatedAppointment = await this.appointmentRepo.updateAppointment(
+        appointmentId,
         updateData
       );
 
-      if (appointment.status === 'confirmed') {
-        const appointmentData = await this.getAppointmentById(id);
-        if (
-          appointmentData &&
-          appointmentData.doctor &&
-          appointmentData.patient &&
-          appointmentData.date
-        ) {
-          const doctor =
-            appointmentData.doctor?.firstName +
-            appointmentData.doctor?.lastName;
-          const patient =
-            appointmentData.patient.firstName +
-            appointmentData.patient.lastName;
-          const date = extractDate(appointmentData.date);
-          const time = extractTime(appointmentData.date);
-          const html = generateBookingConfirmationHtml(
-            doctor,
-            patient,
-            date,
-            time
-          );
-          await sendEmail(
-            appointmentData.patient.email,
-            'Booking Confirmation',
-            undefined,
-            html
-          );
-        }
-      } else if (appointment.status === 'cancelled') {
-        const appointmentData = await this.getAppointmentById(id);
-        if (
-          appointmentData &&
-          appointmentData.doctor &&
-          appointmentData.dayId &&
-          appointmentData.slotId
-        ) {
-          await this.scheduleRepo.toggleBookingStatus(
-            appointmentData.doctor._id,
-            appointmentData.dayId,
+      // Handle email notifications based on appointment status
+      if (status === "confirmed" || status === "cancelled") {
+        const appointmentData = await this.getAppointmentById(appointmentId);
+
+        if (appointmentData?.doctor && appointmentData.patient) {
+          const { firstName: doctorFirstName, lastName: doctorLastName } =
+            appointmentData.doctor;
+          const {
+            firstName: patientFirstName,
+            lastName: patientLastName,
+            email: patientEmail,
+          } = appointmentData.patient;
+
+          if (status === "confirmed" && appointmentData.date) {
+            // Send booking confirmation email
+            const date = extractDate(appointmentData.date);
+            const time = extractTime(appointmentData.date);
+            const html = generateBookingConfirmationHtml(
+              `${doctorFirstName} ${doctorLastName}`,
+              `${patientFirstName} ${patientLastName}`,
+              date,
+              time
+            );
+            await sendEmail(
+              patientEmail,
+              "Booking Confirmation",
+              undefined,
+              html
+            );
+          } else if (
+            status === "cancelled" &&
+            appointmentData.dayId &&
             appointmentData.slotId
-          );
+          ) {
+            // Toggle booking status for cancelled appointment
+            await this.scheduleRepo.toggleBookingStatus(
+              appointmentData.doctor._id,
+              appointmentData.dayId,
+              appointmentData.slotId
+            );
+          }
         }
       }
 
-      return appointment;
+      return updatedAppointment;
     } catch (error) {
-      logger.error('Error updating appointment', error);
+      logger.error("Error updating appointment", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
   async getAppointmentsByUserId(
-    id: string,
+    userId: string,
     role: string
   ): Promise<IAppointment[]> {
     try {
       let appointments: IAppointment[] = [];
 
-      if (role === 'patient') {
+      if (role === "patient") {
         appointments =
-          await this.appointmentRepo.getAppointmentsByPatientId(id);
-      } else if (role === 'doctor') {
-        appointments = await this.appointmentRepo.getAppointmentsByDoctorId(id);
+          await this.appointmentRepo.getAppointmentsByPatientId(userId);
+      } else if (role === "doctor") {
+        appointments =
+          await this.appointmentRepo.getAppointmentsByDoctorId(userId);
       }
 
       return appointments;
@@ -166,7 +197,7 @@ class AppointmentService implements IAppointmentService {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -183,7 +214,7 @@ class AppointmentService implements IAppointmentService {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

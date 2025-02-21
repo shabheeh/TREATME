@@ -1,17 +1,17 @@
-import IPatientRepository from 'src/repositories/patient/interface/IPatientRepository';
-import IPatient, { IPatientAccountService } from '../../interfaces/IPatient';
-import { AppError } from '../../utils/errors';
-import logger from '../../configs/logger';
+import IPatientRepository from "src/repositories/patient/interface/IPatientRepository";
+import IPatient, { IPatientAccountService } from "../../interfaces/IPatient";
+import { AppError } from "../../utils/errors";
+import logger from "../../configs/logger";
 import {
   updateCloudinaryImage,
   uploadToCloudinary,
-} from '../../utils/uploadImage';
-import ILifestyleRepository from 'src/repositories/healthProfile/interface/ILifestyleRepository';
-import IHealthHistoryRepository from 'src/repositories/healthProfile/interface/IHealthHistoryRepository';
-import IBehaviouralHealthRepository from 'src/repositories/healthProfile/interface/IBehaviouralHealthRepository';
-import { IBehaviouralHealth } from 'src/interfaces/IBehaviouralHealth';
-import { IHealthHistory } from 'src/interfaces/IHealthHistory';
-import { ILifestyle } from 'src/interfaces/ILifestyle';
+} from "../../utils/uploadImage";
+import ILifestyleRepository from "src/repositories/healthProfile/interface/ILifestyleRepository";
+import IHealthHistoryRepository from "src/repositories/healthProfile/interface/IHealthHistoryRepository";
+import IBehaviouralHealthRepository from "src/repositories/healthProfile/interface/IBehaviouralHealthRepository";
+import { IBehaviouralHealth } from "src/interfaces/IBehaviouralHealth";
+import { IHealthHistory } from "src/interfaces/IHealthHistory";
+import { ILifestyle } from "src/interfaces/ILifestyle";
 
 class PatientAcccountService implements IPatientAccountService {
   private patientRepository: IPatientRepository;
@@ -48,14 +48,14 @@ class PatientAcccountService implements IPatientAccountService {
           const cloudinaryResponse = await updateCloudinaryImage(
             patient.imagePublicId,
             imageFile,
-            'ProfilePictures/Patient'
+            "ProfilePictures/Patient"
           );
           imageUrl = cloudinaryResponse.url;
           imageId = cloudinaryResponse.publicId;
         } else {
           const cloudinaryResponse = await uploadToCloudinary(
             imageFile,
-            'ProfilePictures/Patients'
+            "ProfilePictures/Patients"
           );
           imageUrl = cloudinaryResponse.url;
           imageId = cloudinaryResponse.publicId;
@@ -72,12 +72,12 @@ class PatientAcccountService implements IPatientAccountService {
 
       return result;
     } catch (error) {
-      logger.error('error updating profile', error);
+      logger.error("error updating profile", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -101,12 +101,12 @@ class PatientAcccountService implements IPatientAccountService {
         lifestyle,
       };
     } catch (error) {
-      logger.error('error fetching health profile', error);
+      logger.error("error fetching health profile", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

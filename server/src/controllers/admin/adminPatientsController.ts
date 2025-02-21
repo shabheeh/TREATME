@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 import {
   IAdminPatientsController,
   IAdminPatientsService,
-} from '../../interfaces/IAdmin';
-import logger from '../../configs/logger';
+} from "../../interfaces/IAdmin";
+import logger from "../../configs/logger";
 
 class AdminPatientsController implements IAdminPatientsController {
   private adminPatientsService: IAdminPatientsService;
@@ -28,7 +28,7 @@ class AdminPatientsController implements IAdminPatientsController {
 
       res.status(200).json({ result });
     } catch (error) {
-      logger.error('controller:error fetching patients data ', error);
+      logger.error("controller:error fetching patients data ", error);
       next(error);
     }
   };
@@ -40,15 +40,18 @@ class AdminPatientsController implements IAdminPatientsController {
   ): Promise<void> => {
     try {
       const { isActive } = req.body;
-      const { id } = req.params;
+      const { getAppointmentsByPatientId } = req.params;
 
-      await this.adminPatientsService.togglePatientActivityStatus(id, isActive);
+      await this.adminPatientsService.togglePatientActivityStatus(
+        getAppointmentsByPatientId,
+        isActive
+      );
 
       res.status(200).json({
-        message: `Successfully ${isActive ? 'Blocked' : 'Unblocked'} Patient`,
+        message: `Successfully ${isActive ? "Blocked" : "Unblocked"} Patient`,
       });
     } catch (error) {
-      logger.error('controller: Error block or unblock patient:', error);
+      logger.error("controller: Error block or unblock patient:", error);
       next(error);
     }
   };

@@ -1,10 +1,10 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model } from "mongoose";
 import IPatient, {
   IPatientsFilter,
   IPatientsFilterResult,
-} from '../../interfaces/IPatient';
-import IPatientRepository from './interface/IPatientRepository';
-import { AppError } from '../../utils/errors';
+} from "../../interfaces/IPatient";
+import IPatientRepository from "./interface/IPatientRepository";
+import { AppError } from "../../utils/errors";
 
 interface Query {
   $or?: Array<{
@@ -28,7 +28,7 @@ class PatientRepository implements IPatientRepository {
       return newPatient.toObject();
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -40,7 +40,7 @@ class PatientRepository implements IPatientRepository {
       return patient;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -48,11 +48,11 @@ class PatientRepository implements IPatientRepository {
 
   async findPatientById(id: string): Promise<IPatient | null> {
     try {
-      const patient = await this.model.findById(id).select('-password').lean();
+      const patient = await this.model.findById(id).select("-password").lean();
       return patient;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -77,10 +77,10 @@ class PatientRepository implements IPatientRepository {
             lean: true,
           }
         )
-        .select('-password');
+        .select("-password");
 
       if (!updatedPatient) {
-        throw new AppError('Patient not found', 404);
+        throw new AppError("Patient not found", 404);
       }
 
       return updatedPatient;
@@ -88,7 +88,7 @@ class PatientRepository implements IPatientRepository {
       if (error instanceof AppError) throw error;
 
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -102,10 +102,10 @@ class PatientRepository implements IPatientRepository {
       const query: Query = {};
 
       query.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
       ];
 
       const [patients, total] = await Promise.all([
@@ -122,7 +122,7 @@ class PatientRepository implements IPatientRepository {
       };
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

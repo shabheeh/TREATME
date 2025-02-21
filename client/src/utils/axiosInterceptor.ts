@@ -14,11 +14,11 @@ const API_URLS = {
   shared: import.meta.env.VITE_API_SHARED
 };
 
-type userRole = "patient" | "doctor" | "admin" | "shared";
+type UserRole = "patient" | "doctor" | "admin";
 
-const createAxiosInstance = (role: userRole) => {
+const createAxiosInstance = (role?: UserRole) => {
   const instance = axios.create({
-    baseURL: API_URLS[role],
+    baseURL: role ? API_URLS[role] : API_URLS.shared,
     timeout: 10000,
     withCredentials: true
   });
@@ -40,7 +40,7 @@ const createAxiosInstance = (role: userRole) => {
         log.error(error.message);
       }
       tokenManager.clearToken();
-      if (role === "patient" || role === "shared") {
+      if (role === "patient") {
         window.location.href = "/signin";
       } else {
         window.location.href = `/${role}/signin`;
@@ -61,52 +61,80 @@ const createAxiosInstance = (role: userRole) => {
     (error) => Promise.reject(error)
   );
 
+  instance.interceptors.request.use(
+    async (config) => {
+      const token = tokenManager.getAccessToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
 
-      if (error.response?.status === 403) {
-        // store.dispatch(signOut())
-        // store.dispatch(clearUser())
-        if (role === "patient" || role === "shared") {
-          window.location.href = "/signin";
-        } else {
-          window.location.href = `/${role}/signin`;
-        }
+      if (!error.response) {
+        return Promise.reject(new Error("Network error, please try again."));
+      }
+
+      const { status, data } = error.response;
+
+      // Handle 403 Forbidden (RBAC Redirect)
+      if (status === 403) {
+        // store.dispatch(signOut());
+        // store.dispatch(clearUser());
+
+        window.location.href =
+          role === "patient" ? "/signin" : `/${role}/signin`;
+
         return Promise.reject(new Error("Forbidden: Permission denied"));
       }
 
-      if (error.response?.status !== 401 || originalRequest._retry) {
-        const errorMessage =
-          error.response?.data?.error ||
-          error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred";
+      // Handle 401 Unauthorized
+      if (status === 401) {
+        const errorCode = data?.error || data?.message;
 
-        return Promise.reject(new Error(errorMessage));
-      }
-
-      originalRequest._retry = true;
-
-      try {
-        const newAccessToken = await refreshAuthToken();
-        if (newAccessToken) {
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return instance(originalRequest);
+        // If login failed (Invalid Credentials), do NOT retry
+        console.log(error.response.data, "dsdsfds");
+        if (errorCode === "Invalid email or password") {
+          return Promise.reject(new Error("Invalid email or password."));
         }
-      } catch (refreshError) {
-        return Promise.reject(refreshError);
+
+        if (originalRequest._retry) {
+          return Promise.reject(new Error("Unauthorized: Access denied."));
+        }
+
+        originalRequest._retry = true;
+        try {
+          const newAccessToken = await refreshAuthToken();
+          if (newAccessToken) {
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return instance(originalRequest);
+          }
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
       }
+
+      const errorMessage =
+        data?.error ||
+        data?.message ||
+        error.message ||
+        "An unexpected error occurred";
+
+      return Promise.reject(new Error(errorMessage));
     }
   );
 
   return instance;
 };
 
-export const api = {
+export const api = Object.assign(createAxiosInstance(), {
   patient: createAxiosInstance("patient"),
   doctor: createAxiosInstance("doctor"),
-  admin: createAxiosInstance("admin"),
-  shared: createAxiosInstance("shared")
-};
+  admin: createAxiosInstance("admin")
+});

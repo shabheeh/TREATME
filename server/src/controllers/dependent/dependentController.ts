@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import IDependent, {
   IDependentController,
   IDependentService,
-} from '../../interfaces/IDependent';
-import { AppError, BadRequestError } from '../../utils/errors';
+} from "../../interfaces/IDependent";
+import { AppError, BadRequestError } from "../../utils/errors";
 
 class DependentController implements IDependentController {
   private dependentService: IDependentService;
@@ -20,7 +20,7 @@ class DependentController implements IDependentController {
   ): Promise<void> => {
     try {
       if (!req.user) {
-        throw new AppError('User not authenticated');
+        throw new AppError("User not authenticated");
       }
 
       const imageFile: Express.Multer.File | undefined = req.file;
@@ -41,10 +41,10 @@ class DependentController implements IDependentController {
 
       res.status(201).json({
         dependent,
-        message: 'Added Dependent successfully',
+        message: "Added Dependent successfully",
       });
     } catch (error) {
-      logger.error('error creating dependent', error);
+      logger.error("error creating dependent", error);
       next(error);
     }
   };
@@ -62,7 +62,7 @@ class DependentController implements IDependentController {
 
       res.status(200).json({ dependents });
     } catch (error) {
-      logger.error('error fetching dependents');
+      logger.error("error fetching dependents");
       next(error);
     }
   };
@@ -79,7 +79,7 @@ class DependentController implements IDependentController {
 
       res.status(200);
     } catch (error) {
-      logger.error('error deleteing dependent');
+      logger.error("error deleteing dependent");
       next(error);
     }
   };
@@ -93,7 +93,7 @@ class DependentController implements IDependentController {
       const id = req.params.id;
 
       if (!id) {
-        throw new BadRequestError('Something went wrong');
+        throw new BadRequestError("Something went wrong");
       }
 
       const imageFile: Express.Multer.File | undefined = req.file;
@@ -114,10 +114,10 @@ class DependentController implements IDependentController {
 
       res.status(200).json({
         dependent,
-        message: 'Profile updated successfully',
+        message: "Profile updated successfully",
       });
     } catch (error) {
-      logger.error('error updating profile', error);
+      logger.error("error updating profile", error);
       next(error);
     }
   };

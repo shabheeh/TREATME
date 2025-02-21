@@ -1,4 +1,4 @@
-import { IBehaviouralHealth } from '../../../interfaces/IBehaviouralHealth';
+import { IBehaviouralHealth } from "../../../interfaces/IBehaviouralHealth";
 
 interface IBehaviouralHealthRepository {
   findBehaviouralHealth(patientId: string): Promise<IBehaviouralHealth | null>;

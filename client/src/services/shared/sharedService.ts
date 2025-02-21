@@ -3,7 +3,7 @@ import { api } from "../../utils/axiosInterceptor";
 class SharedService {
   async checkUserStatus() {
     try {
-      const response = await api.shared("/auth/status");
+      const response = await api.get("/auth/status");
 
       return response.data.success;
     } catch (error: unknown) {

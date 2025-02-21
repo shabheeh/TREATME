@@ -1,51 +1,56 @@
-import { Request, Response, NextFunction } from 'express';
-import { Document, ObjectId } from 'mongoose';
-import IDoctor from './IDoctor';
-import IPatient from './IPatient';
-import IDependent from './IDependent';
+import { Request, Response, NextFunction } from "express";
+import { Document, ObjectId } from "mongoose";
+import IDoctor from "./IDoctor";
+import IPatient from "./IPatient";
+import IDependent from "./IDependent";
 
 export interface IAppointment extends Document {
   patient: ObjectId;
-  patientType: 'Patient' | 'Dependent';
+  patientType: "Patient" | "Dependent";
   doctor: ObjectId;
   specialization: ObjectId;
   date: Date;
   duration: string;
   reason: string;
-  status: 'pending' | 'requested' | 'confirmed' | 'completed' | 'cancelled';
+  status: "pending" | "requested" | "confirmed" | "completed" | "cancelled";
   fee: number;
-  slotId: ObjectId;
-  dayId: ObjectId;
-  paymentStatus: 'pending' | 'paid';
+  slotId: string;
+  dayId: string;
+  paymentStatus: "pending" | "paid";
 }
 
 export default IAppointment;
 
 export interface IAppointmentPopulated extends Document {
   patient: IPatient | IDependent;
-  patientType: 'Patient' | 'Dependent';
+  patientType: "Patient" | "Dependent";
   doctor: IDoctor;
   specialization: { name: string };
   date: Date;
   duration: string;
   reason: string;
-  status: 'pending' | 'requested' | 'confirmed' | 'completed' | 'cancelled';
+  status: "pending" | "requested" | "confirmed" | "completed" | "cancelled";
   fee: number;
-  slotId: ObjectId;
-  dayId: ObjectId;
-  paymentStatus: 'pending' | 'paid';
+  slotId: string;
+  dayId: string;
+  paymentStatus: "pending" | "paid";
 }
 
 export interface IAppointmentService {
   createAppointment(
-    appointmentData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>>;
-  getAppointmentById(id: string): Promise<Partial<IAppointmentPopulated>>;
+    appointmentData: IAppointment
+  ): Promise<IAppointmentPopulated>;
+  getAppointmentById(
+    appointmentId: string
+  ): Promise<Partial<IAppointmentPopulated>>;
   updateAppointment(
-    id: string,
+    appointmentId: string,
     updateData: Partial<IAppointment>
   ): Promise<Partial<IAppointment>>;
-  getAppointmentsByUserId(id: string, role: string): Promise<IAppointment[]>;
+  getAppointmentsByUserId(
+    userId: string,
+    role: string
+  ): Promise<IAppointment[]>;
   getAppointments(): Promise<IAppointment[]>;
 }
 

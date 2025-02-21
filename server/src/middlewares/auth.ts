@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken, ITokenPayload } from '../utils/jwt';
-import logger from '../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import { verifyAccessToken, ITokenPayload } from "../utils/jwt";
+import logger from "../configs/logger";
 
 // declare global {
 //   namespace Express {
@@ -15,11 +15,11 @@ export const authenticate = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).json({ message: 'No token provided' });
+    res.status(401).json({ message: "No token provided" });
     return;
   }
 
@@ -30,8 +30,8 @@ export const authenticate = async (
 
     next();
   } catch (error) {
-    logger.error('Authentication Error', error);
-    res.status(401).json({ message: 'Invalid or expired token' });
+    logger.error("Authentication Error", error);
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
@@ -44,7 +44,7 @@ export const authorize = (...roles: string[]) => {
     try {
       if (!req.user) {
         res.status(401).json({
-          message: 'Authentication required',
+          message: "Authentication required",
         });
         return;
       }
@@ -60,7 +60,7 @@ export const authorize = (...roles: string[]) => {
     } catch (error: unknown) {
       if (error instanceof Error)
         res.status(500).json({
-          message: 'Internal Server Error',
+          message: "Internal Server Error",
         });
     }
   };

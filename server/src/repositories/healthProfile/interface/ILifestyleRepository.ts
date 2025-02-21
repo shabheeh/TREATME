@@ -1,4 +1,4 @@
-import { ILifestyle } from 'src/interfaces/ILifestyle';
+import { ILifestyle } from "src/interfaces/ILifestyle";
 
 interface ILifestyleRepository {
   findLifestyle(patientId: string): Promise<ILifestyle | null>;

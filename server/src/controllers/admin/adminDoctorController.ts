@@ -1,12 +1,12 @@
 import {
   IAdminDoctorController,
   IAdminDoctorService,
-} from 'src/interfaces/IAdmin';
-import logger from '../../configs/logger';
-import { Request, Response, NextFunction } from 'express';
-import { generatePassword } from '../../helpers/passwordGenerator';
-import IDoctor from '../../interfaces/IDoctor';
-import { BadRequestError } from '../../utils/errors';
+} from "src/interfaces/IAdmin";
+import logger from "../../configs/logger";
+import { Request, Response, NextFunction } from "express";
+import { generatePassword } from "../../helpers/passwordGenerator";
+import IDoctor from "../../interfaces/IDoctor";
+import { BadRequestError } from "../../utils/errors";
 
 class AdminDoctorController implements IAdminDoctorController {
   private adminDoctorService: IAdminDoctorService;
@@ -22,7 +22,7 @@ class AdminDoctorController implements IAdminDoctorController {
   ): Promise<void> => {
     try {
       if (!req.file) {
-        throw new BadRequestError('Profile Picture is not provided');
+        throw new BadRequestError("Profile Picture is not provided");
       }
 
       const doctor = {
@@ -49,10 +49,10 @@ class AdminDoctorController implements IAdminDoctorController {
 
       res.status(201).json({
         doctor: newDoctor,
-        message: 'new Doctor created Successfully',
+        message: "new Doctor created Successfully",
       });
     } catch (error) {
-      logger.error('controller:error crating new Doctor ', error);
+      logger.error("controller:error crating new Doctor ", error);
       next(error);
     }
   };
@@ -73,7 +73,7 @@ class AdminDoctorController implements IAdminDoctorController {
 
       res.status(200).json({ result });
     } catch (error) {
-      logger.error('controller:error crating new Doctor ', error);
+      logger.error("controller:error crating new Doctor ", error);
       next(error);
     }
   };

@@ -1,4 +1,4 @@
-import IDependent from '../../../interfaces/IDependent';
+import IDependent from "../../../interfaces/IDependent";
 
 interface IDependentRepository {
   createDependent(dependent: Partial<IDependent>): Promise<IDependent>;

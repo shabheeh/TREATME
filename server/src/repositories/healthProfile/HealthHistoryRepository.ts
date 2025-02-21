@@ -1,7 +1,7 @@
-import { Model } from 'mongoose';
-import IHealthHistoryRepository from './interface/IHealthHistoryRepository';
-import { IHealthHistory } from '../../interfaces/IHealthHistory';
-import { AppError } from '../../utils/errors';
+import { Model } from "mongoose";
+import IHealthHistoryRepository from "./interface/IHealthHistoryRepository";
+import { IHealthHistory } from "../../interfaces/IHealthHistory";
+import { AppError } from "../../utils/errors";
 
 class HealthHistoryRepository implements IHealthHistoryRepository {
   private readonly model: Model<IHealthHistory>;
@@ -17,7 +17,7 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
       return healthHistroy;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -37,7 +37,7 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
       return updatedHealthHistory;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

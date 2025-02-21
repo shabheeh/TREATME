@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { Document, ObjectId } from 'mongoose';
+import { Request, Response, NextFunction } from "express";
+import { Document, ObjectId } from "mongoose";
 import {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
-} from 'src/repositories/doctor/interfaces/IDoctorRepository';
+} from "src/repositories/doctor/interfaces/IDoctorRepository";
 
 export interface ISlot extends Document {
   _id: ObjectId;
@@ -29,7 +29,7 @@ export default interface IDoctor extends Document {
   firstName: string;
   lastName: string;
   phone: string;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   specialization: ObjectId;
   specialties: string[];
   languages: string[];
@@ -86,7 +86,7 @@ export interface IScheduleController {
 }
 
 export interface IDoctorService {
-  getDoctor(id: string): Promise<IDoctor>;
+  getDoctor(doctorId: string): Promise<IDoctor>;
   getDoctorsWithSchedules(
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;

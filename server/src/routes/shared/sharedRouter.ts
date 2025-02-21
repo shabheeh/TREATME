@@ -1,40 +1,40 @@
-import express from 'express';
-import multer from 'multer';
-import SpecializationRepository from '../../repositories/specialization/SpecializationRepository';
-import { SpecializationModel } from '../../models/Specialization';
-import SpecializationService from '../../services/specialization/sepecializationService';
-import SpecializationController from '../../controllers/specialization/specializationController';
-import { validateSpecialization } from '../../validators/specializationValidator';
-import { authenticate, authorize } from '../../middlewares/auth';
-import { isUserActive } from '../../middlewares/checkUserStatus';
-import PatientRepository from '../../repositories/patient/PatientRepository';
-import { PatientModel } from '../../models/Patient';
-import PatientAuthService from '../../services/patient/authService';
-import OtpService from '../../services/OtpService';
-import CacheService from '../../services/CacheService';
-import TokenController from '../../controllers/shared/tokenController';
-import { checkUserStatus } from '../../controllers/shared/userStatusController';
-import DoctorRepository from '../../repositories/doctor/DoctorRepository';
-import { DoctorModel } from '../../models/Doctor';
-import DoctorAuthService from '../../services/doctor/authService';
-import HealthHistoryRepository from '../../repositories/healthProfile/HealthHistoryRepository';
-import { HealthHistoryModel } from '../../models/HealthHistory';
-import HealthHistoryService from '../../services/healthProfile/HealthHistoryService';
-import HealthHistoryController from '../../controllers/healthProfile/healthHistoryController';
-import LifestyleRepository from '../../repositories/healthProfile/LifestyleRepository';
-import { LifestyleModel } from '../../models/Lifestyle';
-import LifestyleService from '../../services/healthProfile/LifestyleService';
-import LifestyleController from '../../controllers/healthProfile/lifestyleController';
-import BehaviouralHealthRepository from '../../repositories/healthProfile/BehaviouralHealthRepository';
-import { BehaviouralHealthModel } from '../../models/BehaviouralHealth';
-import BehaviouralHealthService from '../../services/healthProfile/BehaviouralHealthService';
-import BehaviouralHealthController from '../../controllers/healthProfile/behaviouralHealthController';
-import AppointmentRepository from '../../repositories/appointment/AppointmentRepository';
-import { AppointmentModel } from '../../models/Appointment';
-import AppointmentController from '../../controllers/appointment/appointmentController';
-import AppointmentService from '../../services/appointment/appointmentService';
-import ScheduleRepository from '../../repositories/doctor/ScheduleRepository';
-import { ScheduleModel } from '../../models/Schedule';
+import express from "express";
+import multer from "multer";
+import SpecializationRepository from "../../repositories/specialization/SpecializationRepository";
+import { SpecializationModel } from "../../models/Specialization";
+import SpecializationService from "../../services/specialization/sepecializationService";
+import SpecializationController from "../../controllers/specialization/specializationController";
+import { validateSpecialization } from "../../validators/specializationValidator";
+import { authenticate, authorize } from "../../middlewares/auth";
+import { isUserActive } from "../../middlewares/checkUserStatus";
+import PatientRepository from "../../repositories/patient/PatientRepository";
+import { PatientModel } from "../../models/Patient";
+import PatientAuthService from "../../services/patient/authService";
+import OtpService from "../../services/OtpService";
+import CacheService from "../../services/CacheService";
+import TokenController from "../../controllers/shared/tokenController";
+import { checkUserStatus } from "../../controllers/shared/userStatusController";
+import DoctorRepository from "../../repositories/doctor/DoctorRepository";
+import { DoctorModel } from "../../models/Doctor";
+import DoctorAuthService from "../../services/doctor/authService";
+import HealthHistoryRepository from "../../repositories/healthProfile/HealthHistoryRepository";
+import { HealthHistoryModel } from "../../models/HealthHistory";
+import HealthHistoryService from "../../services/healthProfile/HealthHistoryService";
+import HealthHistoryController from "../../controllers/healthProfile/healthHistoryController";
+import LifestyleRepository from "../../repositories/healthProfile/LifestyleRepository";
+import { LifestyleModel } from "../../models/Lifestyle";
+import LifestyleService from "../../services/healthProfile/LifestyleService";
+import LifestyleController from "../../controllers/healthProfile/lifestyleController";
+import BehaviouralHealthRepository from "../../repositories/healthProfile/BehaviouralHealthRepository";
+import { BehaviouralHealthModel } from "../../models/BehaviouralHealth";
+import BehaviouralHealthService from "../../services/healthProfile/BehaviouralHealthService";
+import BehaviouralHealthController from "../../controllers/healthProfile/behaviouralHealthController";
+import AppointmentRepository from "../../repositories/appointment/AppointmentRepository";
+import { AppointmentModel } from "../../models/Appointment";
+import AppointmentController from "../../controllers/appointment/appointmentController";
+import AppointmentService from "../../services/appointment/appointmentService";
+import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
+import { ScheduleModel } from "../../models/Schedule";
 
 const router = express.Router();
 
@@ -99,127 +99,128 @@ const appointmentService = new AppointmentService(
 );
 const appointmentController = new AppointmentController(appointmentService);
 
-router.post('/auth/refresh-token', tokenController.handleRefreshToken);
+router.post("/auth/refresh-token", tokenController.handleRefreshToken);
+
 router.get(
-  '/auth/status',
+  "/auth/status",
   authenticate,
   checkUserStatus(patientAuthService, doctorAuthService)
 );
 
 router.post(
-  '/specializations',
+  "/specializations",
   authenticate,
-  authorize('admin'),
-  upload.single('image'),
+  authorize("admin"),
+  upload.single("image"),
   validateSpecialization,
   specializationController.createSpecialization
 );
 router.get(
-  '/specializations',
+  "/specializations",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   specializationController.getSpecializations
 );
 router.get(
-  '/specializations/public',
+  "/specializations/public",
   specializationController.getSpecializations
 );
 router.get(
-  '/specializations/:id',
+  "/specializations/:specializationId",
   authenticate,
   specializationController.getSpecializationById
 );
 router.put(
-  '/specializations/:id',
+  "/specializations/:specializationId",
   authenticate,
-  authorize('admin'),
-  upload.single('image'),
+  authorize("admin"),
+  upload.single("image"),
   specializationController.updateSpecialization
 );
 
 router.get(
-  '/health-history/:id',
+  "/health-history/:patientId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient'),
+  authorize("patient"),
   healthHistoryController.getHealthHistory
 );
 
 router.patch(
-  '/health-history/:id',
+  "/health-history/:patientId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient'),
+  authorize("patient"),
   healthHistoryController.updateHealthHistory
 );
 
 router.get(
-  '/lifestyle/:id',
+  "/lifestyle/:patientId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient'),
+  authorize("patient"),
   lifestyleController.getLifestyle
 );
 
 router.patch(
-  '/lifestyle/:id',
+  "/lifestyle/:patientId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient'),
+  authorize("patient"),
   lifestyleController.updateLifestyle
 );
 
 router.get(
-  '/behavioural-health/:id',
+  "/behavioural-health/:patientId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient'),
+  authorize("patient"),
   behaviouralHealController.getBehaviuoralHealth
 );
 
 router.patch(
-  '/behavioural-health/:id',
+  "/behavioural-health/:patientId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient'),
+  authorize("patient"),
   behaviouralHealController.updateBehavouralHealth
 );
 
 router.post(
-  '/appointments',
+  "/appointments",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient', 'doctor'),
+  authorize("patient", "doctor"),
   appointmentController.createAppointment
 );
 
 router.get(
-  '/appointment/:id',
+  "/appointment/:appointmentId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   appointmentController.getAppointmentById
 );
 
 router.put(
-  '/appointments/:id',
+  "/appointments/:appointmentId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient', 'doctor'),
+  authorize("patient", "doctor"),
   appointmentController.updateAppointment
 );
 
 router.get(
-  '/appointments/:id',
+  "/appointments/:userId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
-  authorize('patient', 'doctor'),
+  authorize("patient", "doctor"),
   appointmentController.getAppointmentsByUserId
 );
 
 router.get(
-  '/appointments',
+  "/appointments",
   authenticate,
-  authorize('admin'),
+  authorize("admin"),
   appointmentController.getAppointments
 );
 

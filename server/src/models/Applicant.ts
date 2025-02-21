@@ -1,5 +1,5 @@
-import { Schema, model, Types } from 'mongoose';
-import { IApplicant } from '../interfaces/IApplicant';
+import { Schema, model, Types } from "mongoose";
+import { IApplicant } from "../interfaces/IApplicant";
 
 const applicantSchema = new Schema<IApplicant>(
   {
@@ -12,7 +12,7 @@ const applicantSchema = new Schema<IApplicant>(
     languages: { type: [String], default: [] },
     specialization: {
       type: Types.ObjectId,
-      ref: 'Specialization',
+      ref: "Specialization",
       required: true,
     },
     workingTwoHrs: { type: String, required: true },
@@ -25,4 +25,4 @@ const applicantSchema = new Schema<IApplicant>(
   }
 );
 
-export const ApplicantModel = model<IApplicant>('Applicant', applicantSchema);
+export const ApplicantModel = model<IApplicant>("Applicant", applicantSchema);

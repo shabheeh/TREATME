@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { Document, ObjectId } from 'mongoose';
+import { Request, Response, NextFunction } from "express";
+import { Document, ObjectId } from "mongoose";
 
 export interface IMedication {
   name: string;
@@ -42,7 +42,7 @@ export interface IHealthCondition {
 
 export interface IHealthHistory extends Document {
   patientId: ObjectId;
-  patientType: 'Patient' | 'Dependent';
+  patientType: "Patient" | "Dependent";
   medications: IMedication[];
   allergies: IAllergy[];
   healthConditions: IHealthCondition[];

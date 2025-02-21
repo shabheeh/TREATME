@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import {
   IAdminAuthController,
   IAdminAuthService,
-} from '../../interfaces/IAdmin';
+} from "../../interfaces/IAdmin";
 
 class AdminAuthController implements IAdminAuthController {
   private adminAuthService: IAdminAuthService;
@@ -24,20 +24,20 @@ class AdminAuthController implements IAdminAuthController {
 
       const { admin, accessToken, refreshToken } = result;
 
-      res.cookie('refreshToken', refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       res.status(200).json({
         admin,
         accessToken,
-        message: 'admin signed in successfully',
+        message: "admin signed in successfully",
       });
     } catch (error) {
-      logger.error('controller:error sign in admin ', error);
+      logger.error("controller:error sign in admin ", error);
       next(error);
     }
   };

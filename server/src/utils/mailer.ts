@@ -1,5 +1,5 @@
-import logger from '../configs/logger';
-import { getEmailTransporter } from '..//configs/nodemailer';
+import logger from "../configs/logger";
+import { getEmailTransporter } from "..//configs/nodemailer";
 
 export const sendEmail = async (
   to: string,
@@ -24,7 +24,7 @@ export const sendEmail = async (
 
     logger.info(`Email sent to ${to} with subject "${subject}"`);
   } catch (error) {
-    console.error('Failed to send email:', error);
-    throw new Error('Failed to send email');
+    console.error("Failed to send email:", error);
+    throw new Error("Failed to send email");
   }
 };

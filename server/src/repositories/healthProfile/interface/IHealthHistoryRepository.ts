@@ -1,4 +1,4 @@
-import { IHealthHistory } from '../../../interfaces/IHealthHistory';
+import { IHealthHistory } from "../../../interfaces/IHealthHistory";
 
 interface IHealthHistoryRepository {
   findHealthHistory(patientId: string): Promise<IHealthHistory | null>;

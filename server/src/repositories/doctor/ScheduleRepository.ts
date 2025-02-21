@@ -1,7 +1,7 @@
-import { Model, ObjectId, Types } from 'mongoose';
-import IScheduleRepository from './interfaces/IScheduleRepository';
-import { ISchedule } from '../../interfaces/IDoctor';
-import { AppError } from '../../utils/errors';
+import { Model, ObjectId, Types } from "mongoose";
+import IScheduleRepository from "./interfaces/IScheduleRepository";
+import { ISchedule } from "../../interfaces/IDoctor";
+import { AppError } from "../../utils/errors";
 
 class ScheduleRepository implements IScheduleRepository {
   private readonly model: Model<ISchedule>;
@@ -18,7 +18,7 @@ class ScheduleRepository implements IScheduleRepository {
         {
           $match: {
             doctorId: new Types.ObjectId(doctorId),
-            'availability.date': { $gte: date },
+            "availability.date": { $gte: date },
           },
         },
         {
@@ -26,9 +26,9 @@ class ScheduleRepository implements IScheduleRepository {
             doctorId: 1,
             availability: {
               $filter: {
-                input: '$availability',
-                as: 'av',
-                cond: { $gte: ['$$av.date', date] },
+                input: "$availability",
+                as: "av",
+                cond: { $gte: ["$$av.date", date] },
               },
             },
           },
@@ -38,7 +38,7 @@ class ScheduleRepository implements IScheduleRepository {
       return schedule[0];
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -56,13 +56,13 @@ class ScheduleRepository implements IScheduleRepository {
       );
 
       if (!updatedSchedule) {
-        throw new AppError('Something went wrong');
+        throw new AppError("Something went wrong");
       }
 
       return updatedSchedule;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -70,18 +70,18 @@ class ScheduleRepository implements IScheduleRepository {
 
   async updateBookingStatus(
     doctorId: ObjectId,
-    dayId: ObjectId,
-    slotId: ObjectId
+    dayId: string,
+    slotId: string
   ): Promise<void> {
     try {
       const document = await this.model.findOne({
         doctorId: doctorId,
-        'availability._id': dayId,
-        'availability.slots._id': slotId,
+        "availability._id": dayId,
+        "availability.slots._id": slotId,
       });
 
       if (!document) {
-        throw new AppError('Something went wrong');
+        throw new AppError("Something went wrong");
       }
 
       const day = document.availability.find(
@@ -89,7 +89,7 @@ class ScheduleRepository implements IScheduleRepository {
       );
 
       if (!day) {
-        throw new AppError('Day not found');
+        throw new AppError("Day not found");
       }
 
       const slot = day.slots.find(
@@ -97,33 +97,33 @@ class ScheduleRepository implements IScheduleRepository {
       );
 
       if (!slot) {
-        throw new AppError('Something went wrong');
+        throw new AppError("Something went wrong");
       }
 
       const currentIsBooked = slot.isBooked;
       if (currentIsBooked === true) {
-        throw new AppError('Slot is Already Booked');
+        throw new AppError("Slot is Already Booked");
       }
 
       const updateResult = await this.model.updateOne(
         {
           doctorId: doctorId,
-          'availability._id': dayId,
+          "availability._id": dayId,
         },
         {
-          $set: { 'availability.$[day].slots.$[slot].isBooked': true },
+          $set: { "availability.$[day].slots.$[slot].isBooked": true },
         },
         {
-          arrayFilters: [{ 'day._id': dayId }, { 'slot._id': slotId }],
+          arrayFilters: [{ "day._id": dayId }, { "slot._id": slotId }],
         }
       );
 
       if (updateResult.matchedCount === 0) {
-        throw new AppError('Unknown error');
+        throw new AppError("Unknown error");
       }
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -131,18 +131,20 @@ class ScheduleRepository implements IScheduleRepository {
 
   async toggleBookingStatus(
     doctorId: ObjectId,
-    dayId: ObjectId,
-    slotId: ObjectId
+    dayId: string,
+    slotId: string
   ): Promise<void> {
     try {
       const document = await this.model.findOne({
         doctorId: doctorId,
-        'availability._id': dayId,
-        'availability.slots._id': slotId,
+        "availability._id": dayId,
+        "availability.slots._id": slotId,
       });
 
+      console.log(doctorId, dayId, slotId);
+
       if (!document) {
-        throw new AppError('Something went wrong');
+        throw new AppError("document not found");
       }
 
       const day = document.availability.find(
@@ -150,7 +152,7 @@ class ScheduleRepository implements IScheduleRepository {
       );
 
       if (!day) {
-        throw new AppError('Day not found');
+        throw new AppError("Day not found");
       }
 
       const slot = day.slots.find(
@@ -158,35 +160,35 @@ class ScheduleRepository implements IScheduleRepository {
       );
 
       if (!slot) {
-        throw new AppError('Something went wrong');
+        throw new AppError("Slot not found");
       }
 
       const currentIsBooked = slot.isBooked;
       if (currentIsBooked === undefined) {
-        throw new AppError('Someting went wrong');
+        throw new AppError("Current Booking status couldn't retrieve");
       }
 
       const updateResult = await this.model.updateOne(
         {
           doctorId: doctorId,
-          'availability._id': dayId,
+          "availability._id": dayId,
         },
         {
           $set: {
-            'availability.$[day].slots.$[slot].isBooked': !currentIsBooked,
+            "availability.$[day].slots.$[slot].isBooked": !currentIsBooked,
           },
         },
         {
-          arrayFilters: [{ 'day._id': dayId }, { 'slot._id': slotId }],
+          arrayFilters: [{ "day._id": dayId }, { "slot._id": slotId }],
         }
       );
 
       if (updateResult.matchedCount === 0) {
-        throw new AppError('Unknown error');
+        throw new AppError("Unknown error");
       }
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

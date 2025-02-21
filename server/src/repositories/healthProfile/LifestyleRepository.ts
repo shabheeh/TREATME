@@ -1,7 +1,7 @@
-import { Model } from 'mongoose';
-import ILifestyleRepository from './interface/ILifestyleRepository';
-import { ILifestyle } from '../../interfaces/ILifestyle';
-import { AppError } from '../../utils/errors';
+import { Model } from "mongoose";
+import ILifestyleRepository from "./interface/ILifestyleRepository";
+import { ILifestyle } from "../../interfaces/ILifestyle";
+import { AppError } from "../../utils/errors";
 
 class LifestyleRepository implements ILifestyleRepository {
   private readonly model: Model<ILifestyle>;
@@ -17,7 +17,7 @@ class LifestyleRepository implements ILifestyleRepository {
       return lifestyle;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -37,7 +37,7 @@ class LifestyleRepository implements ILifestyleRepository {
       return updatedLifestyle;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

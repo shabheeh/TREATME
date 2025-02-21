@@ -1,10 +1,10 @@
-import logger from '../../configs/logger';
+import logger from "../../configs/logger";
 import {
   IBehaviouralHealth,
   IBehaviouralHealthService,
-} from '../../interfaces/IBehaviouralHealth';
-import IBehaviouralHealthRepository from '../../repositories/healthProfile/interface/IBehaviouralHealthRepository';
-import { AppError } from '../../utils/errors';
+} from "../../interfaces/IBehaviouralHealth";
+import IBehaviouralHealthRepository from "../../repositories/healthProfile/interface/IBehaviouralHealthRepository";
+import { AppError } from "../../utils/errors";
 
 class BehaviouralHealthService implements IBehaviouralHealthService {
   private behaviouralHealthRepo: IBehaviouralHealthRepository;
@@ -21,12 +21,12 @@ class BehaviouralHealthService implements IBehaviouralHealthService {
         await this.behaviouralHealthRepo.findBehaviouralHealth(patientId);
       return behaviouralHealth;
     } catch (error) {
-      logger.error('Failed to fetch behavioural health');
+      logger.error("Failed to fetch behavioural health");
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -44,17 +44,17 @@ class BehaviouralHealthService implements IBehaviouralHealthService {
         );
 
       if (!updatedData) {
-        throw new AppError('Failed to update Behavioural Health');
+        throw new AppError("Failed to update Behavioural Health");
       }
 
       return updatedData;
     } catch (error) {
-      logger.error('Failded to update behavioural health', error);
+      logger.error("Failded to update behavioural health", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

@@ -19,6 +19,7 @@ import Payment from "../pages/patient/appointment/Payment";
 import BookingConfirmation from "../pages/patient/appointment/BookingConfirmed";
 import Appointments from "../pages/patient/appointment/Appointments";
 import DoctorView from "../components/basics/appointments/DoctorView";
+import Consultations from "../pages/patient/appointment/Consultations";
 
 export const patientRoutes = [
   <Route path="/" element={<LandingPage />} />,
@@ -82,5 +83,6 @@ export const patientRoutes = [
     <Route path="visitnow" element={<VisiitNow />} />
     <Route path="health-profile" element={<HealthProfile />} />
     <Route path="appointments" element={<Appointments />} />
+    <Route path="consultations" element={<Consultations />} />
   </Route>
 ];

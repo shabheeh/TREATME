@@ -1,5 +1,5 @@
-import { Document } from 'mongoose';
-import { NextFunction, Request, Response } from 'express';
+import { Document } from "mongoose";
+import { NextFunction, Request, Response } from "express";
 
 export default interface ISpecialization extends Document {
   name: string;
@@ -16,9 +16,11 @@ export interface ISpecializationService {
     imageFile: Express.Multer.File
   ): Promise<void>;
   getSpecializations(): Promise<ISpecialization[]>;
-  getSpecializationById(id: string): Promise<ISpecialization | null>;
+  getSpecializationById(
+    specializationId: string
+  ): Promise<ISpecialization | null>;
   updateSpecialization(
-    id: string,
+    specializationId: string,
     updateData: Partial<ISpecialization>,
     imageFile: Express.Multer.File | undefined
   ): Promise<ISpecialization | null>;

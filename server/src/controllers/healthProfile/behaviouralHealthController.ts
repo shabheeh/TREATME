@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import {
   IBehaviouralHealthController,
   IBehaviouralHealthService,
-} from '../../interfaces/IBehaviouralHealth';
-import { BadRequestError } from '../../utils/errors';
+} from "../../interfaces/IBehaviouralHealth";
+import { BadRequestError } from "../../utils/errors";
 
 class BehaviouralHealthController implements IBehaviouralHealthController {
   private behavioralHealthService: IBehaviouralHealthService;
@@ -19,18 +19,18 @@ class BehaviouralHealthController implements IBehaviouralHealthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { patientId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Bad Request: Missing info');
+      if (!patientId) {
+        throw new BadRequestError("Bad Request: Missing info");
       }
 
       const behavioralHealth =
-        await this.behavioralHealthService.findBehaviouralHealth(id);
+        await this.behavioralHealthService.findBehaviouralHealth(patientId);
 
       res.status(200).json({ behavioralHealth });
     } catch (error) {
-      logger.error('failed to fetch behavioural health', error);
+      logger.error("failed to fetch behavioural health", error);
       next(error);
     }
   };
@@ -41,22 +41,22 @@ class BehaviouralHealthController implements IBehaviouralHealthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { patientId } = req.params;
       const { updateData } = req.body;
 
-      if (!id || !updateData) {
-        throw new BadRequestError('Bad Reqeuest: Missing info');
+      if (!patientId || !updateData) {
+        throw new BadRequestError("Bad Reqeuest: Missing info");
       }
 
       const behavioralHealth =
         await this.behavioralHealthService.updateBehavouralHealth(
-          id,
+          patientId,
           updateData
         );
 
       res.status(200).json({ behavioralHealth });
     } catch (error) {
-      logger.error('failed to update behavioural health', error);
+      logger.error("failed to update behavioural health", error);
       next(error);
     }
   };

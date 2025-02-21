@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import {
   IAppointmentController,
   IAppointmentService,
-} from '../../interfaces/IAppointment';
-import { BadRequestError } from '../../utils/errors';
-import { ITokenPayload } from 'src/utils/jwt';
+} from "../../interfaces/IAppointment";
+import { BadRequestError } from "../../utils/errors";
+import { ITokenPayload } from "src/utils/jwt";
 
 class AppointmentController implements IAppointmentController {
   private appointmentService: IAppointmentService;
@@ -22,14 +22,12 @@ class AppointmentController implements IAppointmentController {
     try {
       const { appointmentData } = req.body;
 
-      console.log(appointmentData);
-
       const appointment =
         await this.appointmentService.createAppointment(appointmentData);
 
       res.status(201).json({ appointment });
     } catch (error) {
-      logger.error('Failed to create appointment', error);
+      logger.error("Failed to create appointment", error);
       next(error);
     }
   };
@@ -40,18 +38,19 @@ class AppointmentController implements IAppointmentController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { appointmentId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Bad Request: Missing info');
+      if (!appointmentId) {
+        throw new BadRequestError("Bad Request: Missing info");
       }
 
-      const appointment = await this.appointmentService.getAppointmentById(id);
+      const appointment =
+        await this.appointmentService.getAppointmentById(appointmentId);
 
       res.status(200).json({ appointment });
     } catch (error) {
       logger.error(
-        error instanceof Error ? error.message : 'failed to get appointment'
+        error instanceof Error ? error.message : "failed to get appointment"
       );
       next(error);
     }
@@ -63,21 +62,21 @@ class AppointmentController implements IAppointmentController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { appointmentId } = req.params;
       const { updateData } = req.body;
 
-      if (!id || !updateData) {
-        throw new BadRequestError('Bad Request: Missing info');
+      if (!appointmentId || !updateData) {
+        throw new BadRequestError("Bad Request: Missing info");
       }
 
       const appointment = await this.appointmentService.updateAppointment(
-        id,
+        appointmentId,
         updateData
       );
 
       res.status(200).json({ appointment });
     } catch (error) {
-      logger.error('Failed to update appointment');
+      logger.error("Failed to update appointment");
       next(error);
     }
   };
@@ -88,22 +87,22 @@ class AppointmentController implements IAppointmentController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { userId } = req.params;
       const { role } = req.user as ITokenPayload;
 
-      if (!id || !role) {
-        throw new BadRequestError('Bad Request: Missing information');
+      if (!userId || !role) {
+        throw new BadRequestError("Bad Request: Missing information");
       }
 
       const appointments =
-        await this.appointmentService.getAppointmentsByUserId(id, role);
+        await this.appointmentService.getAppointmentsByUserId(userId, role);
 
       res.status(200).json({ appointments });
     } catch (error) {
       logger.error(
         error instanceof Error
           ? error.message
-          : 'Controller Error: getAppointmentByUserId'
+          : "Controller Error: getAppointmentByUserId"
       );
       next(error);
     }
@@ -121,7 +120,7 @@ class AppointmentController implements IAppointmentController {
       logger.error(
         error instanceof Error
           ? error.message
-          : 'Controller Error: getAppointments'
+          : "Controller Error: getAppointments"
       );
       next(error);
     }

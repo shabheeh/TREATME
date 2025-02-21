@@ -1,5 +1,5 @@
-import { model, Schema } from 'mongoose';
-import IDependent from 'src/interfaces/IDependent';
+import { model, Schema } from "mongoose";
+import IDependent from "src/interfaces/IDependent";
 
 const dependentSchema = new Schema<IDependent>(
   {
@@ -7,11 +7,11 @@ const dependentSchema = new Schema<IDependent>(
     lastName: { type: String, required: true },
     primaryUserId: {
       type: Schema.Types.ObjectId,
-      ref: 'Patient',
+      ref: "Patient",
       required: true,
     },
     email: { type: String, required: true },
-    gender: { type: String, enum: ['male', 'female'], required: true },
+    gender: { type: String, enum: ["male", "female"], required: true },
     relationship: { type: String, required: true },
     dateOfBirth: { type: Date, optional: true },
     profilePicture: { type: String },
@@ -22,4 +22,4 @@ const dependentSchema = new Schema<IDependent>(
   }
 );
 
-export const DependentModel = model<IDependent>('Dependent', dependentSchema);
+export const DependentModel = model<IDependent>("Dependent", dependentSchema);

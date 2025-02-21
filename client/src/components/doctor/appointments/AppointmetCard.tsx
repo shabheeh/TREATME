@@ -6,8 +6,19 @@ import {
   Avatar,
   Button,
   Divider,
-  Grid
+  Grid,
+  Chip,
+  IconButton,
+  Tooltip
 } from "@mui/material";
+import {
+  CalendarMonth as CalendarIcon,
+  AccessTime as TimeIcon,
+  VideoCameraFront as VideoIcon,
+  MedicalServices as MedicalIcon,
+  ArrowForward as ArrowIcon,
+  PersonOutline as PatientIcon
+} from "@mui/icons-material";
 
 import { IDependent, IPatient } from "../../../types/patient/patient.types";
 import { IDoctor } from "../../../types/doctor/doctor.types";
@@ -30,6 +41,7 @@ interface AppointmentCardProps {
   fee: number;
   reason: string;
   onReschedule: () => void;
+  onViewDetails?: () => void;
 }
 
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
@@ -38,15 +50,63 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   doctor,
   date,
   specialization,
-  onReschedule
+  reason,
+  onReschedule,
+  onViewDetails
 }) => {
   const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
-
   const navigate = useNavigate();
 
   const doctorName = doctor.firstName + " " + doctor.lastName;
   const patientName = patient.firstName + " " + patient.lastName;
+
+  // Calculate days until appointment
+  const getDaysUntil = (appointmentDate: Date): number => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const apptDate = new Date(appointmentDate);
+    apptDate.setHours(0, 0, 0, 0);
+
+    const diffTime = apptDate.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const daysUntil = getDaysUntil(date);
+  const isToday = daysUntil === 0;
+  const isTomorrow = daysUntil === 1;
+
+  const getStatusChip = () => {
+    if (isToday) {
+      return (
+        <Chip
+          label="Today"
+          size="small"
+          color="error"
+          sx={{ fontWeight: 500 }}
+        />
+      );
+    } else if (isTomorrow) {
+      return (
+        <Chip
+          label="Tomorrow"
+          size="small"
+          color="warning"
+          sx={{ fontWeight: 500 }}
+        />
+      );
+    } else {
+      return (
+        <Chip
+          label={`In ${daysUntil} days`}
+          size="small"
+          color="primary"
+          variant="outlined"
+          sx={{ fontWeight: 500 }}
+        />
+      );
+    }
+  };
 
   const viewHealthProfile = () => {
     navigate("/doctor/patients/health", { state: { patient } });
@@ -56,155 +116,245 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
     <Card
       variant="outlined"
       sx={{
-        maxWidth: { xs: "100%", sm: "90%" },
+        maxWidth: "100%",
         borderRadius: 2,
-        borderColor: "teal",
+        borderColor: isToday ? "#ff5252" : isTomorrow ? "#ff9800" : "#e0e0e0",
+        borderWidth: isToday || isTomorrow ? 2 : 1,
         overflow: "visible",
-        mx: "auto",
-        my: 2,
-        p: { xs: 1, sm: 2 }
+        position: "relative",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+          transform: "translateY(-3px)"
+        }
       }}
     >
-      <Box sx={{ p: { xs: 1, sm: 2 } }}>
-        <Box
+      {/* Appointment status indicator */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 12,
+          right: 12,
+          zIndex: 2
+        }}
+      >
+        {getStatusChip()}
+      </Box>
+
+      {/* Patient info */}
+      <Box
+        sx={{
+          p: 2,
+          pb: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: 2
+        }}
+      >
+        <Avatar
+          src={patient.profilePicture}
+          alt={patient.firstName}
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-            gap: { xs: 2, sm: 0 }
+            width: 56,
+            height: 56,
+            border: "2px solid #f0f0f0",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
           }}
-        >
+        />
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+            {patient.firstName} {patient.lastName}
+          </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar
-              src={patient.profilePicture}
-              alt={patient.firstName}
+            <Typography variant="body2" color="text.secondary">
+              Age: {calculateAge(patient.dateOfBirth)}
+            </Typography>
+            <Typography
+              variant="body2"
+              onClick={viewHealthProfile}
               sx={{
-                width: 48,
-                height: 48,
-                border: "2px solid #eaeaea"
-              }}
-            />
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 500 }}>
-                {patient.firstName} {patient.lastName}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Age: {calculateAge(patient.dateOfBirth)}
-              </Typography>
-              <Typography
-                variant="body1"
-                onClick={viewHealthProfile}
-                sx={{
-                  fontSize: 12,
-                  color: "teal",
-                  cursor: "pointer",
-                  ":hover": {
-                    textDecoration: "underline"
-                  }
-                }}
-              >
-                View Health Profile
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", gap: 1, mt: { xs: 2, sm: 0 } }}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setRescheduleModalOpen(true)}
-              sx={{
-                borderRadius: 4,
-                backgroundColor: "#ffffdd",
-                borderColor: "#e6e6b8",
-                color: "#7a7a52",
-                textTransform: "none",
+                color: "primary.main",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
                 "&:hover": {
-                  backgroundColor: "#ffffe0",
-                  borderColor: "#d6d6a8"
+                  textDecoration: "underline"
                 }
               }}
             >
-              RESCHEDULE
-            </Button>
-            <Button
-              onClick={() => setCancelModalOpen(true)}
-              variant="outlined"
-              size="small"
-              sx={{
-                borderRadius: 4,
-                backgroundColor: "#ffe0e0",
-                borderColor: "#ffb3b3",
-                color: "#d83939",
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: "#ffe6e6",
-                  borderColor: "#ffacac"
-                }
-              }}
-            >
-              CANCEL
-            </Button>
+              <PatientIcon fontSize="small" />
+              View Health Profile
+            </Typography>
           </Box>
-        </Box>
-
-        <Divider sx={{ my: 1 }} />
-
-        <Box sx={{ pt: 1 }}>
-          <Grid container spacing={1} sx={{ textAlign: "center" }}>
-            <Grid item xs={6} sm={3}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ textTransform: "uppercase" }}
-              >
-                DATE
-              </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {formatMonthDay(date)} {getDayName(date)}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ textTransform: "uppercase" }}
-              >
-                TIME
-              </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {formatTime(date)}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ textTransform: "uppercase" }}
-              >
-                TYPE
-              </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {specialization}
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ textTransform: "uppercase" }}
-              >
-                MODE
-              </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                Video Call
-              </Typography>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
+
+      <Divider sx={{ mx: 2, my: 1 }} />
+
+      {/* Appointment details */}
+      <Box sx={{ px: 2, pt: 1, pb: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={6} sm={3}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <CalendarIcon color="primary" fontSize="small" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block" }}
+                >
+                  DATE
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                  {formatMonthDay(date)} {getDayName(date)}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={6} sm={3}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <TimeIcon color="primary" fontSize="small" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block" }}
+                >
+                  TIME
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                  {formatTime(date)}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={6} sm={3}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <MedicalIcon color="primary" fontSize="small" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block" }}
+                >
+                  TYPE
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                  {specialization}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={6} sm={3}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <VideoIcon color="primary" fontSize="small" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block" }}
+                >
+                  MODE
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                  Video Call
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+
+        {reason && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="caption" color="text.secondary">
+              REASON FOR VISIT
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 0.5 }}>
+              {reason}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      {/* Action buttons */}
+      <Box
+        sx={{
+          p: 2,
+          pt: 1,
+          bgcolor: "#f9f9f9",
+          borderTop: "1px solid #eaeaea",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+      >
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setRescheduleModalOpen(true)}
+            sx={{
+              borderRadius: 6,
+              bgcolor: "#f8f8ff",
+              borderColor: "#e0e0e6",
+              color: "#5c6bc0",
+              textTransform: "none",
+              fontWeight: 500,
+              py: 0.5,
+              "&:hover": {
+                bgcolor: "#efefff",
+                borderColor: "#c5cae9"
+              }
+            }}
+          >
+            Reschedule
+          </Button>
+          <Button
+            onClick={() => setCancelModalOpen(true)}
+            variant="outlined"
+            size="small"
+            sx={{
+              borderRadius: 6,
+              bgcolor: "#fff5f5",
+              borderColor: "#ffcdd2",
+              color: "#e53935",
+              textTransform: "none",
+              fontWeight: 500,
+              py: 0.5,
+              "&:hover": {
+                bgcolor: "#ffebee",
+                borderColor: "#ef9a9a"
+              }
+            }}
+          >
+            Cancel
+          </Button>
+        </Box>
+
+        {onViewDetails && (
+          <Tooltip title="Start Appointment">
+            <IconButton
+              color="primary"
+              onClick={onViewDetails}
+              sx={{
+                bgcolor: "primary.light",
+                color: "white",
+                "&:hover": {
+                  bgcolor: "primary.main"
+                }
+              }}
+            >
+              <ArrowIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Box>
+
+      {/* Modals */}
       <RescheduleModal
         open={isRescheduleModalOpen}
         appointmentId={id}

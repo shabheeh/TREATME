@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  CircularProgress
-} from "@mui/material";
+import { Box, Container, Typography, TextField, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -117,7 +110,7 @@ const SignIn: React.FC = () => {
               variant="contained"
               sx={{ py: 2, mt: 3, mb: 13, width: "80%", fontSize: "1rem" }}
             >
-              {loading ? <CircularProgress /> : "Sign In"}
+              Sign in
             </Button>
           </Container>
         </Container>

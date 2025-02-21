@@ -17,10 +17,6 @@ class AuthServiceAdmin {
         password
       });
 
-      if ("error" in response) {
-        throw new Error(`Something went wrong`);
-      }
-
       const { admin, accessToken } = response.data;
 
       this.tokenManager.setToken(accessToken);
@@ -34,7 +30,7 @@ class AuthServiceAdmin {
       );
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error(`error user signup: ${error.message}`);
+        console.error(`error admin signin: ${error.message}`);
         throw new Error(error.message);
       }
 

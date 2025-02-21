@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../configs/logger";
 
 export const convertFormData = (
   req: Request,
@@ -13,8 +13,8 @@ export const convertFormData = (
     next();
   } catch (error) {
     logger.error(
-      error instanceof Error ? error.message : 'Failed to format data'
+      error instanceof Error ? error.message : "Failed to format data"
     );
-    res.status(400).json({ error: 'Invalid form data format' });
+    res.status(400).json({ error: "Invalid form data format" });
   }
 };

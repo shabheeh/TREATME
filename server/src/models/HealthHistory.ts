@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types } from "mongoose";
 import {
   // IBodyMeasureMents,
   IHealthCondition,
@@ -7,7 +7,7 @@ import {
   IMedication,
   IAllergy,
   ISurgery,
-} from '../interfaces/IHealthHistory';
+} from "../interfaces/IHealthHistory";
 
 const MedicationSchema = new Schema<IMedication>({
   name: { type: String, required: true },
@@ -53,11 +53,11 @@ const HealthHistorySchema = new Schema<IHealthHistory>(
     patientId: {
       type: Types.ObjectId,
       required: true,
-      refPath: 'patientType',
+      refPath: "patientType",
     },
     patientType: {
       type: String,
-      enum: ['Patient', 'Dependent'],
+      enum: ["Patient", "Dependent"],
       required: true,
     },
     medications: { type: [MedicationSchema], required: true },
@@ -73,6 +73,6 @@ const HealthHistorySchema = new Schema<IHealthHistory>(
 );
 
 export const HealthHistoryModel = model<IHealthHistory>(
-  'HealthHistory',
+  "HealthHistory",
   HealthHistorySchema
 );

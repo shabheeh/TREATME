@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import {
   ILifestyleController,
   ILifestyleService,
-} from '../../interfaces/ILifestyle';
-import { BadRequestError } from '../../utils/errors';
+} from "../../interfaces/ILifestyle";
+import { BadRequestError } from "../../utils/errors";
 
 class LifestyleController implements ILifestyleController {
   private lifestyleService: ILifestyleService;
@@ -19,17 +19,17 @@ class LifestyleController implements ILifestyleController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { patientId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Bad Request: Missing info');
+      if (!patientId) {
+        throw new BadRequestError("Bad Request: Missing info");
       }
 
-      const lifestyle = await this.lifestyleService.findLifestyle(id);
+      const lifestyle = await this.lifestyleService.findLifestyle(patientId);
 
       res.status(200).json({ lifestyle });
     } catch (error) {
-      logger.error('Failed to fetch lifestyle');
+      logger.error("Failed to fetch lifestyle");
       next(error);
     }
   };
@@ -40,21 +40,21 @@ class LifestyleController implements ILifestyleController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { patientId } = req.params;
       const updateData = req.body;
 
-      if (!id || !updateData) {
-        throw new BadRequestError('Bad Request: Missing info');
+      if (!patientId || !updateData) {
+        throw new BadRequestError("Bad Request: Missing info");
       }
 
       const lifestyle = await this.lifestyleService.updateLifestyle(
-        id,
+        patientId,
         updateData
       );
 
       res.status(200).json({ lifestyle });
     } catch (error) {
-      logger.error('Failed to update lifestyle');
+      logger.error("Failed to update lifestyle");
       next(error);
     }
   };

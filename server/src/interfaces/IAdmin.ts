@@ -1,7 +1,7 @@
-import { Document } from 'mongoose';
-import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from './IDoctor';
-import { Request, Response, NextFunction } from 'express';
-import { IPatientsFilter, IPatientsFilterResult } from './IPatient';
+import { Document } from "mongoose";
+import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from "./IDoctor";
+import { Request, Response, NextFunction } from "express";
+import { IPatientsFilter, IPatientsFilterResult } from "./IPatient";
 export default interface IAdmin extends Document {
   email: string;
   password: string;

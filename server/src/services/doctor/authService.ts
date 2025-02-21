@@ -1,9 +1,9 @@
-import { IDoctorAuthService, SignInResult } from '../../interfaces/IDoctor';
-import IDoctorRepository from '../../repositories/doctor/interfaces/IDoctorRepository';
-import bcrypt from 'bcryptjs';
-import { AppError, AuthError, AuthErrorCode } from '../../utils/errors';
-import logger from '../../configs/logger';
-import { generateTokens, ITokenPayload } from '../../utils/jwt';
+import { IDoctorAuthService, SignInResult } from "../../interfaces/IDoctor";
+import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepository";
+import bcrypt from "bcryptjs";
+import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
+import logger from "../../configs/logger";
+import { generateTokens, ITokenPayload } from "../../utils/jwt";
 
 class DoctorAuthService implements IDoctorAuthService {
   private doctorRepository: IDoctorRepository;
@@ -32,19 +32,19 @@ class DoctorAuthService implements IDoctorAuthService {
 
       const payload: ITokenPayload = {
         email: doctor.email,
-        role: 'doctor',
+        role: "doctor",
       };
 
       const { accessToken, refreshToken } = generateTokens(payload);
 
       return { accessToken, refreshToken, doctor };
     } catch (error) {
-      logger.error('error doctor signin', error);
+      logger.error("error doctor signin", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -60,12 +60,12 @@ class DoctorAuthService implements IDoctorAuthService {
 
       return doctor.isActive;
     } catch (error) {
-      logger.error('error checking doctor status', error);
+      logger.error("error checking doctor status", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

@@ -4,7 +4,7 @@ import { api } from "../../utils/axiosInterceptor";
 class SpecializationService {
   async addSepcialization(specialization: FormData): Promise<void> {
     try {
-      await api.shared.post("/specializations", specialization);
+      await api.post("/specializations", specialization);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error Adding Specialization: ${error.message}`, error);
@@ -18,7 +18,7 @@ class SpecializationService {
 
   async getSpecializations(): Promise<ISpecialization[]> {
     try {
-      const response = await api.shared.get("/specializations");
+      const response = await api.get("/specializations");
 
       const { specializations } = response.data;
 
@@ -39,7 +39,7 @@ class SpecializationService {
 
   async getSpecializationsPublic(): Promise<ISpecialization[]> {
     try {
-      const response = await api.shared.get("/specializations/public");
+      const response = await api.get("/specializations/public");
 
       const { specializations } = response.data;
 
@@ -60,7 +60,7 @@ class SpecializationService {
 
   async getSpecializationById(id: string): Promise<ISpecialization> {
     try {
-      const response = await api.shared.get(`/specializations/${id}`);
+      const response = await api.get(`/specializations/${id}`);
 
       const { specialization } = response.data;
 
@@ -78,10 +78,7 @@ class SpecializationService {
 
   async updateSpecialization(id: string, updateData: FormData): Promise<void> {
     try {
-      const response = await api.shared.put(
-        `/specializations/${id}`,
-        updateData
-      );
+      const response = await api.put(`/specializations/${id}`, updateData);
 
       console.log(response.status);
     } catch (error: unknown) {

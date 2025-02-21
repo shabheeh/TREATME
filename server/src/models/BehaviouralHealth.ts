@@ -1,16 +1,16 @@
-import { Schema, Types, model } from 'mongoose';
-import { IBehaviouralHealth } from 'src/interfaces/IBehaviouralHealth';
+import { Schema, Types, model } from "mongoose";
+import { IBehaviouralHealth } from "src/interfaces/IBehaviouralHealth";
 
 const behaviourHealthSchema = new Schema<IBehaviouralHealth>(
   {
     patientId: {
       type: Types.ObjectId,
       required: true,
-      refPath: 'patientType',
+      refPath: "patientType",
     },
     patientType: {
       type: String,
-      enum: ['Patient', 'Dependent'],
+      enum: ["Patient", "Dependent"],
       required: true,
     },
     conditions: { type: [String], required: true },
@@ -28,6 +28,6 @@ const behaviourHealthSchema = new Schema<IBehaviouralHealth>(
 );
 
 export const BehaviouralHealthModel = model<IBehaviouralHealth>(
-  'BehaviouralHealth',
+  "BehaviouralHealth",
   behaviourHealthSchema
 );

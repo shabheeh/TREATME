@@ -1,8 +1,8 @@
-import IPatient from '../../../interfaces/IPatient';
+import IPatient from "../../../interfaces/IPatient";
 import {
   IPatientsFilter,
   IPatientsFilterResult,
-} from '../../../interfaces/IPatient';
+} from "../../../interfaces/IPatient";
 
 interface IPatientRepository {
   createPatient(user: Partial<IPatient>): Promise<IPatient>;

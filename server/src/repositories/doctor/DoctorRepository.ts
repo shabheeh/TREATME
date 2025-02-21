@@ -1,13 +1,13 @@
-import { Model } from 'mongoose';
+import { Model } from "mongoose";
 import IDoctorRepository, {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
-} from './interfaces/IDoctorRepository';
+} from "./interfaces/IDoctorRepository";
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
-} from 'src/interfaces/IDoctor';
-import { AppError } from '../../utils/errors';
+} from "src/interfaces/IDoctor";
+import { AppError } from "../../utils/errors";
 
 interface Query {
   $or?: Array<{
@@ -31,7 +31,7 @@ class DoctorRepository implements IDoctorRepository {
       return newDoctor.toObject();
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -41,60 +41,60 @@ class DoctorRepository implements IDoctorRepository {
     try {
       const doctor = await this.model
         .findOne({ email })
-        .populate('specialization')
+        .populate("specialization")
         .lean();
       return doctor;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
-  async findDoctorById(id: string): Promise<IDoctor> {
+  async findDoctorById(doctorId: string): Promise<IDoctor> {
     try {
       const doctor = await this.model
-        .findById(id)
-        .populate('specialization')
+        .findById(doctorId)
+        .populate("specialization")
         .lean();
 
       if (!doctor) {
-        throw new AppError('Something went wrong');
+        throw new AppError("Something went wrong");
       }
       return doctor;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
   async updateDoctor(
-    id: string,
+    doctorId: string,
     updateData: Partial<IDoctor>
   ): Promise<IDoctor> {
     try {
       const updatedDoctor = await this.model
         .findOneAndUpdate(
-          { _id: id },
+          { _id: doctorId },
           { $set: updateData },
           {
             new: true,
             lean: true,
           }
         )
-        .select('-password');
+        .select("-password");
 
       if (!updatedDoctor) {
-        throw new AppError('Something went wrong');
+        throw new AppError("Something went wrong");
       }
 
       return updatedDoctor;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -108,10 +108,10 @@ class DoctorRepository implements IDoctorRepository {
       const query: Query = {};
 
       query.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
       ];
 
       const doctors = await this.model.find(query).skip(skip).limit(limit);
@@ -126,7 +126,7 @@ class DoctorRepository implements IDoctorRepository {
       };
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -167,25 +167,25 @@ class DoctorRepository implements IDoctorRepository {
         },
         {
           $lookup: {
-            from: 'schedules',
-            localField: '_id',
-            foreignField: 'doctorId',
-            as: 'schedule',
+            from: "schedules",
+            localField: "_id",
+            foreignField: "doctorId",
+            as: "schedule",
           },
         },
         {
           $unwind: {
-            path: '$schedule',
+            path: "$schedule",
           },
         },
         {
           $addFields: {
             availability: {
               $filter: {
-                input: '$schedule.availability',
-                as: 'av',
+                input: "$schedule.availability",
+                as: "av",
                 cond: {
-                  $gte: ['$$av.date', selectedDateISO],
+                  $gte: ["$$av.date", selectedDateISO],
                 },
               },
             },
@@ -194,7 +194,7 @@ class DoctorRepository implements IDoctorRepository {
         {
           $match: {
             $expr: {
-              $gt: [{ $size: '$availability' }, 0],
+              $gt: [{ $size: "$availability" }, 0],
             },
           },
         },
@@ -221,7 +221,7 @@ class DoctorRepository implements IDoctorRepository {
       };
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

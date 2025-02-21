@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { Document, ObjectId } from 'mongoose';
+import { Request, Response, NextFunction } from "express";
+import { Document, ObjectId } from "mongoose";
 
 export interface IBehaviouralHealth extends Document {
   patientId: ObjectId;
-  patientType: 'Patient' | 'Dependent';
+  patientType: "Patient" | "Dependent";
   conditions: string[];
   anxietyLevel: number;
   depressionLevel: number;

@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import IDoctor from '../interfaces/IDoctor';
+import { Schema, model } from "mongoose";
+import IDoctor from "../interfaces/IDoctor";
 
 const doctorSchema = new Schema<IDoctor>(
   {
@@ -8,10 +8,10 @@ const doctorSchema = new Schema<IDoctor>(
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
     phone: { type: String, required: true, trim: true },
-    gender: { type: String, enum: ['male', 'female'], required: true },
+    gender: { type: String, enum: ["male", "female"], required: true },
     specialization: {
       type: Schema.Types.ObjectId,
-      ref: 'Specialization',
+      ref: "Specialization",
       required: true,
     },
     specialties: { type: [String], default: [] },
@@ -28,4 +28,4 @@ const doctorSchema = new Schema<IDoctor>(
   }
 );
 
-export const DoctorModel = model<IDoctor>('Doctor', doctorSchema);
+export const DoctorModel = model<IDoctor>("Doctor", doctorSchema);

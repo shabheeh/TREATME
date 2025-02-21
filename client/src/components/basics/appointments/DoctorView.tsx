@@ -1,23 +1,22 @@
-import { useState } from "react";
 import {
   Box,
   Typography,
   Avatar,
   Grid,
-  Paper,
+  // Paper,
   Button,
-  IconButton,
+  // IconButton,
   Container,
   List,
   ListItem
 } from "@mui/material";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+// import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+// import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DoctorProfile = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  // const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Mock data
   const doctor = {
@@ -36,20 +35,20 @@ const DoctorProfile = () => {
     npiNumber: "1669786000"
   };
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
+  // const months = [
+  //   "January",
+  //   "February",
+  //   "March",
+  //   "April",
+  //   "May",
+  //   "June",
+  //   "July",
+  //   "August",
+  //   "September",
+  //   "October",
+  //   "November",
+  //   "December"
+  // ];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -132,7 +131,7 @@ const DoctorProfile = () => {
           </Box>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        {/* <Grid item xs={12} md={4}>
           <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
             <Box
               sx={{
@@ -191,7 +190,7 @@ const DoctorProfile = () => {
               Request an Appointment
             </Button>
           </Paper>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Container>
   );

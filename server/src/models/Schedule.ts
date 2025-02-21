@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import { IDaySchedule, ISchedule, ISlot } from '../interfaces/IDoctor';
+import { Schema, model } from "mongoose";
+import { IDaySchedule, ISchedule, ISlot } from "../interfaces/IDoctor";
 
 const slotSchema = new Schema<ISlot>({
   startTime: { type: Date, required: true },
@@ -8,18 +8,18 @@ const slotSchema = new Schema<ISlot>({
 });
 
 const availabilitySchema = new Schema<IDaySchedule>({
-  date: { type: Date, required: true, index: { expires: '30d' } },
+  date: { type: Date, required: true, index: { expires: "30d" } },
   slots: [slotSchema],
 });
 
 const scheduleSchema = new Schema<ISchedule>({
   doctorId: {
     type: Schema.Types.ObjectId,
-    ref: 'Doctor',
+    ref: "Doctor",
     required: true,
     unique: true,
   },
   availability: [availabilitySchema],
 });
 
-export const ScheduleModel = model<ISchedule>('Schedule', scheduleSchema);
+export const ScheduleModel = model<ISchedule>("Schedule", scheduleSchema);

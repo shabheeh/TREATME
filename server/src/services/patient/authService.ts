@@ -1,26 +1,26 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 import IPatient, {
   IPatientAuthService,
   SignInResult,
   googleSignInResult,
-} from '../../interfaces/IPatient';
-import IPatientRepository from '../../repositories/patient/interface/IPatientRepository';
-import { generateTokens, ITokenPayload } from '../../utils/jwt';
-import CacheService from '../CacheService';
-import OtpService from '../OtpService';
-import logger from '../../configs/logger';
-import { OAuth2Client } from 'google-auth-library';
+} from "../../interfaces/IPatient";
+import IPatientRepository from "../../repositories/patient/interface/IPatientRepository";
+import { generateTokens, ITokenPayload } from "../../utils/jwt";
+import CacheService from "../CacheService";
+import OtpService from "../OtpService";
+import logger from "../../configs/logger";
+import { OAuth2Client } from "google-auth-library";
 import {
   AppError,
   AuthError,
   AuthErrorCode,
   BadRequestError,
   ConflictError,
-} from '../../utils/errors';
+} from "../../utils/errors";
 
 const mailSubject = {
-  verifyEmail: 'Verify Your Email Address',
-  resetPassword: 'Reset Your Password',
+  verifyEmail: "Verify Your Email Address",
+  resetPassword: "Reset Your Password",
 };
 
 class PatientAuthService implements IPatientAuthService {
@@ -44,7 +44,7 @@ class PatientAuthService implements IPatientAuthService {
         await this.patientRepository.findPatientByEmail(email);
 
       if (existingPatient) {
-        throw new ConflictError('User with this email already exists');
+        throw new ConflictError("User with this email already exists");
       }
 
       await this.cacheService.store(
@@ -55,22 +55,22 @@ class PatientAuthService implements IPatientAuthService {
 
       const otpSent = await this.otpService.sendOTP(
         email,
-        'signup',
+        "signup",
         mailSubject.verifyEmail
       );
 
       logger.info(otpSent);
 
       if (!otpSent) {
-        throw new BadRequestError('Error Sending OTP');
+        throw new BadRequestError("Error Sending OTP");
       }
     } catch (error) {
-      logger.error('errro sending otp', error);
+      logger.error("errro sending otp", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -89,7 +89,7 @@ class PatientAuthService implements IPatientAuthService {
       const isOtpVerified = await this.otpService.verifyOTP(
         email,
         otp,
-        'signup'
+        "signup"
       );
 
       if (!isOtpVerified) {
@@ -102,14 +102,14 @@ class PatientAuthService implements IPatientAuthService {
         600
       );
 
-      await this.otpService.deleteOTP(email, 'signup');
+      await this.otpService.deleteOTP(email, "signup");
     } catch (error) {
-      logger.error('error verifying otp', error);
+      logger.error("error verifying otp", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -128,7 +128,7 @@ class PatientAuthService implements IPatientAuthService {
       const parsedPatientData = JSON.parse(cachedPatientData);
 
       if (!parsedPatientData.isOtpVerified) {
-        throw new BadRequestError('Please verify your email');
+        throw new BadRequestError("Please verify your email");
       }
 
       const hashedPassword = await bcrypt.hash(parsedPatientData.password, 0);
@@ -145,12 +145,12 @@ class PatientAuthService implements IPatientAuthService {
 
       return { newUser: userWithoutPassword };
     } catch (error) {
-      logger.error('error during signup', error);
+      logger.error("error during signup", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -172,7 +172,7 @@ class PatientAuthService implements IPatientAuthService {
         return {
           googleUser: true,
           message:
-            'You previously signed in with Google please use Google for future sign in',
+            "You previously signed in with Google please use Google for future sign in",
         };
       }
 
@@ -184,19 +184,19 @@ class PatientAuthService implements IPatientAuthService {
 
       const payload: ITokenPayload = {
         email: patient.email,
-        role: 'patient',
+        role: "patient",
       };
 
       const { accessToken, refreshToken } = generateTokens(payload);
 
       return { accessToken, refreshToken, patient };
     } catch (error) {
-      logger.error('error signin patient', error);
+      logger.error("error signin patient", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -216,12 +216,12 @@ class PatientAuthService implements IPatientAuthService {
 
       return patient;
     } catch (error) {
-      logger.error('errro sending otp for forgot password', error);
+      logger.error("errro sending otp for forgot password", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -241,22 +241,22 @@ class PatientAuthService implements IPatientAuthService {
 
       const isOtpSent = await this.otpService.sendOTP(
         email,
-        'signin',
+        "signin",
         mailSubject.resetPassword
       );
 
       if (!isOtpSent) {
-        throw new BadRequestError('Failed to sent otp, Please try again later');
+        throw new BadRequestError("Failed to sent otp, Please try again later");
       }
 
       return patient;
     } catch (error) {
-      logger.error('errro sending otp for forgot password', error);
+      logger.error("errro sending otp for forgot password", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -267,17 +267,17 @@ class PatientAuthService implements IPatientAuthService {
       const isOtpVerified = await this.otpService.verifyOTP(
         email,
         otp,
-        'signin'
+        "signin"
       );
 
       return isOtpVerified;
     } catch (error) {
-      logger.error('error sign in with google', error);
+      logger.error("error sign in with google", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -292,15 +292,15 @@ class PatientAuthService implements IPatientAuthService {
       });
 
       if (!updateData) {
-        throw new BadRequestError('Error reseting password');
+        throw new BadRequestError("Error reseting password");
       }
     } catch (error) {
-      logger.error('error reseting password', error);
+      logger.error("error reseting password", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -338,7 +338,7 @@ class PatientAuthService implements IPatientAuthService {
       if (patient) {
         const jwtPayload: ITokenPayload = {
           email: patient.email,
-          role: 'patient',
+          role: "patient",
         };
 
         const { accessToken, refreshToken } = generateTokens(jwtPayload);
@@ -361,19 +361,19 @@ class PatientAuthService implements IPatientAuthService {
 
       const jwtPayload: ITokenPayload = {
         email: payload.email,
-        role: 'patient',
+        role: "patient",
       };
 
       const { accessToken, refreshToken } = generateTokens(jwtPayload);
 
       return { newPatient, accessToken, refreshToken, partialUser: true };
     } catch (error) {
-      logger.error('error google signin', error);
+      logger.error("error google signin", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -384,17 +384,17 @@ class PatientAuthService implements IPatientAuthService {
       const patient = await this.patientRepository.createPatient(patientData);
 
       if (!patient) {
-        throw new AppError('Failed to create New User');
+        throw new AppError("Failed to create New User");
       }
 
       return patient;
     } catch (error) {
-      logger.error('error creating a new googleUser', error);
+      logger.error("error creating a new googleUser", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -402,26 +402,26 @@ class PatientAuthService implements IPatientAuthService {
 
   async resendOtp(email: string): Promise<void> {
     try {
-      await this.otpService.deleteOTP(email, 'signup');
+      await this.otpService.deleteOTP(email, "signup");
 
       const otp = await this.otpService.sendOTP(
         email,
-        'signup',
+        "signup",
         mailSubject.verifyEmail
       );
 
       if (!otp) {
-        throw new BadRequestError('Failed to Resend OTP');
+        throw new BadRequestError("Failed to Resend OTP");
       }
 
       logger.info(otp);
     } catch (error) {
-      logger.error('error re-sending otp', error);
+      logger.error("error re-sending otp", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -429,26 +429,26 @@ class PatientAuthService implements IPatientAuthService {
 
   async resendOtpForgotPassword(email: string): Promise<void> {
     try {
-      await this.otpService.deleteOTP(email, 'signin');
+      await this.otpService.deleteOTP(email, "signin");
 
       const otp = await this.otpService.sendOTP(
         email,
-        'signin',
+        "signin",
         mailSubject.resetPassword
       );
 
       if (!otp) {
-        throw new BadRequestError('Failed to resend otp');
+        throw new BadRequestError("Failed to resend otp");
       }
 
       logger.info(otp);
     } catch (error) {
-      logger.error('error re-sending otp', error);
+      logger.error("error re-sending otp", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -464,12 +464,12 @@ class PatientAuthService implements IPatientAuthService {
 
       return patient.isActive;
     } catch (error) {
-      logger.error('error checking patient status', error);
+      logger.error("error checking patient status", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

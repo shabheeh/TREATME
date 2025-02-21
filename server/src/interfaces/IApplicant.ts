@@ -1,6 +1,6 @@
-import { Document, ObjectId } from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
-import ISpecialization from './ISpecilazation';
+import { Document, ObjectId } from "mongoose";
+import { Request, Response, NextFunction } from "express";
+import ISpecialization from "./ISpecilazation";
 
 export interface IApplicant extends Document {
   firstName: string;
@@ -11,7 +11,7 @@ export interface IApplicant extends Document {
   specialization: ObjectId | ISpecialization;
   languages: string[];
   experience: number;
-  workingTwoHrs: 'Yes' | 'No';
+  workingTwoHrs: "Yes" | "No";
   licensedState: string;
   idProof: string;
   resume: string;

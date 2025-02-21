@@ -1,7 +1,7 @@
-import IScheduleRepository from 'src/repositories/doctor/interfaces/IScheduleRepository';
-import logger from '../../configs/logger';
-import { ISchedule, IScheduleService } from '../../interfaces/IDoctor';
-import { AppError } from '../../utils/errors';
+import IScheduleRepository from "src/repositories/doctor/interfaces/IScheduleRepository";
+import logger from "../../configs/logger";
+import { ISchedule, IScheduleService } from "../../interfaces/IDoctor";
+import { AppError } from "../../utils/errors";
 
 class ScheduleService implements IScheduleService {
   private scheduleRepo: IScheduleRepository;
@@ -15,12 +15,12 @@ class ScheduleService implements IScheduleService {
       const schedule = await this.scheduleRepo.findSchedule(doctorId);
       return schedule;
     } catch (error) {
-      logger.error('Failed to update doctor Shedule');
+      logger.error("Failed to update doctor Shedule");
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -47,12 +47,12 @@ class ScheduleService implements IScheduleService {
 
       return updatedSchedule;
     } catch (error) {
-      logger.error('Failed to update doctor Shedule');
+      logger.error("Failed to update doctor Shedule");
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

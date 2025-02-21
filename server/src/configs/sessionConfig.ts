@@ -1,4 +1,4 @@
-import session from 'express-session';
+import session from "express-session";
 // import { createClient } from 'redis';
 // import { default as connectRedis } from 'connect-redis';
 
@@ -28,7 +28,7 @@ const sessionConfig = session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },

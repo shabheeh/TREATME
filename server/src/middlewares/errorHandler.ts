@@ -1,15 +1,15 @@
-import { Request, Response, ErrorRequestHandler } from 'express';
-import { AppError } from '../utils/errors';
-import logger from '../configs/logger';
+import { Request, Response, ErrorRequestHandler, NextFunction } from "express";
+import { AppError } from "../utils/errors";
+import logger from "../configs/logger";
 
 export const errorHandler: ErrorRequestHandler = (
   error: Error | AppError,
   _req: Request,
-  res: Response
+  res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction
 ): void => {
   logger.error(`${error.message} - ${error.stack}`);
-
-  console.log('res object:', res);
 
   if (error instanceof AppError) {
     res.status(error.statusCode).json({
@@ -20,8 +20,8 @@ export const errorHandler: ErrorRequestHandler = (
   }
 
   res.status(500).json({
-    status: 'error',
-    message: 'Internal server error',
+    status: "error",
+    message: "Internal server error",
   });
   return;
 };

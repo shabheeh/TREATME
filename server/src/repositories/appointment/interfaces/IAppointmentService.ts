@@ -1,12 +1,10 @@
 import IAppointment, {
   IAppointmentPopulated,
-} from 'src/interfaces/IAppointment';
+} from "src/interfaces/IAppointment";
 
 interface IAppointmentRepository {
-  createAppointment(
-    appointmentData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>>;
-  getAppointmentById(id: string): Promise<Partial<IAppointmentPopulated>>;
+  createAppointment(appointmentData: IAppointment): Promise<IAppointment>;
+  getAppointmentById(id: string): Promise<IAppointmentPopulated>;
   updateAppointment(
     id: string,
     appointmentData: Partial<IAppointment>

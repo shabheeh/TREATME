@@ -1,6 +1,6 @@
-import { redisClient } from '../configs/redis';
-import logger from '../configs/logger';
-import { ICacheService } from '../interfaces/IShared';
+import { redisClient } from "../configs/redis";
+import logger from "../configs/logger";
+import { ICacheService } from "../interfaces/IShared";
 
 export default class CacheService implements ICacheService {
   async store(key: string, value: string, ttl: number): Promise<void> {
@@ -8,7 +8,7 @@ export default class CacheService implements ICacheService {
       await redisClient.setEx(key, ttl, value);
     } catch (error) {
       logger.error(`Error storing value in Redis for key "${key}":`, error);
-      throw new Error('Failed to store data in cache');
+      throw new Error("Failed to store data in cache");
     }
   }
 
@@ -20,7 +20,7 @@ export default class CacheService implements ICacheService {
         `Error retrieving value from Redis for key "${key}":`,
         error
       );
-      throw new Error('Failed to retrieve data from cache');
+      throw new Error("Failed to retrieve data from cache");
     }
   }
 
@@ -29,7 +29,7 @@ export default class CacheService implements ICacheService {
       await redisClient.del(key);
     } catch (error) {
       logger.error(`Error deleting key "${key}" from Redis:`, error);
-      throw new Error('Failed to delete data from cache');
+      throw new Error("Failed to delete data from cache");
     }
   }
 
@@ -39,7 +39,7 @@ export default class CacheService implements ICacheService {
       return exists > 0;
     } catch (error) {
       logger.error(`Error checking existence of key "${key}" in Redis:`, error);
-      throw new Error('Failed to check existence in cache');
+      throw new Error("Failed to check existence in cache");
     }
   }
 }

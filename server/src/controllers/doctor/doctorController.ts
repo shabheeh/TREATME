@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
-import { IDoctorController, IDoctorService } from '../../interfaces/IDoctor';
-import { getDoctorsWithSchedulesQuery } from '../../repositories/doctor/interfaces/IDoctorRepository';
-import { Types } from 'mongoose';
-import { BadRequestError } from '../../utils/errors';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
+import { IDoctorController, IDoctorService } from "../../interfaces/IDoctor";
+import { getDoctorsWithSchedulesQuery } from "../../repositories/doctor/interfaces/IDoctorRepository";
+import { Types } from "mongoose";
+import { BadRequestError } from "../../utils/errors";
 
 class DoctorController implements IDoctorController {
   private doctorService: IDoctorService;
@@ -18,17 +18,17 @@ class DoctorController implements IDoctorController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
-      if (!id) {
-        throw new BadRequestError('Bad Request: Missing info');
+      const { doctorId } = req.params;
+      if (!doctorId) {
+        throw new BadRequestError("Bad Request: Missing info");
       }
 
-      const doctor = await this.doctorService.getDoctor(id);
+      const doctor = await this.doctorService.getDoctor(doctorId);
 
       res.status(200).json({ doctor });
     } catch (error) {
       logger.error(
-        error instanceof Error ? error.message : 'Controller: getDoctor'
+        error instanceof Error ? error.message : "Controller: getDoctor"
       );
       next(error);
     }
@@ -42,8 +42,8 @@ class DoctorController implements IDoctorController {
     try {
       const query = {
         specialization: new Types.ObjectId(req.query.spec as string),
-        gender: req.query.gen === 'any' ? null : (req.query.gen as string),
-        language: req.query.lan === 'any' ? null : (req.query.lan as string),
+        gender: req.query.gen === "any" ? null : (req.query.gen as string),
+        language: req.query.lan === "any" ? null : (req.query.lan as string),
         page: Number(req.query.page),
         selectedDate: (req.query.date as string) || new Date(),
       } as unknown as getDoctorsWithSchedulesQuery;
@@ -53,7 +53,7 @@ class DoctorController implements IDoctorController {
       res.status(200).json({ result });
     } catch (error) {
       logger.error(
-        error instanceof Error ? error.message : 'Failed to fetch Doctors'
+        error instanceof Error ? error.message : "Failed to fetch Doctors"
       );
       next(error);
     }

@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongoose';
+import { ObjectId } from "mongoose";
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
   ISchedule,
-} from 'src/interfaces/IDoctor';
+} from "src/interfaces/IDoctor";
 
 export interface getDoctorsWithSchedulesQuery {
   specialization: ObjectId;
@@ -27,7 +27,10 @@ interface IDoctorRepository {
   createDoctor(doctor: Partial<IDoctor>): Promise<IDoctor>;
   findDoctorByEmail(email: string): Promise<IDoctor | null>;
   findDoctorById(email: string): Promise<IDoctor>;
-  updateDoctor(id: string, updateData: Partial<IDoctor>): Promise<IDoctor>;
+  updateDoctor(
+    doctorId: string,
+    updateData: Partial<IDoctor>
+  ): Promise<IDoctor>;
   getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult>;
   getDoctorsWithSchedules(
     query: getDoctorsWithSchedulesQuery

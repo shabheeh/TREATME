@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from "express";
 import ISpecialization, {
   ISpecializationController,
   ISpecializationService,
-} from '../../interfaces/ISpecilazation';
-import { BadRequestError } from '../../utils/errors';
-import logger from '../../configs/logger';
+} from "../../interfaces/ISpecilazation";
+import { BadRequestError } from "../../utils/errors";
+import logger from "../../configs/logger";
 
 class SpecializationController implements ISpecializationController {
   private specializationService: ISpecializationService;
@@ -20,7 +20,7 @@ class SpecializationController implements ISpecializationController {
   ): Promise<void> => {
     try {
       if (!req.file) {
-        throw new BadRequestError('Image is not provided');
+        throw new BadRequestError("Image is not provided");
       }
 
       const specialization = {
@@ -38,10 +38,10 @@ class SpecializationController implements ISpecializationController {
       );
 
       res.status(201).json({
-        message: 'Specialization created successfully',
+        message: "Specialization created successfully",
       });
     } catch (error) {
-      logger.error('Error creating Specialization', error);
+      logger.error("Error creating Specialization", error);
       next(error);
     }
   };
@@ -57,10 +57,10 @@ class SpecializationController implements ISpecializationController {
 
       res.status(200).json({
         specializations,
-        message: 'Specializations fetched successfully',
+        message: "Specializations fetched successfully",
       });
     } catch (error) {
-      logger.error('Error Fetching Specializations', error);
+      logger.error("Error Fetching Specializations", error);
       next(error);
     }
   };
@@ -71,21 +71,23 @@ class SpecializationController implements ISpecializationController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { specializationId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Something went wrong');
+      if (!specializationId) {
+        throw new BadRequestError("Something went wrong");
       }
 
       const specialization =
-        await this.specializationService.getSpecializationById(id);
+        await this.specializationService.getSpecializationById(
+          specializationId
+        );
 
       res.status(200).json({
         specialization,
-        message: 'Fetched Specialization Successfully',
+        message: "Fetched Specialization Successfully",
       });
     } catch (error) {
-      logger.error('Error Fetching Specialization', error);
+      logger.error("Error Fetching Specialization", error);
       next(error);
     }
   };
@@ -96,10 +98,10 @@ class SpecializationController implements ISpecializationController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { specializationId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Something went wrong');
+      if (!specializationId) {
+        throw new BadRequestError("Something went wrong");
       }
 
       const updateData = {
@@ -112,17 +114,17 @@ class SpecializationController implements ISpecializationController {
       const imageFile: Express.Multer.File | undefined = req.file;
 
       const updatedData = await this.specializationService.updateSpecialization(
-        id,
+        specializationId,
         updateData,
         imageFile
       );
 
       res.status(200).json({
         updatedData,
-        message: 'Specialization updated successfully',
+        message: "Specialization updated successfully",
       });
     } catch (error) {
-      logger.error('Error upadating Specializations', error);
+      logger.error("Error upadating Specializations", error);
       next(error);
     }
   };

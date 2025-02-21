@@ -1,7 +1,7 @@
-import logger from '../../configs/logger';
-import { ILifestyle, ILifestyleService } from '../../interfaces/ILifestyle';
-import ILifestyleRepository from '../../repositories/healthProfile/interface/ILifestyleRepository';
-import { AppError } from '../../utils/errors';
+import logger from "../../configs/logger";
+import { ILifestyle, ILifestyleService } from "../../interfaces/ILifestyle";
+import ILifestyleRepository from "../../repositories/healthProfile/interface/ILifestyleRepository";
+import { AppError } from "../../utils/errors";
 
 class LifestyleService implements ILifestyleService {
   private lifestyleRepo: ILifestyleRepository;
@@ -16,12 +16,12 @@ class LifestyleService implements ILifestyleService {
 
       return lifestyle;
     } catch (error) {
-      logger.error('Failed to fetch lifestyle', error);
+      logger.error("Failed to fetch lifestyle", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -38,17 +38,17 @@ class LifestyleService implements ILifestyleService {
       );
 
       if (!updatedData) {
-        throw new AppError('Failed to update Lifestyle');
+        throw new AppError("Failed to update Lifestyle");
       }
 
       return updatedData;
     } catch (error) {
-      logger.error('Failded to update Lifestyle', error);
+      logger.error("Failded to update Lifestyle", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

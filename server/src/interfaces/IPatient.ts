@@ -1,8 +1,8 @@
-import { Document } from 'mongoose';
-import { Request, Response, NextFunction } from 'express';
-import { IHealthHistory } from './IHealthHistory';
-import { IBehaviouralHealth } from './IBehaviouralHealth';
-import { ILifestyle } from './ILifestyle';
+import { Document } from "mongoose";
+import { Request, Response, NextFunction } from "express";
+import { IHealthHistory } from "./IHealthHistory";
+import { IBehaviouralHealth } from "./IBehaviouralHealth";
+import { ILifestyle } from "./ILifestyle";
 export interface Address {
   city: string;
   landmark: string;
@@ -16,7 +16,7 @@ export default interface IPatient extends Document {
   password?: string;
   firstName: string;
   lastName: string;
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   dateOfBirth: Date;
   address?: Address;
   isActive: boolean;

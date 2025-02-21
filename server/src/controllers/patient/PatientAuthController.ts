@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
-import OtpService from '../../services/OtpService';
-import logger from '../../configs/logger';
+import { NextFunction, Request, Response } from "express";
+import OtpService from "../../services/OtpService";
+import logger from "../../configs/logger";
 import {
   IPatientAuthService,
   IPatientAuthController,
-} from '../../interfaces/IPatient';
-import { AuthError, AuthErrorCode, BadRequestError } from '../../utils/errors';
-import { ITokenPayload } from '../../utils/jwt';
+} from "../../interfaces/IPatient";
+import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
+import { ITokenPayload } from "../../utils/jwt";
 
 class PatientAuthController implements IPatientAuthController {
   private patientAuthService: IPatientAuthService;
@@ -27,7 +27,7 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.sendOtp(email, password);
 
-      const otp = await this.otpService.getOTP(email, 'signup');
+      const otp = await this.otpService.getOTP(email, "signup");
 
       res.status(200).json({
         message: `A verification OTP has been sent to ${email}`,
@@ -49,11 +49,11 @@ class PatientAuthController implements IPatientAuthController {
       await this.patientAuthService.verifyOtp(email, otp);
 
       res.status(200).json({
-        message: 'OTP verified successfully',
+        message: "OTP verified successfully",
         email,
       });
     } catch (error) {
-      logger.error('error verifying otp', error);
+      logger.error("error verifying otp", error);
       next(error);
     }
   };
@@ -69,10 +69,10 @@ class PatientAuthController implements IPatientAuthController {
       await this.patientAuthService.signup(userData);
 
       res.status(201).json({
-        message: 'User signed up successfully',
+        message: "User signed up successfully",
       });
     } catch (error) {
-      logger.error('error signup', error);
+      logger.error("error signup", error);
       next(error);
     }
   };
@@ -87,17 +87,17 @@ class PatientAuthController implements IPatientAuthController {
 
       const result = await this.patientAuthService.signin(email, password);
 
-      if ('googleUser' in result) {
+      if ("googleUser" in result) {
         res.status(202).json(result.message);
         return;
       }
 
       const { accessToken, refreshToken, patient } = result;
 
-      res.cookie('refreshToken', refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -106,7 +106,7 @@ class PatientAuthController implements IPatientAuthController {
         patient,
       });
     } catch (error) {
-      logger.error('error signin', error);
+      logger.error("error signin", error);
       next(error);
     }
   };
@@ -125,7 +125,7 @@ class PatientAuthController implements IPatientAuthController {
         user,
       });
     } catch (error) {
-      logger.error('error sedning otp fogotpassword', error);
+      logger.error("error sedning otp fogotpassword", error);
       next(error);
     }
   };
@@ -141,10 +141,10 @@ class PatientAuthController implements IPatientAuthController {
       await this.patientAuthService.verifyOtpForgotPassword(email, otp);
 
       res.status(200).json({
-        messge: 'OTP verified successfully',
+        messge: "OTP verified successfully",
       });
     } catch (error) {
-      logger.error('error veriying otp forgotpassword', error);
+      logger.error("error veriying otp forgotpassword", error);
       next(error);
     }
   };
@@ -160,10 +160,10 @@ class PatientAuthController implements IPatientAuthController {
       await this.patientAuthService.resetPassword(id, password);
 
       res.status(200).json({
-        message: 'Password reset successfully',
+        message: "Password reset successfully",
       });
     } catch (error) {
-      logger.error('error reset password', error);
+      logger.error("error reset password", error);
       next(error);
     }
   };
@@ -181,10 +181,10 @@ class PatientAuthController implements IPatientAuthController {
       if (!result.partialUser) {
         const { patient, accessToken, refreshToken, partialUser } = result;
 
-        res.cookie('refreshToken', refreshToken, {
+        res.cookie("refreshToken", refreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
@@ -198,10 +198,10 @@ class PatientAuthController implements IPatientAuthController {
 
       const { newPatient, accessToken, refreshToken, partialUser } = result;
 
-      res.cookie('refreshToken', refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -211,7 +211,7 @@ class PatientAuthController implements IPatientAuthController {
         partialUser,
       });
     } catch (error) {
-      logger.error('Error during Google authentication:', error);
+      logger.error("Error during Google authentication:", error);
       next(error);
     }
   };
@@ -239,7 +239,7 @@ class PatientAuthController implements IPatientAuthController {
         patient,
       });
     } catch (error) {
-      logger.error('Error during Google authentication singup:', error);
+      logger.error("Error during Google authentication singup:", error);
       next(error);
     }
   };
@@ -253,16 +253,16 @@ class PatientAuthController implements IPatientAuthController {
       const { email } = req.body;
 
       if (!email) {
-        throw new BadRequestError('No email not provided');
+        throw new BadRequestError("No email not provided");
       }
 
       await this.patientAuthService.resendOtp(email);
 
       res.status(200).json({
-        message: 'otp resent successfully',
+        message: "otp resent successfully",
       });
     } catch (error) {
-      logger.error('controller: Error resending otp:', error);
+      logger.error("controller: Error resending otp:", error);
       next(error);
     }
   };
@@ -276,16 +276,16 @@ class PatientAuthController implements IPatientAuthController {
       const { email } = req.body;
 
       if (!email) {
-        throw new BadRequestError('No email not provided');
+        throw new BadRequestError("No email not provided");
       }
 
       await this.patientAuthService.resendOtpForgotPassword(email);
 
       res.status(200).json({
-        message: 'otp resent successfully',
+        message: "otp resent successfully",
       });
     } catch (error) {
-      logger.error('controller: Error resending otp:', error);
+      logger.error("controller: Error resending otp:", error);
       next(error);
     }
   };
@@ -296,17 +296,17 @@ class PatientAuthController implements IPatientAuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      res.clearCookie('refreshToken', {
+      res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
       });
 
       res.status(200).json({
-        message: 'user signed out successfully',
+        message: "user signed out successfully",
       });
     } catch (error) {
-      logger.error('controller: Error resending otp:', error);
+      logger.error("controller: Error resending otp:", error);
       next(error);
     }
   };

@@ -1,15 +1,15 @@
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
-} from 'src/interfaces/IDoctor';
-import IDoctorRepository from '../../repositories/doctor/interfaces/IDoctorRepository';
-import bcrypt from 'bcryptjs';
-import logger from '../../configs/logger';
-import { IAdminDoctorService } from 'src/interfaces/IAdmin';
-import { AppError } from '../../utils/errors';
-import { sendEmail } from '../../utils/mailer';
-import { generateWelcomeDoctorHtml } from '../../helpers/welcomeDoctor';
-import { uploadToCloudinary } from '../../utils/uploadImage';
+} from "src/interfaces/IDoctor";
+import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepository";
+import bcrypt from "bcryptjs";
+import logger from "../../configs/logger";
+import { IAdminDoctorService } from "src/interfaces/IAdmin";
+import { AppError } from "../../utils/errors";
+import { sendEmail } from "../../utils/mailer";
+import { generateWelcomeDoctorHtml } from "../../helpers/welcomeDoctor";
+import { uploadToCloudinary } from "../../utils/uploadImage";
 
 class AdminDoctorService implements IAdminDoctorService {
   private doctorRepository: IDoctorRepository;
@@ -25,7 +25,7 @@ class AdminDoctorService implements IAdminDoctorService {
     try {
       const cloudinaryResponse = await uploadToCloudinary(
         imageFile,
-        'ProfilePictures/Doctors'
+        "ProfilePictures/Doctors"
       );
       const imageUrl = cloudinaryResponse.url;
       const imageId = cloudinaryResponse.publicId;
@@ -51,19 +51,19 @@ class AdminDoctorService implements IAdminDoctorService {
 
       await sendEmail(
         withoutPassword.email,
-        'Welcome to Treamtme',
+        "Welcome to Treamtme",
         undefined,
         html
       );
 
       return withoutPassword;
     } catch (error) {
-      logger.error('error creating a new doctor', error);
+      logger.error("error creating a new doctor", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -74,17 +74,17 @@ class AdminDoctorService implements IAdminDoctorService {
       const filter = {
         page: Math.max(1, params.page || 1),
         limit: Math.min(50, Math.max(1, params.limit || 5)),
-        search: params.search?.trim() || '',
+        search: params.search?.trim() || "",
       };
 
       return await this.doctorRepository.getDoctors(filter);
     } catch (error) {
-      logger.error('error creating a new doctor', error);
+      logger.error("error creating a new doctor", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

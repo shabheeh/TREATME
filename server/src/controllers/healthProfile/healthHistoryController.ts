@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import {
   IHealthHistoryController,
   IHealthHistoryService,
-} from '../../interfaces/IHealthHistory';
-import { BadRequestError } from '../../utils/errors';
+} from "../../interfaces/IHealthHistory";
+import { BadRequestError } from "../../utils/errors";
 
 class HealthHistoryController implements IHealthHistoryController {
   private healthHistoryService: IHealthHistoryService;
@@ -19,18 +19,18 @@ class HealthHistoryController implements IHealthHistoryController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { patientId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Bad Request');
+      if (!patientId) {
+        throw new BadRequestError("Bad Request");
       }
 
       const healthHistory =
-        await this.healthHistoryService.getHealthHistory(id);
+        await this.healthHistoryService.getHealthHistory(patientId);
 
       res.status(200).json({ healthHistory });
     } catch (error) {
-      logger.error('Failed to fetch health history', error);
+      logger.error("Failed to fetch health history", error);
       next(error);
     }
   };
@@ -41,17 +41,17 @@ class HealthHistoryController implements IHealthHistoryController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { patientId } = req.params;
       const updateData = req.body;
 
       console.log(updateData);
 
-      if (!id || !updateData) {
-        throw new BadRequestError('Bad request');
+      if (!patientId || !updateData) {
+        throw new BadRequestError("Bad request");
       }
 
       const healthHistory = await this.healthHistoryService.updateHealthHistory(
-        id,
+        patientId,
         updateData
       );
 
@@ -59,7 +59,7 @@ class HealthHistoryController implements IHealthHistoryController {
         healthHistory,
       });
     } catch (error) {
-      logger.error('Failded to update health history', error);
+      logger.error("Failded to update health history", error);
       next(error);
     }
   };

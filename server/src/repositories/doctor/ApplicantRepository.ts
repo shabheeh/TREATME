@@ -1,11 +1,11 @@
-import { Model } from 'mongoose';
-import IApplicantRepository from './interfaces/IApplicantRepository';
-import { IApplicant } from 'src/interfaces/IApplicant';
-import { AppError } from '../../utils/errors';
+import { Model } from "mongoose";
+import IApplicantRepository from "./interfaces/IApplicantRepository";
+import { IApplicant } from "src/interfaces/IApplicant";
+import { AppError } from "../../utils/errors";
 import {
   IApplicantsFilter,
   IApplicantsFilterResult,
-} from 'src/interfaces/IApplicant';
+} from "src/interfaces/IApplicant";
 
 interface Query {
   $or?: Array<{
@@ -28,7 +28,7 @@ class ApplicantRepository implements IApplicantRepository {
       await this.model.create(applicant);
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -38,11 +38,11 @@ class ApplicantRepository implements IApplicantRepository {
     try {
       const applicant = await this.model
         .findOne({ email })
-        .populate('specialization');
+        .populate("specialization");
       return applicant;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -58,16 +58,16 @@ class ApplicantRepository implements IApplicantRepository {
       const query: Query = {};
 
       query.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: search, $options: "i" } },
+        { lastName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
       ];
 
       const [applicants, total] = await Promise.all([
         this.model
           .find(query)
-          .populate('specialization')
+          .populate("specialization")
           .skip(skip)
           .limit(limit),
         this.model.countDocuments(query),
@@ -82,36 +82,38 @@ class ApplicantRepository implements IApplicantRepository {
       };
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
-  async findApplicantById(id: string): Promise<IApplicant | null> {
+  async findApplicantById(applicantId: string): Promise<IApplicant | null> {
     try {
       const applicant = await this.model
-        .findById(id)
-        .populate('specialization');
+        .findById(applicantId)
+        .populate("specialization");
       return applicant;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
-  async deleteApplicant(id: string): Promise<void> {
+  async deleteApplicant(applicantId: string): Promise<void> {
     try {
-      const deletedApplicant = await this.model.findByIdAndDelete(id).exec();
+      const deletedApplicant = await this.model
+        .findByIdAndDelete(applicantId)
+        .exec();
 
       if (!deletedApplicant) {
-        throw new AppError('Applicant not found', 404);
+        throw new AppError("Applicant not found", 404);
       }
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

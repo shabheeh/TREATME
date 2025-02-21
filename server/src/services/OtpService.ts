@@ -1,7 +1,7 @@
-import CacheService from './CacheService';
-import logger from '../configs/logger';
-import { IOtpService } from '../interfaces/IShared';
-import { getEmailTransporter } from '../configs/nodemailer';
+import CacheService from "./CacheService";
+import logger from "../configs/logger";
+import { IOtpService } from "../interfaces/IShared";
+import { getEmailTransporter } from "../configs/nodemailer";
 
 class OtpService implements IOtpService {
   private emailTransporter;
@@ -35,8 +35,8 @@ class OtpService implements IOtpService {
 
       return otp;
     } catch (error) {
-      logger.error('otp service', error);
-      throw new Error('error sending otp');
+      logger.error("otp service", error);
+      throw new Error("error sending otp");
     }
   }
 

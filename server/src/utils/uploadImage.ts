@@ -1,16 +1,16 @@
-import cloudinary from '../configs/cloudinary';
+import cloudinary from "../configs/cloudinary";
 
 export async function uploadToCloudinary(
   file: Express.Multer.File,
   folder: string
 ): Promise<{ url: string; publicId: string }> {
   try {
-    const fileStr = file.buffer.toString('base64');
+    const fileStr = file.buffer.toString("base64");
     const fileUri = `data:${file.mimetype};base64,${fileStr}`;
 
     const uploadResponse = await cloudinary.uploader.upload(fileUri, {
       folder,
-      resource_type: 'auto',
+      resource_type: "auto",
     });
 
     return {
@@ -18,8 +18,8 @@ export async function uploadToCloudinary(
       publicId: uploadResponse.public_id,
     };
   } catch (error) {
-    console.error('Error uploading to Cloudinary:', error);
-    throw new Error('Failed to upload image');
+    console.error("Error uploading to Cloudinary:", error);
+    throw new Error("Failed to upload image");
   }
 }
 
@@ -31,12 +31,12 @@ export async function updateCloudinaryImage(
   try {
     await cloudinary.uploader.destroy(oldPublicId);
 
-    const fileStr = newImage.buffer.toString('base64');
+    const fileStr = newImage.buffer.toString("base64");
     const fileUri = `data:${newImage.mimetype};base64,${fileStr}`;
 
     const uploadResponse = await cloudinary.uploader.upload(fileUri, {
       folder,
-      resource_type: 'auto',
+      resource_type: "auto",
     });
 
     return {
@@ -44,7 +44,7 @@ export async function updateCloudinaryImage(
       publicId: uploadResponse.public_id,
     };
   } catch (error) {
-    console.error('Error updating Cloudinary image:', error);
-    throw new Error('Failed to update image');
+    console.error("Error updating Cloudinary image:", error);
+    throw new Error("Failed to update image");
   }
 }

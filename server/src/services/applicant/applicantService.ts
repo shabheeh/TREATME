@@ -1,15 +1,15 @@
-import { AppError, ConflictError } from '../../utils/errors';
-import logger from '../../configs/logger';
+import { AppError, ConflictError } from "../../utils/errors";
+import logger from "../../configs/logger";
 import {
   IApplicant,
   IApplicantService,
   IApplicantsFilter,
   IApplicantsFilterResult,
-} from '../../interfaces/IApplicant';
-import IApplicantRepository from '../../repositories/doctor/interfaces/IApplicantRepository';
-import { uploadToCloudinary } from '../../utils/uploadImage';
-import { sendEmail } from '../../utils/mailer';
-import ISpecialization from 'src/interfaces/ISpecilazation';
+} from "../../interfaces/IApplicant";
+import IApplicantRepository from "../../repositories/doctor/interfaces/IApplicantRepository";
+import { uploadToCloudinary } from "../../utils/uploadImage";
+import { sendEmail } from "../../utils/mailer";
+import ISpecialization from "src/interfaces/ISpecilazation";
 
 class ApplicantService implements IApplicantService {
   private applicantRepository: IApplicantRepository;
@@ -30,23 +30,23 @@ class ApplicantService implements IApplicantService {
         );
 
       if (existingApplicant) {
-        throw new ConflictError('Alreeady Registerd Candidate');
+        throw new ConflictError("Alreeady Registerd Candidate");
       }
 
-      const uplodIdProof = await uploadToCloudinary(idProofFile, 'Applicants');
-      const uploadResume = await uploadToCloudinary(resumeFile, 'Applicants');
+      const uplodIdProof = await uploadToCloudinary(idProofFile, "Applicants");
+      const uploadResume = await uploadToCloudinary(resumeFile, "Applicants");
 
       applicantData.idProof = uplodIdProof.url;
       applicantData.resume = uploadResume.url;
 
       await this.applicantRepository.createApplicant(applicantData);
     } catch (error) {
-      logger.error('error creating applicant', error);
+      logger.error("error creating applicant", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -59,17 +59,17 @@ class ApplicantService implements IApplicantService {
       const filter = {
         page: Math.max(1, params.page || 1),
         limit: Math.min(50, Math.max(1, params.limit || 5)),
-        search: params.search?.trim() || '',
+        search: params.search?.trim() || "",
       };
 
       return this.applicantRepository.getApplicants(filter);
     } catch (error) {
-      logger.error('error getting applicants', error);
+      logger.error("error getting applicants", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -80,17 +80,17 @@ class ApplicantService implements IApplicantService {
       const applicant = await this.applicantRepository.findApplicantById(id);
 
       if (!applicant) {
-        throw new AppError('Applicant not found');
+        throw new AppError("Applicant not found");
       }
 
       return applicant;
     } catch (error) {
-      logger.error('error getting applicant', error);
+      logger.error("error getting applicant", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -116,19 +116,19 @@ class ApplicantService implements IApplicantService {
 
       await sendEmail(
         applicant.email,
-        'Update on Your Application Status',
+        "Update on Your Application Status",
         undefined,
         mailContent
       );
 
       await this.applicantRepository.deleteApplicant(id);
     } catch (error) {
-      logger.error('error deleting applicant', error);
+      logger.error("error deleting applicant", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

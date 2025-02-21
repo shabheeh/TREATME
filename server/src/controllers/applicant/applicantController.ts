@@ -1,10 +1,10 @@
 import {
   IApplicantController,
   IApplicantService,
-} from 'src/interfaces/IApplicant';
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
-import { BadRequestError } from '../../utils/errors';
+} from "src/interfaces/IApplicant";
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
+import { BadRequestError } from "../../utils/errors";
 
 class ApplicantController implements IApplicantController {
   private applicantService: IApplicantService;
@@ -21,30 +21,28 @@ class ApplicantController implements IApplicantController {
     try {
       const applicantData = req.body;
 
-      console.log(applicantData);
-
       if (
         !req.files ||
         !(req.files as { [fieldname: string]: Express.Multer.File[] })[
-          'idProof'
+          "idProof"
         ]
       ) {
-        throw new BadRequestError('ID Proof is required');
+        throw new BadRequestError("ID Proof is required");
       }
 
       if (
         !req.files ||
-        !(req.files as { [fieldname: string]: Express.Multer.File[] })['resume']
+        !(req.files as { [fieldname: string]: Express.Multer.File[] })["resume"]
       ) {
-        throw new BadRequestError('Resume required');
+        throw new BadRequestError("Resume required");
       }
 
       const uploadedFiles = req.files as {
         [fieldname: string]: Express.Multer.File[];
       };
 
-      const idProofFile = uploadedFiles['idProof'][0];
-      const resumeFile = uploadedFiles['resume'][0];
+      const idProofFile = uploadedFiles["idProof"][0];
+      const resumeFile = uploadedFiles["resume"][0];
 
       await this.applicantService.createApplicant(
         applicantData,
@@ -53,10 +51,10 @@ class ApplicantController implements IApplicantController {
       );
 
       res.status(201).json({
-        message: 'Applicant created successfully',
+        message: "Applicant created successfully",
       });
     } catch (error) {
-      logger.error('controller:error fetching patients data ', error);
+      logger.error("controller:error fetching patients data ", error);
       next(error);
     }
   };
@@ -77,7 +75,7 @@ class ApplicantController implements IApplicantController {
 
       res.status(200).json({ result });
     } catch (error) {
-      logger.error('error listing applicants', error);
+      logger.error("error listing applicants", error);
       next(error);
     }
   };
@@ -88,20 +86,20 @@ class ApplicantController implements IApplicantController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { applicantId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Bad Request');
+      if (!applicantId) {
+        throw new BadRequestError("Bad Request");
       }
 
-      const applicant = await this.applicantService.getApplicant(id);
+      const applicant = await this.applicantService.getApplicant(applicantId);
 
       res.status(200).json({
         applicant,
-        message: 'Applicant fetched Successfully',
+        message: "Applicant fetched Successfully",
       });
     } catch (error) {
-      logger.error('error fetching applicant details', error);
+      logger.error("error fetching applicant details", error);
       next(error);
     }
   };
@@ -112,17 +110,17 @@ class ApplicantController implements IApplicantController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { id } = req.params;
+      const { applicantId } = req.params;
 
-      if (!id) {
-        throw new BadRequestError('Bad Request');
+      if (!applicantId) {
+        throw new BadRequestError("Bad Request");
       }
 
-      await this.applicantService.deleteApplicant(id);
+      await this.applicantService.deleteApplicant(applicantId);
 
       res.status(200);
     } catch (error) {
-      logger.error('error deleteing applicant', error);
+      logger.error("error deleteing applicant", error);
       next(error);
     }
   };

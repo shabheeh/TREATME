@@ -1,4 +1,4 @@
-import { celebrate, Joi, Segments } from 'celebrate';
+import { celebrate, Joi, Segments } from "celebrate";
 
 export const validateDoctor = celebrate({
   [Segments.BODY]: Joi.object().keys({
@@ -8,7 +8,7 @@ export const validateDoctor = celebrate({
     phone: Joi.string()
       .pattern(/^\+?[1-9]\d{1,14}$/)
       .required(),
-    gender: Joi.string().valid('male', 'female').required(),
+    gender: Joi.string().valid("male", "female").required(),
     specialization: Joi.string().required(),
     specialties: Joi.array().items(Joi.string()).min(1).required(),
     languages: Joi.array().items(Joi.string()).min(1).required(),
@@ -20,13 +20,13 @@ export const validateDoctor = celebrate({
         Joi.object({
           day: Joi.string()
             .valid(
-              'Monday',
-              'Tuesday',
-              'Wednesday',
-              'Thursday',
-              'Friday',
-              'Saturday',
-              'Sunday'
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
             )
             .required(),
           slots: Joi.array()

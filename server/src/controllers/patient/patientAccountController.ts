@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../../configs/logger";
 import IPatient, {
   IPatientAccountController,
   IPatientAccountService,
-} from 'src/interfaces/IPatient';
-import { AppError, BadRequestError } from '../../utils/errors';
-import { ITokenPayload } from 'src/utils/jwt';
+} from "src/interfaces/IPatient";
+import { AppError, BadRequestError } from "../../utils/errors";
+import { ITokenPayload } from "src/utils/jwt";
 // import { ITokenPayload } from "../../utils/jwt";
 
 // declare global {
@@ -30,7 +30,7 @@ class PatientAcccountController implements IPatientAccountController {
   ): Promise<void> => {
     try {
       if (!req.user) {
-        throw new AppError('User not authenticated');
+        throw new AppError("User not authenticated");
       }
 
       const { email } = req.user as ITokenPayload;
@@ -53,10 +53,10 @@ class PatientAcccountController implements IPatientAccountController {
 
       res.status(200).json({
         patient: updatedData,
-        message: 'Profile updated Successfully',
+        message: "Profile updated Successfully",
       });
     } catch (error) {
-      logger.error('error updating profile', error);
+      logger.error("error updating profile", error);
       next(error);
     }
   };
@@ -69,7 +69,7 @@ class PatientAcccountController implements IPatientAccountController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new BadRequestError('Bad Request: Missing info');
+        throw new BadRequestError("Bad Request: Missing info");
       }
       const result = await this.patientAccountService.getHealthProfile(id);
       res.status(200).json({
@@ -79,7 +79,7 @@ class PatientAcccountController implements IPatientAccountController {
       });
     } catch (error) {
       logger.error(
-        error instanceof Error ? error.message : 'Controller: getHealthProfile'
+        error instanceof Error ? error.message : "Controller: getHealthProfile"
       );
       next(error);
     }

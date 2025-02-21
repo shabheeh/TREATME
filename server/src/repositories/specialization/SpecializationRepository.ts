@@ -1,7 +1,7 @@
-import { Model } from 'mongoose';
-import ISpecialization from '../../interfaces/ISpecilazation';
-import ISpecializationRepository from './interfaces/ISpecializationRepository';
-import { AppError } from '../../utils/errors';
+import { Model } from "mongoose";
+import ISpecialization from "../../interfaces/ISpecilazation";
+import ISpecializationRepository from "./interfaces/ISpecializationRepository";
+import { AppError } from "../../utils/errors";
 
 class SpecializationRepository implements ISpecializationRepository {
   private readonly model: Model<ISpecialization>;
@@ -17,7 +17,7 @@ class SpecializationRepository implements ISpecializationRepository {
       await this.model.create(specialization);
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -26,13 +26,13 @@ class SpecializationRepository implements ISpecializationRepository {
   async getSpecializationByName(name: string): Promise<ISpecialization | null> {
     try {
       const specialization = await this.model.findOne({
-        name: { $regex: new RegExp(name, 'i') },
+        name: { $regex: new RegExp(name, "i") },
       });
 
       return specialization;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -44,32 +44,34 @@ class SpecializationRepository implements ISpecializationRepository {
       return specializations;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
-  async getSpecializationById(id: string): Promise<ISpecialization | null> {
+  async getSpecializationById(
+    specializationId: string
+  ): Promise<ISpecialization | null> {
     try {
-      const specialization = await this.model.findById(id).lean();
+      const specialization = await this.model.findById(specializationId).lean();
 
       return specialization;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
   async updateSpecialization(
-    id: string,
+    specializationId: string,
     updateData: Partial<ISpecialization>
   ): Promise<ISpecialization> {
     try {
       const updatedData = await this.model.findByIdAndUpdate(
-        id,
+        specializationId,
         { $set: updateData },
         {
           new: true,
@@ -79,7 +81,7 @@ class SpecializationRepository implements ISpecializationRepository {
       );
 
       if (!updatedData) {
-        throw new AppError('Specialization not found', 404);
+        throw new AppError("Specialization not found", 404);
       }
 
       return updatedData;
@@ -87,7 +89,7 @@ class SpecializationRepository implements ISpecializationRepository {
       if (error instanceof AppError) throw error;
 
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

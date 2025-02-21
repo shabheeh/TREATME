@@ -1,7 +1,7 @@
-import { Model } from 'mongoose';
-import IDependentRepository from './interface/IDependentRepository';
-import IDependent from '../../interfaces/IDependent';
-import { AppError } from '../../utils/errors';
+import { Model } from "mongoose";
+import IDependentRepository from "./interface/IDependentRepository";
+import IDependent from "../../interfaces/IDependent";
+import { AppError } from "../../utils/errors";
 
 class DependentRepository implements IDependentRepository {
   private readonly model: Model<IDependent>;
@@ -16,7 +16,7 @@ class DependentRepository implements IDependentRepository {
       return newDependent.toObject();
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -28,7 +28,7 @@ class DependentRepository implements IDependentRepository {
       return dependent;
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -41,7 +41,7 @@ class DependentRepository implements IDependentRepository {
       return dependents || [];
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -52,11 +52,11 @@ class DependentRepository implements IDependentRepository {
       const deletedDependent = await this.model.findByIdAndDelete(id);
 
       if (!deletedDependent) {
-        throw new AppError('Dependent not found', 404);
+        throw new AppError("Dependent not found", 404);
       }
     } catch (error) {
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -78,7 +78,7 @@ class DependentRepository implements IDependentRepository {
       );
 
       if (!updatedData) {
-        throw new AppError('Dependent not found', 404);
+        throw new AppError("Dependent not found", 404);
       }
 
       return updatedData;
@@ -86,7 +86,7 @@ class DependentRepository implements IDependentRepository {
       if (error instanceof AppError) throw error;
 
       throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

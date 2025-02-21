@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write .",
-    "preview": "vite preview"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "lint": "eslint . --fix",
+  "lint:fix": "eslint . --fix",
+  "format": "prettier --write .",
+  "preview": "vite preview"
+ },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",

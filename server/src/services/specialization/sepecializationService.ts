@@ -1,13 +1,13 @@
 import ISpecialization, {
   ISpecializationService,
-} from '../../interfaces/ISpecilazation';
-import ISpecializationRepository from '../../repositories/specialization/interfaces/ISpecializationRepository';
-import logger from '../../configs/logger';
-import { AppError, ConflictError } from '../../utils/errors';
+} from "../../interfaces/ISpecilazation";
+import ISpecializationRepository from "../../repositories/specialization/interfaces/ISpecializationRepository";
+import logger from "../../configs/logger";
+import { AppError, ConflictError } from "../../utils/errors";
 import {
   uploadToCloudinary,
   updateCloudinaryImage,
-} from '../../utils/uploadImage';
+} from "../../utils/uploadImage";
 class SpecializationService implements ISpecializationService {
   private specializationRepository: ISpecializationRepository;
 
@@ -26,12 +26,12 @@ class SpecializationService implements ISpecializationService {
         );
 
       if (existingSpecialization) {
-        throw new ConflictError('Specailization with this name is exists');
+        throw new ConflictError("Specailization with this name is exists");
       }
 
       const cloudinaryResponse = await uploadToCloudinary(
         imageFile,
-        'Specializations'
+        "Specializations"
       );
       const imageUrl = cloudinaryResponse.url;
       const imagePublicId = cloudinaryResponse.publicId;
@@ -41,12 +41,12 @@ class SpecializationService implements ISpecializationService {
 
       await this.specializationRepository.createSpecialization(specialization);
     } catch (error) {
-      logger.error('Error creating specialization', error);
+      logger.error("Error creating specialization", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
@@ -56,37 +56,41 @@ class SpecializationService implements ISpecializationService {
     try {
       return await this.specializationRepository.getSpecializations();
     } catch (error) {
-      logger.error('Error creating specialization', error);
+      logger.error("Error creating specialization", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
-  async getSpecializationById(id: string): Promise<ISpecialization | null> {
+  async getSpecializationById(
+    specializationId: string
+  ): Promise<ISpecialization | null> {
     try {
       const specialization =
-        await this.specializationRepository.getSpecializationById(id);
+        await this.specializationRepository.getSpecializationById(
+          specializationId
+        );
 
       return specialization;
     } catch (error) {
-      logger.error('Error creating specialization', error);
+      logger.error("Error creating specialization", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }
   }
 
   async updateSpecialization(
-    id: string,
+    specializationId: string,
     updateData: Partial<ISpecialization>,
     imageFile: Express.Multer.File | undefined
   ): Promise<ISpecialization | null> {
@@ -100,16 +104,21 @@ class SpecializationService implements ISpecializationService {
         if (existingSpecialization) {
           const existingId = (existingSpecialization as ISpecialization)._id;
 
-          if (existingId && existingId.toString() !== id.toString()) {
+          if (
+            existingId &&
+            existingId.toString() !== specializationId.toString()
+          ) {
             throw new AppError(
-              'A specialization with this name already exists.'
+              "A specialization with this name already exists."
             );
           }
         }
       }
 
       const specialization =
-        await this.specializationRepository.getSpecializationById(id);
+        await this.specializationRepository.getSpecializationById(
+          specializationId
+        );
 
       if (imageFile && specialization?.imagePublicId) {
         const newImage = await updateCloudinaryImage(
@@ -122,18 +131,18 @@ class SpecializationService implements ISpecializationService {
       }
 
       const result = await this.specializationRepository.updateSpecialization(
-        id,
+        specializationId,
         updateData
       );
 
       return result;
     } catch (error) {
-      logger.error('Error upadate specialization', error);
+      logger.error("Error upadate specialization", error);
       if (error instanceof AppError) {
         throw error;
       }
       throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
       );
     }

@@ -1,4 +1,4 @@
-import { celebrate, Joi, Segments } from 'celebrate';
+import { celebrate, Joi, Segments } from "celebrate";
 
 export const validateUser = celebrate({
   [Segments.BODY]: Joi.object().keys({
@@ -11,7 +11,7 @@ export const validateUser = celebrate({
     dateOfBirth: Joi.string()
       .pattern(/^\d{4}-\d{2}-\d{2}$/)
       .required(),
-    gender: Joi.string().valid('male', 'female').required(),
+    gender: Joi.string().valid("male", "female").required(),
     address: Joi.object({
       city: Joi.string().required(),
       landmark: Joi.string().optional(),

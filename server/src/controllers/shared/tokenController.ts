@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { refreshAccessToken } from '../../utils/jwt';
-import { AuthError, AuthErrorCode } from '../../utils/errors';
-import logger from '../../configs/logger';
+import { Request, Response, NextFunction } from "express";
+import { refreshAccessToken } from "../../utils/jwt";
+import { AuthError, AuthErrorCode } from "../../utils/errors";
+import logger from "../../configs/logger";
 
 class AuthController {
   handleRefreshToken = async (
@@ -20,10 +20,10 @@ class AuthController {
 
       res.status(200).json({
         accessToken: newAccessToken,
-        message: 'Access token refreshed successfully',
+        message: "Access token refreshed successfully",
       });
     } catch (error) {
-      logger.error('error refreshing tokens', error);
+      logger.error("error refreshing tokens", error);
       next(error);
     }
   };
