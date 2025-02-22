@@ -8,7 +8,7 @@ import {
   Avatar,
   Button,
   Divider,
-  Skeleton
+  Skeleton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { IDependent } from "../../../types/patient/patient.types";
@@ -25,7 +25,7 @@ interface FamilyMembersProps {
 }
 
 const FamilyMembers: React.FC<FamilyMembersProps> = ({
-  changeCurrentState
+  changeCurrentState,
 }) => {
   const [dependents, setDependents] = useState<IDependent[] | []>([]);
   const [loading, setLoading] = useState(false);
@@ -111,7 +111,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                     flexDirection: "column",
                     height: "100%",
                     justifyContent: "space-between",
-                    padding: 2
+                    padding: 2,
                   }}
                 >
                   <Box
@@ -119,14 +119,14 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      mb: 2
+                      mb: 2,
                     }}
                   >
                     <Box
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 2
+                        gap: 2,
                       }}
                     >
                       <Skeleton variant="circular" width={40} height={40} />
@@ -142,7 +142,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                     sx={{
                       display: "flex",
                       justifyContent: "space-between",
-                      marginTop: 2
+                      marginTop: 2,
                     }}
                   >
                     <Skeleton variant="text" width="30%" />
@@ -168,7 +168,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                 flexDirection: "column",
                 height: "100%",
                 justifyContent: "space-between",
-                padding: 2
+                padding: 2,
               }}
             >
               <Box
@@ -176,14 +176,14 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  mb: 2
+                  mb: 2,
                 }}
               >
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 2
+                    gap: 2,
                   }}
                 >
                   <Avatar src={patient?.profilePicture || ""}>
@@ -211,7 +211,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                       color: "green",
                       position: "absolute",
                       top: 16,
-                      right: 16
+                      right: 16,
                     }}
                   >
                     Active
@@ -223,7 +223,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  marginTop: 2
+                  marginTop: 2,
                 }}
               >
                 <Button
@@ -247,7 +247,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                     flexDirection: "column",
                     height: "100%",
                     justifyContent: "space-between",
-                    padding: 2
+                    padding: 2,
                   }}
                 >
                   <Box
@@ -255,14 +255,14 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      mb: 2
+                      mb: 2,
                     }}
                   >
                     <Box
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 2
+                        gap: 2,
                       }}
                     >
                       <Avatar src={dependent.profilePicture || ""}>
@@ -287,7 +287,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                           color: "green",
                           position: "absolute",
                           top: 16,
-                          right: 16
+                          right: 16,
                         }}
                       >
                         Active
@@ -299,7 +299,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                     sx={{
                       display: "flex",
                       justifyContent: "space-between",
-                      marginTop: 2
+                      marginTop: 2,
                     }}
                   >
                     <Button
@@ -331,8 +331,8 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
               height: "100%",
               cursor: "pointer",
               "&:hover": {
-                borderColor: "primary.main"
-              }
+                borderColor: "primary.main",
+              },
             }}
           >
             <Button sx={{ width: "100%" }} onClick={changeCurrentState}>
@@ -343,7 +343,7 @@ const FamilyMembers: React.FC<FamilyMembersProps> = ({
                     flexDirection: "column",
                     alignItems: "center",
                     gap: 1,
-                    my: 3
+                    my: 3,
                   }}
                 >
                   <AddIcon fontSize="large" />

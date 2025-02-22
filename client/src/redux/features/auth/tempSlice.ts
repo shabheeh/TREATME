@@ -4,7 +4,7 @@ import { IPatient } from "../../../types/patient/patient.types";
 type InitialStateType = { tempUser: Partial<IPatient> | null };
 
 const initialState: InitialStateType = {
-  tempUser: null
+  tempUser: null,
 };
 
 interface SignInActionPayload {
@@ -17,8 +17,8 @@ const authSlice = createSlice({
   reducers: {
     setTempUser: (state, action: PayloadAction<SignInActionPayload>) => {
       state.tempUser = action.payload.tempUser;
-    }
-  }
+    },
+  },
 });
 
 export const { setTempUser } = authSlice.actions;

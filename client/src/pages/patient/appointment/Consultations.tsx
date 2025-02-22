@@ -17,7 +17,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
 } from "@mui/material";
 import {
   AccessTime as AccessTimeIcon,
@@ -34,7 +34,7 @@ import {
   KeyboardArrowRight as ArrowIcon,
   Print as PrintIcon,
   Share as ShareIcon,
-  ArrowBack as BackIcon
+  ArrowBack as BackIcon,
 } from "@mui/icons-material";
 
 const ConsultationDetailsPage = () => {
@@ -49,12 +49,12 @@ const ConsultationDetailsPage = () => {
       id: "PT-78965",
       age: 42,
       gender: "Male",
-      avatar: "/patient-avatar.jpg"
+      avatar: "/patient-avatar.jpg",
     },
     doctor: {
       name: "Dr. Sarah Johnson",
       specialty: "Neurologist",
-      avatar: "/doctor-avatar.jpg"
+      avatar: "/doctor-avatar.jpg",
     },
     location: "Memorial Health Center, Room 305",
     visitType: "Follow-up",
@@ -64,7 +64,7 @@ const ConsultationDetailsPage = () => {
       "Throbbing headache",
       "Visual disturbances",
       "Nausea",
-      "Sensitivity to light and sound"
+      "Sensitivity to light and sound",
     ],
     vitals: {
       bloodPressure: "128/85 mmHg",
@@ -73,13 +73,13 @@ const ConsultationDetailsPage = () => {
       respiration: "16/min",
       oxygenSaturation: "98%",
       weight: "185 lbs",
-      height: "6'1\""
+      height: "6'1\"",
     },
     treatmentPlan: [
       "Continue Sumatriptan 50mg for acute migraine attacks",
       "Start Propranolol 40mg daily for prevention",
       "Increase water intake to at least 2L daily",
-      "Maintain regular sleep schedule"
+      "Maintain regular sleep schedule",
     ],
     prescriptions: [
       {
@@ -88,60 +88,60 @@ const ConsultationDetailsPage = () => {
         instructions:
           "Take 1 tablet at onset of migraine, may repeat after 2 hours if needed. Max 2 tablets/24 hrs",
         quantity: "9 tablets",
-        refills: 3
+        refills: 3,
       },
       {
         name: "Propranolol",
         dose: "40mg",
         instructions: "Take 1 tablet daily in the morning",
         quantity: "30 tablets",
-        refills: 2
-      }
+        refills: 2,
+      },
     ],
     labTests: [
       {
         name: "Complete Blood Count",
         status: "Ordered",
-        dueDate: "Feb 22, 2025"
+        dueDate: "Feb 22, 2025",
       },
       {
         name: "Comprehensive Metabolic Panel",
         status: "Ordered",
-        dueDate: "Feb 22, 2025"
-      }
+        dueDate: "Feb 22, 2025",
+      },
     ],
     followUp: {
       type: "In-person",
       timeframe: "4 weeks",
       date: "March 15, 2025",
-      time: "11:00 AM"
+      time: "11:00 AM",
     },
     billingInfo: {
       visitCode: "99214",
       copay: "$25.00",
       insuranceBilled: "$175.00",
-      paymentStatus: "Paid"
+      paymentStatus: "Paid",
     },
     notes:
-      "Patient reports migraine frequency decreased from 3-4 times weekly to 1-2 times weekly since last visit. Current episode began yesterday evening, preceded by visual aura. Patient believes trigger may be work-related stress and skipped meals. Recommended maintaining migraine diary to identify patterns."
+      "Patient reports migraine frequency decreased from 3-4 times weekly to 1-2 times weekly since last visit. Current episode began yesterday evening, preceded by visual aura. Patient believes trigger may be work-related stress and skipped meals. Recommended maintaining migraine diary to identify patterns.",
   };
 
   const sectionStyle = {
     border: "1px solid #e0e0e0",
     borderRadius: 2,
     overflow: "hidden",
-    height: "100%"
+    height: "100%",
   };
 
   const sectionHeaderStyle = {
     backgroundColor: "#f5f5f5",
     p: 2,
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   };
 
   const sectionContentStyle = {
-    p: 2
+    p: 2,
   };
 
   return (

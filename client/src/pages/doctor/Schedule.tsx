@@ -9,7 +9,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from "@mui/material";
 import { Add as AddIcon, Close as CloseIcon } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -25,7 +25,7 @@ import isBetween from "dayjs/plugin/isBetween";
 import {
   ISchedule,
   IDaySchedule,
-  ISlot
+  ISlot,
 } from "../../types/doctor/doctor.types";
 import scheduleService from "../../services/doctor/scheduleService";
 
@@ -36,7 +36,7 @@ const SPECIALIZATION_DURATION: { [key: string]: number } = {
   "Urgent Care": 15,
   Therapy: 45,
   Psychiatry: 30,
-  Default: 30
+  Default: 30,
 };
 
 export default function ScheduleManagement() {
@@ -49,7 +49,7 @@ export default function ScheduleManagement() {
     endTime: Dayjs | null;
   }>({
     startTime: null,
-    endTime: null
+    endTime: null,
   });
   const doctor = useSelector((state: RootState) => state.user.doctor);
 
@@ -67,8 +67,8 @@ export default function ScheduleManagement() {
               slots: avail.slots.map((slot: ISlot) => ({
                 ...slot,
                 startTime: new Date(slot.startTime),
-                endTime: new Date(slot.endTime)
-              }))
+                endTime: new Date(slot.endTime),
+              })),
             })
           );
           setSchedules(scheduleWithDayjsDates);
@@ -146,7 +146,7 @@ export default function ScheduleManagement() {
     const newSlot: ISlot = {
       startTime,
       endTime,
-      isBooked: false
+      isBooked: false,
     };
 
     const updatedSchedules = schedules.map((avail) => {
@@ -155,7 +155,7 @@ export default function ScheduleManagement() {
           ...avail,
           slots: [...avail.slots, newSlot].sort((a, b) =>
             dayjs(a.startTime).diff(dayjs(b.startTime))
-          )
+          ),
         };
       }
       return avail;
@@ -164,7 +164,7 @@ export default function ScheduleManagement() {
     if (!existingAvailability) {
       updatedSchedules.push({
         date: selectedDate.toDate(),
-        slots: [newSlot]
+        slots: [newSlot],
       });
     }
 
@@ -172,7 +172,7 @@ export default function ScheduleManagement() {
       if (!doctor) return;
 
       const result = await scheduleService.updateSchedule(doctor._id, {
-        availability: updatedSchedules
+        availability: updatedSchedules,
       });
 
       const formattedResult = result.availability.map(
@@ -182,8 +182,8 @@ export default function ScheduleManagement() {
           slots: avail.slots.map((slot: ISlot) => ({
             ...slot,
             startTime: new Date(slot.startTime),
-            endTime: new Date(slot.endTime)
-          }))
+            endTime: new Date(slot.endTime),
+          })),
         })
       );
 
@@ -213,7 +213,7 @@ export default function ScheduleManagement() {
       );
       const updatedAvailability: IDaySchedule = {
         ...existingAvailability,
-        slots: updatedSlots
+        slots: updatedSlots,
       };
       const updatedSchedules = schedules.map((avail) =>
         dayjs(avail.date).isSame(date, "day") ? updatedAvailability : avail
@@ -223,7 +223,7 @@ export default function ScheduleManagement() {
         return;
       }
       await scheduleService.updateSchedule(doctor._id, {
-        availability: updatedSchedules
+        availability: updatedSchedules,
       });
       setSchedules(updatedSchedules);
       toast.success("Time slot removed successfully");
@@ -252,7 +252,7 @@ export default function ScheduleManagement() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                mb: 1
+                mb: 1,
               }}
             >
               <Typography
@@ -288,7 +288,7 @@ export default function ScheduleManagement() {
                       justifyContent: "space-between",
                       backgroundColor: "rgba(0,0,0,0.05)",
                       p: 1,
-                      borderRadius: 1
+                      borderRadius: 1,
                     }}
                   >
                     <Typography variant="body2">
@@ -322,7 +322,7 @@ export default function ScheduleManagement() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 3
+            mb: 3,
           }}
         >
           <Typography variant="h5" color="primary" sx={{ fontWeight: 600 }}>
@@ -383,7 +383,7 @@ export default function ScheduleManagement() {
                           ] || 30,
                           "minute"
                         )
-                      : null
+                      : null,
                   }))
                 }
                 views={["hours", "minutes"]}

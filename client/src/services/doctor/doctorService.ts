@@ -1,7 +1,7 @@
 import {
   getDoctorsWithSchedulesResult,
   getDoctorWithScheduleQuery,
-  IDoctor
+  IDoctor,
 } from "../../types/doctor/doctor.types";
 import { api } from "../../utils/axiosInterceptor";
 
@@ -27,7 +27,7 @@ class DoctorService {
     gender,
     selectedDate,
     page,
-    language
+    language,
   }: getDoctorWithScheduleQuery): Promise<getDoctorsWithSchedulesResult> {
     try {
       const response = await api.doctor.get(

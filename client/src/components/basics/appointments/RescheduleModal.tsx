@@ -8,7 +8,7 @@ import {
   Paper,
   IconButton,
   Alert,
-  Skeleton
+  Skeleton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -38,7 +38,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
   onClose,
   appointmentId,
   doctorId,
-  onReschedule
+  onReschedule,
 }) => {
   const today = dayjs();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(today);
@@ -94,7 +94,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
         doctor: doctorId,
         dayId,
         slotId,
-        date
+        date,
       });
 
       toast.success("Reschedule request submitted successfully");
@@ -130,7 +130,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
             boxShadow: 24,
             p: { xs: 2, sm: 4 },
             maxHeight: "90vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           <Box
@@ -164,7 +164,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                             sx={{
                               width: 60,
                               height: 30,
-                              borderRadius: 3
+                              borderRadius: 3,
                             }}
                           />
                         </Grid>
@@ -193,8 +193,8 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
                                   color: slotId === slot._id ? "white" : "",
                                   ":hover": {
                                     backgroundColor: "teal",
-                                    color: "white"
-                                  }
+                                    color: "white",
+                                  },
                                 }}
                               />
                             </Grid>

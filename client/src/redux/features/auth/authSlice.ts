@@ -7,7 +7,7 @@ const initialAuthState: AuthState = {
   email: "",
   role: null,
   token: null,
-  isAuthenticated: false
+  isAuthenticated: false,
 };
 
 const authSlice = createSlice({
@@ -36,14 +36,14 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
 
-    signOut: () => initialAuthState
-  }
+    signOut: () => initialAuthState,
+  },
 });
 
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["email", "role", "token", "isAuthenticated"]
+  whitelist: ["email", "role", "token", "isAuthenticated"],
 };
 
 export const persistedAuthReducer = persistReducer(

@@ -6,7 +6,7 @@ import { IDependent, IPatient } from "../../types/patient/patient.types";
 import {
   IBehaviouralHealth,
   IHealthHistory,
-  ILifestyle
+  ILifestyle,
 } from "../../types/patient/health.types";
 
 export interface IHealthProfile {

@@ -10,7 +10,7 @@ const initialUserState = {
   patient: null as IPatient | null,
   doctor: null as IDoctor | null,
   admin: null as IAdmin | null,
-  currentUser: null as IPatient | IDependent | null
+  currentUser: null as IPatient | IDependent | null,
 };
 
 const userSlice = createSlice({
@@ -37,14 +37,14 @@ const userSlice = createSlice({
       state.currentUser = action.payload;
     },
 
-    clearUser: () => initialUserState
-  }
+    clearUser: () => initialUserState,
+  },
 });
 
 const userPersistConfig = {
   key: "user",
   storage,
-  whitelist: ["patient", "doctor", "admin", "currentUser"]
+  whitelist: ["patient", "doctor", "admin", "currentUser"],
 };
 
 export const persistedUserReducer = persistReducer(

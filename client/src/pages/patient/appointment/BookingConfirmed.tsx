@@ -5,12 +5,12 @@ import {
   Divider,
   Button,
   Avatar,
-  Grid
+  Grid,
 } from "@mui/material";
 import {
   CheckCircle as CheckCircleIcon,
   CalendarMonth as CalendarIcon,
-  AccessTime as TimeIcon
+  AccessTime as TimeIcon,
 } from "@mui/icons-material";
 import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
 import { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ const BookingConfirmation = () => {
 
   useEffect(() => {
     if (!state) {
-      navigate("/visitnow", { state: {} });
+      // navigate("/visitnow", { state: {} });
       return;
     }
     const fetchAppointment = async () => {
@@ -72,19 +72,19 @@ const BookingConfirmation = () => {
     provider: {
       name: "Dr. Sarah Thompson",
       specialty: "Mental Health Counseling",
-      image: "/api/placeholder/60/60"
+      image: "/api/placeholder/60/60",
     },
     appointment: {
       date: "Tuesday, February 11, 2024",
       time: "01:00 PM EST",
       duration: "45 minutes",
-      type: "Video Consultation"
+      type: "Video Consultation",
     },
     payment: {
       amount: "179.00",
       method: "VISA **** 4242",
-      status: "Paid"
-    }
+      status: "Paid",
+    },
   };
 
   return (
@@ -182,7 +182,7 @@ const BookingConfirmation = () => {
         sx={{
           p: 3,
           mb: 3,
-          border: "1px solid teal"
+          border: "1px solid teal",
         }}
       >
         <Typography variant="h6" gutterBottom>

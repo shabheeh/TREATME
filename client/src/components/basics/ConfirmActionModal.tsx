@@ -5,7 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from "@mui/material";
 
 interface ConfirmActionModalProps {
@@ -27,7 +27,7 @@ const ConfirmActionModal: React.FC<ConfirmActionModalProps> = ({
   cancelText = "Cancel",
   confirmColor = "error",
   handleClose,
-  handleConfirm
+  handleConfirm,
 }) => {
   return (
     <Dialog

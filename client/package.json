@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-"scripts": {
-  "dev": "vite",
-  "build": "tsc -b && vite build",
-  "lint": "eslint . --fix",
-  "lint:fix": "eslint . --fix",
-  "format": "prettier --write .",
-  "preview": "vite preview"
- },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --fix",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -21,6 +21,8 @@
     "@mui/x-date-pickers": "^7.24.1",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.5.0",
+    "@stripe/react-stripe-js": "^3.1.1",
+    "@stripe/stripe-js": "^5.6.0",
     "@toolpad/core": "^0.12.0",
     "axios": "^1.7.9",
     "cropperjs": "^1.6.2",

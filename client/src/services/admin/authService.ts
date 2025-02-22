@@ -14,7 +14,7 @@ class AuthServiceAdmin {
     try {
       const response = await api.admin.post("/auth/signin", {
         email,
-        password
+        password,
       });
 
       const { admin, accessToken } = response.data;
@@ -25,7 +25,7 @@ class AuthServiceAdmin {
         signIn({
           email: admin.email,
           role: "admin",
-          token: accessToken
+          token: accessToken,
         })
       );
     } catch (error: unknown) {

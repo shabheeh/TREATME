@@ -6,7 +6,7 @@ import IAppointment from "../../../types/appointment/appointment.types";
 
 const initialState = {
   appointmentData: null as Partial<IAppointment> | null,
-  step: 0 as number
+  step: 0 as number,
 };
 
 const appointmentSlice = createSlice({
@@ -24,14 +24,14 @@ const appointmentSlice = createSlice({
       state.step = action.payload;
     },
 
-    resetAppointment: () => initialState
-  }
+    resetAppointment: () => initialState,
+  },
 });
 
 const appointmentPersistConfig = {
   key: "appointment",
   storage,
-  whitelist: ["appointmentData", "step"]
+  whitelist: ["appointmentData", "step"],
 };
 
 export const persistAppointmentReducer = persistReducer(

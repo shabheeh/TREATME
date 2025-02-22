@@ -7,7 +7,7 @@ import {
   Grid,
   Paper,
   IconButton,
-  Alert
+  Alert,
   // Skeleton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -18,7 +18,7 @@ import dayjs, { Dayjs } from "dayjs";
 import {
   IDaySchedule,
   IDoctor,
-  ISlot
+  ISlot,
 } from "../../../types/doctor/doctor.types";
 import { toast } from "sonner";
 import { formatTime } from "../../../utils/dateUtils";
@@ -44,7 +44,7 @@ const RequestModal: React.FC<RescheduleModalProps> = ({
   onClose,
   doctor,
   availability,
-  handleSlotClick
+  handleSlotClick,
 }) => {
   const today = dayjs();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(today);
@@ -105,7 +105,7 @@ const RequestModal: React.FC<RescheduleModalProps> = ({
             boxShadow: 24,
             p: { xs: 2, sm: 4 },
             maxHeight: "90vh",
-            overflow: "auto"
+            overflow: "auto",
           }}
         >
           <Box
@@ -164,8 +164,8 @@ const RequestModal: React.FC<RescheduleModalProps> = ({
                                 color: slotId === slot._id ? "white" : "",
                                 ":hover": {
                                   backgroundColor: "teal",
-                                  color: "white"
-                                }
+                                  color: "white",
+                                },
                               }}
                             />
                           </Grid>

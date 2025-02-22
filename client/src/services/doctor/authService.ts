@@ -16,7 +16,7 @@ class DoctorAuthService {
     try {
       const response = await api.doctor.post("/auth/signin", {
         email,
-        password
+        password,
       });
 
       const { doctor, accessToken } = response.data;
@@ -27,7 +27,7 @@ class DoctorAuthService {
         signIn({
           email: doctor.email,
           role: "doctor",
-          token: accessToken
+          token: accessToken,
         })
       );
 

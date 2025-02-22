@@ -4,7 +4,7 @@ import {
   CardMedia,
   Button,
   Typography,
-  Box
+  Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -25,7 +25,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
   fee,
   image,
   link,
-  id
+  id,
 }) => {
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
       state: { specializationId: id, fee: fee } as {
         specializationId: string;
         fee: number;
-      }
+      },
     });
   };
 
@@ -49,8 +49,8 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
         "&:hover": {
           transform: "scale(1.00)",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)"
-        }
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)",
+        },
       }}
     >
       <CardMedia
@@ -64,7 +64,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
           flexGrow: 1,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
         }}
       >
         <Box>
@@ -77,7 +77,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
               whiteSpace: "nowrap",
               textOverflow: "ellipsis",
               overflow: "hidden",
-              py: 0
+              py: 0,
             }}
           >
             {name}
@@ -92,7 +92,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
               textOverflow: "ellipsis",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 2
+              WebkitLineClamp: 2,
             }}
           >
             {description}
@@ -103,7 +103,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
           }}
         >
           <Typography
@@ -114,7 +114,7 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
               textOverflow: "ellipsis",
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3
+              WebkitLineClamp: 3,
             }}
           >
             {note}
@@ -136,8 +136,8 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
             borderRadius: "50px",
             "&:hover": {
               transform: "scale(1.0)",
-              boxShadow: "0px 2px 2px rgba(0, 0, 0, 0.25)"
-            }
+              boxShadow: "0px 2px 2px rgba(0, 0, 0, 0.25)",
+            },
           }}
           variant="outlined"
           size="large"

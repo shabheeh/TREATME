@@ -8,7 +8,7 @@ import {
   // IconButton,
   Container,
   List,
-  ListItem
+  ListItem,
 } from "@mui/material";
 // import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 // import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -28,11 +28,11 @@ const DoctorProfile = () => {
       "Alcohol/Drug use, Anxiety, Behavioral Issues, Bipolar Disorder, Depression",
       "Emotional Disturbance, Grief or Loss, Life Transitions, Medical Stress",
       "Medication Management, Panic Disorder, Stress, Trauma and PTSD",
-      "Work/Life Balance"
+      "Work/Life Balance",
     ],
     licenseStates: ["California", "Tennessee"],
     languages: ["English"],
-    npiNumber: "1669786000"
+    npiNumber: "1669786000",
   };
 
   // const months = [
@@ -67,7 +67,7 @@ const DoctorProfile = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              mb: 3
+              mb: 3,
             }}
           >
             <Avatar

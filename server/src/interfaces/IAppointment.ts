@@ -52,6 +52,10 @@ export interface IAppointmentService {
     role: string
   ): Promise<IAppointment[]>;
   getAppointments(): Promise<IAppointment[]>;
+  stripePayment(
+    appointmentData: IAppointment
+  ): Promise<{ clientSecret: string }>;
+  handleWebHook(payload: Buffer, sig: string): Promise<void>;
 }
 
 export interface IAppointmentController {
@@ -80,4 +84,5 @@ export interface IAppointmentController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
+  stripePayment(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

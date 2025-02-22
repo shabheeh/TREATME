@@ -2,15 +2,15 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
-"scripts": {
-"dev": "ts-node-dev --respawn src/app.ts",
-"build": "tsc",
-"start": "node dist/app.js",
-"lint": "eslint .",
-"lint:fix": "eslint . --fix",
-"format": "prettier --write .",
-"validate": "npm run lint && npm run format"
-},
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "validate": "npm run lint && npm run format"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -33,6 +33,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.16",
     "redis": "^4.7.0",
+    "stripe": "^17.6.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {

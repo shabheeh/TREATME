@@ -5,7 +5,7 @@ import {
   TextField,
   Link,
   Button,
-  Divider
+  Divider,
 } from "@mui/material";
 import SignupPath from "./SignupPath";
 import React, { useState } from "react";
@@ -31,13 +31,13 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignupFormInputs>({
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: ""
-    }
+      confirmPassword: "",
+    },
   });
 
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
 
       await authServicePatient.sendOtp({
         email: data.email,
-        password: data.password
+        password: data.password,
       });
       onSignUp();
 
@@ -106,7 +106,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Typography
@@ -118,7 +118,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 1
+            marginBottom: 1,
           }}
         >
           Sign up your account
@@ -132,7 +132,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <TextField
@@ -140,8 +140,8 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
               required: "Email is required",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address"
-              }
+                message: "Invalid email address",
+              },
             })}
             label="Email"
             variant="outlined"
@@ -154,14 +154,14 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
               required: "Password is required",
               minLength: {
                 value: 8,
-                message: "Password must be at least 8 characters"
+                message: "Password must be at least 8 characters",
               },
               pattern: {
                 value:
                   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                 message:
-                  "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character"
-              }
+                  "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+              },
             })}
             type="text"
             label="Password"
@@ -174,7 +174,7 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
             {...register("confirmPassword", {
               required: "Please confirm your password",
               validate: (value) =>
-                value === password || "Passwords do not match"
+                value === password || "Passwords do not match",
             })}
             type="password"
             label="Confirm Password"

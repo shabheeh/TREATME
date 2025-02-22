@@ -18,7 +18,7 @@ const LayoutAccount = () => {
       sx={{
         display: "flex",
         height: "100vh",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
       <Navbar
@@ -36,21 +36,21 @@ const LayoutAccount = () => {
           backgroundColor: "#ffffff",
           height: "calc(100vh - 64px)",
           overflow: "auto",
-          width: { xs: "100%", lg: `calc(100% - 240px)` }
+          width: { xs: "100%", lg: `calc(100% - 240px)` },
         }}
       >
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
-            borderBottom: "1px solid lightgray"
+            borderBottom: "1px solid lightgray",
           }}
         >
           <Typography
             variant="h4"
             gutterBottom
             sx={{
-              alignSelf: "center"
+              alignSelf: "center",
             }}
           >
             Manage Account

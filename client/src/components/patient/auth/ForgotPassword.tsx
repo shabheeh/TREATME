@@ -4,7 +4,7 @@ import {
   Typography,
   TextField,
   Link,
-  Button
+  Button,
   // Divider,
 } from "@mui/material";
 
@@ -22,11 +22,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<{ email: string }>({
     defaultValues: {
-      email: ""
-    }
+      email: "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -57,7 +57,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Typography
@@ -69,7 +69,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 2
+            marginBottom: 2,
           }}
         >
           Forgot Password
@@ -82,7 +82,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
           color="secondary"
           sx={{
             marginTop: 2,
-            marginBottom: 10
+            marginBottom: 10,
           }}
         >
           Enter the reagisterd email to sent an otp to reset password
@@ -94,7 +94,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <TextField
@@ -102,8 +102,8 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
               required: "Email is required",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address"
-              }
+                message: "Invalid email address",
+              },
             })}
             label="Email"
             variant="outlined"

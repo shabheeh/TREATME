@@ -26,7 +26,7 @@ export const filterAvailability = (
       );
       filteredAvailability.push({
         ...day,
-        slots: futureSlots
+        slots: futureSlots,
       });
     }
 

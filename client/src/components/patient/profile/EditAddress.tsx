@@ -27,15 +27,15 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<IFormInputs>({
     defaultValues: {
       street: patient?.address?.street || "",
       city: patient?.address?.city || "",
       landmark: patient?.address?.landmark || "",
       state: patient?.address?.state || "",
-      pincode: patient?.address?.pincode || ""
-    }
+      pincode: patient?.address?.pincode || "",
+    },
   });
 
   const onSubmit = async (data: IFormInputs) => {
@@ -74,7 +74,7 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
         maxWidth: 700,
         mx: "auto",
         p: 3,
-        backgroundColor: "white"
+        backgroundColor: "white",
       }}
     >
       <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -87,7 +87,7 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
 
         <TextField
           {...register("street", {
-            required: "Street address is required"
+            required: "Street address is required",
           })}
           fullWidth
           label="Street"
@@ -99,7 +99,7 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <TextField
             {...register("city", {
-              required: "City is required"
+              required: "City is required",
             })}
             fullWidth
             label="City"
@@ -109,7 +109,7 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
           />
           <TextField
             {...register("landmark", {
-              required: "Landmark is required"
+              required: "Landmark is required",
             })}
             fullWidth
             label="Landmark"
@@ -122,7 +122,7 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <TextField
             {...register("state", {
-              required: "State is required"
+              required: "State is required",
             })}
             fullWidth
             label="State"
@@ -135,8 +135,8 @@ const EditAddress: React.FC<EditAddressProps> = ({ handleSave }) => {
               required: "Postal Code is required",
               pattern: {
                 value: /^\d{6}$/,
-                message: "Please enter a valid 6-digit Postal Code"
-              }
+                message: "Please enter a valid 6-digit Postal Code",
+              },
             })}
             fullWidth
             label="Pin Code"

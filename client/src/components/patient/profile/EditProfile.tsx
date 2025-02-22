@@ -27,7 +27,7 @@ const relationships = [
   "Grandparent",
   "Grandchild",
   "Wife",
-  "Husband"
+  "Husband",
 ];
 
 type EditProfileProps = {
@@ -52,7 +52,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
     control,
     setValue,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<IFormInputs>({
     defaultValues: {
       firstName: currentPatient?.firstName || "",
@@ -65,8 +65,8 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
       relationship:
         currentPatient && isDependent(currentPatient)
           ? currentPatient.relationship
-          : ""
-    }
+          : "",
+    },
   });
 
   const profilePicture = watch("profilePicture");
@@ -142,7 +142,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
         maxWidth: 700,
         mx: "auto",
         p: 3,
-        backgroundColor: "white"
+        backgroundColor: "white",
       }}
     >
       <Box
@@ -150,7 +150,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          mb: 4
+          mb: 4,
         }}
       >
         <Avatar
@@ -164,7 +164,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
             width: 100,
             height: 100,
             mb: 2,
-            border: "3px solid primary.main"
+            border: "3px solid primary.main",
           }}
         />
         <Button
@@ -189,8 +189,8 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
               required: "First Name is required",
               pattern: {
                 value: /^[A-Z][a-zA-Z' -]*$/,
-                message: "Please enter a valid First Name"
-              }
+                message: "Please enter a valid First Name",
+              },
             })}
             fullWidth
             label="First Name"
@@ -203,8 +203,8 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
               required: "Last Name is required",
               pattern: {
                 value: /^[A-Z][a-zA-Z' -]*$/,
-                message: "Please enter a valid Last Name"
-              }
+                message: "Please enter a valid Last Name",
+              },
             })}
             fullWidth
             label="Last Name"
@@ -220,8 +220,8 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
               required: "Phone Number is required",
               pattern: {
                 value: /^[2-9]\d{9}$/,
-                message: "Please enter a valid 10-digit Phone Number"
-              }
+                message: "Please enter a valid 10-digit Phone Number",
+              },
             })}
             disabled={isDependent(currentPatient)}
             fullWidth
@@ -268,7 +268,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
                   return age >= 18 || "You must be at least 18 years old";
                 }
                 return true;
-              }
+              },
             })}
             fullWidth
             label="Date of Birth"

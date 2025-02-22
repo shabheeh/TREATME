@@ -11,7 +11,7 @@ import {
   MenuItem,
   TextField,
   Card,
-  CardContent
+  CardContent,
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import doctorService from "../../../services/doctor/doctorService";
 import {
   IDoctor,
-  IDoctorWithSchedule
+  IDoctorWithSchedule,
 } from "../../../types/doctor/doctor.types";
 import { toast } from "sonner";
 import Loading from "../../../components/basics/Loading";
@@ -29,7 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import {
   resetAppointment,
-  updateAppointment
+  updateAppointment,
 } from "../../../redux/features/appointment/appointmentSlice";
 
 type Gender = "male" | "female" | "any" | "";
@@ -44,7 +44,7 @@ const LANGUAGES = [
   "Urdu",
   "Bengali",
   "Gujarati",
-  "Punjabi"
+  "Punjabi",
 ];
 
 const ListDoctors = () => {
@@ -75,7 +75,7 @@ const ListDoctors = () => {
       gender: gender,
       language: language,
       specialization: appointmentData.specialization,
-      page: page
+      page: page,
     };
     const fetchDoctors = async () => {
       try {
@@ -122,7 +122,7 @@ const ListDoctors = () => {
         doctor: doctor._id,
         dayId,
         slotId,
-        date
+        date,
       })
     );
 
@@ -169,7 +169,7 @@ const ListDoctors = () => {
           fontSize: "16px",
           fontWeight: "bold",
           textDecoration: "none",
-          ":hover": { textDecoration: "underline" }
+          ":hover": { textDecoration: "underline" },
         }}
       >
         <ArrowBack fontSize="small" sx={{ mr: 1 }} />
@@ -242,7 +242,7 @@ const ListDoctors = () => {
             minHeight: 200,
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <CardContent
@@ -253,7 +253,7 @@ const ListDoctors = () => {
               height: "100%",
               width: "100%",
               p: 2,
-              flexDirection: "column"
+              flexDirection: "column",
             }}
           >
             <Typography

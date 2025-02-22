@@ -7,13 +7,13 @@ import { store } from "../../redux/app/store";
 import {
   setAuthState,
   signIn,
-  signOut
+  signOut,
 } from "../../redux/features/auth/authSlice";
 import { setTempUser } from "../../redux/features/auth/tempSlice";
 import {
   clearUser,
   setCurrentPatient,
-  setPatient
+  setPatient,
 } from "../../redux/features/user/userSlice";
 
 type SignInResult = { patient: IPatient };
@@ -60,7 +60,7 @@ class AuthServicePatient implements IAuthServicePatient {
     try {
       const response = await api.patient.post("/auth/send-otp/", credentials);
       const tempUser = {
-        email: credentials.email
+        email: credentials.email,
       };
 
       store.dispatch(setTempUser({ tempUser }));
@@ -86,7 +86,7 @@ class AuthServicePatient implements IAuthServicePatient {
       await api.patient.post("/auth/verify-otp", { email, otp });
 
       const tempUser = {
-        email
+        email,
       };
 
       store.dispatch(setTempUser({ tempUser }));
@@ -131,7 +131,7 @@ class AuthServicePatient implements IAuthServicePatient {
         signIn({
           email: patient.email,
           role: "patient",
-          token: accessToken
+          token: accessToken,
         })
       );
 
@@ -184,7 +184,7 @@ class AuthServicePatient implements IAuthServicePatient {
       if (partialUser) {
         store.dispatch(
           setTempUser({
-            tempUser: patient
+            tempUser: patient,
           })
         );
 
@@ -193,7 +193,7 @@ class AuthServicePatient implements IAuthServicePatient {
             email: patient.email,
             role: "patient",
             token: accessToken,
-            isAuthenticated: false
+            isAuthenticated: false,
           })
         );
 
@@ -204,7 +204,7 @@ class AuthServicePatient implements IAuthServicePatient {
         signIn({
           email: patient.email,
           role: "patient",
-          token: accessToken
+          token: accessToken,
         })
       );
 
@@ -254,11 +254,11 @@ class AuthServicePatient implements IAuthServicePatient {
     try {
       await api.patient.post("/auth/forgot-password/verify-otp", {
         email,
-        otp
+        otp,
       });
 
       return {
-        email
+        email,
       };
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -290,7 +290,7 @@ class AuthServicePatient implements IAuthServicePatient {
   async completeProfile(patientData: Partial<IPatient>): Promise<void> {
     try {
       const response = await api.patient.post("/auth/complete-profile", {
-        patientData
+        patientData,
       });
 
       const { patient } = response.data;

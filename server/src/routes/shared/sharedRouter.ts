@@ -224,4 +224,16 @@ router.get(
   appointmentController.getAppointments
 );
 
+router.post(
+  "/create-payment-intent",
+  authenticate,
+  appointmentController.stripePayment
+);
+
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  appointmentController.handleWebHook
+);
+
 export default router;

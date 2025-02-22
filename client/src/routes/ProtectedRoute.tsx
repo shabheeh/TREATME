@@ -14,7 +14,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  allowedRoles
+  allowedRoles,
 }) => {
   const auth = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();

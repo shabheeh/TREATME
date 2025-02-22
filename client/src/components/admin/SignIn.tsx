@@ -14,12 +14,12 @@ const SignIn: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignInFormInputs>({
     defaultValues: {
       email: "",
-      password: ""
-    }
+      password: "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ const SignIn: React.FC = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <Typography
@@ -63,7 +63,7 @@ const SignIn: React.FC = () => {
               color: "teal",
               textDecoration: "underline",
               marginTop: 5,
-              marginBottom: 10
+              marginBottom: 10,
             }}
           >
             Admin Sign in
@@ -75,7 +75,7 @@ const SignIn: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center"
+              justifyContent: "center",
             }}
           >
             <TextField
@@ -83,8 +83,8 @@ const SignIn: React.FC = () => {
                 required: "Email is required",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address"
-                }
+                  message: "Invalid email address",
+                },
               })}
               label="Email"
               variant="outlined"
@@ -94,7 +94,7 @@ const SignIn: React.FC = () => {
             />
             <TextField
               {...register("password", {
-                required: "Password is required"
+                required: "Password is required",
               })}
               label="Password"
               type="password"

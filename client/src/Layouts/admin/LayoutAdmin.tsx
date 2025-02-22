@@ -16,7 +16,7 @@ const LayoutAdmin = () => {
       sx={{
         display: "flex",
         height: "100vh",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
       <NavbarHome onMenuClick={handleDrawerToggle} />
@@ -31,7 +31,7 @@ const LayoutAdmin = () => {
           backgroundColor: "#ffffff",
           height: "calc(100vh - 64px)",
           overflow: "auto",
-          width: { xs: "100%", lg: `calc(100% - 240px)` }
+          width: { xs: "100%", lg: `calc(100% - 240px)` },
         }}
       >
         <Outlet />

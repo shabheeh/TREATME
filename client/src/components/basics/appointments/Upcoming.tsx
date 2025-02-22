@@ -30,7 +30,7 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            textAlign: "center"
+            textAlign: "center",
           }}
         >
           <Typography>No upcoming appointments</Typography>

@@ -15,7 +15,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        py: 5
+        py: 5,
       }}
     >
       <Stack direction="row" alignItems="center" spacing={2}>
@@ -27,7 +27,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
               mb: 1,
               textAlign: "center",
               fontSize: "0.7rem",
-              color: "gray"
+              color: "gray",
             }}
           >
             Create Account
@@ -39,7 +39,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
             width: "100px",
             height: "2px",
             bgcolor: "gray",
-            position: "relative"
+            position: "relative",
           }}
         >
           <Box
@@ -51,7 +51,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
               height: "10px",
               borderTop: "2px solid gray",
               borderRight: "2px solid gray",
-              transform: "rotate(45deg)"
+              transform: "rotate(45deg)",
             }}
           />
         </Box>
@@ -67,7 +67,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
               mb: 1,
               textAlign: "center",
               fontSize: "0.7rem",
-              color: "gray"
+              color: "gray",
             }}
           >
             Verify Email
@@ -79,7 +79,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
             width: "100px",
             height: "2px",
             bgcolor: "gray",
-            position: "relative"
+            position: "relative",
           }}
         >
           <Box
@@ -91,7 +91,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
               height: "10px",
               borderTop: "2px solid gray",
               borderRight: "2px solid gray",
-              transform: "rotate(45deg)"
+              transform: "rotate(45deg)",
             }}
           />
         </Box>
@@ -107,7 +107,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
               mb: 1,
               textAlign: "center",
               fontSize: "0.7rem",
-              color: "gray"
+              color: "gray",
             }}
           >
             Complete Profile

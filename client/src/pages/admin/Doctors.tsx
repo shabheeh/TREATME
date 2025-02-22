@@ -23,7 +23,7 @@ const Doctors = () => {
           href="/admin/add-doctor"
           sx={{
             textTransform: "none",
-            textDecoration: "none"
+            textDecoration: "none",
           }}
         >
           Add Doctor

@@ -4,7 +4,7 @@ import {
   Toolbar,
   Button,
   IconButton,
-  Avatar
+  Avatar,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import logoNavbar from "../../assets/logo.navbar.svg";
@@ -35,7 +35,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
       sx={{
         bgcolor: "teal",
         width: "100%",
-        boxShadow: 0
+        boxShadow: 0,
       }}
     >
       <Toolbar sx={{ padding: "0.5rem 1rem" }}>
@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
           sx={{
             display: { xs: "flex", lg: "none" },
             mr: 2,
-            color: "white"
+            color: "white",
           }}
         >
           <MenuIcon />
@@ -62,7 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
             sx={{
               display: "flex",
               alignItems: "center",
-              ml: "auto"
+              ml: "auto",
             }}
           >
             <Button
@@ -82,7 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
                 sx={{
                   width: 32,
                   height: 32,
-                  fontSize: 14
+                  fontSize: 14,
                 }}
               >
                 {currentPatient?.firstName?.[0]}

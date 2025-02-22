@@ -11,7 +11,7 @@ import {
   FormLabel,
   Slider,
   Select,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { Edit as EditIcon, Save as SaveIcon } from "@mui/icons-material";
 import { useSelector } from "react-redux";
@@ -32,7 +32,7 @@ const MENTAL_HEALTH_CONDITIONS = [
   "Social Anxiety",
   "Eating Disorder",
   "Schizophrenia",
-  "Personality Disorder"
+  "Personality Disorder",
 ] as const;
 
 const THERAPY_STATUS_OPTIONS = [
@@ -40,7 +40,7 @@ const THERAPY_STATUS_OPTIONS = [
   "Previously attended therapy",
   "Never attended therapy",
   "Seeking therapy",
-  "Prefer not to say"
+  "Prefer not to say",
 ] as const;
 
 const SUPPORT_SYSTEM_OPTIONS = [
@@ -51,7 +51,7 @@ const SUPPORT_SYSTEM_OPTIONS = [
   "Religious/Spiritual Community",
   "Healthcare Provider",
   "Social Worker",
-  "None"
+  "None",
 ] as const;
 
 const COPING_MECHANISMS = [
@@ -62,7 +62,7 @@ const COPING_MECHANISMS = [
   "Music",
   "Breathing Exercises",
   "Professional Help",
-  "Support Groups"
+  "Support Groups",
 ] as const;
 
 const BehavioralHealth = () => {
@@ -95,7 +95,7 @@ const BehavioralHealth = () => {
           stressLevel: 0,
           therapyStatus: "",
           supportSystem: [],
-          copingMechanisms: []
+          copingMechanisms: [],
         });
       } else {
         setEditedData(result);
@@ -114,7 +114,7 @@ const BehavioralHealth = () => {
     try {
       const updatedData = {
         ...behaviouralHealth,
-        ...editedData
+        ...editedData,
       };
 
       const result = await healthProfileService.updateBehavioualHealth(
@@ -138,7 +138,7 @@ const BehavioralHealth = () => {
 
     setEditedData((prev) => ({
       ...prev,
-      [array]: updatedItems
+      [array]: updatedItems,
     }));
   };
 
@@ -187,7 +187,7 @@ const BehavioralHealth = () => {
                       !isEditing &&
                       !behaviouralHealth?.conditions?.includes(condition)
                         ? 0.5
-                        : 1
+                        : 1,
                   }}
                 />
               </Grid>
@@ -248,7 +248,7 @@ const BehavioralHealth = () => {
                       !isEditing &&
                       !behaviouralHealth?.copingMechanisms?.includes(mechanism)
                         ? 0.5
-                        : 1
+                        : 1,
                   }}
                 />
               </Grid>
@@ -270,7 +270,7 @@ const BehavioralHealth = () => {
               onChange={(e) =>
                 setEditedData((prev) => ({
                   ...prev,
-                  therapyStatus: e.target.value
+                  therapyStatus: e.target.value,
                 }))
               }
               disabled={!isEditing}
@@ -295,7 +295,7 @@ const BehavioralHealth = () => {
               onChange={(e) =>
                 setEditedData((prev) => ({
                   ...prev,
-                  lastEpisodeDate: e.target.value
+                  lastEpisodeDate: e.target.value,
                 }))
               }
               disabled={!isEditing}
@@ -324,7 +324,7 @@ const BehavioralHealth = () => {
                       !isEditing &&
                       !behaviouralHealth?.supportSystem?.includes(support)
                         ? 0.5
-                        : 1
+                        : 1,
                   }}
                 />
               </Grid>

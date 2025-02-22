@@ -24,7 +24,7 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
   open,
   onClose,
   appointment,
-  onReschedule
+  onReschedule,
 }) => {
   const patient = useSelector((state: RootState) => state.user.patient);
   const [loading, setLoading] = useState(false);
@@ -33,14 +33,14 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
     weekday: "long",
     year: "numeric",
     month: "long",
-    day: "numeric"
+    day: "numeric",
   });
 
   const handleCancel = async () => {
     try {
       setLoading(true);
       await appointmentService.updateAppointment(appointment.id, {
-        status: "cancelled"
+        status: "cancelled",
       });
       toast.success("Appointment Cancelled");
     } catch (error) {
@@ -72,7 +72,7 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
           bgcolor: "background.paper",
           borderRadius: 2,
           boxShadow: 24,
-          p: 4
+          p: 4,
         }}
       >
         <Box

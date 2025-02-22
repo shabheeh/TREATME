@@ -18,17 +18,17 @@ const StyledTab = styled(Tab)(({ theme }) => ({
   flex: 1,
   color: theme.palette.text.secondary,
   "&.Mui-selected": {
-    color: theme.palette.primary.main
+    color: theme.palette.primary.main,
   },
   "&:hover": {
     color: theme.palette.primary.main,
-    opacity: 1
+    opacity: 1,
   },
   boxShadow: "none",
   border: "none",
   [theme.breakpoints.down("sm")]: {
-    fontSize: theme.typography.pxToRem(16)
-  }
+    fontSize: theme.typography.pxToRem(16),
+  },
 }));
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -36,22 +36,22 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   justifyContent: "space-between",
   borderBottom: "1px solid #e0e4e8",
   "& .MuiTabs-indicator": {
-    backgroundColor: "teal"
+    backgroundColor: "teal",
   },
   "& .MuiTabs-flexContainer": {
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   [theme.breakpoints.down("sm")]: {
     flexDirection: "column",
-    borderBottom: "none"
-  }
+    borderBottom: "none",
+  },
 }));
 
 export const CustomTabs: React.FC<CustomTabsProps> = ({
   value,
   onChange,
-  tabContent
+  tabContent,
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));

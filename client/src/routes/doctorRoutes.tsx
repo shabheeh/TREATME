@@ -33,5 +33,5 @@ export const doctorRoutes = [
     <Route path="appointments" element={<Appointments />} />
     <Route path="schedules" element={<Schedule />} />
     <Route path="patients/health" element={<PatientProfile />} />
-  </Route>
+  </Route>,
 ];

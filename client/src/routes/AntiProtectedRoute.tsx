@@ -9,7 +9,7 @@ interface AntiProtectedRouteProps {
 }
 
 const AntiProtectedRoute: React.FC<AntiProtectedRouteProps> = ({
-  children
+  children,
 }) => {
   const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();

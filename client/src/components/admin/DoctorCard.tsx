@@ -8,7 +8,7 @@ import {
   Stack,
   Chip,
   IconButton,
-  Divider
+  Divider,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -40,14 +40,14 @@ const DoctorCard = ({
   rating,
   nextAvailable,
   imageUrl,
-  status = "In Consultation"
+  status = "In Consultation",
 }: DoctorCardProps) => {
   return (
     <Card
       sx={{
         width: "100%",
         borderRadius: 3,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
       }}
     >
       <CardContent>
@@ -87,7 +87,7 @@ const DoctorCard = ({
             sx={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "flex-end"
+              alignItems: "flex-end",
             }}
           >
             <Chip label={status} color="warning" size="small" sx={{ mb: 1 }} />
@@ -107,7 +107,7 @@ const DoctorCard = ({
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <Box>

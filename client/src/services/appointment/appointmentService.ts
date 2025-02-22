@@ -1,5 +1,5 @@
 import IAppointment, {
-  IAppointmentPopulated
+  IAppointmentPopulated,
 } from "../../types/appointment/appointment.types";
 import { api } from "../../utils/axiosInterceptor";
 
@@ -9,7 +9,7 @@ class AppointmentService {
   ): Promise<Partial<IAppointment>> {
     try {
       const response = await api.post("/appointments", {
-        appointmentData
+        appointmentData,
       });
       const { appointment } = response.data;
       return appointment;
@@ -81,7 +81,7 @@ class AppointmentService {
   ): Promise<Partial<IAppointment>> {
     try {
       const response = await api.put(`/appointments/${id}`, {
-        updateData
+        updateData,
       });
       const { appointment } = response.data;
       return appointment;

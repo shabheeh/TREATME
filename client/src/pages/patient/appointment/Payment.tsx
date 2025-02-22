@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -9,15 +9,18 @@ import {
   Grid,
   Avatar,
   Button,
-  Skeleton
+  Skeleton,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
 import { useNavigate } from "react-router-dom";
-import appointmentService from "../../../services/appointment/appointmentService";
+// import appointmentService from "../../../services/appointment/appointmentService";
 import { toast } from "sonner";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
@@ -29,7 +32,17 @@ import { ISpecialization } from "../../../types/specialization/specialization.ty
 import specializationService from "../../../services/specialization/specializationService";
 import doctorService from "../../../services/doctor/doctorService";
 
-const Payment = () => {
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import {
+  // confirmPaymentIntent,
+  createPaymentIntent,
+} from "../../../services/stripe/stripeService";
+
+const Payment: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [exitModalOpen, setExitModalOpen] = useState(false);
   const [isPaymentLoading, setPaymentLoading] = useState(false);
@@ -38,6 +51,12 @@ const Payment = () => {
   const [specialization, setSpecialization] = useState<ISpecialization | null>(
     null
   );
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const stripe = useStripe();
+  const elements = useElements();
+  // const [paymentIntentClientSecret, setPaymentIntentClientSecret] = useState<
+  //   string | null
+  // >(null);
 
   const currentPatient = useSelector(
     (state: RootState) => state.user.currentUser
@@ -80,23 +99,97 @@ const Payment = () => {
     fetchData();
   }, []);
 
+  // useEffect(() => {
+  //   const createPayment = async () => {
+  //     if (!appointmentData || !appointmentData.fee) {
+  //       return;
+  //     }
+  //     try {
+  //       const result = await createPaymentIntent(appointmentData.fee);
+
+  //       setPaymentIntentClientSecret(result.clientSecret);
+  //     } catch (error) {
+  //       console.error("Error creating payment intent:", error);
+  //       toast.error("Failed to create payment gatway");
+  //     }
+  //   };
+
+  //   createPayment();
+  // }, []);
+
+  useEffect(() => {
+    const initializePayment = async () => {
+      if (!appointmentData) return;
+
+      try {
+        const response = await createPaymentIntent(appointmentData);
+        setClientSecret(response.clientSecret);
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to initialize payment");
+      }
+    };
+
+    initializePayment();
+  }, [appointmentData]);
+
   const handlePaymentClick = async () => {
+    if (!appointmentData) {
+      return;
+    }
+
+    if (!stripe || !elements) {
+      return;
+    }
+
     try {
-      if (!appointmentData) {
+      setPaymentLoading(true);
+
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        console.error(submitError);
         return;
       }
-      const updatedAppointment = {
-        ...appointmentData,
-        status: "confirmed",
-        paymentStatus: "paid"
-      };
 
-      setPaymentLoading(true);
-      const result =
-        await appointmentService.createAppointment(updatedAppointment);
-      navigate("/confirmed", { state: { appointmentId: result._id } });
-      dispatch(resetAppointment());
+      // const response = await createPaymentIntent(appointmentData);
+
+      // const { clientSecret } = response;
+
+      if (!clientSecret) return;
+
+      const result = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/confirmed`,
+        },
+      });
+
+      if (result.error) {
+        toast.success("Payment success");
+      } else {
+        toast.error("Someting went wrong");
+      }
+      // const paymentIntent = await confirmPaymentIntent({
+      //   paymentMethodId: paymentMethod.id,
+      //   clientSecret: paymentIntentClientSecret!
+      // });
+      // if (!paymentIntent || paymentIntent.status !== "succeeded") {
+      //   throw new Error("Payment confirmation failed");
+      // }
+
+      // const updatedAppointment = {
+      //   ...appointmentData,
+      //   status: "confirmed",
+      //   paymentStatus: "paid"
+      // };
+
+      // const result =
+      //   await appointmentService.createAppointment(updatedAppointment);
+      // navigate("/confirmed", { state: { appointmentId: result._id } });
+      // dispatch(resetAppointment());
     } catch (error) {
+      console.log(error);
       toast.error(error instanceof Error ? error.message : "Unknown Error");
     } finally {
       setPaymentLoading(false);
@@ -112,6 +205,24 @@ const Payment = () => {
   const handleBack = () => {
     navigate(-1);
   };
+
+  // const CARD_ELEMENT_OPTIONS = {
+  //   style: {
+  //     base: {
+  //       color: "#32325d",
+  //       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  //       fontSmoothing: "antialiased",
+  //       fontSize: "16px",
+  //       "::placeholder": {
+  //         color: "#aab7c4",
+  //       },
+  //     },
+  //     invalid: {
+  //       color: "#fa755a",
+  //       iconColor: "#fa755a",
+  //     },
+  //   },
+  // };
 
   if (loading) {
     return (
@@ -143,7 +254,7 @@ const Payment = () => {
             fontSize: "16px",
             fontWeight: "bold",
             textDecoration: "none",
-            ":hover": { textDecoration: "underline" }
+            ":hover": { textDecoration: "underline" },
           }}
         >
           <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
@@ -193,7 +304,7 @@ const Payment = () => {
                     borderRadius: 1,
                     px: 2,
                     py: 1,
-                    mb: 0
+                    mb: 0,
                   }}
                 >
                   <Typography sx={{ fontWeight: 500, fontSize: 13 }}>
@@ -227,7 +338,7 @@ const Payment = () => {
                       borderColor: "grey.300",
                       borderRadius: 1,
                       p: 2,
-                      mb: 1
+                      mb: 1,
                     }}
                   >
                     <Skeleton variant="text" width="50%" />
@@ -241,7 +352,7 @@ const Payment = () => {
                       borderColor: "grey.300",
                       borderRadius: 1,
                       p: 2,
-                      mb: 1
+                      mb: 1,
                     }}
                   >
                     <Skeleton variant="text" width="50%" />
@@ -289,7 +400,7 @@ const Payment = () => {
           fontSize: "16px",
           fontWeight: "bold",
           textDecoration: "none",
-          ":hover": { textDecoration: "underline" }
+          ":hover": { textDecoration: "underline" },
         }}
       >
         <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
@@ -351,7 +462,7 @@ const Payment = () => {
                     borderRadius: 1,
                     px: 2,
                     py: 1,
-                    mb: 0
+                    mb: 0,
                   }}
                 >
                   <Typography sx={{ fontWeight: 500, fontSize: 13 }}>
@@ -378,20 +489,25 @@ const Payment = () => {
                   <Typography variant="h6" sx={{ mb: 2 }}>
                     Payment Details
                   </Typography>
+
+                  {/* Stripe Payment Element - handles all payment methods */}
                   <Box
-                    display="flex"
-                    justifyContent="space-between"
                     sx={{
                       border: 1,
                       borderColor: "grey.300",
                       borderRadius: 1,
                       p: 2,
-                      mb: 1
+                      mb: 1,
                     }}
                   >
-                    <Typography>Payment Method</Typography>
-                    <Typography>Credit/Debit Card</Typography>
+                    <PaymentElement
+                      options={{
+                        paymentMethodOrder: ["card", "upi", "netbanking"],
+                        layout: "tabs",
+                      }}
+                    />
                   </Box>
+
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -400,14 +516,15 @@ const Payment = () => {
                       borderColor: "grey.300",
                       borderRadius: 1,
                       p: 2,
-                      mb: 1
+                      mb: 1,
                     }}
                   >
                     <Typography>Amount Due</Typography>
                     <Typography>
-                      ₹{appointmentData.fee && appointmentData?.fee.toFixed(2)}
+                      ₹{appointmentData.fee && appointmentData.fee.toFixed(2)}
                     </Typography>
                   </Box>
+
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -418,16 +535,16 @@ const Payment = () => {
                   </Typography>
                 </CardContent>
               </Card>
+
               <Box>
                 <Button
-                  loading={isPaymentLoading}
-                  disabled={isPaymentLoading}
+                  disabled={isPaymentLoading || !stripe}
                   fullWidth
                   onClick={handlePaymentClick}
                   variant="contained"
                   sx={{ p: 2 }}
                 >
-                  Book Appointment
+                  {isPaymentLoading ? "Processing..." : "Book Appointment"}
                 </Button>
               </Box>
             </Box>
@@ -438,7 +555,7 @@ const Payment = () => {
           No appointment found. Please try again.
         </Typography>
       )}
-
+      {/* <CardElement /> */}
       <ConfirmActionModal
         open={exitModalOpen}
         title="Exit Booking"

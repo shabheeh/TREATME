@@ -9,6 +9,7 @@ import { AppError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
 import { extractDate, extractTime } from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
+import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
@@ -210,6 +211,68 @@ class AppointmentService implements IAppointmentService {
       return appointments;
     } catch (error) {
       logger.error(`Error getting appointments for admin`, error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async stripePayment(
+    appointmentData: IAppointment
+  ): Promise<{ clientSecret: string }> {
+    try {
+      const paymentIntent = await createPaymentIntent(
+        appointmentData.fee,
+        "usd",
+        appointmentData
+      );
+      return { clientSecret: paymentIntent.client_secret || "" };
+    } catch (error) {
+      logger.error(`Error stripe payment`, error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async handleWebHook(payload: Buffer, sig: string) {
+    try {
+      const event = constructWebhookEvent(
+        payload,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      );
+
+      if (event.type === "payment_intent.succeeded") {
+        const paymentIntent = event.data.object;
+
+        const appointment = {
+          doctor: paymentIntent.metadata.doctor,
+          patientType: paymentIntent.metadata.patientType,
+          patient: paymentIntent.metadata.patient,
+          specialization: paymentIntent.metadata.specialization,
+          date: paymentIntent.metadata.date,
+          duration: paymentIntent.metadata.duration,
+          reason: paymentIntent.metadata.reason,
+          fee: paymentIntent.metadata.fee,
+          slotId: paymentIntent.metadata.slotId,
+          dayId: paymentIntent.metadata.dayId,
+          status: paymentIntent.metadata.status,
+          paymentStatus: paymentIntent.metadata.paymentStatus,
+        } as unknown as IAppointment;
+
+        await this.createAppointment(appointment);
+      }
+    } catch (error) {
+      logger.error(`Error stripe payment`, error);
       if (error instanceof AppError) {
         throw error;
       }

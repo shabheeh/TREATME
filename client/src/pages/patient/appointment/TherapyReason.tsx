@@ -8,7 +8,7 @@ import {
   IconButton,
   Divider,
   Autocomplete,
-  TextField
+  TextField,
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
@@ -19,7 +19,7 @@ import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
 import {
   resetAppointment,
   updateAppointment,
-  updateStep
+  updateStep,
 } from "../../../redux/features/appointment/appointmentSlice";
 
 const concerns = [
@@ -32,7 +32,7 @@ const concerns = [
   "I have experienced trauma",
   "I recently had major life changes",
   "I have not been happy for a long time",
-  "I am not sure"
+  "I am not sure",
 ];
 
 const TherapyReason = () => {
@@ -64,7 +64,7 @@ const TherapyReason = () => {
         status: "pending",
         fee: state.fee,
         patientType:
-          currentPatient?._id === patient?._id ? "Patient" : "Dependent"
+          currentPatient?._id === patient?._id ? "Patient" : "Dependent",
       })
     );
 
@@ -115,7 +115,7 @@ const TherapyReason = () => {
               fontSize: "16px",
               fontWeight: "bold",
               textDecoration: "none",
-              ":hover": { textDecoration: "underline" }
+              ":hover": { textDecoration: "underline" },
             }}
           >
             <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />

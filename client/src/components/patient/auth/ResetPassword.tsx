@@ -20,12 +20,12 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<ResetPasswordInputs>({
     defaultValues: {
       password: "",
-      confirmPassword: ""
-    }
+      confirmPassword: "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Typography
@@ -73,7 +73,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 1
+            marginBottom: 1,
           }}
         >
           Reset Password
@@ -85,7 +85,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
           gutterBottom
           color="secondary"
           sx={{
-            marginTop: 2
+            marginTop: 2,
           }}
         >
           Enter your new password
@@ -98,7 +98,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            m: 10
+            m: 10,
           }}
         >
           <TextField
@@ -106,14 +106,14 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
               required: "Password is required",
               minLength: {
                 value: 8,
-                message: "Password must be at least 8 characters"
+                message: "Password must be at least 8 characters",
               },
               pattern: {
                 value:
                   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                 message:
-                  "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character"
-              }
+                  "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
+              },
             })}
             type="password"
             label="Password"
@@ -126,7 +126,7 @@ const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
             {...register("confirmPassword", {
               required: "Please confirm your password",
               validate: (value) =>
-                value === password || "Passwords do not match"
+                value === password || "Passwords do not match",
             })}
             type="password"
             label="Confirm Password"

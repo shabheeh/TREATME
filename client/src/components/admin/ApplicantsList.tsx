@@ -21,20 +21,20 @@ import { toast } from "sonner";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white
+    color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover
+    backgroundColor: theme.palette.action.hover,
   },
   "&:last-child td, &:last-child th": {
-    border: 0
-  }
+    border: 0,
+  },
 }));
 
 const ApplicantsList = () => {
@@ -62,7 +62,7 @@ const ApplicantsList = () => {
         const response = await applicantService.getApplicants({
           page: page + 1,
           limit: rowsPerPage,
-          search: debouncedSearch
+          search: debouncedSearch,
         });
 
         setData(response);

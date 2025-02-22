@@ -18,28 +18,28 @@ const StyledTab = styled(Tab)(({ theme }) => ({
   marginRight: theme.spacing(1),
   color: theme.palette.text.secondary,
   "&.Mui-selected": {
-    color: theme.palette.primary.main
+    color: theme.palette.primary.main,
   },
   "&:hover": {
     color: theme.palette.primary.main,
-    opacity: 1
+    opacity: 1,
   },
   boxShadow: "none",
-  border: "none"
+  border: "none",
 }));
 
 const StyledTabs = styled(Tabs)({
   boxShadow: "none",
   borderBottom: "1px solid #e0e4e8",
   "& .MuiTabs-indicator": {
-    backgroundColor: "teal"
-  }
+    backgroundColor: "teal",
+  },
 });
 
 export const CustomTabs: React.FC<CustomTabsProps> = ({
   value,
   onChange,
-  tabContent
+  tabContent,
 }) => {
   return (
     <StyledTabs

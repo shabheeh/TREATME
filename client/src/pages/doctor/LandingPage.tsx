@@ -6,7 +6,7 @@ import {
   Grid,
   List,
   ListItem,
-  Typography
+  Typography,
 } from "@mui/material";
 
 import bgImage from "../../assets/Hero-banner.jpg";
@@ -42,7 +42,7 @@ const LandingPage = () => {
                     color: "teal",
                     "&:hover": { bgcolor: "grey.100" },
                     borderRadius: 28,
-                    px: 4
+                    px: 4,
                   }}
                 >
                   Sign in
@@ -70,8 +70,8 @@ const LandingPage = () => {
                     background:
                       "linear-gradient(90deg, rgba(255,255,255,5.95) 0%, rgba(255,255,255,0.5) 25%, rgba(255,255,255,0) 100%)",
                     zIndex: 1,
-                    pointerEvents: "none"
-                  }
+                    pointerEvents: "none",
+                  },
                 }}
               >
                 <Box
@@ -82,7 +82,7 @@ const LandingPage = () => {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    display: "block"
+                    display: "block",
                   }}
                 />
               </Box>
@@ -96,7 +96,7 @@ const LandingPage = () => {
           <Typography
             variant="body1"
             sx={{
-              color: "GrayText"
+              color: "GrayText",
             }}
           >
             Thank you for your interest in joining the Treateme provider
@@ -116,7 +116,7 @@ const LandingPage = () => {
                   variant="body1"
                   component="li"
                   sx={{
-                    color: "GrayText"
+                    color: "GrayText",
                   }}
                 >
                   Medical providers must hold a valid MD or equivalent
@@ -131,7 +131,7 @@ const LandingPage = () => {
                   variant="body1"
                   component="li"
                   sx={{
-                    color: "GrayText"
+                    color: "GrayText",
                   }}
                 >
                   Physicians and Psychiatrists must have at least 4 years of
@@ -148,7 +148,7 @@ const LandingPage = () => {
                   variant="body1"
                   component="li"
                   sx={{
-                    color: "GrayText"
+                    color: "GrayText",
                   }}
                 >
                   Providers must maintain an active and unrestricted medical
@@ -162,7 +162,7 @@ const LandingPage = () => {
                   variant="body1"
                   component="li"
                   sx={{
-                    color: "GrayText"
+                    color: "GrayText",
                   }}
                 >
                   We do not currently onboard nurse practitioners, physician
@@ -203,16 +203,16 @@ const LandingPage = () => {
             {[
               {
                 title: "Services",
-                items: ["Dermatology", "Urgent Care", "Therapy", "Psychiatry"]
+                items: ["Dermatology", "Urgent Care", "Therapy", "Psychiatry"],
               },
               {
                 title: "Company",
-                items: ["About Us", "Contact", "Privacy Policy"]
+                items: ["About Us", "Contact", "Privacy Policy"],
               },
               {
                 title: "Contact",
-                items: ["support@treatme.com", "1-800-TREATME", "Mon-Sun 24/7"]
-              }
+                items: ["support@treatme.com", "1-800-TREATME", "Mon-Sun 24/7"],
+              },
             ].map((section, index) => (
               <Grid item xs={12} md={3} key={index}>
                 <Typography variant="h6" gutterBottom>
@@ -235,7 +235,7 @@ const LandingPage = () => {
               pt: 4,
               borderTop: 1,
               borderColor: "grey.800",
-              textAlign: "center"
+              textAlign: "center",
             }}
           >
             <Typography color="grey.400">

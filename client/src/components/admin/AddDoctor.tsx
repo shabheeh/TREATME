@@ -9,7 +9,7 @@ import {
   Grid,
   Avatar,
   Chip,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
@@ -47,7 +47,7 @@ const languageOptions = [
   "Urdu",
   "Bengali",
   "Gujarati",
-  "Punjabi"
+  "Punjabi",
 ];
 
 const AddDoctor = () => {
@@ -57,7 +57,7 @@ const AddDoctor = () => {
     control,
     watch,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignupFormInputs>({
     defaultValues: {
       firstName: "",
@@ -70,8 +70,8 @@ const AddDoctor = () => {
       languages: [],
       specialization: "",
       specialties: [],
-      profilePicture: null
-    }
+      profilePicture: null,
+    },
   });
 
   const profilePicture = watch("profilePicture");
@@ -191,7 +191,7 @@ const AddDoctor = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Container
@@ -201,7 +201,7 @@ const AddDoctor = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <Box
@@ -210,7 +210,7 @@ const AddDoctor = () => {
               my: 2,
               display: "flex",
               flexDirection: "column",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Avatar
@@ -242,8 +242,8 @@ const AddDoctor = () => {
                     required: "First Name is required",
                     pattern: {
                       value: /^[A-Z][a-zA-Z' -]*$/,
-                      message: "Please enter a valid First Name"
-                    }
+                      message: "Please enter a valid First Name",
+                    },
                   })}
                   fullWidth
                   label="First Name"
@@ -258,8 +258,8 @@ const AddDoctor = () => {
                     required: "Last Name is required",
                     pattern: {
                       value: /^[A-Z][a-zA-Z' -]*$/,
-                      message: "Please enter a valid Last Name"
-                    }
+                      message: "Please enter a valid Last Name",
+                    },
                   })}
                   fullWidth
                   label="Last Name"
@@ -279,8 +279,8 @@ const AddDoctor = () => {
                     required: "Email is required",
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address"
-                    }
+                      message: "Invalid email address",
+                    },
                   })}
                   fullWidth
                   label="Email"
@@ -295,8 +295,8 @@ const AddDoctor = () => {
                     required: "Phone Number is required",
                     pattern: {
                       value: /^[2-9]\d{9}$/,
-                      message: "Please enter a valid Phone Number"
-                    }
+                      message: "Please enter a valid Phone Number",
+                    },
                   })}
                   fullWidth
                   type="tel"
@@ -346,8 +346,8 @@ const AddDoctor = () => {
                     required: "Biography is required",
                     minLength: {
                       value: 10,
-                      message: "Biography should be at least 100 characters"
-                    }
+                      message: "Biography should be at least 100 characters",
+                    },
                   })}
                   fullWidth
                   label="Professional Biography"
@@ -369,8 +369,8 @@ const AddDoctor = () => {
                     required: "Experience is required",
                     min: {
                       value: 2,
-                      message: "Experience Must be more than 1"
-                    }
+                      message: "Experience Must be more than 1",
+                    },
                   })}
                   fullWidth
                   type="number"
@@ -383,7 +383,7 @@ const AddDoctor = () => {
               <Grid item xs={6}>
                 <TextField
                   {...register("registerNo", {
-                    required: "Registration number is required"
+                    required: "Registration number is required",
                   })}
                   fullWidth
                   label="Medical Registration Number"
@@ -398,7 +398,7 @@ const AddDoctor = () => {
           <Box sx={{ width: "90%", my: 2 }}>
             <TextField
               {...register("specialization", {
-                required: "Specialization is required"
+                required: "Specialization is required",
               })}
               select
               fullWidth
@@ -417,7 +417,7 @@ const AddDoctor = () => {
             <Box sx={{ mt: 2 }}>
               <TextField
                 {...register("specialties", {
-                  required: "Specialty is required"
+                  required: "Specialty is required",
                 })}
                 fullWidth
                 label="Specialties"

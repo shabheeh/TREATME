@@ -9,20 +9,20 @@ import BehavioralHealth from "../../components/patient/behaviouralHealth/Behavio
 const tabContent = [
   {
     title: "Health History",
-    component: <HealthHistory />
+    component: <HealthHistory />,
   },
   {
     title: "Lifestyle",
-    component: <Lifestyle />
+    component: <Lifestyle />,
   },
   {
     title: "Family History",
-    component: <FamilyHistory />
+    component: <FamilyHistory />,
   },
   {
     title: "Behavioural History",
-    component: <BehavioralHealth />
-  }
+    component: <BehavioralHealth />,
+  },
 ];
 
 const HealthProfile = () => {

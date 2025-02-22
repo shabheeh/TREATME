@@ -22,7 +22,7 @@ interface OtpFormValues {
 const Otp: React.FC<OtpPageProps> = ({
   isVerifyEmail,
   onVerifySignUp,
-  onVerifySignIn
+  onVerifySignIn,
 }) => {
   const [seconds, setSeconds] = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(true);
@@ -34,11 +34,11 @@ const Otp: React.FC<OtpPageProps> = ({
     handleSubmit,
     control,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<OtpFormValues>({
     defaultValues: {
-      otp: ""
-    }
+      otp: "",
+    },
   });
 
   useEffect(() => {
@@ -116,7 +116,7 @@ const Otp: React.FC<OtpPageProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Typography
@@ -128,7 +128,7 @@ const Otp: React.FC<OtpPageProps> = ({
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 2
+            marginBottom: 2,
           }}
         >
           {isVerifyEmail ? "Verify your Email" : "Forgot Password"}
@@ -141,7 +141,7 @@ const Otp: React.FC<OtpPageProps> = ({
           color="secondary"
           sx={{
             marginTop: 2,
-            marginBottom: 10
+            marginBottom: 10,
           }}
         >
           {isVerifyEmail ? <SignupPath step={2} /> : ""}
@@ -154,7 +154,7 @@ const Otp: React.FC<OtpPageProps> = ({
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           {errors.otp && (
@@ -169,7 +169,7 @@ const Otp: React.FC<OtpPageProps> = ({
             rules={{
               required: "OTP is required",
               minLength: { value: 6, message: "OTP must be 6 digits" },
-              maxLength: { value: 6, message: "OTP must be 6 digits" }
+              maxLength: { value: 6, message: "OTP must be 6 digits" },
             }}
             render={({ field }) => (
               <PinInput
@@ -182,18 +182,18 @@ const Otp: React.FC<OtpPageProps> = ({
                   marginTop: "5px",
                   paddingBottom: "50px",
                   display: "flex",
-                  gap: "15px"
+                  gap: "15px",
                 }}
                 inputStyle={{
                   borderColor: errors.otp ? "red" : "gray",
                   borderWidth: "2px",
                   width: "50px",
                   height: "50px",
-                  textAlign: "center"
+                  textAlign: "center",
                 }}
                 inputFocusStyle={{
                   borderColor: "teal",
-                  borderWidth: "2px"
+                  borderWidth: "2px",
                 }}
                 onComplete={(value) => setValue("otp", value)}
                 autoSelect={true}
@@ -217,7 +217,7 @@ const Otp: React.FC<OtpPageProps> = ({
               mt: 1,
               m: 5,
               textAlign: "center",
-              color: "gray"
+              color: "gray",
             }}
           >
             Didn't receive the OTP?{" "}
@@ -226,7 +226,7 @@ const Otp: React.FC<OtpPageProps> = ({
               underline="none"
               sx={{
                 color: "teal",
-                cursor: isTimerActive ? "wait" : "pointer"
+                cursor: isTimerActive ? "wait" : "pointer",
               }}
               onClick={handleResendOtp}
               disabled={isTimerActive}

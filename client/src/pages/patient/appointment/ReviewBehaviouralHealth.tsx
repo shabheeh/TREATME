@@ -70,7 +70,7 @@ const ReviewBehaviouralHealth = () => {
           fontSize: "16px",
           fontWeight: "bold",
           textDecoration: "none",
-          ":hover": { textDecoration: "underline" }
+          ":hover": { textDecoration: "underline" },
         }}
       >
         <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />

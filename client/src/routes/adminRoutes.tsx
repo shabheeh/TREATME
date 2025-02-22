@@ -39,5 +39,5 @@ export const adminRoutes = [
     <Route path="specializations" element={<Specializations />} />
     <Route path="specializations/add" element={<AddSpecialization />} />
     <Route path="specializations/edit/:id" element={<EditSpecialization />} />
-  </Route>
+  </Route>,
 ];

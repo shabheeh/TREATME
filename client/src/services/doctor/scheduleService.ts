@@ -24,7 +24,7 @@ class ScheduleService {
   ): Promise<ISchedule> {
     try {
       const response = await api.doctor.patch(`/schedules/${id}`, {
-        updateData
+        updateData,
       });
       const { schedule } = response.data;
       return schedule;

@@ -7,7 +7,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   MenuItem,
-  Grid
+  Grid,
 } from "@mui/material";
 import SignupPath from "./SignupPath";
 import React, { useEffect, useState } from "react";
@@ -47,7 +47,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
     control,
     watch,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignupFormInputs>({
     defaultValues: {
       firstName: tempUser?.firstName || "",
@@ -56,13 +56,13 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
       gender: "",
       birthDay: "",
       birthMonth: "",
-      birthYear: ""
-    }
+      birthYear: "",
+    },
   });
 
   const months = Array.from({ length: 12 }, (_, i) => ({
     value: (i + 1).toString().padStart(2, "0"),
-    label: new Date(2000, i).toLocaleString("default", { month: "long" })
+    label: new Date(2000, i).toLocaleString("default", { month: "long" }),
   }));
 
   const currentYear = new Date().getFullYear();
@@ -162,7 +162,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
       email: tempUser.email,
       phone: data.phone,
       gender: data.gender,
-      dateOfBirth: formattedDateOfBirth
+      dateOfBirth: formattedDateOfBirth,
     };
 
     try {
@@ -195,7 +195,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          width: "45%"
+          width: "45%",
         }}
       >
         <Typography
@@ -207,7 +207,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 1
+            marginBottom: 1,
           }}
         >
           Complete Your Profile
@@ -220,7 +220,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <Box sx={{ width: "90%", my: 2 }}>
@@ -231,8 +231,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                     required: "First Name is required",
                     pattern: {
                       value: /^[A-Z][a-zA-Z' -]*$/,
-                      message: "Please enter a valid First Name"
-                    }
+                      message: "Please enter a valid First Name",
+                    },
                   })}
                   fullWidth
                   label="First Name"
@@ -247,8 +247,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                     required: "Last Name is required",
                     pattern: {
                       value: /^[A-Z][a-zA-Z' -]*$/,
-                      message: "Please enter a valid Last Name"
-                    }
+                      message: "Please enter a valid Last Name",
+                    },
                   })}
                   fullWidth
                   label="Last Name"
@@ -266,8 +266,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                 required: "Phone Number is required",
                 pattern: {
                   value: /^[2-9]\d{9}$/,
-                  message: "Please enter a valid Phone Number"
-                }
+                  message: "Please enter a valid Phone Number",
+                },
               })}
               fullWidth
               type="tel"
@@ -354,8 +354,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                           parseInt(value) <= daysInMonth ||
                           "Invalid day for selected month and year"
                         );
-                      }
-                    }
+                      },
+                    },
                   }}
                   render={({ field }) => (
                     <TextField
@@ -389,8 +389,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                           validateAge(value, selectedMonth, selectedDay) ||
                           "Must be at least 18 years old"
                         );
-                      }
-                    }
+                      },
+                    },
                   }}
                   render={({ field }) => (
                     <TextField

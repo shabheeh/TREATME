@@ -8,7 +8,7 @@ import {
   IconButton,
   Divider,
   Autocomplete,
-  TextField
+  TextField,
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Close } from "@mui/icons-material";
 import ProgressBar from "../../../components/basics/PrgressBar";
@@ -29,7 +29,7 @@ const concerns = [
   "I have been experiencing post-traumatic stress",
   "I have been experiencing mood swings or bipolar symptoms",
   "I have obsessive-compulsive thoughts or behaviors",
-  "I am not sure"
+  "I am not sure",
 ];
 
 const PsychiatryReason = () => {
@@ -59,13 +59,13 @@ const PsychiatryReason = () => {
       specialization: state.specializationId,
       fee: state.fee,
       status: "pending",
-      reason: selectedConcern
+      reason: selectedConcern,
     };
     try {
       const result =
         await appointmentService.createAppointment(appointmentData);
       navigate("/review-health-history", {
-        state: { appointmentId: result._id }
+        state: { appointmentId: result._id },
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -119,7 +119,7 @@ const PsychiatryReason = () => {
               fontSize: "16px",
               fontWeight: "bold",
               textDecoration: "none",
-              ":hover": { textDecoration: "underline" }
+              ":hover": { textDecoration: "underline" },
             }}
           >
             <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />

@@ -35,7 +35,7 @@ class ApplicantService {
   async getApplicants({
     page,
     limit,
-    search
+    search,
   }: UrlQuery): Promise<ResponseData> {
     try {
       const response = await api.doctor.get(

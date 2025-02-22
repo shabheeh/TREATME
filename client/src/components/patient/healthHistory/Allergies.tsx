@@ -7,7 +7,7 @@ import {
   TextField,
   Grid,
   IconButton,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 import { IAllergy, IHealthHistory } from "../../../types/patient/health.types";
@@ -42,13 +42,13 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
     handleSubmit,
     control,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<IAllergy>({
     defaultValues: {
       allergicTo: "",
       severity: "",
-      reaction: ""
-    }
+      reaction: "",
+    },
   });
 
   const updateAllegies = async (updatedAllergies: IAllergy[]) => {
@@ -143,7 +143,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
                   pb: 1,
                   pt: 0,
                   backgroundColor: "#F5F5F5",
-                  display: { xs: "none", sm: "flex" }
+                  display: { xs: "none", sm: "flex" },
                 }}
               >
                 <Grid item xs={12} sm={4}>
@@ -176,7 +176,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
                       borderBottom: "1px solid #e0e0e0",
                       py: 1,
                       alignItems: "center",
-                      display: { xs: "none", sm: "flex" }
+                      display: { xs: "none", sm: "flex" },
                     }}
                   >
                     <Grid item xs={12} sm={4}>
@@ -210,7 +210,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
                     sx={{
                       display: { xs: "block", sm: "none" },
                       borderBottom: "1px solid #e0e0e0",
-                      py: 2
+                      py: 2,
                     }}
                   >
                     <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
@@ -264,12 +264,12 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
                 gap: 2,
-                mt: 4
+                mt: 4,
               }}
             >
               <TextField
                 {...register("allergicTo", {
-                  required: "Name is required"
+                  required: "Name is required",
                 })}
                 placeholder="E.g. Penicillin, amoxicillin"
                 fullWidth
@@ -284,7 +284,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
                 control={control}
                 defaultValue=""
                 rules={{
-                  required: "Field is required"
+                  required: "Field is required",
                 }}
                 render={({ field }) => (
                   <TextField
@@ -307,7 +307,7 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
               />
               <TextField
                 {...register("reaction", {
-                  required: "Field is required"
+                  required: "Field is required",
                 })}
                 placeholder="E.g. Rashes, itchy"
                 fullWidth
@@ -328,8 +328,8 @@ const Allergies: React.FC<AllergiesProps> = ({ allergies, onUpdate }) => {
                   height: "50px",
                   backgroundColor: "#05998c",
                   "&:hover": {
-                    backgroundColor: "#008080"
-                  }
+                    backgroundColor: "#008080",
+                  },
                 }}
               >
                 Save

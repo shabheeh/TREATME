@@ -8,14 +8,14 @@ export const validateFile = (
   if (size > maxSize) {
     return {
       valid: false,
-      message: `File must be smaller than ${maxSize / (1024 * 1024)} MB`
+      message: `File must be smaller than ${maxSize / (1024 * 1024)} MB`,
     };
   }
 
   if (!allowedTypes.includes(type)) {
     return {
       valid: false,
-      message: `Only ${allowedTypes.join(", ")} files are allowed`
+      message: `Only ${allowedTypes.join(", ")} files are allowed`,
     };
   }
 

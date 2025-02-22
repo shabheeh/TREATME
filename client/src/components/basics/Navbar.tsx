@@ -8,7 +8,7 @@ const Navbar = () => {
       sx={{
         bgcolor: "teal",
         width: "100%",
-        boxShadow: 0
+        boxShadow: 0,
       }}
     >
       <Toolbar sx={{ padding: "0.5rem 1rem" }}>

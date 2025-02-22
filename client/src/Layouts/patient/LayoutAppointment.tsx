@@ -8,7 +8,7 @@ const LayoutAppointment = () => {
       sx={{
         display: "flex",
         height: "100vh",
-        overflow: "hidden"
+        overflow: "hidden",
       }}
     >
       <Navbar />
@@ -22,7 +22,7 @@ const LayoutAppointment = () => {
           backgroundColor: "#fffff",
           height: "calc(100vh - 64px)",
           overflow: "auto",
-          width: { xs: "100%", lg: `calc(100% - 240px)` }
+          width: { xs: "100%", lg: `calc(100% - 240px)` },
         }}
       >
         <Outlet />

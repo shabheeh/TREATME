@@ -6,7 +6,7 @@ import {
   Button,
   Grid,
   Card,
-  CardMedia
+  CardMedia,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
@@ -46,7 +46,7 @@ const EditSpecialization = () => {
           description: specialization.description,
           note: specialization.note,
           fee: specialization.fee,
-          image: null
+          image: null,
         });
       } catch (error) {
         log.error("Error fetching specialization", error);
@@ -65,15 +65,15 @@ const EditSpecialization = () => {
     // watch,
     setValue,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: {
       name: specialization?.name || "",
       description: specialization?.description || "",
       note: specialization?.note || "",
       fee: specialization?.fee || null,
-      image: null
-    }
+      image: null,
+    },
   });
 
   // const image = watch("image");
@@ -99,7 +99,7 @@ const EditSpecialization = () => {
         croppedCanvas.toBlob((blob) => {
           if (blob) {
             const file = new File([blob], "cropped-image.png", {
-              type: "image/png"
+              type: "image/png",
             });
             setValue("image", file);
             setCroppedImage(croppedCanvas.toDataURL());
@@ -164,7 +164,7 @@ const EditSpecialization = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Container
@@ -174,7 +174,7 @@ const EditSpecialization = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <Box
@@ -183,7 +183,7 @@ const EditSpecialization = () => {
               my: 2,
               display: "flex",
               flexDirection: "column",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Card sx={{ maxWidth: 600, maxHeight: 400, my: 5 }}>
@@ -232,8 +232,8 @@ const EditSpecialization = () => {
                 required: "Name is required",
                 pattern: {
                   value: /^[A-Z][a-zA-Z' -]*$/,
-                  message: "Please enter a valid Name"
-                }
+                  message: "Please enter a valid Name",
+                },
               })}
               fullWidth
               label="Name"
@@ -246,7 +246,7 @@ const EditSpecialization = () => {
           <Box sx={{ width: "90%", my: 2 }}>
             <TextField
               {...register("description", {
-                required: "Description is required"
+                required: "Description is required",
               })}
               fullWidth
               InputLabelProps={{ shrink: true }}
@@ -264,8 +264,8 @@ const EditSpecialization = () => {
                     required: "Note is required",
                     minLength: {
                       value: 30,
-                      message: "Note should be at least 30 characters"
-                    }
+                      message: "Note should be at least 30 characters",
+                    },
                   })}
                   fullWidth
                   label="Note"
@@ -285,8 +285,8 @@ const EditSpecialization = () => {
                 required: "Fee is required",
                 min: {
                   value: 2,
-                  message: "Fee must be a valid amount"
-                }
+                  message: "Fee must be a valid amount",
+                },
               })}
               fullWidth
               type="number"

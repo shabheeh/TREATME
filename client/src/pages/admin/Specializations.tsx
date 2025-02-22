@@ -50,7 +50,7 @@ const Specializations = () => {
             href="/admin/specializations/add"
             sx={{
               textTransform: "none",
-              textDecoration: "none"
+              textDecoration: "none",
             }}
           >
             Add Specialization

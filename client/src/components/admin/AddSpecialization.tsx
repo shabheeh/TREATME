@@ -6,7 +6,7 @@ import {
   Button,
   Grid,
   Card,
-  CardMedia
+  CardMedia,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
@@ -31,15 +31,15 @@ const AddSpecialization = () => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: {
       name: "",
       description: "",
       note: "",
       fee: null,
-      image: null
-    }
+      image: null,
+    },
   });
 
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ const AddSpecialization = () => {
         croppedCanvas.toBlob((blob) => {
           if (blob) {
             const file = new File([blob], "cropped-image.png", {
-              type: "image/png"
+              type: "image/png",
             });
             setValue("image", file);
             setCroppedImage(croppedCanvas.toDataURL());
@@ -135,7 +135,7 @@ const AddSpecialization = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Container
@@ -145,7 +145,7 @@ const AddSpecialization = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <Box
@@ -154,7 +154,7 @@ const AddSpecialization = () => {
               my: 2,
               display: "flex",
               flexDirection: "column",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Card sx={{ maxWidth: 600, maxHeight: 400, my: 5 }}>
@@ -203,8 +203,8 @@ const AddSpecialization = () => {
                 required: "Name is required",
                 pattern: {
                   value: /^[A-Z][a-zA-Z' -]*$/,
-                  message: "Please enter a valid Name"
-                }
+                  message: "Please enter a valid Name",
+                },
               })}
               fullWidth
               label="Name"
@@ -216,7 +216,7 @@ const AddSpecialization = () => {
           <Box sx={{ width: "90%", my: 2 }}>
             <TextField
               {...register("description", {
-                required: "Description is required"
+                required: "Description is required",
               })}
               fullWidth
               label="Description"
@@ -233,8 +233,8 @@ const AddSpecialization = () => {
                     required: "Note is required",
                     minLength: {
                       value: 30,
-                      message: "Note should be at least 30 characters"
-                    }
+                      message: "Note should be at least 30 characters",
+                    },
                   })}
                   fullWidth
                   label="Note"
@@ -253,8 +253,8 @@ const AddSpecialization = () => {
                 required: "Fee is required",
                 min: {
                   value: 2,
-                  message: "Fee must be a valid amount"
-                }
+                  message: "Fee must be a valid amount",
+                },
               })}
               fullWidth
               type="number"
@@ -268,7 +268,7 @@ const AddSpecialization = () => {
             sx={{
               width: "60%",
               display: "flex",
-              gap: 2
+              gap: 2,
             }}
           >
             <Button

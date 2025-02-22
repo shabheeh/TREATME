@@ -11,7 +11,7 @@ const API_URLS = {
   patient: import.meta.env.VITE_API_PATIENT,
   doctor: import.meta.env.VITE_API_DOCTOR,
   admin: import.meta.env.VITE_API_ADMIN,
-  shared: import.meta.env.VITE_API_SHARED
+  shared: import.meta.env.VITE_API_SHARED,
 };
 
 type UserRole = "patient" | "doctor" | "admin";
@@ -20,7 +20,7 @@ const createAxiosInstance = (role?: UserRole) => {
   const instance = axios.create({
     baseURL: role ? API_URLS[role] : API_URLS.shared,
     timeout: 10000,
-    withCredentials: true
+    withCredentials: true,
   });
 
   const refreshAuthToken = async () => {
@@ -136,5 +136,5 @@ const createAxiosInstance = (role?: UserRole) => {
 export const api = Object.assign(createAxiosInstance(), {
   patient: createAxiosInstance("patient"),
   doctor: createAxiosInstance("doctor"),
-  admin: createAxiosInstance("admin")
+  admin: createAxiosInstance("admin"),
 });

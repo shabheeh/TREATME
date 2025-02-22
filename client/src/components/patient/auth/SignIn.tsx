@@ -5,7 +5,7 @@ import {
   TextField,
   Link,
   Button,
-  Divider
+  Divider,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import authServicePatient from "../../../services/patient/authService";
@@ -25,17 +25,17 @@ interface SignInProps {
 
 const SignIn: React.FC<SignInProps> = ({
   onForgotPassword,
-  onCompleteProfile
+  onCompleteProfile,
 }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignInFormInputs>({
     defaultValues: {
       email: "",
-      password: ""
-    }
+      password: "",
+    },
   });
 
   const [loading, setLoading] = useState(false);
@@ -89,7 +89,7 @@ const SignIn: React.FC<SignInProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Typography
@@ -101,7 +101,7 @@ const SignIn: React.FC<SignInProps> = ({
             color: "teal",
             textDecoration: "underline",
             marginTop: 5,
-            marginBottom: 10
+            marginBottom: 10,
           }}
         >
           Sign in to your account
@@ -113,7 +113,7 @@ const SignIn: React.FC<SignInProps> = ({
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <TextField
@@ -121,8 +121,8 @@ const SignIn: React.FC<SignInProps> = ({
               required: "Email is required",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address"
-              }
+                message: "Invalid email address",
+              },
             })}
             label="Email"
             variant="outlined"
@@ -132,7 +132,7 @@ const SignIn: React.FC<SignInProps> = ({
           />
           <TextField
             {...register("password", {
-              required: "Password is required"
+              required: "Password is required",
             })}
             label="Password"
             type="password"
@@ -152,8 +152,8 @@ const SignIn: React.FC<SignInProps> = ({
               cursor: "pointer",
               textDecoration: "none",
               "&:hover": {
-                textDecoration: "underline"
-              }
+                textDecoration: "underline",
+              },
             }}
             onClick={onForgotPassword}
           >

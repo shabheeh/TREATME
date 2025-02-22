@@ -4,7 +4,7 @@ import {
   IAppointmentController,
   IAppointmentService,
 } from "../../interfaces/IAppointment";
-import { BadRequestError } from "../../utils/errors";
+import { AppError, BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
 
 class AppointmentController implements IAppointmentController {
@@ -121,6 +121,55 @@ class AppointmentController implements IAppointmentController {
         error instanceof Error
           ? error.message
           : "Controller Error: getAppointments"
+      );
+      next(error);
+    }
+  };
+
+  stripePayment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { appointmentData } = req.body;
+      if (!appointmentData) {
+        throw new BadRequestError("Bad Request: Missing appointment data");
+      }
+      const clientSecret =
+        await this.appointmentService.stripePayment(appointmentData);
+
+      res.status(200).json(clientSecret);
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controller Error: stripePayement"
+      );
+      next(error);
+    }
+  };
+
+  handleWebHook = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const sig = req.headers["stripe-signature"];
+    try {
+      console.log("webhook called");
+
+      if (!sig || Array.isArray(sig)) {
+        throw new AppError("Invalid Stripe signature", 400);
+      }
+
+      await this.appointmentService.handleWebHook(req.body, sig);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controller Error: stripePayement"
       );
       next(error);
     }

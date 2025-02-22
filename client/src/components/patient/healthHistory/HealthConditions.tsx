@@ -6,12 +6,12 @@ import {
   Button,
   TextField,
   Grid,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 import {
   IHealthCondition,
-  IHealthHistory
+  IHealthHistory,
 } from "../../../types/patient/health.types";
 import { useForm } from "react-hook-form";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
@@ -27,7 +27,7 @@ interface HealthConditionsProps {
 
 const HealthConditions: React.FC<HealthConditionsProps> = ({
   healthConditions,
-  onUpdate
+  onUpdate,
 }) => {
   const [showConditionInputs, setShowConditionInputs] = useState(
     healthConditions.length > 0
@@ -45,12 +45,12 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<IHealthCondition>({
     defaultValues: {
       condition: "",
-      reportedBy: "Self Reported"
-    }
+      reportedBy: "Self Reported",
+    },
   });
 
   const updateCoditions = async (updatedConditions: IHealthCondition[]) => {
@@ -145,7 +145,7 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({
                   borderBottom: "1px solid #e0e0e0",
                   pb: 1,
                   pt: 0,
-                  backgroundColor: "#F5F5F5"
+                  backgroundColor: "#F5F5F5",
                 }}
               >
                 <Grid item xs={7}>
@@ -206,7 +206,7 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({
             <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
               <TextField
                 {...register("condition", {
-                  required: "Required"
+                  required: "Required",
                 })}
                 placeholder="E.g. Blood Pressure, Cholesterol"
                 fullWidth
@@ -227,8 +227,8 @@ const HealthConditions: React.FC<HealthConditionsProps> = ({
                   height: "50px",
                   backgroundColor: "#05998c",
                   "&:hover": {
-                    backgroundColor: "#008080"
-                  }
+                    backgroundColor: "#008080",
+                  },
                 }}
               >
                 Save

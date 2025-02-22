@@ -7,12 +7,12 @@ import {
   TextField,
   Grid,
   IconButton,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 import {
   IHealthHistory,
-  IMedication
+  IMedication,
 } from "../../../types/patient/health.types";
 import { useForm, Controller } from "react-hook-form";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
@@ -50,13 +50,13 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate }) => {
     handleSubmit,
     control,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<IMedication>({
     defaultValues: {
       name: "",
       frequency: "",
-      reportedBy: "Self Reported"
-    }
+      reportedBy: "Self Reported",
+    },
   });
 
   const updateMedications = async (updatedMedications: IMedication[]) => {
@@ -171,7 +171,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate }) => {
                     borderBottom: "1px solid #e0e0e0",
                     pb: 1,
                     pt: 0,
-                    backgroundColor: "#F5F5F5"
+                    backgroundColor: "#F5F5F5",
                   }}
                 >
                   <Grid item xs={4}>
@@ -203,7 +203,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate }) => {
                     sx={{
                       borderBottom: "1px solid #e0e0e0",
                       py: 1,
-                      viewTransitionName: `medication-${medication._id}`
+                      viewTransitionName: `medication-${medication._id}`,
                     }}
                   >
                     <Grid item xs={4}>
@@ -242,13 +242,13 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate }) => {
 
             <Box
               sx={{
-                viewTransitionName: "medication-form"
+                viewTransitionName: "medication-form",
               }}
             >
               <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                 <TextField
                   {...register("name", {
-                    required: "Name is required"
+                    required: "Name is required",
                   })}
                   placeholder="E.g. Aspirin, Paracetamol"
                   fullWidth
@@ -263,7 +263,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate }) => {
                   control={control}
                   defaultValue=""
                   rules={{
-                    required: "Frequency is required"
+                    required: "Frequency is required",
                   }}
                   render={({ field }) => (
                     <TextField
@@ -295,8 +295,8 @@ const Medications: React.FC<MedicationsProps> = ({ medications, onUpdate }) => {
                     height: "50px",
                     backgroundColor: "#05998c",
                     "&:hover": {
-                      backgroundColor: "#008080"
-                    }
+                      backgroundColor: "#008080",
+                    },
                   }}
                 >
                   Save

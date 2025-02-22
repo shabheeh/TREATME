@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card } from "@mui/material";
 import {
   CustomTabs,
-  TabPanel
+  TabPanel,
 } from "../../components/basics/appointments/AppointmentTabs";
 import Upcoming from "../../components/basics/appointments/Upcoming";
 import { toast } from "sonner";
@@ -55,7 +55,7 @@ const Appointments = () => {
       title: "Upcoming",
       component: (
         <Upcoming appointments={upcoming} onReschedule={fetchAppointments} />
-      )
+      ),
     },
     // {
     //     title: 'Requested',
@@ -63,8 +63,8 @@ const Appointments = () => {
     // },
     {
       title: "Completed",
-      component: <div>tab 3</div>
-    }
+      component: <div>tab 3</div>,
+    },
   ];
 
   return (

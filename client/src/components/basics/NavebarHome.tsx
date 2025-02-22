@@ -16,7 +16,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ onMenuClick }) => {
         // zIndex: (theme) => theme.zIndex.drawer + 1,
         // zIndex: 10,
         width: "100%",
-        boxShadow: 0
+        boxShadow: 0,
       }}
     >
       <Box sx={{ px: 2 }}>
@@ -26,7 +26,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ onMenuClick }) => {
             sx={{
               display: { xs: "flex", lg: "none" },
               mr: 2,
-              color: "white"
+              color: "white",
             }}
           >
             <MenuIcon />

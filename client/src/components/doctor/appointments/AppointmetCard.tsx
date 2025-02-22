@@ -9,7 +9,7 @@ import {
   Grid,
   Chip,
   IconButton,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import {
   CalendarMonth as CalendarIcon,
@@ -17,7 +17,7 @@ import {
   VideoCameraFront as VideoIcon,
   MedicalServices as MedicalIcon,
   ArrowForward as ArrowIcon,
-  PersonOutline as PatientIcon
+  PersonOutline as PatientIcon,
 } from "@mui/icons-material";
 
 import { IDependent, IPatient } from "../../../types/patient/patient.types";
@@ -25,7 +25,8 @@ import { IDoctor } from "../../../types/doctor/doctor.types";
 import {
   formatMonthDay,
   formatTime,
-  getDayName
+  getDayName,
+  getDaysUntil,
 } from "../../../utils/dateUtils";
 import RescheduleModal from "../../basics/appointments/RescheduleModal";
 import CancelAppointmentModal from "../../basics/appointments/CancelAppointmentModal ";
@@ -52,7 +53,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   specialization,
   reason,
   onReschedule,
-  onViewDetails
+  onViewDetails,
 }) => {
   const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
@@ -62,16 +63,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   const patientName = patient.firstName + " " + patient.lastName;
 
   // Calculate days until appointment
-  const getDaysUntil = (appointmentDate: Date): number => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const apptDate = new Date(appointmentDate);
-    apptDate.setHours(0, 0, 0, 0);
-
-    const diffTime = apptDate.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
   const daysUntil = getDaysUntil(date);
   const isToday = daysUntil === 0;
   const isTomorrow = daysUntil === 1;
@@ -125,8 +116,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         transition: "transform 0.2s, box-shadow 0.2s",
         "&:hover": {
           boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-          transform: "translateY(-3px)"
-        }
+          transform: "translateY(-3px)",
+        },
       }}
     >
       {/* Appointment status indicator */}
@@ -135,7 +126,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           position: "absolute",
           top: 12,
           right: 12,
-          zIndex: 2
+          zIndex: 2,
         }}
       >
         {getStatusChip()}
@@ -148,7 +139,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           pb: 1,
           display: "flex",
           alignItems: "center",
-          gap: 2
+          gap: 2,
         }}
       >
         <Avatar
@@ -158,7 +149,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
             width: 56,
             height: 56,
             border: "2px solid #f0f0f0",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         />
         <Box sx={{ flex: 1 }}>
@@ -179,8 +170,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
                 alignItems: "center",
                 gap: 0.5,
                 "&:hover": {
-                  textDecoration: "underline"
-                }
+                  textDecoration: "underline",
+                },
               }}
             >
               <PatientIcon fontSize="small" />
@@ -289,7 +280,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           borderTop: "1px solid #eaeaea",
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
         <Box sx={{ display: "flex", gap: 1 }}>
@@ -307,8 +298,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               py: 0.5,
               "&:hover": {
                 bgcolor: "#efefff",
-                borderColor: "#c5cae9"
-              }
+                borderColor: "#c5cae9",
+              },
             }}
           >
             Reschedule
@@ -327,8 +318,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               py: 0.5,
               "&:hover": {
                 bgcolor: "#ffebee",
-                borderColor: "#ef9a9a"
-              }
+                borderColor: "#ef9a9a",
+              },
             }}
           >
             Cancel
@@ -344,8 +335,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
                 bgcolor: "primary.light",
                 color: "white",
                 "&:hover": {
-                  bgcolor: "primary.main"
-                }
+                  bgcolor: "primary.main",
+                },
               }}
             >
               <ArrowIcon />

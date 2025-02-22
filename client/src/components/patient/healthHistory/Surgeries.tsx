@@ -7,7 +7,7 @@ import {
   TextField,
   Grid,
   IconButton,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { CheckCircle, RadioButtonUnchecked, Delete } from "@mui/icons-material";
 import { IHealthHistory, ISurgery } from "../../../types/patient/health.types";
@@ -53,13 +53,13 @@ const Surgeries: React.FC<SurgeriesProps> = ({ surgeries, onUpdate }) => {
     handleSubmit,
     control,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<ISurgery>({
     defaultValues: {
       procedure: "",
       year: "",
-      reportedBy: "Self Reported"
-    }
+      reportedBy: "Self Reported",
+    },
   });
 
   const updateSurgeries = async (updatedSurgeries: ISurgery[]) => {
@@ -154,7 +154,7 @@ const Surgeries: React.FC<SurgeriesProps> = ({ surgeries, onUpdate }) => {
                   borderBottom: "1px solid #e0e0e0",
                   pb: 1,
                   pt: 0,
-                  backgroundColor: "#F5F5F5"
+                  backgroundColor: "#F5F5F5",
                 }}
               >
                 <Grid item xs={4}>
@@ -219,7 +219,7 @@ const Surgeries: React.FC<SurgeriesProps> = ({ surgeries, onUpdate }) => {
             <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
               <TextField
                 {...register("procedure", {
-                  required: "Required"
+                  required: "Required",
                 })}
                 placeholder="E.g. Appendectomy, Cholecystectomy"
                 fullWidth
@@ -234,7 +234,7 @@ const Surgeries: React.FC<SurgeriesProps> = ({ surgeries, onUpdate }) => {
                 control={control}
                 defaultValue=""
                 rules={{
-                  required: "Required"
+                  required: "Required",
                 }}
                 render={({ field }) => (
                   <TextField
@@ -267,8 +267,8 @@ const Surgeries: React.FC<SurgeriesProps> = ({ surgeries, onUpdate }) => {
                   height: "50px",
                   backgroundColor: "#05998c",
                   "&:hover": {
-                    backgroundColor: "#008080"
-                  }
+                    backgroundColor: "#008080",
+                  },
                 }}
               >
                 Save

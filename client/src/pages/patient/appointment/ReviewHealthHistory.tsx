@@ -68,7 +68,7 @@ const ReviewHealthHistory = () => {
           fontSize: "16px",
           fontWeight: "bold",
           textDecoration: "none",
-          ":hover": { textDecoration: "underline" }
+          ":hover": { textDecoration: "underline" },
         }}
       >
         <ArrowBack fontSize="small" sx={{ mr: 1 }} />

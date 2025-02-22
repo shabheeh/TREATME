@@ -10,7 +10,7 @@ import {
   Grid,
   styled,
   Divider,
-  Button
+  Button,
 } from "@mui/material";
 import { formatMonthDay, formatTime, getDayName } from "../../utils/dateUtils";
 import { IDaySchedule, IDoctor } from "../../types/doctor/doctor.types";
@@ -23,8 +23,8 @@ export const TimeChip = styled(Chip)(({ theme }) => ({
   backgroundColor: "transparent",
   color: theme.palette.primary.main,
   "&:hover": {
-    backgroundColor: "transparent"
-  }
+    backgroundColor: "transparent",
+  },
 }));
 
 interface ProviderCardProps {
@@ -41,7 +41,7 @@ interface ProviderCardProps {
 const DoctorCard: React.FC<ProviderCardProps> = ({
   doctor,
   availability,
-  handleSlotClick
+  handleSlotClick,
 }) => {
   const [filteredAvailability, setFilteredAvailability] =
     useState<IDaySchedule[]>(availability);
@@ -60,7 +60,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
           borderColor: "teal",
           boxShadow: "none",
           minHeight: 200,
-          padding: { xs: 1, sm: 2 }
+          padding: { xs: 1, sm: 2 },
         }}
       >
         <CardContent
@@ -68,7 +68,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             gap: { xs: 2, sm: 0 },
-            p: 2
+            p: 2,
           }}
         >
           <Box sx={{ display: "flex", gap: 2, flex: 1 }}>
@@ -76,7 +76,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
               src={doctor.profilePicture}
               sx={{
                 width: { xs: 50, sm: 70 },
-                height: { xs: 50, sm: 70 }
+                height: { xs: 50, sm: 70 },
               }}
             />
             <Box>
@@ -88,7 +88,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                   fontSize: { xs: "1rem", sm: "1.1rem" },
                   fontWeight: 500,
                   display: "block",
-                  mb: 0.5
+                  mb: 0.5,
                 }}
               >
                 Dr. {doctor.firstName} {doctor.lastName}
@@ -97,7 +97,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                 <Typography
                   sx={{
                     fontSize: { xs: "12px", sm: "14px" },
-                    color: "GrayText"
+                    color: "GrayText",
                   }}
                 >
                   {doctor.specialties.join(" ")}
@@ -116,7 +116,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
               textAlign: "right",
               minWidth: { xs: "100%", sm: 330 },
               flexShrink: 0,
-              mt: { xs: 2, sm: 0 }
+              mt: { xs: 2, sm: 0 },
             }}
           >
             <Grid container spacing={1}>
@@ -129,7 +129,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      minHeight: 80
+                      minHeight: 80,
                     }}
                   >
                     <Grid
@@ -145,7 +145,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                           sx={{
                             fontSize: { xs: "10px", sm: "12px" },
                             fontWeight: "bold",
-                            textAlign: "left"
+                            textAlign: "left",
                           }}
                         >
                           {getDayName(day.date)}
@@ -181,8 +181,8 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                                 sx={{
                                   ":hover": {
                                     backgroundColor: "teal",
-                                    color: "white"
-                                  }
+                                    color: "white",
+                                  },
                                 }}
                               />
                             </Grid>
@@ -194,7 +194,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                           <Link
                             sx={{
                               color: "primary.main",
-                              fontSize: { xs: "0.75rem", sm: "0.875rem" }
+                              fontSize: { xs: "0.75rem", sm: "0.875rem" },
                             }}
                             onClick={() => setModalOpen(true)}
                           >
@@ -214,7 +214,7 @@ const DoctorCard: React.FC<ProviderCardProps> = ({
                   color: "primary.main",
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
                   display: "inline-block",
-                  ":hover": { textDecoration: "underline" }
+                  ":hover": { textDecoration: "underline" },
                 }}
               >
                 View Full Availability

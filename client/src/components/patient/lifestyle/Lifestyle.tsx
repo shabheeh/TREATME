@@ -5,7 +5,7 @@ import {
   Paper,
   Grid,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
 } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
 import { useSelector } from "react-redux";
@@ -42,7 +42,7 @@ const Lifestyle: React.FC = () => {
             answer:
               result && result.doExercise !== undefined
                 ? result.doExercise
-                : null
+                : null,
           },
           {
             id: "sleepSevenPlusHrs",
@@ -50,19 +50,21 @@ const Lifestyle: React.FC = () => {
             answer:
               result && result.sleepSevenPlusHrs !== undefined
                 ? result.sleepSevenPlusHrs
-                : null
+                : null,
           },
           {
             id: "doSmoke",
             question: "Do you smoke or use tobacco products?",
             answer:
-              result && result.doSmoke !== undefined ? result.doSmoke : null
+              result && result.doSmoke !== undefined ? result.doSmoke : null,
           },
           {
             id: "doAlcohol",
             question: "Do you consume alcohol more than twice a week?",
             answer:
-              result && result.doAlcohol !== undefined ? result.doAlcohol : null
+              result && result.doAlcohol !== undefined
+                ? result.doAlcohol
+                : null,
           },
           {
             id: "followDietPlan",
@@ -71,7 +73,7 @@ const Lifestyle: React.FC = () => {
             answer:
               result && result.followDietPlan !== undefined
                 ? result.followDietPlan
-                : null
+                : null,
           },
           {
             id: "highStress",
@@ -79,7 +81,7 @@ const Lifestyle: React.FC = () => {
             answer:
               result && result.highStress !== undefined
                 ? result.highStress
-                : null
+                : null,
           },
           {
             id: "doMeditate",
@@ -87,7 +89,7 @@ const Lifestyle: React.FC = () => {
             answer:
               result && result.doMeditate !== undefined
                 ? result.doMeditate
-                : null
+                : null,
           },
           {
             id: "vaccinatedCovid19",
@@ -95,8 +97,8 @@ const Lifestyle: React.FC = () => {
             answer:
               result && result.vaccinatedCovid19 !== undefined
                 ? result.vaccinatedCovid19
-                : null
-          }
+                : null,
+          },
         ]);
       } catch (error) {
         if (error instanceof Error) {
@@ -115,7 +117,7 @@ const Lifestyle: React.FC = () => {
     try {
       if (!currentPatient) return;
       await healthProfileService.updateLifestyle(currentPatient._id, {
-        [questionId]: newAnswer
+        [questionId]: newAnswer,
       });
       setQuestions((prev) =>
         prev.map((q) => (q.id === questionId ? { ...q, answer: newAnswer } : q))
@@ -133,7 +135,7 @@ const Lifestyle: React.FC = () => {
       sx={{
         p: 3,
         backgroundColor: "background.default",
-        borderRadius: 2
+        borderRadius: 2,
       }}
     >
       <Typography
@@ -141,7 +143,7 @@ const Lifestyle: React.FC = () => {
         sx={{
           mb: 3,
           color: "primary.main",
-          fontWeight: 600
+          fontWeight: 600,
         }}
       >
         Lifestyle Assessment
@@ -159,8 +161,8 @@ const Lifestyle: React.FC = () => {
                 borderColor: "divider",
                 "&:hover": {
                   borderColor: "primary.main",
-                  transition: "border-color 0.3s ease"
-                }
+                  transition: "border-color 0.3s ease",
+                },
               }}
             >
               <Grid container alignItems="center" spacing={2}>
@@ -184,9 +186,9 @@ const Lifestyle: React.FC = () => {
                           backgroundColor: "teal",
                           color: "white",
                           "&:hover": {
-                            backgroundColor: "#006B6C"
-                          }
-                        }
+                            backgroundColor: "#006B6C",
+                          },
+                        },
                       }}
                     >
                       <CheckCircle sx={{ mr: 1 }} />
@@ -200,9 +202,9 @@ const Lifestyle: React.FC = () => {
                           backgroundColor: "teal",
                           color: "white",
                           "&:hover": {
-                            backgroundColor: "#006B6C"
-                          }
-                        }
+                            backgroundColor: "#006B6C",
+                          },
+                        },
                       }}
                     >
                       <Cancel sx={{ mr: 1 }} />

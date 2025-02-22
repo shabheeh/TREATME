@@ -10,7 +10,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  Chip
+  Chip,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -21,7 +21,7 @@ import {
   Healing as HealingIcon,
   FitnessCenter as FitnessCenterIcon,
   People as PeopleIcon,
-  FamilyRestroom as FamilyIcon
+  FamilyRestroom as FamilyIcon,
 } from "@mui/icons-material";
 
 import { calculateAge } from "../../helpers/ageCalculator";
@@ -32,7 +32,7 @@ import { IDependent, IPatient } from "../../types/patient/patient.types";
 import {
   IBehaviouralHealth,
   IHealthHistory,
-  ILifestyle
+  ILifestyle,
 } from "../../types/patient/health.types";
 import { formatMonthDay } from "../../utils/dateUtils";
 
@@ -68,7 +68,7 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.doExercise !== undefined
           ? lifestyle.doExercise
-          : null
+          : null,
     },
     {
       id: "sleepSevenPlusHrs",
@@ -76,13 +76,13 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.sleepSevenPlusHrs !== undefined
           ? lifestyle.sleepSevenPlusHrs
-          : null
+          : null,
     },
     {
       id: "doSmoke",
       question: "Do you smoke or use tobacco products?",
       answer:
-        lifestyle && lifestyle.doSmoke !== undefined ? lifestyle.doSmoke : null
+        lifestyle && lifestyle.doSmoke !== undefined ? lifestyle.doSmoke : null,
     },
     {
       id: "doAlcohol",
@@ -90,7 +90,7 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.doAlcohol !== undefined
           ? lifestyle.doAlcohol
-          : null
+          : null,
     },
     {
       id: "followDietPlan",
@@ -98,7 +98,7 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.followDietPlan !== undefined
           ? lifestyle.followDietPlan
-          : null
+          : null,
     },
     {
       id: "highStress",
@@ -106,7 +106,7 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.highStress !== undefined
           ? lifestyle.highStress
-          : null
+          : null,
     },
     {
       id: "doMeditate",
@@ -114,7 +114,7 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.doMeditate !== undefined
           ? lifestyle.doMeditate
-          : null
+          : null,
     },
     {
       id: "vaccinatedCovid19",
@@ -122,8 +122,8 @@ const PatientProfile: React.FC = () => {
       answer:
         lifestyle && lifestyle.vaccinatedCovid19 !== undefined
           ? lifestyle.vaccinatedCovid19
-          : null
-    }
+          : null,
+    },
   ];
 
   return (
@@ -136,7 +136,7 @@ const PatientProfile: React.FC = () => {
           alignItems: "center",
           border: "1px solid #e0e0e0",
           borderRadius: 2,
-          overflow: "hidden"
+          overflow: "hidden",
         }}
       >
         <Avatar
@@ -167,7 +167,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Box
@@ -176,7 +176,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Current Medications</Typography>
@@ -253,7 +253,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Box
@@ -262,7 +262,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Allergic to</Typography>
@@ -278,7 +278,7 @@ const PatientProfile: React.FC = () => {
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      alignItems: "flex-start"
+                      alignItems: "flex-start",
                     }}
                   >
                     <Box sx={{ display: "flex", width: "100%", mb: 0.5 }}>
@@ -293,7 +293,7 @@ const PatientProfile: React.FC = () => {
                       sx={{
                         width: "100%",
                         display: "flex",
-                        justifyContent: "space-between"
+                        justifyContent: "space-between",
                       }}
                     >
                       <Typography variant="body2" color="text.secondary">
@@ -307,7 +307,7 @@ const PatientProfile: React.FC = () => {
                               ? "error.main"
                               : allergy.severity === "Moderate"
                                 ? "warning.main"
-                                : "info.main"
+                                : "info.main",
                         }}
                       >
                         Severity: {allergy.severity}
@@ -334,7 +334,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Box
@@ -343,7 +343,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Family History</Typography>
@@ -382,7 +382,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Box
@@ -391,7 +391,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Medical conditions</Typography>
@@ -435,7 +435,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Box
@@ -444,7 +444,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Lifestyle</Typography>
@@ -475,7 +475,7 @@ const PatientProfile: React.FC = () => {
             sx={{
               border: "1px solid #e0e0e0",
               borderRadius: 2,
-              overflow: "hidden"
+              overflow: "hidden",
             }}
           >
             <Box
@@ -484,7 +484,7 @@ const PatientProfile: React.FC = () => {
                 p: 2,
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <Typography variant="h6">Behavioral Health</Typography>
@@ -517,7 +517,7 @@ const PatientProfile: React.FC = () => {
                           sx={{
                             display: "flex",
                             justifyContent: "center",
-                            mt: 1
+                            mt: 1,
                           }}
                         >
                           {[1, 2, 3, 4, 5].map((level) => (
@@ -531,7 +531,7 @@ const PatientProfile: React.FC = () => {
                                 bgcolor:
                                   level <= behaviouralHealth.anxietyLevel
                                     ? "warning.main"
-                                    : "grey.300"
+                                    : "grey.300",
                               }}
                             />
                           ))}
@@ -547,7 +547,7 @@ const PatientProfile: React.FC = () => {
                           sx={{
                             display: "flex",
                             justifyContent: "center",
-                            mt: 1
+                            mt: 1,
                           }}
                         >
                           {[1, 2, 3, 4, 5].map((level) => (
@@ -561,7 +561,7 @@ const PatientProfile: React.FC = () => {
                                 bgcolor:
                                   level <= behaviouralHealth.depressionLevel
                                     ? "error.main"
-                                    : "grey.300"
+                                    : "grey.300",
                               }}
                             />
                           ))}
@@ -577,7 +577,7 @@ const PatientProfile: React.FC = () => {
                           sx={{
                             display: "flex",
                             justifyContent: "center",
-                            mt: 1
+                            mt: 1,
                           }}
                         >
                           {[1, 2, 3, 4, 5].map((level) => (
@@ -591,7 +591,7 @@ const PatientProfile: React.FC = () => {
                                 bgcolor:
                                   level <= behaviouralHealth.stressLevel
                                     ? "info.main"
-                                    : "grey.300"
+                                    : "grey.300",
                               }}
                             />
                           ))}
@@ -639,7 +639,7 @@ const PatientProfile: React.FC = () => {
                           display: "flex",
                           flexWrap: "wrap",
                           gap: 0.5,
-                          mt: 0.5
+                          mt: 0.5,
                         }}
                       >
                         {behaviouralHealth.copingMechanisms.map(
@@ -671,7 +671,7 @@ const PatientProfile: React.FC = () => {
                           display: "flex",
                           flexWrap: "wrap",
                           gap: 0.5,
-                          mt: 0.5
+                          mt: 0.5,
                         }}
                       >
                         {behaviouralHealth.supportSystem.map((support, idx) => (

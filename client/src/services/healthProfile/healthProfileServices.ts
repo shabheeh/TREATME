@@ -1,7 +1,7 @@
 import {
   IBehaviouralHealth,
   IHealthHistory,
-  ILifestyle
+  ILifestyle,
 } from "../../types/patient/health.types";
 import { api } from "../../utils/axiosInterceptor";
 
@@ -34,7 +34,7 @@ class HealthProfileService {
   ) {
     try {
       const response = await api.patch(`/health-history/${patientId}`, {
-        [field]: newValue
+        [field]: newValue,
       });
 
       const { healthHistory } = response.data;
@@ -115,7 +115,7 @@ class HealthProfileService {
   ): Promise<IBehaviouralHealth> {
     try {
       const response = await api.patch(`/behavioural-health/${patientId}`, {
-        updateData
+        updateData,
       });
 
       const { behavioralHealth } = response.data;

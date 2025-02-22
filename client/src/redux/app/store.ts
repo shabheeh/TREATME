@@ -6,7 +6,7 @@ import {
   PAUSE,
   PERSIST,
   PURGE,
-  REGISTER
+  REGISTER,
 } from "redux-persist";
 import { persistedAuthReducer } from "../features/auth/authSlice";
 import { persistedUserReducer } from "../features/user/userSlice";
@@ -18,14 +18,14 @@ export const store = configureStore({
     auth: persistedAuthReducer,
     user: persistedUserReducer,
     tempUser: tempReducer,
-    appointment: persistAppointmentReducer
+    appointment: persistAppointmentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-      }
-    })
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);

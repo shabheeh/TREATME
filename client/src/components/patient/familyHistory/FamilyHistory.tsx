@@ -10,7 +10,7 @@ import {
   Button,
   Collapse,
   IconButton,
-  FormControl
+  FormControl,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
@@ -31,7 +31,7 @@ const HEALTH_CONDITIONS = [
   "Kidney Disease",
   "Thyroid Disease",
   "Arthritis",
-  "Alzheimer's Disease"
+  "Alzheimer's Disease",
 ];
 
 const RELATIONSHIPS = [
@@ -44,7 +44,7 @@ const RELATIONSHIPS = [
   "Grandfather (Maternal)",
   "Grandfather (Paternal)",
   "Aunt",
-  "Uncle"
+  "Uncle",
 ];
 
 const FamilyHistory = () => {
@@ -103,8 +103,8 @@ const FamilyHistory = () => {
         ...familyHistory,
         {
           condition: selectedCondition,
-          relationship: relationship.trim()
-        }
+          relationship: relationship.trim(),
+        },
       ];
       const result = await healthProfileService.updateHealthHistory(
         currentPatient._id,
@@ -190,8 +190,8 @@ const FamilyHistory = () => {
                 "&:hover": {
                   bgcolor: isConditionSelected(condition)
                     ? "primary.dark"
-                    : "action.hover"
-                }
+                    : "action.hover",
+                },
               }}
             />
           </Grid>
@@ -204,7 +204,7 @@ const FamilyHistory = () => {
             bgcolor: "background.paper",
             borderRadius: 1,
             border: 1,
-            borderColor: "divider"
+            borderColor: "divider",
           }}
         >
           <Typography variant="subtitle2" sx={{ mb: 2 }}>

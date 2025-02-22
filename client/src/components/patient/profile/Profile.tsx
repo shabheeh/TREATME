@@ -10,7 +10,7 @@ type ProfileProps = {
 
 const Profile: React.FC<ProfileProps> = ({
   handleEditProfile,
-  handleEditAddress
+  handleEditAddress,
 }) => {
   const patient = useSelector((state: RootState) => state.user.patient);
   const currentPatient = useSelector(
@@ -24,7 +24,7 @@ const Profile: React.FC<ProfileProps> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          mb: 4
+          mb: 4,
         }}
       >
         <Avatar
@@ -34,7 +34,7 @@ const Profile: React.FC<ProfileProps> = ({
             width: 100,
             height: 100,
             mb: 2,
-            border: "3px solid primary.main"
+            border: "3px solid primary.main",
           }}
         />
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
@@ -55,7 +55,7 @@ const Profile: React.FC<ProfileProps> = ({
                 alignItems: "center",
                 mb: 2,
                 borderBottom: "1px solid grey",
-                pb: 1
+                pb: 1,
               }}
             >
               <Typography variant="h6">Personal Information</Typography>
@@ -91,7 +91,7 @@ const Profile: React.FC<ProfileProps> = ({
                   alignItems: "center",
                   mb: 2,
                   borderBottom: "1px solid grey",
-                  pb: 1
+                  pb: 1,
                 }}
               >
                 <Typography variant="h6">Address</Typography>

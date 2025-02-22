@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import {
   Home,
@@ -16,7 +16,7 @@ import {
   People,
   MedicalServices,
   PersonSearch,
-  Logout
+  Logout,
 } from "@mui/icons-material";
 
 import { FaUserDoctor } from "react-icons/fa6";
@@ -34,13 +34,13 @@ const menuItems = [
   {
     text: "Specializations",
     icon: <MedicalServices />,
-    path: "/admin/specializations"
+    path: "/admin/specializations",
   },
   {
     text: "Recruitements",
     icon: <PersonSearch />,
-    path: "/admin/recruitements"
-  }
+    path: "/admin/recruitements",
+  },
 ];
 
 interface SidebarProps {
@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
           disablePadding
           sx={{
             px: 2,
-            py: 0.5
+            py: 0.5,
           }}
         >
           <ListItemButton
@@ -90,12 +90,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 backgroundColor: "#e6fffa",
                 border: "1px solid #00897b",
                 "&:hover": {
-                  backgroundColor: "#e6fffa"
-                }
+                  backgroundColor: "#e6fffa",
+                },
               },
               "&:hover": {
-                backgroundColor: "#f5f5f5"
-              }
+                backgroundColor: "#f5f5f5",
+              },
             }}
           >
             <Box
@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                width: "80%"
+                width: "80%",
               }}
             >
               <ListItemIcon
@@ -112,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                   color:
                     location.pathname === item.path
                       ? "#00897b"
-                      : "rgba(0, 0, 0, 0.54)"
+                      : "rgba(0, 0, 0, 0.54)",
                 }}
               >
                 {item.icon}
@@ -123,8 +123,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                   "& .MuiTypography-root": {
                     fontWeight: location.pathname === item.path ? 600 : 400,
                     color:
-                      location.pathname === item.path ? "#00897b" : "inherit"
-                  }
+                      location.pathname === item.path ? "#00897b" : "inherit",
+                  },
                 }}
               />
             </Box>
@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
         disablePadding
         sx={{
           px: 2,
-          py: 0.5
+          py: 0.5,
         }}
       >
         <ListItemButton
@@ -149,12 +149,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               backgroundColor: "#e6fffa",
               border: "1px solid #00897b",
               "&:hover": {
-                backgroundColor: "#e6fffa"
-              }
+                backgroundColor: "#e6fffa",
+              },
             },
             "&:hover": {
-              backgroundColor: "#f5f5f5"
-            }
+              backgroundColor: "#f5f5f5",
+            },
           }}
         >
           <Box
@@ -162,13 +162,13 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-start",
-              width: "80%"
+              width: "80%",
             }}
           >
             <ListItemIcon
               sx={{
                 minWidth: "40px",
-                color: "rgba(0, 0, 0, 0.54)"
+                color: "rgba(0, 0, 0, 0.54)",
               }}
             >
               <Logout />
@@ -178,8 +178,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               sx={{
                 "& .MuiTypography-root": {
                   fontWeight: 400,
-                  color: "inherit"
-                }
+                  color: "inherit",
+                },
               }}
             />
           </Box>
@@ -198,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
         open={mobileOpen}
         onClose={onClose}
         ModalProps={{
-          keepMounted: true
+          keepMounted: true,
         }}
         sx={{
           display: { xs: "block", lg: "none" },
@@ -207,8 +207,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
             width: drawerWidth,
             top: "64px",
             height: "calc(100vh - 64px)",
-            backgroundColor: "#fff"
-          }
+            backgroundColor: "#fff",
+          },
         }}
       >
         {drawerContent}
@@ -223,8 +223,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
             top: "64px",
             height: "calc(100vh - 64px)",
             backgroundColor: "#fff",
-            borderRight: "1px solid rgba(0, 0, 0, 0.12)"
-          }
+            borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+          },
         }}
         open
       >

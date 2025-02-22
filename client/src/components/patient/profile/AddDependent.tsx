@@ -25,7 +25,7 @@ const relationships = [
   "Grandparent",
   "Grandchild",
   "Wife",
-  "Husband"
+  "Husband",
 ];
 
 type AddDependentProps = {
@@ -42,7 +42,7 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
     control,
     setValue,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<IFormInputs>({
     defaultValues: {
       firstName: "",
@@ -50,8 +50,8 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
       email: patient?.email,
       dateOfBirth: "",
       gender: "",
-      relationship: ""
-    }
+      relationship: "",
+    },
   });
 
   const profilePicture = watch("profilePicture");
@@ -125,7 +125,7 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
         maxWidth: 700,
         mx: "auto",
         p: 3,
-        backgroundColor: "white"
+        backgroundColor: "white",
       }}
     >
       <Box
@@ -133,7 +133,7 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          mb: 4
+          mb: 4,
         }}
       >
         <Avatar
@@ -147,7 +147,7 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
             width: 100,
             height: 100,
             mb: 2,
-            border: "3px solid primary.main"
+            border: "3px solid primary.main",
           }}
         />
         <Button
@@ -172,8 +172,8 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
               required: "First Name is required",
               pattern: {
                 value: /^[A-Z][a-zA-Z' -]*$/,
-                message: "Please enter a valid First Name"
-              }
+                message: "Please enter a valid First Name",
+              },
             })}
             fullWidth
             label="First Name"
@@ -186,8 +186,8 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
               required: "Last Name is required",
               pattern: {
                 value: /^[A-Z][a-zA-Z' -]*$/,
-                message: "Please enter a valid Last Name"
-              }
+                message: "Please enter a valid Last Name",
+              },
             })}
             fullWidth
             label="Last Name"
@@ -230,7 +230,7 @@ const AddDependent: React.FC<AddDependentProps> = ({ changeCurrentState }) => {
                   return "Enter a valid Age";
                 }
                 return true;
-              }
+              },
             })}
             fullWidth
             label="Date of Birth"

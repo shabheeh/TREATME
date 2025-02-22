@@ -7,7 +7,7 @@ import {
   Grid,
   Alert,
   Skeleton,
-  Divider
+  Divider,
 } from "@mui/material";
 import { IApplicant } from "../../types/doctor/doctor.types";
 import applicantService from "../../services/applicant/applicantService";
@@ -21,7 +21,7 @@ import {
   Work,
   Language,
   AssignmentInd,
-  LocationOn
+  LocationOn,
 } from "@mui/icons-material";
 import ConfirmActionModal from "../basics/ConfirmActionModal";
 
@@ -128,7 +128,7 @@ const ApplicantDetails: React.FC = () => {
               fontSize: "18px",
               mb: 2,
               display: "flex",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Badge sx={{ mr: 1 }} />
@@ -196,7 +196,7 @@ const ApplicantDetails: React.FC = () => {
               fontSize: "18px",
               mb: 2,
               display: "flex",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <Description sx={{ mr: 1 }} />
@@ -231,7 +231,7 @@ const ApplicantDetails: React.FC = () => {
           display: "flex",
           justifyContent: "flex-end",
           gap: 2,
-          mt: 4
+          mt: 4,
         }}
       >
         <Button
