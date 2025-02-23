@@ -151,10 +151,6 @@ const Payment: React.FC = () => {
         return;
       }
 
-      // const response = await createPaymentIntent(appointmentData);
-
-      // const { clientSecret } = response;
-
       if (!clientSecret) return;
 
       const result = await stripe.confirmPayment({
@@ -170,24 +166,6 @@ const Payment: React.FC = () => {
       } else {
         toast.error("Someting went wrong");
       }
-      // const paymentIntent = await confirmPaymentIntent({
-      //   paymentMethodId: paymentMethod.id,
-      //   clientSecret: paymentIntentClientSecret!
-      // });
-      // if (!paymentIntent || paymentIntent.status !== "succeeded") {
-      //   throw new Error("Payment confirmation failed");
-      // }
-
-      // const updatedAppointment = {
-      //   ...appointmentData,
-      //   status: "confirmed",
-      //   paymentStatus: "paid"
-      // };
-
-      // const result =
-      //   await appointmentService.createAppointment(updatedAppointment);
-      // navigate("/confirmed", { state: { appointmentId: result._id } });
-      // dispatch(resetAppointment());
     } catch (error) {
       console.log(error);
       toast.error(error instanceof Error ? error.message : "Unknown Error");

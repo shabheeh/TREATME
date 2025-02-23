@@ -33,7 +33,7 @@ export interface IAppointmentPopulated extends Document {
   fee: number;
   slotId: string;
   dayId: string;
-  paymentStatus: "pending" | "paid";
+  paymentStatus: "failed" | "completed";
 }
 
 export interface IAppointmentService {

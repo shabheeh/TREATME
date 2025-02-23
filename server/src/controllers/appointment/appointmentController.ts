@@ -157,8 +157,6 @@ class AppointmentController implements IAppointmentController {
   ): Promise<void> => {
     const sig = req.headers["stripe-signature"];
     try {
-      console.log("webhook called");
-
       if (!sig || Array.isArray(sig)) {
         throw new AppError("Invalid Stripe signature", 400);
       }

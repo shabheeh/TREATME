@@ -36,6 +36,8 @@ const corsOptions = {
   credentials: true,
 };
 
+app.use("/api/webhook", express.raw({ type: "application/json" }));
+
 //Middlewares
 app.use(cors(corsOptions));
 app.use(morgan("dev"));

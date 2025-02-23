@@ -1,6 +1,7 @@
 import IAppointment from "src/interfaces/IAppointment";
 import logger from "../configs/logger";
 import Stripe from "stripe";
+import { AppError } from "./errors";
 
 const appointmentToMetadata = (
   appointment: IAppointment
@@ -62,10 +63,11 @@ export const constructWebhookEvent = (
   webhookSecret: string
 ) => {
   try {
-    const event = stripe.webhooks.constructEvent(payload, sig, webhookSecret);
-    return event;
-  } catch (error) {
-    logger.error(error instanceof Error ? error.message : error);
-    throw new Error("Stripe: Failed to construct webhook event");
+    return stripe.webhooks.constructEvent(payload, sig, webhookSecret);
+  } catch (err) {
+    if (err instanceof stripe.errors.StripeSignatureVerificationError) {
+      throw new AppError("Webhook signature verification failed", 400);
+    }
+    throw new AppError("Invalid webhook payload", 400);
   }
 };

@@ -10,6 +10,7 @@ import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmati
 import { extractDate, extractTime } from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
 import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
+import Stripe from "stripe";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
@@ -245,31 +246,32 @@ class AppointmentService implements IAppointmentService {
 
   async handleWebHook(payload: Buffer, sig: string) {
     try {
-      const event = constructWebhookEvent(
+      if (!process.env.STRIPE_WEBHOOK_SECRET) {
+        throw new Error("STRIPE_WEBHOOK_SECRET is not configured");
+      }
+
+      const event = await constructWebhookEvent(
         payload,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET!
+        process.env.STRIPE_WEBHOOK_SECRET
       );
 
-      if (event.type === "payment_intent.succeeded") {
-        const paymentIntent = event.data.object;
+      switch (event.type) {
+        case "payment_intent.succeeded":
+          await this.handlePaymentIntentSucceeded(event.data.object);
+          break;
 
-        const appointment = {
-          doctor: paymentIntent.metadata.doctor,
-          patientType: paymentIntent.metadata.patientType,
-          patient: paymentIntent.metadata.patient,
-          specialization: paymentIntent.metadata.specialization,
-          date: paymentIntent.metadata.date,
-          duration: paymentIntent.metadata.duration,
-          reason: paymentIntent.metadata.reason,
-          fee: paymentIntent.metadata.fee,
-          slotId: paymentIntent.metadata.slotId,
-          dayId: paymentIntent.metadata.dayId,
-          status: paymentIntent.metadata.status,
-          paymentStatus: paymentIntent.metadata.paymentStatus,
-        } as unknown as IAppointment;
+        case "payment_intent.payment_failed":
+          await this.handlePaymentIntentFailed(event.data.object);
+          break;
 
-        await this.createAppointment(appointment);
+        case "payment_intent.canceled":
+          await this.handlePaymentIntentCanceled(event.data.object);
+          break;
+
+        // Add more cases as needed
+        default:
+          logger.info(`Unhandled event type: ${event.type}`);
       }
     } catch (error) {
       logger.error(`Error stripe payment`, error);
@@ -281,6 +283,76 @@ class AppointmentService implements IAppointmentService {
         500
       );
     }
+  }
+
+  private async handlePaymentIntentSucceeded(
+    paymentIntent: Stripe.PaymentIntent
+  ) {
+    if (!paymentIntent.metadata) {
+      throw new AppError("Payment intent metadata is missing", 400);
+    }
+
+    const appointment = {
+      doctor: paymentIntent.metadata.doctor,
+      patientType: paymentIntent.metadata.patientType,
+      patient: paymentIntent.metadata.patient,
+      specialization: paymentIntent.metadata.specialization,
+      date: paymentIntent.metadata.date,
+      duration: paymentIntent.metadata.duration,
+      reason: paymentIntent.metadata.reason,
+      fee: Number(paymentIntent.metadata.fee),
+      slotId: paymentIntent.metadata.slotId,
+      dayId: paymentIntent.metadata.dayId,
+      status: "confirmed",
+      paymentStatus: "completed",
+    } as unknown as IAppointment;
+
+    await this.createAppointment(appointment);
+  }
+
+  private async handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+    if (!paymentIntent.metadata) {
+      throw new AppError("Payment intent metadata is missing", 400);
+    }
+
+    const appointment = {
+      ...this.createAppointmentObject(paymentIntent.metadata),
+      status: "pending",
+      paymentStatus: "failed",
+    } as unknown as IAppointment;
+
+    await this.createAppointment(appointment);
+  }
+
+  private async handlePaymentIntentCanceled(
+    paymentIntent: Stripe.PaymentIntent
+  ) {
+    if (!paymentIntent.metadata) {
+      throw new AppError("Payment intent metadata is missing", 400);
+    }
+
+    const appointment = {
+      ...this.createAppointmentObject(paymentIntent.metadata),
+      status: "cancelled",
+      paymentStatus: "cancelled",
+    } as unknown as IAppointment;
+
+    await this.createAppointment(appointment);
+  }
+
+  private createAppointmentObject(metadata: Stripe.Metadata) {
+    return {
+      doctor: metadata.doctor,
+      patientType: metadata.patientType,
+      patient: metadata.patient,
+      specialization: metadata.specialization,
+      date: metadata.date,
+      duration: metadata.duration,
+      reason: metadata.reason,
+      fee: Number(metadata.fee),
+      slotId: metadata.slotId,
+      dayId: metadata.dayId,
+    };
   }
 }
 

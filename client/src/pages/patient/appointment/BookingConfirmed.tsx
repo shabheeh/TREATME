@@ -14,32 +14,43 @@ import {
 } from "@mui/icons-material";
 import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import appointmentService from "../../../services/appointment/appointmentService";
 import BookingConfirmedSkeleton from "../../../components/patient/BookingConfirmationSkelton";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { FaHouseMedical } from "react-icons/fa6";
+import { useStripe } from "@stripe/react-stripe-js";
 const BookingConfirmation = () => {
   const [appointment, setAppointment] =
     useState<Partial<IAppointmentPopulated> | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const stripe = useStripe();
 
-  const state = location.state;
+  const [searchParams] = useSearchParams()
 
   useEffect(() => {
-    if (!state) {
-      // navigate("/visitnow", { state: {} });
-      return;
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      "payment_intent_client_secret"
+    );
+
+    if (!clientSecret || !stripe) {
+      throw new Error("Payment verification failed");
     }
     const fetchAppointment = async () => {
       try {
-        const appointment = await appointmentService.getAppointment(
-          state.appointmentId
-        );
-        setAppointment(appointment);
+
+        const { paymentIntent } =
+          await stripe.retrievePaymentIntent(clientSecret);
+
+        console.log(paymentIntent, "je;");
+
+        // const appointment = await appointmentService.getAppointment(
+
+        // );
+        // setAppointment(appointment);
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"

@@ -230,10 +230,6 @@ router.post(
   appointmentController.stripePayment
 );
 
-router.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  appointmentController.handleWebHook
-);
+router.post("/webhook", appointmentController.handleWebHook);
 
 export default router;
