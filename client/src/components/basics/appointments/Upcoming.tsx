@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
 import React from "react";
-import AppointmentCardPatient from "../../patient/appointments/AppointmentCard";
-import AppointmentCardDoctor from "../../doctor/appointments/AppointmetCard";
+import AppointmentCardPatient from "../../patient/appointments/AppointmentCardPatient";
+import AppointmentCardDoctor from "../../doctor/appointments/AppointmetCardDoctor";
 
 import Loading from "../Loading";
 import { useSelector } from "react-redux";
@@ -45,6 +45,7 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
             reason={appointment.reason}
             id={appointment._id}
             fee={appointment.fee}
+            status={appointment.reason}
             patient={appointment.patient}
             onReschedule={onReschedule}
           />
@@ -59,6 +60,7 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
             reason={appointment.reason}
             id={appointment._id}
             fee={appointment.fee}
+            status={appointment.status}
             patient={appointment.patient}
             onReschedule={onReschedule}
           />

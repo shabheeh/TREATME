@@ -11,46 +11,49 @@ import {
   CheckCircle as CheckCircleIcon,
   CalendarMonth as CalendarIcon,
   AccessTime as TimeIcon,
+  Payment as PaymentIcon,
+  Error as ErrorIcon,
 } from "@mui/icons-material";
 import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import appointmentService from "../../../services/appointment/appointmentService";
 import BookingConfirmedSkeleton from "../../../components/patient/BookingConfirmationSkelton";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { FaHouseMedical } from "react-icons/fa6";
-import { useStripe } from "@stripe/react-stripe-js";
+import Loading from "../../../components/basics/Loading";
+import { useDispatch } from "react-redux";
+import { resetAppointment } from "../../../redux/features/appointment/appointmentSlice";
+
 const BookingConfirmation = () => {
-  const [appointment, setAppointment] =
-    useState<Partial<IAppointmentPopulated> | null>(null);
+  const [appointment, setAppointment] = useState<IAppointmentPopulated | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const stripe = useStripe();
-
-  const [searchParams] = useSearchParams()
+  const dispatch = useDispatch();
+  const searchParams = new URLSearchParams(location.search);
+  const clientSecret = searchParams.get("payment_intent_client_secret");
+  const paymentId = searchParams.get("payment_intent");
 
   useEffect(() => {
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      "payment_intent_client_secret"
-    );
-
-    if (!clientSecret || !stripe) {
+    if (!clientSecret || !paymentId) {
       throw new Error("Payment verification failed");
     }
     const fetchAppointment = async () => {
       try {
+        // const { paymentIntent } =
+        //   await stripe.retrievePaymentIntent(clientSecret);
 
-        const { paymentIntent } =
-          await stripe.retrievePaymentIntent(clientSecret);
+        // if (!paymentIntent) {
+        //   return null;
+        // }
 
-        console.log(paymentIntent, "je;");
-
-        // const appointment = await appointmentService.getAppointment(
-
-        // );
-        // setAppointment(appointment);
+        const appointment =
+          await appointmentService.getAppointmentByPaymentId(paymentId);
+        setAppointment(appointment);
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
@@ -60,12 +63,11 @@ const BookingConfirmation = () => {
       }
     };
     fetchAppointment();
-  }, [state, navigate]);
+  }, [navigate, clientSecret, paymentId]);
 
   useEffect(() => {
     const handlePopState = () => {
-      console.log("Popstate event triggered: Clearing state");
-      navigate("/visitnow", { state: {} });
+      dispatch(resetAppointment());
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -73,39 +75,43 @@ const BookingConfirmation = () => {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [navigate, location]);
+  }, [dispatch]);
 
   if (loading) {
     return <BookingConfirmedSkeleton />;
   }
 
-  const appointmentDetails = {
-    provider: {
-      name: "Dr. Sarah Thompson",
-      specialty: "Mental Health Counseling",
-      image: "/api/placeholder/60/60",
-    },
-    appointment: {
-      date: "Tuesday, February 11, 2024",
-      time: "01:00 PM EST",
-      duration: "45 minutes",
-      type: "Video Consultation",
-    },
-    payment: {
-      amount: "179.00",
-      method: "VISA **** 4242",
-      status: "Paid",
-    },
+  if (!appointment) {
+    return <Loading />;
+  }
+
+  const handleBackToHome = () => {
+    dispatch(resetAppointment());
+    navigate("/visitnow", { state: {} });
+  };
+
+  const handleBackToAppointments = () => {
+    dispatch(resetAppointment());
+    navigate("/appointments", { state: {} });
   };
 
   return (
     <Box sx={{ maxWidth: 1000, margin: "auto", p: 3, pt: 1 }}>
-      <Box sx={{ textAlign: "center", mb: 4, color: "teal" }}>
-        <CheckCircleIcon sx={{ fontSize: 64, mb: 2, color: "teal" }} />
-        <Typography variant="h4" gutterBottom>
-          Booking Confirmed!
-        </Typography>
-      </Box>
+      {appointment.paymentStatus === "failed" ? (
+        <Box color="secondary" sx={{ textAlign: "center", mb: 4 }}>
+          <ErrorIcon color="secondary" sx={{ fontSize: 64, mb: 2 }} />
+          <Typography color="secondary" variant="h4" gutterBottom>
+            Booking Failed!
+          </Typography>
+        </Box>
+      ) : (
+        <Box sx={{ textAlign: "center", mb: 4, color: "teal" }}>
+          <CheckCircleIcon sx={{ fontSize: 64, mb: 2, color: "teal" }} />
+          <Typography variant="h4" gutterBottom>
+            Booking Confirmed!
+          </Typography>
+        </Box>
+      )}
 
       <Grid container direction="row" spacing={1}>
         <Grid item xs={12} sm={6}>
@@ -125,7 +131,7 @@ const BookingConfirmation = () => {
                   {appointment?.doctor?.lastName}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {appointmentDetails.provider.specialty}
+                  {appointment.specialization.name}
                 </Typography>
               </Box>
             </Box>
@@ -144,7 +150,7 @@ const BookingConfirmation = () => {
                 <TimeIcon sx={{ mr: 2, color: "primary.main" }} />
                 <Typography>
                   {appointment?.date && formatTime(appointment?.date)} (
-                  {appointmentDetails.appointment.duration})
+                  {appointment.duration || "45 mins"})
                 </Typography>
               </Box>
             </Box>
@@ -167,20 +173,20 @@ const BookingConfirmation = () => {
               sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
             >
               <Typography color="text.secondary">Amount Paid</Typography>
-              <Typography>${appointmentDetails.payment.amount}</Typography>
+              <Typography>₹{appointment.fee}</Typography>
             </Box>
 
             <Box
               sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
             >
               <Typography color="text.secondary">Payment Method</Typography>
-              <Typography>{appointmentDetails.payment.method}</Typography>
+              <Typography>Card</Typography>
             </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography color="text.secondary">Status</Typography>
               <Typography color="success.main">
-                {appointmentDetails.payment.status}
+                {appointment.paymentStatus}
               </Typography>
             </Box>
           </Paper>
@@ -210,15 +216,27 @@ const BookingConfirmation = () => {
       </Paper>
 
       <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+        {appointment.paymentStatus === "failed" ? (
+          <Button
+            onClick={() => navigate(-1)}
+            variant="contained"
+            color="warning"
+            startIcon={<PaymentIcon />}
+          >
+            Retry Payment
+          </Button>
+        ) : (
+          <Button
+            onClick={handleBackToAppointments}
+            variant="contained"
+            startIcon={<CalendarIcon />}
+          >
+            Upcoming Appointments
+          </Button>
+        )}
+
         <Button
-          onClick={() => navigate("/appointments", { state: {} })}
-          variant="contained"
-          startIcon={<CalendarIcon />}
-        >
-          Upcoming Appointments
-        </Button>
-        <Button
-          onClick={() => navigate("/visitnow", { state: {} })}
+          onClick={handleBackToHome}
           variant="outlined"
           startIcon={<FaHouseMedical />}
         >

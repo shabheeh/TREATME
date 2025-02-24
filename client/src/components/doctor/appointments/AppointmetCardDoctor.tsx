@@ -26,7 +26,7 @@ import {
   formatMonthDay,
   formatTime,
   getDayName,
-  getDaysUntil,
+  getDaysDifference,
 } from "../../../utils/dateUtils";
 import RescheduleModal from "../../basics/appointments/RescheduleModal";
 import CancelAppointmentModal from "../../basics/appointments/CancelAppointmentModal ";
@@ -41,17 +41,19 @@ interface AppointmentCardProps {
   specialization: string;
   fee: number;
   reason: string;
+  status: string;
   onReschedule: () => void;
   onViewDetails?: () => void;
 }
 
-const AppointmentCard: React.FC<AppointmentCardProps> = ({
+const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
   id,
   patient,
   doctor,
   date,
   specialization,
   reason,
+  status,
   onReschedule,
   onViewDetails,
 }) => {
@@ -62,10 +64,11 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   const doctorName = doctor.firstName + " " + doctor.lastName;
   const patientName = patient.firstName + " " + patient.lastName;
 
-  // Calculate days until appointment
-  const daysUntil = getDaysUntil(date);
-  const isToday = daysUntil === 0;
-  const isTomorrow = daysUntil === 1;
+  // calculate days difference until and after appointment
+  const days = getDaysDifference(date);
+  const isToday = days === 0;
+  const isTomorrow = days === 1;
+  const isPast = days > 1;
 
   const getStatusChip = () => {
     if (isToday) {
@@ -86,10 +89,19 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           sx={{ fontWeight: 500 }}
         />
       );
+    } else if (isPast) {
+      return (
+        <Chip
+          label={`${days} Ago`}
+          size="small"
+          color="info"
+          sx={{ fontWeight: 500 }}
+        />
+      );
     } else {
       return (
         <Chip
-          label={`In ${daysUntil} days`}
+          label={`In ${days} days`}
           size="small"
           color="primary"
           variant="outlined"
@@ -271,7 +283,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         )}
       </Box>
 
-      {/* Action buttons */}
       <Box
         sx={{
           p: 2,
@@ -326,7 +337,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           </Button>
         </Box>
 
-        {onViewDetails && (
+        {status === "completed" && (
           <Tooltip title="Start Appointment">
             <IconButton
               color="primary"
@@ -364,4 +375,4 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   );
 };
 
-export default AppointmentCard;
+export default AppointmentCardDoctor;

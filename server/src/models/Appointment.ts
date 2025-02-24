@@ -26,6 +26,8 @@ const appointmentSchema = new Schema<IAppointment>(
     fee: { type: Number, required: true },
     dayId: { type: String },
     slotId: { type: String },
+    paymentStatus: { type: String, enum: ["pending", "completed", "failed"] },
+    paymentIntentId: { type: String },
   },
   {
     timestamps: true,

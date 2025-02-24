@@ -12,6 +12,7 @@ interface IAppointmentRepository {
   getAppointmentsByPatientId(patientId: string): Promise<IAppointment[]>;
   getAppointmentsByDoctorId(doctorId: string): Promise<IAppointment[]>;
   getAppointments(): Promise<IAppointment[]>;
+  getAppointmentByPaymentId(id: string): Promise<IAppointmentPopulated>;
 }
 
 export default IAppointmentRepository;

@@ -208,6 +208,13 @@ export default function ScheduleManagement() {
         toast.error("No availability found for the selected date");
         return;
       }
+      const selectedSlot = existingAvailability.slots.find(
+        (slot) => slot._id === slotId
+      );
+      if (selectedSlot && selectedSlot.isBooked) {
+        toast.error("Cannot remove Booked slot");
+        return;
+      }
       const updatedSlots = existingAvailability.slots.filter(
         (slot) => slot._id !== slotId
       );

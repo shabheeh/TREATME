@@ -232,4 +232,11 @@ router.post(
 
 router.post("/webhook", appointmentController.handleWebHook);
 
+router.get(
+  "/appointment/payment/:paymentId",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  appointmentController.getAppointmentByPaymentId
+);
+
 export default router;

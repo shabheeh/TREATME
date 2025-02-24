@@ -79,7 +79,7 @@ export const addDays = (date: Date, days: number): Date => {
   return result;
 };
 
-export const getDaysUntil = (appointmentDate: Date): number => {
+export const getDaysDifference = (appointmentDate: Date): number => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const apptDate = new Date(appointmentDate);

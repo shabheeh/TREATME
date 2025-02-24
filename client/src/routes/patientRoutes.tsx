@@ -16,14 +16,15 @@ import ReviewBehaviouralHealth from "../pages/patient/appointment/ReviewBehaviou
 import ReviewHealthHistory from "../pages/patient/appointment/ReviewHealthHistory";
 import ListDoctors from "../pages/patient/appointment/ListDoctors";
 // import Payment from "../pages/patient/appointment/Payment";
-import BookingConfirmation from "../pages/patient/appointment/BookingConfirmed";
+import BookingConfirmation from "../pages/patient/appointment/BookingConfirmation";
 import Appointments from "../pages/patient/appointment/Appointments";
 import DoctorView from "../components/basics/appointments/DoctorView";
 import Consultations from "../pages/patient/appointment/Consultations";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
 import PaymentWrapper from "../pages/patient/payment/PaymentWrapper";
-import { Appearance } from "@stripe/stripe-js";
+import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
+// import { Appearance } from "@stripe/stripe-js";
 // const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
 //   betas: ["payment_element_beta_1"],
 // });
@@ -46,13 +47,13 @@ import { Appearance } from "@stripe/stripe-js";
 //   </Elements>
 // );
 
-const appearance: Appearance = {
-  theme: "stripe",
-  variables: {
-    colorPrimary: "#008080", // teal color to match your border
-    fontFamily: '"Roboto", sans-serif',
-  },
-};
+// const appearance: Appearance = {
+//   theme: "stripe",
+//   variables: {
+//     colorPrimary: "#008080", // teal color to match your border
+//     fontFamily: '"Roboto", sans-serif',
+//   },
+// };
 
 export const patientRoutes = [
   <Route path="/" element={<LandingPage />} />,
@@ -113,7 +114,7 @@ export const patientRoutes = [
       }
     /> */}
     <Route path="review-appointment" element={<PaymentWrapper />} />
-    <Route path="confirmed" element={<BookingConfirmation />} />,
+    <Route path="confirmation" element={<BookingWrapper />} />,
   </Route>,
 
   <Route

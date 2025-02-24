@@ -10,9 +10,6 @@ import {
   Avatar,
   Button,
   Skeleton,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -37,10 +34,6 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import {
-  // confirmPaymentIntent,
-  createPaymentIntent,
-} from "../../../services/stripe/stripeService";
 
 const Payment: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -51,12 +44,9 @@ const Payment: React.FC = () => {
   const [specialization, setSpecialization] = useState<ISpecialization | null>(
     null
   );
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
   const stripe = useStripe();
   const elements = useElements();
-  // const [paymentIntentClientSecret, setPaymentIntentClientSecret] = useState<
-  //   string | null
-  // >(null);
 
   const currentPatient = useSelector(
     (state: RootState) => state.user.currentUser
@@ -78,6 +68,8 @@ const Payment: React.FC = () => {
         return;
       }
 
+      console.log(appointmentData, "appointment");
+
       try {
         const specialization =
           await specializationService.getSpecializationById(
@@ -97,41 +89,7 @@ const Payment: React.FC = () => {
     };
 
     fetchData();
-  }, []);
-
-  // useEffect(() => {
-  //   const createPayment = async () => {
-  //     if (!appointmentData || !appointmentData.fee) {
-  //       return;
-  //     }
-  //     try {
-  //       const result = await createPaymentIntent(appointmentData.fee);
-
-  //       setPaymentIntentClientSecret(result.clientSecret);
-  //     } catch (error) {
-  //       console.error("Error creating payment intent:", error);
-  //       toast.error("Failed to create payment gatway");
-  //     }
-  //   };
-
-  //   createPayment();
-  // }, []);
-
-  useEffect(() => {
-    const initializePayment = async () => {
-      if (!appointmentData) return;
-
-      try {
-        const response = await createPaymentIntent(appointmentData);
-        setClientSecret(response.clientSecret);
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to initialize payment");
-      }
-    };
-
-    initializePayment();
-  }, [appointmentData]);
+  }, [appointmentData, navigate]);
 
   const handlePaymentClick = async () => {
     if (!appointmentData) {
@@ -151,13 +109,10 @@ const Payment: React.FC = () => {
         return;
       }
 
-      if (!clientSecret) return;
-
       const result = await stripe.confirmPayment({
         elements,
-        clientSecret,
         confirmParams: {
-          return_url: `${window.location.origin}/confirmed`,
+          return_url: `${window.location.origin}/confirmation`,
         },
       });
 
@@ -183,24 +138,6 @@ const Payment: React.FC = () => {
   const handleBack = () => {
     navigate(-1);
   };
-
-  // const CARD_ELEMENT_OPTIONS = {
-  //   style: {
-  //     base: {
-  //       color: "#32325d",
-  //       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  //       fontSmoothing: "antialiased",
-  //       fontSize: "16px",
-  //       "::placeholder": {
-  //         color: "#aab7c4",
-  //       },
-  //     },
-  //     invalid: {
-  //       color: "#fa755a",
-  //       iconColor: "#fa755a",
-  //     },
-  //   },
-  // };
 
   if (loading) {
     return (

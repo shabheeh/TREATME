@@ -160,6 +160,37 @@ class AppointmentRepository implements IAppointmentRepository {
       );
     }
   }
+
+  async getAppointmentByPaymentId(
+    paymentIntentId: string
+  ): Promise<IAppointmentPopulated> {
+    try {
+      const appointment = await this.model
+        .findOne({ paymentIntentId })
+        .populate({
+          path: "specialization",
+          select: "name",
+        })
+        .populate({
+          path: "patient",
+          select: "-password",
+        })
+        .populate({
+          path: "doctor",
+          select: "-password",
+        });
+
+      if (!appointment) {
+        throw new AppError("Somethig went Wrong");
+      }
+      return appointment as unknown as IAppointmentPopulated;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
 }
 
 export default AppointmentRepository;

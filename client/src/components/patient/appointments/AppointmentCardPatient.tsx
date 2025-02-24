@@ -25,6 +25,7 @@ import {
   formatMonthDay,
   formatTime,
   getDayName,
+  getDaysDifference,
 } from "../../../utils/dateUtils";
 import RescheduleModal from "../../basics/appointments/RescheduleModal";
 import CancelAppointmentModal from "../../basics/appointments/CancelAppointmentModal ";
@@ -37,11 +38,12 @@ interface AppointmentCardProps {
   specialization: string;
   fee: number;
   reason: string;
+  status: string;
   onReschedule: () => void;
   onViewDetails?: () => void;
 }
 
-const AppointmentCard: React.FC<AppointmentCardProps> = ({
+const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
   id,
   patient,
   doctor,
@@ -49,6 +51,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   specialization,
   fee,
   reason,
+  status,
   onReschedule,
   onViewDetails,
 }) => {
@@ -58,20 +61,10 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   const doctorName = doctor.firstName + " " + doctor.lastName;
   const patientName = patient.firstName + " " + patient.lastName;
 
-  // Calculate days until appointment
-  const getDaysUntil = (appointmentDate: Date): number => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const apptDate = new Date(appointmentDate);
-    apptDate.setHours(0, 0, 0, 0);
-
-    const diffTime = apptDate.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const daysUntil = getDaysUntil(date);
-  const isToday = daysUntil === 0;
-  const isTomorrow = daysUntil === 1;
+  const days = getDaysDifference(date);
+  const isToday = days === 0;
+  const isTomorrow = days === 1;
+  const isPast = days > 1;
 
   const getStatusChip = () => {
     if (isToday) {
@@ -92,10 +85,19 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           sx={{ fontWeight: 500 }}
         />
       );
+    } else if (isPast) {
+      return (
+        <Chip
+          label={`${days} Ago`}
+          size="small"
+          color="info"
+          sx={{ fontWeight: 500 }}
+        />
+      );
     } else {
       return (
         <Chip
-          label={`In ${daysUntil} days`}
+          label={`In ${days} days`}
           size="small"
           color="primary"
           variant="outlined"
@@ -104,6 +106,8 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       );
     }
   };
+
+  console.log(status, "status");
 
   return (
     <Card
@@ -228,7 +232,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
                   FEE
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
-                  ${fee?.toFixed(2) || "0.00"}
+                  ₹{fee?.toFixed(2) || "0.00"}
                 </Typography>
               </Box>
             </Box>
@@ -265,7 +269,6 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
         )}
       </Box>
 
-      {/* Action buttons */}
       <Box
         sx={{
           p: 2,
@@ -277,65 +280,89 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
           alignItems: "center",
         }}
       >
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => setRescheduleModalOpen(true)}
-            sx={{
-              borderRadius: 6,
-              bgcolor: "#f8f8ff",
-              borderColor: "#e0e0e6",
-              color: "#5c6bc0",
-              textTransform: "none",
-              fontWeight: 500,
-              py: 0.5,
-              "&:hover": {
-                bgcolor: "#efefff",
-                borderColor: "#c5cae9",
-              },
-            }}
-          >
-            Reschedule
-          </Button>
-          <Button
-            onClick={() => setCancelModalOpen(true)}
-            variant="outlined"
-            size="small"
-            sx={{
-              borderRadius: 6,
-              bgcolor: "#fff5f5",
-              borderColor: "#ffcdd2",
-              color: "#e53935",
-              textTransform: "none",
-              fontWeight: 500,
-              py: 0.5,
-              "&:hover": {
-                bgcolor: "#ffebee",
-                borderColor: "#ef9a9a",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        </Box>
-
-        {onViewDetails && (
-          <Tooltip title="View appointment details">
-            <IconButton
-              color="primary"
-              onClick={onViewDetails}
+        {status === "confirmed" && (
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setRescheduleModalOpen(true)}
               sx={{
-                bgcolor: "primary.light",
-                color: "white",
+                borderRadius: 6,
+                bgcolor: "#f8f8ff",
+                borderColor: "#e0e0e6",
+                color: "#5c6bc0",
+                textTransform: "none",
+                fontWeight: 500,
+                py: 0.5,
                 "&:hover": {
-                  bgcolor: "primary.main",
+                  bgcolor: "#efefff",
+                  borderColor: "#c5cae9",
                 },
               }}
             >
-              <ArrowIcon />
-            </IconButton>
-          </Tooltip>
+              Reschedule
+            </Button>
+            <Button
+              onClick={() => setCancelModalOpen(true)}
+              variant="outlined"
+              size="small"
+              sx={{
+                borderRadius: 6,
+                bgcolor: "#fff5f5",
+                borderColor: "#ffcdd2",
+                color: "#e53935",
+                textTransform: "none",
+                fontWeight: 500,
+                py: 0.5,
+                "&:hover": {
+                  bgcolor: "#ffebee",
+                  borderColor: "#ef9a9a",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        )}
+
+        {status === "completed" && (
+          <>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setRescheduleModalOpen(true)}
+                sx={{
+                  textDecoration: "underline",
+                  color: "#5c6bc0",
+                  fontWeight: 500,
+                  py: 0.5,
+                  "&:hover": {
+                    bgcolor: "#efefff",
+                    borderColor: "#c5cae9",
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                Share your feedback on your recent appointment.
+              </Button>
+            </Box>
+            <Tooltip title="View appointment details">
+              <IconButton
+                color="primary"
+                onClick={onViewDetails}
+                sx={{
+                  bgcolor: "primary.light",
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: "primary.main",
+                  },
+                }}
+              >
+                <ArrowIcon />
+              </IconButton>
+            </Tooltip>
+          </>
         )}
       </Box>
 
@@ -358,4 +385,4 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   );
 };
 
-export default AppointmentCard;
+export default AppointmentCardPatient;

@@ -8,7 +8,7 @@ const slotSchema = new Schema<ISlot>({
 });
 
 const availabilitySchema = new Schema<IDaySchedule>({
-  date: { type: Date, required: true, index: { expires: "30d" } },
+  date: { type: Date, required: true },
   slots: [slotSchema],
 });
 

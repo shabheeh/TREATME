@@ -228,7 +228,7 @@ class AppointmentService implements IAppointmentService {
     try {
       const paymentIntent = await createPaymentIntent(
         appointmentData.fee,
-        "usd",
+        "inr",
         appointmentData
       );
       return { clientSecret: paymentIntent.client_secret || "" };
@@ -285,6 +285,14 @@ class AppointmentService implements IAppointmentService {
     }
   }
 
+  async getAppointmentByPaymentId(
+    paymentIntentId: string
+  ): Promise<IAppointmentPopulated> {
+    const appointment =
+      await this.appointmentRepo.getAppointmentByPaymentId(paymentIntentId);
+    return appointment;
+  }
+
   private async handlePaymentIntentSucceeded(
     paymentIntent: Stripe.PaymentIntent
   ) {
@@ -293,18 +301,10 @@ class AppointmentService implements IAppointmentService {
     }
 
     const appointment = {
-      doctor: paymentIntent.metadata.doctor,
-      patientType: paymentIntent.metadata.patientType,
-      patient: paymentIntent.metadata.patient,
-      specialization: paymentIntent.metadata.specialization,
-      date: paymentIntent.metadata.date,
-      duration: paymentIntent.metadata.duration,
-      reason: paymentIntent.metadata.reason,
-      fee: Number(paymentIntent.metadata.fee),
-      slotId: paymentIntent.metadata.slotId,
-      dayId: paymentIntent.metadata.dayId,
+      ...this.createAppointmentObject(paymentIntent.metadata),
       status: "confirmed",
       paymentStatus: "completed",
+      paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
 
     await this.createAppointment(appointment);
@@ -319,6 +319,7 @@ class AppointmentService implements IAppointmentService {
       ...this.createAppointmentObject(paymentIntent.metadata),
       status: "pending",
       paymentStatus: "failed",
+      paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
 
     await this.createAppointment(appointment);
@@ -335,6 +336,7 @@ class AppointmentService implements IAppointmentService {
       ...this.createAppointmentObject(paymentIntent.metadata),
       status: "cancelled",
       paymentStatus: "cancelled",
+      paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
 
     await this.createAppointment(appointment);

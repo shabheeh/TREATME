@@ -5,6 +5,8 @@ import { RootState } from "../../../redux/app/store";
 import { loadStripe } from "@stripe/stripe-js";
 import Payment from "../appointment/Payment";
 import { createPaymentIntent } from "../../../services/stripe/stripeService";
+import Loading from "../../../components/basics/Loading";
+import { useNavigate } from "react-router-dom";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -13,8 +15,12 @@ const PaymentWrapper: React.FC = () => {
   const appointmentData = useSelector(
     (state: RootState) => state.appointment.appointmentData
   );
+  const navigate = useNavigate();
   useEffect(() => {
-    if (!appointmentData) return;
+    if (!appointmentData) {
+      navigate("/visitnow");
+      return;
+    }
     const initializePayment = async () => {
       try {
         const response = await createPaymentIntent(appointmentData);
@@ -28,7 +34,7 @@ const PaymentWrapper: React.FC = () => {
   }, []);
 
   if (!clientSecret) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (

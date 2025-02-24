@@ -24,7 +24,7 @@ class AppointmentService {
     }
   }
 
-  async getAppointment(id: string): Promise<Partial<IAppointmentPopulated>> {
+  async getAppointment(id: string): Promise<IAppointmentPopulated> {
     try {
       const response = await api.get(`/appointment/${id}`);
 
@@ -88,6 +88,23 @@ class AppointmentService {
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error updating appointment: ${error.message}`);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
+
+  async getAppointmentByPaymentId(id: string): Promise<IAppointmentPopulated> {
+    try {
+      const response = await api.get(`/appointment/payment/${id}`);
+
+      const { appointment } = response.data;
+      return appointment;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error fetching appointment: ${error.message}`);
         throw new Error(error.message);
       }
 

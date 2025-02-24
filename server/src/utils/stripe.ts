@@ -28,12 +28,12 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export const createPaymentIntent = async (
   amount: number,
-  currency = "usd",
+  currency = "inr",
   appointmentData: IAppointment
 ) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount: amount * 100,
       currency,
       automatic_payment_methods: {
         enabled: true,

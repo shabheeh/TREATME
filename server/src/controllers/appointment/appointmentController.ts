@@ -172,6 +172,29 @@ class AppointmentController implements IAppointmentController {
       next(error);
     }
   };
+  getAppointmentByPaymentId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { paymentId } = req.params;
+
+      if (!paymentId) {
+        throw new BadRequestError("Bad Request: Missing info");
+      }
+
+      const appointment =
+        await this.appointmentService.getAppointmentByPaymentId(paymentId);
+
+      res.status(200).json({ appointment });
+    } catch (error) {
+      logger.error(
+        error instanceof Error ? error.message : "failed to get appointment"
+      );
+      next(error);
+    }
+  };
 }
 
 export default AppointmentController;

@@ -16,7 +16,8 @@ export interface IAppointment extends Document {
   fee: number;
   slotId: string;
   dayId: string;
-  paymentStatus: "pending" | "paid";
+  paymentStatus: "pending" | "completed" | "failed";
+  paymentIntentId: string;
 }
 
 export default IAppointment;
@@ -33,7 +34,8 @@ export interface IAppointmentPopulated extends Document {
   fee: number;
   slotId: string;
   dayId: string;
-  paymentStatus: "failed" | "completed";
+  paymentStatus: "pending" | "completed" | "failed";
+  paymentIntentId: string;
 }
 
 export interface IAppointmentService {
@@ -56,6 +58,9 @@ export interface IAppointmentService {
     appointmentData: IAppointment
   ): Promise<{ clientSecret: string }>;
   handleWebHook(payload: Buffer, sig: string): Promise<void>;
+  getAppointmentByPaymentId(
+    paymentIntentId: string
+  ): Promise<IAppointmentPopulated>;
 }
 
 export interface IAppointmentController {
@@ -85,4 +90,9 @@ export interface IAppointmentController {
     next: NextFunction
   ): Promise<void>;
   stripePayment(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getAppointmentByPaymentId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
 }
