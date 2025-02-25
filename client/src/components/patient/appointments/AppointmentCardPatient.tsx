@@ -328,7 +328,7 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
         {status === "completed" && (
           <>
             <Box sx={{ display: "flex", gap: 1 }}>
-              <Button
+              {/* <Button
                 variant="text"
                 size="small"
                 onClick={() => setRescheduleModalOpen(true)}
@@ -345,7 +345,7 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
                 }}
               >
                 Share your feedback on your recent appointment.
-              </Button>
+              </Button> */}
             </Box>
             <Tooltip title="View appointment details">
               <IconButton

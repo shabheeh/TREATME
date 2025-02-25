@@ -269,7 +269,6 @@ class AppointmentService implements IAppointmentService {
           await this.handlePaymentIntentCanceled(event.data.object);
           break;
 
-        // Add more cases as needed
         default:
           logger.info(`Unhandled event type: ${event.type}`);
       }

@@ -68,8 +68,6 @@ const Payment: React.FC = () => {
         return;
       }
 
-      console.log(appointmentData, "appointment");
-
       try {
         const specialization =
           await specializationService.getSpecializationById(
@@ -92,11 +90,7 @@ const Payment: React.FC = () => {
   }, [appointmentData, navigate]);
 
   const handlePaymentClick = async () => {
-    if (!appointmentData) {
-      return;
-    }
-
-    if (!stripe || !elements) {
+    if (!appointmentData || !stripe || !elements) {
       return;
     }
 
@@ -106,23 +100,29 @@ const Payment: React.FC = () => {
       const { error: submitError } = await elements.submit();
       if (submitError) {
         console.error(submitError);
+        toast.error(submitError.message || "Failed to submit payment details");
         return;
       }
 
       const result = await stripe.confirmPayment({
         elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/confirmation`,
-        },
+        redirect: "if_required",
       });
 
       if (result.error) {
-        toast.success("Payment success");
+        toast.error(result.error.message || "Payment failed");
       } else {
-        toast.error("Someting went wrong");
+        const paymentIntentId = result.paymentIntent.id;
+
+        // toast.success(`Payment confirmed successfully`);
+        if (result.paymentIntent.status === "succeeded") {
+          navigate("/confirmation", { state: { paymentIntentId } });
+        } else {
+          console.log("PaymentIntent status:", result.paymentIntent.status);
+        }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Payment error:", error);
       toast.error(error instanceof Error ? error.message : "Unknown Error");
     } finally {
       setPaymentLoading(false);

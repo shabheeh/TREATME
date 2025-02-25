@@ -16,11 +16,13 @@ const PaymentWrapper: React.FC = () => {
     (state: RootState) => state.appointment.appointmentData
   );
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!appointmentData) {
       navigate("/visitnow");
       return;
     }
+
     const initializePayment = async () => {
       try {
         const response = await createPaymentIntent(appointmentData);

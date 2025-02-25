@@ -89,6 +89,7 @@ export const theme = createTheme({
     },
   },
   palette: {
+    // mode: "dark",
     primary: {
       main: "#009C9D",
     },

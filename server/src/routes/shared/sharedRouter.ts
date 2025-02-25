@@ -35,6 +35,10 @@ import AppointmentController from "../../controllers/appointment/appointmentCont
 import AppointmentService from "../../services/appointment/appointmentService";
 import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
 import { ScheduleModel } from "../../models/Schedule";
+import ReviewRepository from "../../repositories/review/reviewRepository";
+import { ReviewModel } from "../../models/Review";
+import ReviewService from "../../services/review/reviewService";
+import ReviewController from "../../controllers/review/reviewController";
 
 const router = express.Router();
 
@@ -90,6 +94,7 @@ const behaviouralHealController = new BehaviouralHealthController(
   behavioralHealthService
 );
 
+// appointment di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
 
 const appointmentRepository = new AppointmentRepository(AppointmentModel);
@@ -98,6 +103,10 @@ const appointmentService = new AppointmentService(
   scheduleRepository
 );
 const appointmentController = new AppointmentController(appointmentService);
+
+const reviewRepository = new ReviewRepository(ReviewModel);
+const reviewService = new ReviewService(reviewRepository);
+const reviewController = new ReviewController(reviewService);
 
 router.post("/auth/refresh-token", tokenController.handleRefreshToken);
 
@@ -230,13 +239,28 @@ router.post(
   appointmentController.stripePayment
 );
 
-router.post("/webhook", appointmentController.handleWebHook);
+router.post("/webhooks", appointmentController.handleWebHook);
 
 router.get(
   "/appointment/payment/:paymentId",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   appointmentController.getAppointmentByPaymentId
+);
+
+router.post(
+  "/reviews",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  authorize("patient"),
+  reviewController.addOrUpdateReview
+);
+
+router.get(
+  "/reviews/:reviewId",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  reviewController.getDoctorReviews
 );
 
 export default router;

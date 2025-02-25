@@ -34,12 +34,13 @@ const BookingConfirmation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const searchParams = new URLSearchParams(location.search);
-  const clientSecret = searchParams.get("payment_intent_client_secret");
-  const paymentId = searchParams.get("payment_intent");
+  // const searchParams = new URLSearchParams(location.search);
+  // const clientSecret = searchParams.get("payment_intent_client_secret");
+  // const paymentId = searchParams.get("payment_intent");
+  const paymentIntentId = location.state.paymentIntentId;
 
   useEffect(() => {
-    if (!clientSecret || !paymentId) {
+    if (!paymentIntentId) {
       throw new Error("Payment verification failed");
     }
     const fetchAppointment = async () => {
@@ -52,7 +53,7 @@ const BookingConfirmation = () => {
         // }
 
         const appointment =
-          await appointmentService.getAppointmentByPaymentId(paymentId);
+          await appointmentService.getAppointmentByPaymentId(paymentIntentId);
         setAppointment(appointment);
       } catch (error) {
         toast.error(
@@ -62,12 +63,14 @@ const BookingConfirmation = () => {
         setLoading(false);
       }
     };
-    fetchAppointment();
-  }, [navigate, clientSecret, paymentId]);
+    setTimeout(fetchAppointment, 2000);
+  }, [navigate, paymentIntentId]);
 
   useEffect(() => {
     const handlePopState = () => {
+      console.log("Popstate triggered at:", new Date().toISOString());
       dispatch(resetAppointment());
+      navigate("/visitnow");
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -75,7 +78,7 @@ const BookingConfirmation = () => {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [dispatch]);
+  }, []);
 
   if (loading) {
     return <BookingConfirmedSkeleton />;

@@ -100,7 +100,9 @@ class AppointmentRepository implements IAppointmentRepository {
         .populate({
           path: "doctor",
           select: "-password",
-        });
+        })
+        .sort({ date: 1 })
+        .lean();
 
       return appointments;
     } catch (error) {
@@ -126,7 +128,10 @@ class AppointmentRepository implements IAppointmentRepository {
         .populate({
           path: "doctor",
           select: "-password",
-        });
+        })
+        .sort({ date: 1 })
+        .lean();
+
       return appointments;
     } catch (error) {
       throw new AppError(
@@ -181,7 +186,7 @@ class AppointmentRepository implements IAppointmentRepository {
         });
 
       if (!appointment) {
-        throw new AppError("Somethig went Wrong");
+        throw new AppError("");
       }
       return appointment as unknown as IAppointmentPopulated;
     } catch (error) {

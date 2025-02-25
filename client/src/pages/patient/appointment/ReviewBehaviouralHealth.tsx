@@ -27,7 +27,7 @@ const ReviewBehaviouralHealth = () => {
   }, [appointmentData, navigate]);
 
   const handleContinue = async () => {
-    navigate("/doctors");
+    navigate("/providers");
   };
 
   const handleExitBooking = () => {

@@ -17,7 +17,7 @@ import {
   ContactSupport,
 } from "@mui/icons-material";
 
-import { FaHouseMedical } from "react-icons/fa6";
+import { FaHouseMedical, FaUserDoctor } from "react-icons/fa6";
 
 import { RiHealthBookFill } from "react-icons/ri";
 
@@ -25,6 +25,7 @@ const drawerWidth = 250;
 
 const menuItems = [
   { text: "Visit Now", icon: <FaHouseMedical size={23} />, path: "/visitnow" },
+  { text: "Doctors", icon: <FaUserDoctor size={23} />, path: "/doctors" },
   { text: "Appointments", icon: <EventNote />, path: "/appointments" },
   { text: "Messages", icon: <Message />, path: "/messages" },
   {

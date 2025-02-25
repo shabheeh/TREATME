@@ -23,7 +23,8 @@ import Consultations from "../pages/patient/appointment/Consultations";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
 import PaymentWrapper from "../pages/patient/payment/PaymentWrapper";
-import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
+import Doctors from "../pages/patient/Doctors";
+// import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
 // import { Appearance } from "@stripe/stripe-js";
 // const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
 //   betas: ["payment_element_beta_1"],
@@ -100,8 +101,7 @@ export const patientRoutes = [
     />
     ,
     <Route path="review-health-history" element={<ReviewHealthHistory />} />,
-    <Route path="doctors" element={<ListDoctors />} />,
-    <Route path="doctors/:id" element={<DoctorView />} />,
+    <Route path="providers" element={<ListDoctors />} />,
     {/* <Route
       path="review-appointment"
       element={
@@ -114,7 +114,7 @@ export const patientRoutes = [
       }
     /> */}
     <Route path="review-appointment" element={<PaymentWrapper />} />
-    <Route path="confirmation" element={<BookingWrapper />} />,
+    <Route path="confirmation" element={<BookingConfirmation />} />,
   </Route>,
 
   <Route
@@ -129,5 +129,7 @@ export const patientRoutes = [
     <Route path="health-profile" element={<HealthProfile />} />
     <Route path="appointments" element={<Appointments />} />
     <Route path="consultations" element={<Consultations />} />
+    <Route path="doctors" element={<Doctors />} />,
+    <Route path="doctors/:id" element={<DoctorView />} />,
   </Route>,
 ];
