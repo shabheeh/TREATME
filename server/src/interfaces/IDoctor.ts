@@ -1,26 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { Document, ObjectId } from "mongoose";
+import { Document, ObjectId, Types } from "mongoose";
 import {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
 } from "src/repositories/doctor/interfaces/IDoctorRepository";
-
-export interface ISlot extends Document {
-  _id: ObjectId;
-  startTime: Date;
-  endTime: Date;
-  isBooked: boolean;
-}
-
-export interface IDaySchedule extends Document {
-  date: Date;
-  slots: ISlot[];
-}
-
-export interface ISchedule extends Document {
-  doctorId: ObjectId;
-  availability: IDaySchedule[];
-}
+import IReview from "./IReview";
 
 export default interface IDoctor extends Document {
   _id: ObjectId;
@@ -42,9 +26,11 @@ export default interface IDoctor extends Document {
 }
 
 export interface IDoctorsFilter {
-  page: number;
-  limit: number;
-  search: string;
+  specialization?: string | Types.ObjectId;
+  gender?: string;
+  page?: number;
+  limit?: number;
+  search?: string;
 }
 
 export interface IDoctorsFilterResult {
@@ -61,6 +47,10 @@ export interface SignInResult {
   refreshToken: string;
 }
 
+export interface IDoctorWithReviews extends IDoctor {
+  reviews: IReview[];
+}
+
 export interface IDoctorAuthService {
   signIn(email: string, password: string): Promise<SignInResult>;
   checkActiveStatus(email: string): Promise<boolean>;
@@ -71,25 +61,13 @@ export interface IDoctorAuthController {
   signOut(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
-export interface IScheduleService {
-  getSchedule(doctorId: string): Promise<ISchedule | null>;
-  updateSchedule(doctorId: string, updateData: ISchedule): Promise<ISchedule>;
-}
-
-export interface IScheduleController {
-  getSchedule(req: Request, res: Response, next: NextFunction): Promise<void>;
-  updateSchedule(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void>;
-}
-
 export interface IDoctorService {
   getDoctor(doctorId: string): Promise<IDoctor>;
   getDoctorsWithSchedules(
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;
+  getDoctors(query: IDoctorsFilter): Promise<IDoctorsFilterResult>;
+  getDoctorWithReviews(doctorId: string): Promise<IDoctor>;
 }
 
 export interface IDoctorController {
@@ -99,4 +77,10 @@ export interface IDoctorController {
     next: NextFunction
   ): Promise<void>;
   getDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getDoctors(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getDoctorWithReviews(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
 }

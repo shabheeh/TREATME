@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { IDaySchedule, ISchedule, ISlot } from "../interfaces/IDoctor";
+import { IDaySchedule, ISchedule, ISlot } from "../interfaces/ISchedule";
 
 const slotSchema = new Schema<ISlot>({
   startTime: { type: Date, required: true },

@@ -6,129 +6,121 @@ import {
   Typography,
   Avatar,
   Stack,
-  Chip,
-  IconButton,
-  Divider,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import StarIcon from "@mui/icons-material/Star";
+import { IDoctor } from "../../types/doctor/doctor.types";
 
 interface DoctorCardProps {
-  name: string;
-  specialty: string;
-  email: string;
-  phone: string;
-  experience: number;
-  totalAppointments: number;
-  todayAppointments: number;
-  rating: number;
-  nextAvailable: string;
-  imageUrl?: string;
-  status?: string;
+  doctor: IDoctor;
 }
 
-const DoctorCard = ({
-  name,
-  specialty,
-  email,
-  phone,
-  experience,
-  totalAppointments,
-  todayAppointments,
-  rating,
-  nextAvailable,
-  imageUrl,
-  status = "In Consultation",
-}: DoctorCardProps) => {
+const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
   return (
     <Card
       sx={{
         width: "100%",
         borderRadius: 3,
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        transition: "transform 0.2s ease-in-out",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        },
       }}
     >
-      <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Avatar src={imageUrl} sx={{ width: 64, height: 64 }} />
-            <Box>
-              <Typography variant="h6" component="div">
-                {name}
-              </Typography>
-              <Typography color="text.secondary" gutterBottom>
-                {specialty}
-              </Typography>
-              <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <EmailIcon
-                    fontSize="small"
-                    sx={{ color: "text.secondary", mr: 0.5 }}
-                  />
-                  <Typography variant="body2" color="text.secondary">
-                    {email}
-                  </Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <PhoneIcon
-                    fontSize="small"
-                    sx={{ color: "text.secondary", mr: 0.5 }}
-                  />
-                  <Typography variant="body2" color="text.secondary">
-                    {phone}
-                  </Typography>
-                </Box>
-              </Stack>
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <Chip label={status} color="warning" size="small" sx={{ mb: 1 }} />
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
-              <Typography variant="h6">{rating}</Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              Next available: {nextAvailable}
-            </Typography>
-          </Box>
-        </Box>
-
-        <Divider sx={{ my: 2 }} />
-
+      <CardContent sx={{ padding: 3 }}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            gap: 2,
           }}
         >
-          <Box>
-            <Typography color="text.secondary">Experience</Typography>
-            <Typography variant="h6">{experience} years</Typography>
+          {/* Left Section: Avatar and Name */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Avatar
+              src={doctor.profilePicture}
+              sx={{
+                width: 64,
+                height: 64,
+                border: "2px solid #f5f5f5",
+              }}
+            />
+            <Box>
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{
+                  fontWeight: 600,
+                  color: "#1976d2",
+                }}
+              >
+                {doctor.firstName} {doctor.lastName}
+              </Typography>
+              <Typography color="text.secondary" sx={{ fontSize: "0.95rem" }}>
+                {doctor.specialization.name}
+              </Typography>
+            </Box>
           </Box>
-          <Box>
-            <Typography color="text.secondary">Total Appointments</Typography>
-            <Typography variant="h6" align="center">
-              {totalAppointments}
+
+          {/* Middle Section: Contact Info */}
+          <Stack direction="column" spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <EmailIcon
+                fontSize="small"
+                sx={{ color: "text.secondary", mr: 0.5 }}
+              />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontSize: "0.85rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {doctor.email}
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <PhoneIcon
+                fontSize="small"
+                sx={{ color: "text.secondary", mr: 0.5 }}
+              />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  fontSize: "0.85rem",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {doctor.phone}
+              </Typography>
+            </Box>
+          </Stack>
+
+          {/* Right Section: Experience */}
+          <Box sx={{ textAlign: "right" }}>
+            <Typography color="text.secondary" sx={{ fontSize: "0.9rem" }}>
+              Experience
+            </Typography>
+            <Typography
+              variant="body1" // Changed from h6 to body1 for smaller size
+              sx={{
+                fontWeight: 500,
+                color: "#424242",
+                fontSize: "1.1rem", // Slightly smaller than h6
+              }}
+            >
+              {doctor.experience} years
             </Typography>
           </Box>
-          <Box>
-            <Typography color="text.secondary">Today's Schedule</Typography>
-            <Typography variant="h6" align="center">
-              {todayAppointments} appointments
-            </Typography>
-          </Box>
-          <IconButton>
-            <MoreVertIcon />
-          </IconButton>
         </Box>
       </CardContent>
     </Card>

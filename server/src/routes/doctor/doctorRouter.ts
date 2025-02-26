@@ -109,7 +109,7 @@ router.patch(
 );
 
 router.get(
-  "/doctors",
+  "/doctors/schedules",
   authenticateAndCheckStatus,
   doctorController.getDoctorsWithSchedules
 );
@@ -124,6 +124,14 @@ router.get(
   "/:doctorId/schedules",
   authenticateAndCheckStatus,
   scheduleController.getSchedule
+);
+
+router.get("/doctors", authenticateAndCheckStatus, doctorController.getDoctors);
+
+router.get(
+  "/doctors/:doctorId/reviews",
+  authenticate,
+  doctorController.getDoctorWithReviews
 );
 
 export default router;

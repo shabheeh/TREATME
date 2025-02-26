@@ -1,10 +1,11 @@
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
-  ISchedule,
+  IDoctorWithReviews,
 } from "src/interfaces/IDoctor";
 
+import { ISchedule } from "src/interfaces/ISchedule";
 export interface getDoctorsWithSchedulesQuery {
   specialization: ObjectId;
   gender: string | null;
@@ -23,6 +24,17 @@ export interface getDoctorsWithSchedulesResult {
   totalPages: number;
 }
 
+export type MatchStage = {
+  specialization?: Types.ObjectId;
+  gender?: string;
+  $or?: Array<{
+    firstName?: { $regex: string; $options: string };
+    lastName?: { $regex: string; $options: string };
+    email?: { $regex: string; $options: string };
+    phone?: { $regex: string; $options: string };
+  }>;
+};
+
 interface IDoctorRepository {
   createDoctor(doctor: Partial<IDoctor>): Promise<IDoctor>;
   findDoctorByEmail(email: string): Promise<IDoctor | null>;
@@ -35,6 +47,7 @@ interface IDoctorRepository {
   getDoctorsWithSchedules(
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;
+  findDoctorWithReviews(doctorId: string): Promise<IDoctorWithReviews>;
 }
 
 export default IDoctorRepository;

@@ -1,22 +1,15 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import IDoctorRepository, {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
+  MatchStage,
 } from "./interfaces/IDoctorRepository";
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
+  IDoctorWithReviews,
 } from "src/interfaces/IDoctor";
 import { AppError } from "../../utils/errors";
-
-interface Query {
-  $or?: Array<{
-    firstName?: { $regex: string; $options: string };
-    lastName?: { $regex: string; $options: string };
-    email?: { $regex: string; $options: string };
-    phone?: { $regex: string; $options: string };
-  }>;
-}
 
 class DoctorRepository implements IDoctorRepository {
   private readonly model: Model<IDoctor>;
@@ -100,29 +93,75 @@ class DoctorRepository implements IDoctorRepository {
     }
   }
 
-  async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
+  async getDoctors(query: IDoctorsFilter): Promise<IDoctorsFilterResult> {
     try {
-      const { page, limit, search } = filter;
+      const { specialization, gender, search, page = 1, limit = 10 } = query;
       const skip = (page - 1) * limit;
 
-      const query: Query = {};
+      const matchStage: MatchStage = {};
 
-      query.$or = [
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
+      if (search) {
+        matchStage.$or = [
+          { firstName: { $regex: search, $options: "i" } },
+          { lastName: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { phone: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      if (gender) {
+        matchStage.gender = gender;
+      }
+
+      if (specialization) {
+        matchStage.specialization =
+          typeof specialization === "string"
+            ? new Types.ObjectId(specialization)
+            : specialization;
+      }
+
+      const aggregationPipeline = [
+        {
+          $match: matchStage,
+        },
+        {
+          $lookup: {
+            from: "specializations",
+            localField: "specialization",
+            foreignField: "_id",
+            as: "specialization",
+          },
+        },
+        {
+          $addFields: {
+            specialization: { $arrayElemAt: ["$specialization", 0] },
+          },
+        },
+        {
+          $facet: {
+            metadata: [{ $count: "total" }],
+            data: [{ $skip: skip }, { $limit: limit }],
+          },
+        },
+        {
+          $project: {
+            metadata: 1,
+            doctors: "$data",
+          },
+        },
       ];
 
-      const doctors = await this.model.find(query).skip(skip).limit(limit);
-      const total = await this.model.countDocuments(query);
+      const result = await this.model.aggregate(aggregationPipeline);
+
+      const total = result[0]?.metadata[0]?.total || 0;
+      const totalPages = Math.ceil(total / limit);
 
       return {
-        doctors,
+        doctors: result[0]?.doctors || [],
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit),
+        totalPages,
       };
     } catch (error) {
       throw new AppError(
@@ -219,6 +258,117 @@ class DoctorRepository implements IDoctorRepository {
         currentPage: page,
         totalPages: Math.ceil(totalDoctorsCount / limit),
       };
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async findDoctorWithReviews(doctorId: string): Promise<IDoctorWithReviews> {
+    try {
+      const doctorWithReviews = await this.model.aggregate([
+        {
+          $match: {
+            _id: new Types.ObjectId(doctorId),
+          },
+        },
+        {
+          $lookup: {
+            from: "specializations",
+            localField: "specialization",
+            foreignField: "_id",
+            as: "specialization",
+          },
+        },
+        {
+          $addFields: {
+            specialization: { $arrayElemAt: ["$specialization", 0] },
+          },
+        },
+        {
+          $lookup: {
+            from: "reviews",
+            localField: "_id",
+            foreignField: "doctor",
+            as: "reviews",
+          },
+        },
+        {
+          $unwind: {
+            path: "$reviews",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "patients",
+            localField: "reviews.patient",
+            foreignField: "_id",
+            as: "reviews.patient",
+          },
+        },
+        {
+          $unwind: {
+            path: "$reviews.patient",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            firstName: { $first: "$firstName" },
+            lastName: { $first: "$lastName" },
+            email: { $first: "$email" },
+            phone: { $first: "$phone" },
+            gender: { $first: "$gender" },
+            languages: { $first: "$languages" },
+            specialties: { $first: "$specialties" },
+            experience: { $first: "$experience" },
+            registerNo: { $first: "$registerNo" },
+            profilePicture: { $first: "$profilePicture" },
+            specialization: { $first: "$specialization" },
+            reviews: { $push: "$reviews" },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            firstName: 1,
+            lastName: 1,
+            email: 1,
+            phone: 1,
+            specialization: {
+              name: 1,
+            },
+            gender: 1,
+            specialties: 1,
+            languages: 1,
+            registerNo: 1,
+            biography: 1,
+            profilePicutre: 1,
+            experience: 1,
+            reviews: {
+              _id: 1,
+              patient: {
+                _id: 1,
+                firstName: 1,
+                lastName: 1,
+              },
+              rating: 1,
+              comment: 1,
+              createdAt: 1,
+            },
+          },
+        },
+      ]);
+
+      if (!doctorWithReviews.length) {
+        throw new AppError("Something went wrong");
+      }
+
+      return doctorWithReviews[0];
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

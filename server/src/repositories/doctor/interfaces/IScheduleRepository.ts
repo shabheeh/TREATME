@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose";
-import { ISchedule } from "../../../interfaces/IDoctor";
+import { ISchedule } from "../../../interfaces/ISchedule";
 
 interface IScheduleRepository {
   findSchedule(doctorId: string): Promise<ISchedule | null>;

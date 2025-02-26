@@ -12,10 +12,6 @@ class ReviewService implements IReviewService {
   async addOrUpdateReview(reviewData: IReview): Promise<IReview> {
     return this.reviewRepo.createOrUpdateReview(reviewData);
   }
-
-  async getDoctorReviews(doctorId: string): Promise<IReview[]> {
-    return this.reviewRepo.findReviewsByDoctorId(doctorId);
-  }
 }
 
 export default ReviewService;

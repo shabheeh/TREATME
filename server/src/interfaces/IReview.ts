@@ -12,16 +12,10 @@ export default IReview;
 
 export interface IReviewService {
   addOrUpdateReview(reviewData: IReview): Promise<IReview>;
-  getDoctorReviews(doctorId: string): Promise<IReview[]>;
 }
 
 export interface IReviewController {
   addOrUpdateReview(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void>;
-  getDoctorReviews(
     req: Request,
     res: Response,
     next: NextFunction

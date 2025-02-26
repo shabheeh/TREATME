@@ -81,3 +81,19 @@ export interface getDoctorsWithSchedulesResult {
   currentPage: number;
   totalPages: number;
 }
+
+export interface getDoctorsQuery {
+  specialization: string;
+  gender: "male" | "female" | "any" | "";
+  search: string;
+  page: number;
+  limit: number;
+}
+
+export interface getDoctorsResult {
+  doctors: IDoctor[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

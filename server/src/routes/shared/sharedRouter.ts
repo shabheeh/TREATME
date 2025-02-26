@@ -256,11 +256,4 @@ router.post(
   reviewController.addOrUpdateReview
 );
 
-router.get(
-  "/reviews/:reviewId",
-  authenticate,
-  isUserActive(patientAuthService, doctorAuthService),
-  reviewController.getDoctorReviews
-);
-
 export default router;

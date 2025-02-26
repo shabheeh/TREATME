@@ -25,33 +25,29 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import specializationService from "../../services/specialization/specializationService";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import doctorService from "../../services/doctor/doctorService";
-import { getDoctorsWithSchedulesResult } from "../../types/doctor/doctor.types";
-
-// Define types
-interface Doctor {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  gender: string;
-  specialization: string;
-  // Add other properties as needed
-}
+import {
+  getDoctorsQuery,
+  getDoctorsResult,
+} from "../../types/doctor/doctor.types";
 
 const Doctors: React.FC = () => {
-  const [data, setData] = useState<getDoctorsWithSchedulesResult | null>(null);
+  const [data, setData] = useState<getDoctorsResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
-  const [genderFilter, setGenderFilter] = useState<string>("all");
-  const [specializationFilter, setSpecializationFilter] =
-    useState<string>("all");
+  const [genderFilter, setGenderFilter] = useState<string>("");
+  const [specializationFilter, setSpecializationFilter] = useState<{
+    id: string;
+    name: string;
+  }>({
+    id: "",
+    name: "",
+  });
   const [specializations, setSpecializations] = useState<ISpecialization[]>([]);
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
@@ -74,7 +70,6 @@ const Doctors: React.FC = () => {
     fetchSpecializations();
   }, []);
 
-  // Fetch doctors data with filters
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -82,17 +77,12 @@ const Doctors: React.FC = () => {
         const query = {
           page: page + 1,
           limit: rowsPerPage,
-          gender: genderFilter === "all" ? "" : genderFilter,
-          specialization:
-            specializationFilter === "all" ? "" : specializationFilter,
-        };
+          gender: genderFilter,
+          specialization: specializationFilter.id,
+          search: debouncedSearch,
+        } as getDoctorsQuery;
 
-        if (debouncedSearch) params.search = debouncedSearch;
-        if (genderFilter !== "all") params.gender = genderFilter;
-        if (specializationFilter !== "all")
-          params.specialization = specializationFilter;
-
-        const response = await doctorService.getDoctorsWithSchedules(query);
+        const response = await doctorService.getDoctors(query);
         setData(response);
         setError(null);
       } catch (err) {
@@ -120,19 +110,28 @@ const Doctors: React.FC = () => {
     setPage(0);
   };
 
-  const handleGenderFilterChange = (event: SelectChangeEvent) => {
+  const handleGenderChange = (event: SelectChangeEvent) => {
     setGenderFilter(event.target.value);
     setPage(0);
   };
 
-  const handleSpecializationFilterChange = (event: SelectChangeEvent) => {
-    setSpecializationFilter(event.target.value);
+  const handleSpecializationChange = (event: SelectChangeEvent) => {
+    const selectedId = event.target.value;
+    const selectedSpec = specializations.find(
+      (spec) => spec._id === selectedId
+    );
+
+    if (selectedSpec) {
+      setSpecializationFilter({
+        id: selectedSpec._id,
+        name: selectedSpec.name,
+      });
+    }
     setPage(0);
   };
-
   const handleClearFilters = () => {
-    setGenderFilter("all");
-    setSpecializationFilter("all");
+    setGenderFilter("");
+    setSpecializationFilter({ id: "", name: "" });
     setSearchQuery("");
     setPage(0);
   };
@@ -154,16 +153,6 @@ const Doctors: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Doctors Management
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Search, filter, and manage doctor profiles.
-        </Typography>
-        g
-      </Box>
-
       {/* Search and Filters */}
       <Card sx={{ mb: 4, p: 3 }}>
         <Grid container spacing={3} alignItems="center">
@@ -192,13 +181,12 @@ const Doctors: React.FC = () => {
                 labelId="gender-filter-label"
                 id="gender-filter"
                 value={genderFilter}
-                onChange={handleGenderFilterChange}
+                onChange={handleGenderChange}
                 label="Gender"
               >
-                <MenuItem value="all">All Genders</MenuItem>
+                <MenuItem value="">Any</MenuItem>
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -211,14 +199,14 @@ const Doctors: React.FC = () => {
               <Select
                 labelId="specialization-filter-label"
                 id="specialization-filter"
-                value={specializationFilter}
-                onChange={handleSpecializationFilterChange}
+                value={specializationFilter.id}
+                onChange={handleSpecializationChange}
                 label="Specialization"
               >
-                <MenuItem value="all">All Specializations</MenuItem>
+                <MenuItem value="">All Specializations</MenuItem>
                 {specializations.map((spec) => (
-                  <MenuItem key={spec} value={spec}>
-                    {spec}
+                  <MenuItem key={spec._id} value={spec._id}>
+                    {spec.name}
                   </MenuItem>
                 ))}
               </Select>
@@ -238,9 +226,8 @@ const Doctors: React.FC = () => {
         </Grid>
       </Card>
 
-      {/* Active Filters */}
       {(genderFilter !== "all" ||
-        specializationFilter !== "all" ||
+        specializationFilter.id !== "all" ||
         searchQuery) && (
         <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
           <Typography variant="body2" sx={{ mr: 1, mt: 0.5 }}>
@@ -255,25 +242,24 @@ const Doctors: React.FC = () => {
             />
           )}
 
-          {genderFilter !== "all" && (
+          {genderFilter !== "" && (
             <Chip
               label={`Gender: ${genderFilter}`}
               size="small"
-              onDelete={() => setGenderFilter("all")}
+              onDelete={() => setGenderFilter("")}
             />
           )}
 
-          {specializationFilter !== "all" && (
+          {specializationFilter.id !== "" && (
             <Chip
-              label={`Specialization: ${specializationFilter}`}
+              label={`Specialization: ${specializationFilter.name}`}
               size="small"
-              onDelete={() => setSpecializationFilter("all")}
+              onDelete={() => setSpecializationFilter({ id: "", name: "" })}
             />
           )}
         </Box>
       )}
 
-      {/* Doctors List - One Card Per Row */}
       {loading ? (
         <Box
           display="flex"
@@ -288,8 +274,14 @@ const Doctors: React.FC = () => {
           <Box sx={{ mb: 4 }}>
             {data?.doctors && data.doctors.length > 0 ? (
               data.doctors.map((doctor) => (
-                <Box key={doctor.id} sx={{ mb: 2 }}>
-                  <DoctorCard doctor={doctor} />
+                <Box key={doctor._id} sx={{ mb: 2 }}>
+                  <DoctorCard
+                    doctor={doctor}
+                    nextAvailable="354353"
+                    rating={4}
+                    todayAppointments={3}
+                    totalAppointments={33}
+                  />
                 </Box>
               ))
             ) : (

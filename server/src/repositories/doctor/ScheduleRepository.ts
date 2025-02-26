@@ -1,6 +1,6 @@
 import { Model, ObjectId, Types } from "mongoose";
 import IScheduleRepository from "./interfaces/IScheduleRepository";
-import { ISchedule } from "../../interfaces/IDoctor";
+import { ISchedule } from "../../interfaces/ISchedule";
 import { AppError } from "../../utils/errors";
 
 class ScheduleRepository implements IScheduleRepository {

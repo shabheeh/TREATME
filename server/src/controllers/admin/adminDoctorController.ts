@@ -63,13 +63,15 @@ class AdminDoctorController implements IAdminDoctorController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const params = {
+      const query = {
+        specialization: req.query.specialization as string,
+        gender: req.query.gender as string,
+        search: req.query.search as string,
         page: parseInt(req.query.page as string),
         limit: parseInt(req.query.limit as string),
-        search: req.query.search as string,
       };
 
-      const result = await this.adminDoctorService.getDoctors(params);
+      const result = await this.adminDoctorService.getDoctors(query);
 
       res.status(200).json({ result });
     } catch (error) {

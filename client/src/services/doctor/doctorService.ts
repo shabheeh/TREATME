@@ -1,4 +1,6 @@
 import {
+  getDoctorsQuery,
+  getDoctorsResult,
   getDoctorsWithSchedulesResult,
   getDoctorWithScheduleQuery,
   IDoctor,
@@ -31,7 +33,35 @@ class DoctorService {
   }: getDoctorWithScheduleQuery): Promise<getDoctorsWithSchedulesResult> {
     try {
       const response = await api.doctor.get(
-        `/doctors?spec=${specialization}&gen=${gender}&page=${page}&date=${selectedDate}&lan=${language}`
+        `/doctors/schedules?spec=${specialization}&gen=${gender}&page=${page}&date=${selectedDate}&lan=${language}`
+      );
+
+      const { result } = response.data;
+      return result;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          `Error fetching doctors with schedule: ${error.message}`,
+          error
+        );
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
+
+  async getDoctors({
+    specialization,
+    gender,
+    search,
+    page,
+    limit,
+  }: getDoctorsQuery): Promise<getDoctorsResult> {
+    try {
+      const response = await api.doctor.get(
+        `/doctors?spec=${specialization}&gender=${gender}&page=${page}&limit=${limit}&search=${search}`
       );
 
       const { result } = response.data;

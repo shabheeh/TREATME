@@ -69,14 +69,8 @@ class AdminDoctorService implements IAdminDoctorService {
     }
   }
 
-  async getDoctors(params: IDoctorsFilter): Promise<IDoctorsFilterResult> {
+  async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
     try {
-      const filter = {
-        page: Math.max(1, params.page || 1),
-        limit: Math.min(50, Math.max(1, params.limit || 5)),
-        search: params.search?.trim() || "",
-      };
-
       return await this.doctorRepository.getDoctors(filter);
     } catch (error) {
       logger.error("error creating a new doctor", error);

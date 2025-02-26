@@ -58,6 +58,54 @@ class DoctorController implements IDoctorController {
       next(error);
     }
   };
+
+  getDoctors = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const query = {
+        specialization: req.query.spec as string,
+        gender: req.query.gender as string,
+        search: req.query.search as string,
+        page: parseInt(req.query.page as string),
+        limit: parseInt(req.query.limit as string),
+      };
+      console.log(query, "query");
+      const result = await this.doctorService.getDoctors(query);
+      res.status(200).json({ result });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controller: Failed to getDoctors"
+      );
+      next(error);
+    }
+  };
+
+  getDoctorWithReviews = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { doctorId } = req.params;
+      if (!doctorId) {
+        throw new BadRequestError("Bad Request: Missing info");
+      }
+      const doctor = await this.doctorService.getDoctorWithReviews(doctorId);
+      res.status(200).json({ doctor });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controller: Failed to get doctor with reviews"
+      );
+      next(error);
+    }
+  };
 }
 
 export default DoctorController;

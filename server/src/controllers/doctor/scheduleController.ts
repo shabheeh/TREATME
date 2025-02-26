@@ -3,7 +3,7 @@ import logger from "../../configs/logger";
 import {
   IScheduleController,
   IScheduleService,
-} from "../../interfaces/IDoctor";
+} from "../../interfaces/ISchedule";
 import { BadRequestError } from "../../utils/errors";
 
 class ScheduleController implements IScheduleController {

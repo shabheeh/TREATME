@@ -1,5 +1,9 @@
 import logger from "../../configs/logger";
-import IDoctor, { IDoctorService } from "../../interfaces/IDoctor";
+import IDoctor, {
+  IDoctorService,
+  IDoctorsFilter,
+  IDoctorsFilterResult,
+} from "../../interfaces/IDoctor";
 import IDoctorRepository, {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
@@ -34,6 +38,14 @@ class DoctorService implements IDoctorService {
         500
       );
     }
+  }
+
+  async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
+    return await this.doctorRepo.getDoctors(filter);
+  }
+
+  async getDoctorWithReviews(doctorId: string): Promise<IDoctor> {
+    return await this.doctorRepo.findDoctorWithReviews(doctorId);
   }
 }
 

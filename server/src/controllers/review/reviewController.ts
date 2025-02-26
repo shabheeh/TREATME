@@ -23,21 +23,6 @@ class ReviewController implements IReviewController {
       next(error);
     }
   };
-
-  getDoctorReviews = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const { doctorId } = req.params;
-      const reviews = await this.reviewService.getDoctorReviews(doctorId);
-      res.status(200).json({ reviews });
-    } catch (error) {
-      logger.error("Controller: Failed to fetch review for doctor");
-      next(error);
-    }
-  };
 }
 
 export default ReviewController;

@@ -1,6 +1,6 @@
 import IScheduleRepository from "src/repositories/doctor/interfaces/IScheduleRepository";
 import logger from "../../configs/logger";
-import { ISchedule, IScheduleService } from "../../interfaces/IDoctor";
+import { ISchedule, IScheduleService } from "../../interfaces/ISchedule";
 import { AppError } from "../../utils/errors";
 
 class ScheduleService implements IScheduleService {
