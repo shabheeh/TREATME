@@ -4,7 +4,6 @@ import {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
 } from "src/repositories/doctor/interfaces/IDoctorRepository";
-import IReview from "./IReview";
 
 export default interface IDoctor extends Document {
   _id: ObjectId;
@@ -20,6 +19,7 @@ export default interface IDoctor extends Document {
   registerNo: string;
   experience: number;
   biography: string;
+  licensedState: string;
   profilePicture: string;
   imagePublicId: string;
   isActive: boolean;
@@ -47,10 +47,6 @@ export interface SignInResult {
   refreshToken: string;
 }
 
-export interface IDoctorWithReviews extends IDoctor {
-  reviews: IReview[];
-}
-
 export interface IDoctorAuthService {
   signIn(email: string, password: string): Promise<SignInResult>;
   checkActiveStatus(email: string): Promise<boolean>;
@@ -67,7 +63,6 @@ export interface IDoctorService {
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;
   getDoctors(query: IDoctorsFilter): Promise<IDoctorsFilterResult>;
-  getDoctorWithReviews(doctorId: string): Promise<IDoctor>;
 }
 
 export interface IDoctorController {
@@ -78,9 +73,4 @@ export interface IDoctorController {
   ): Promise<void>;
   getDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
   getDoctors(req: Request, res: Response, next: NextFunction): Promise<void>;
-  getDoctorWithReviews(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void>;
 }

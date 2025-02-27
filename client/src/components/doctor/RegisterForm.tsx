@@ -159,8 +159,6 @@ const RegisterForm = () => {
     const idProofFile = data.idProof?.[0] || null;
     const resumeFile = data.resume?.[0] || null;
 
-    console.log(idProofFile, "idprrof");
-
     if (!idProofFile) {
       toast.error("ID Proof is required");
       return;

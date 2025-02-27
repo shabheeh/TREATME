@@ -6,16 +6,19 @@ import {
   Typography,
   Avatar,
   Stack,
+  Link,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { IDoctor } from "../../types/doctor/doctor.types";
+import { useNavigate } from "react-router-dom";
 
 interface DoctorCardProps {
   doctor: IDoctor;
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
+  const navigate = useNavigate();
   return (
     <Card
       sx={{
@@ -50,15 +53,21 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
             />
             <Box>
               <Typography
-                variant="h6"
-                component="div"
+                component="span"
+                onClick={() => navigate(`/doctors/${doctor._id}`)}
                 sx={{
                   fontWeight: 600,
-                  color: "#1976d2",
+                  color: "primary.main",
+                  textDecoration: "none",
+                  cursor: "pointer",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
                 }}
               >
                 {doctor.firstName} {doctor.lastName}
               </Typography>
+              ;
               <Typography color="text.secondary" sx={{ fontSize: "0.95rem" }}>
                 {doctor.specialization.name}
               </Typography>

@@ -64,7 +64,8 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
   const days = getDaysDifference(date);
   const isToday = days === 0;
   const isTomorrow = days === 1;
-  const isPast = days > 1;
+  const isPast = days < 1;
+  const isFuture = days > 1;
 
   const getStatusChip = () => {
     if (isToday) {
@@ -88,13 +89,13 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
     } else if (isPast) {
       return (
         <Chip
-          label={`${days} Ago`}
+          label={`${days * -1} days Ago`}
           size="small"
           color="info"
           sx={{ fontWeight: 500 }}
         />
       );
-    } else {
+    } else if (isFuture) {
       return (
         <Chip
           label={`In ${days} days`}

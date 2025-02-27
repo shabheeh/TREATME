@@ -29,6 +29,7 @@ export interface IDoctor {
   languages: string[];
   registerNo: string;
   experience: number;
+  licensedState: string;
   biography: string;
   profilePicture: string;
 }
@@ -44,6 +45,7 @@ export interface IDoctorSignUp {
   languages: string[];
   registerNo: string;
   experience: number | null;
+  licensedState: string;
   biography: string;
   profilePicture: File | null;
 }

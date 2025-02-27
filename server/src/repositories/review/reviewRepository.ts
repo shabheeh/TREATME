@@ -32,6 +32,22 @@ class ReviewRepository implements IReviewRepository {
       );
     }
   }
+
+  async findReviewsByDoctorId(doctorId: string): Promise<IReview[]> {
+    try {
+      const reviews = await this.model
+        .find({ doctor: doctorId })
+        .populate("patient")
+        .lean();
+
+      return reviews;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
 }
 
 export default ReviewRepository;

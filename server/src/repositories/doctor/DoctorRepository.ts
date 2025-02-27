@@ -7,8 +7,7 @@ import IDoctorRepository, {
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
-  IDoctorWithReviews,
-} from "src/interfaces/IDoctor";
+} from "../../interfaces/IDoctor";
 import { AppError } from "../../utils/errors";
 
 class DoctorRepository implements IDoctorRepository {
@@ -258,117 +257,6 @@ class DoctorRepository implements IDoctorRepository {
         currentPage: page,
         totalPages: Math.ceil(totalDoctorsCount / limit),
       };
-    } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
-    }
-  }
-
-  async findDoctorWithReviews(doctorId: string): Promise<IDoctorWithReviews> {
-    try {
-      const doctorWithReviews = await this.model.aggregate([
-        {
-          $match: {
-            _id: new Types.ObjectId(doctorId),
-          },
-        },
-        {
-          $lookup: {
-            from: "specializations",
-            localField: "specialization",
-            foreignField: "_id",
-            as: "specialization",
-          },
-        },
-        {
-          $addFields: {
-            specialization: { $arrayElemAt: ["$specialization", 0] },
-          },
-        },
-        {
-          $lookup: {
-            from: "reviews",
-            localField: "_id",
-            foreignField: "doctor",
-            as: "reviews",
-          },
-        },
-        {
-          $unwind: {
-            path: "$reviews",
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $lookup: {
-            from: "patients",
-            localField: "reviews.patient",
-            foreignField: "_id",
-            as: "reviews.patient",
-          },
-        },
-        {
-          $unwind: {
-            path: "$reviews.patient",
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            firstName: { $first: "$firstName" },
-            lastName: { $first: "$lastName" },
-            email: { $first: "$email" },
-            phone: { $first: "$phone" },
-            gender: { $first: "$gender" },
-            languages: { $first: "$languages" },
-            specialties: { $first: "$specialties" },
-            experience: { $first: "$experience" },
-            registerNo: { $first: "$registerNo" },
-            profilePicture: { $first: "$profilePicture" },
-            specialization: { $first: "$specialization" },
-            reviews: { $push: "$reviews" },
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            firstName: 1,
-            lastName: 1,
-            email: 1,
-            phone: 1,
-            specialization: {
-              name: 1,
-            },
-            gender: 1,
-            specialties: 1,
-            languages: 1,
-            registerNo: 1,
-            biography: 1,
-            profilePicutre: 1,
-            experience: 1,
-            reviews: {
-              _id: 1,
-              patient: {
-                _id: 1,
-                firstName: 1,
-                lastName: 1,
-              },
-              rating: 1,
-              comment: 1,
-              createdAt: 1,
-            },
-          },
-        },
-      ]);
-
-      if (!doctorWithReviews.length) {
-        throw new AppError("Something went wrong");
-      }
-
-      return doctorWithReviews[0];
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

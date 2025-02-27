@@ -43,10 +43,6 @@ class DoctorService implements IDoctorService {
   async getDoctors(filter: IDoctorsFilter): Promise<IDoctorsFilterResult> {
     return await this.doctorRepo.getDoctors(filter);
   }
-
-  async getDoctorWithReviews(doctorId: string): Promise<IDoctor> {
-    return await this.doctorRepo.findDoctorWithReviews(doctorId);
-  }
 }
 
 export default DoctorService;

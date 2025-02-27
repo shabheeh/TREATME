@@ -128,10 +128,4 @@ router.get(
 
 router.get("/doctors", authenticateAndCheckStatus, doctorController.getDoctors);
 
-router.get(
-  "/doctors/:doctorId/reviews",
-  authenticate,
-  doctorController.getDoctorWithReviews
-);
-
 export default router;

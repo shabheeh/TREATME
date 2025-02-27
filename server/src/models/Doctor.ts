@@ -19,6 +19,7 @@ const doctorSchema = new Schema<IDoctor>(
     registerNo: { type: String, required: true, unique: true },
     experience: { type: Number, required: true, min: 0 },
     biography: { type: String, trim: true },
+    licensedState: { type: String, trim: true },
     isActive: { type: Boolean, default: true },
     profilePicture: { type: String, required: true },
     imagePublicId: { type: String, required: true },

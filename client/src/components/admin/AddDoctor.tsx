@@ -34,6 +34,7 @@ interface SignupFormInputs {
   specialization: string;
   specialties: string[];
   registerNo: string;
+  licensedState: string;
   profilePicture: File | null;
 }
 
@@ -48,6 +49,38 @@ const languageOptions = [
   "Bengali",
   "Gujarati",
   "Punjabi",
+];
+
+const licensedStates = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Medical Council of India (NMC)",
 ];
 
 const AddDoctor = () => {
@@ -70,6 +103,7 @@ const AddDoctor = () => {
       languages: [],
       specialization: "",
       specialties: [],
+      licensedState: "",
       profilePicture: null,
     },
   });
@@ -157,6 +191,7 @@ const AddDoctor = () => {
       formData.append("registerNo", data.registerNo);
       formData.append("gender", data.gender);
       formData.append("specialization", data.specialization);
+      formData.append("licensedState", data.licensedState);
       formData.append("specialties", JSON.stringify(data.specialties));
       formData.append("languages", JSON.stringify(data.languages));
 
@@ -391,6 +426,30 @@ const AddDoctor = () => {
                   error={!!errors.registerNo}
                   helperText={errors.registerNo?.message}
                 />
+              </Grid>
+            </Grid>
+          </Box>
+
+          <Box sx={{ width: "90%", my: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  {...register("licensedState", {
+                    required: "This field is required",
+                  })}
+                  select
+                  fullWidth
+                  label="Which state are you licensed in"
+                  variant="outlined"
+                  error={!!errors.licensedState}
+                  helperText={errors.licensedState?.message}
+                >
+                  {licensedStates.map((state, idx) => (
+                    <MenuItem key={idx} value={state}>
+                      {state}
+                    </MenuItem>
+                  ))}
+                </TextField>
               </Grid>
             </Grid>
           </Box>

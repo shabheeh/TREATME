@@ -36,6 +36,7 @@ class AdminDoctorController implements IAdminDoctorController {
         specialization: req.body.specialization,
         specialties: JSON.parse(req.body.specialties),
         languages: JSON.parse(req.body.languages),
+        licensedState: req.body.licensedState,
         registerNo: req.body.registerNo,
         experience: JSON.parse(req.body.experience),
       } as IDoctor;

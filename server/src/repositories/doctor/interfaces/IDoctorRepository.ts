@@ -2,7 +2,6 @@ import { ObjectId, Types } from "mongoose";
 import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
-  IDoctorWithReviews,
 } from "src/interfaces/IDoctor";
 
 import { ISchedule } from "src/interfaces/ISchedule";
@@ -47,7 +46,6 @@ interface IDoctorRepository {
   getDoctorsWithSchedules(
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;
-  findDoctorWithReviews(doctorId: string): Promise<IDoctorWithReviews>;
 }
 
 export default IDoctorRepository;

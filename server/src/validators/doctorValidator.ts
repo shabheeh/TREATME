@@ -15,6 +15,7 @@ export const validateDoctor = celebrate({
     registerNo: Joi.string().required(),
     experience: Joi.number().integer().min(0).required(),
     biography: Joi.string().required(),
+    licensedState: Joi.string().required(),
     availability: Joi.array()
       .items(
         Joi.object({

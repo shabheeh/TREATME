@@ -1,5 +1,3 @@
-import { IDoctor } from "../doctor/doctor.types";
-
 export interface IReview {
   doctor: string;
   patient: string;
@@ -8,7 +6,8 @@ export interface IReview {
 }
 
 export interface IReviewPopulated {
-  doctor: IDoctor;
+  _id: string;
+  doctor: string;
   patient: {
     _id: string;
     firstName: string;
@@ -16,4 +15,6 @@ export interface IReviewPopulated {
   };
   rating: number;
   comment: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

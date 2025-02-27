@@ -18,12 +18,13 @@ import ListDoctors from "../pages/patient/appointment/ListDoctors";
 // import Payment from "../pages/patient/appointment/Payment";
 import BookingConfirmation from "../pages/patient/appointment/BookingConfirmation";
 import Appointments from "../pages/patient/appointment/Appointments";
-import DoctorView from "../components/basics/appointments/DoctorView";
+import DoctorView from "../components/basics/DoctorView";
 import Consultations from "../pages/patient/appointment/Consultations";
 // import { Elements } from "@stripe/react-stripe-js";
 // import { loadStripe } from "@stripe/stripe-js";
 import PaymentWrapper from "../pages/patient/payment/PaymentWrapper";
 import Doctors from "../pages/patient/Doctors";
+import Messages from "../components/basics/messages/Messages";
 // import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
 // import { Appearance } from "@stripe/stripe-js";
 // const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
@@ -130,6 +131,7 @@ export const patientRoutes = [
     <Route path="appointments" element={<Appointments />} />
     <Route path="consultations" element={<Consultations />} />
     <Route path="doctors" element={<Doctors />} />,
-    <Route path="doctors/:id" element={<DoctorView />} />,
+    <Route path="messages" element={<Messages />} />,
+    <Route path="doctors/:doctorId" element={<DoctorView />} />,
   </Route>,
 ];

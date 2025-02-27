@@ -19,6 +19,24 @@ class ReviewService {
       throw new Error(`Something went error`);
     }
   }
+
+  async getDoctorReviews(doctorId: string): Promise<IReviewPopulated[]> {
+    try {
+      const response = await api.get(`/reviews/${doctorId}`);
+      return response.data.reviews;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          `Error adding or updating review: ${error.message}`,
+          error
+        );
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
 }
 
 const reviewService = new ReviewService();
