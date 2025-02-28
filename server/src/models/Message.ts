@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
+import { IMessage } from "src/interfaces/IMessage";
 
-const messageSchema = new Schema(
+const messageSchema = new Schema<IMessage>(
   {
     sender: {
       type: Schema.Types.ObjectId,
@@ -19,6 +20,8 @@ const messageSchema = new Schema(
       type: [
         {
           url: String,
+          public_id: String,
+          resource_type: String,
         },
       ],
       default: [],
@@ -40,5 +43,4 @@ const messageSchema = new Schema(
   { timestamps: true }
 );
 
-// Create the ChatMessage model
-export const MessageModel = model("Message", messageSchema);
+export const MessageModel = model<IMessage>("Message", messageSchema);

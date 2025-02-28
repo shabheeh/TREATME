@@ -4,11 +4,7 @@ import { IPatient } from "../../types/patient/patient.types";
 import TokenManager from "../../utils/TokenMangager";
 import log from "loglevel";
 import { store } from "../../redux/app/store";
-import {
-  setAuthState,
-  signIn,
-  signOut,
-} from "../../redux/features/auth/authSlice";
+import { signIn, signOut } from "../../redux/features/auth/authSlice";
 import { setTempUser } from "../../redux/features/auth/tempSlice";
 import {
   clearUser,
@@ -179,8 +175,6 @@ class AuthServicePatient implements IAuthServicePatient {
 
       this.tokenManager.setToken(accessToken);
 
-      console.log(response.data);
-
       if (partialUser) {
         store.dispatch(
           setTempUser({
@@ -293,11 +287,17 @@ class AuthServicePatient implements IAuthServicePatient {
         patientData,
       });
 
-      const { patient } = response.data;
+      const { patient, accessToken } = response.data;
 
-      console.log("pateientesfsdfsd", patient);
+      this.tokenManager.setToken(accessToken);
 
-      store.dispatch(setAuthState());
+      store.dispatch(
+        signIn({
+          email: patient.email,
+          role: "patient",
+          token: accessToken,
+        })
+      );
       store.dispatch(setPatient(patient));
     } catch (error) {
       console.error(`Unknown error occurred during completing profile`, error);

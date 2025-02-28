@@ -30,6 +30,7 @@ class AdminAuthService implements IAdminAuthService {
       }
 
       const payload: ITokenPayload = {
+        id: admin._id!.toString(),
         email: admin.email,
         role: "admin",
       };

@@ -99,8 +99,8 @@ const createAxiosInstance = (role?: UserRole) => {
         const errorCode = data?.error || data?.message;
 
         // If login failed (Invalid Credentials), do NOT retry
-        console.log(error.response.data, "dsdsfds");
-        if (errorCode === "Invalid email or password") {
+
+        if (errorCode !== "Token has expired") {
           return Promise.reject(new Error("Invalid email or password."));
         }
 

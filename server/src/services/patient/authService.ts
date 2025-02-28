@@ -183,6 +183,7 @@ class PatientAuthService implements IPatientAuthService {
       }
 
       const payload: ITokenPayload = {
+        id: patient._id!.toString(),
         email: patient.email,
         role: "patient",
       };
@@ -337,6 +338,7 @@ class PatientAuthService implements IPatientAuthService {
 
       if (patient) {
         const jwtPayload: ITokenPayload = {
+          id: patient._id!.toString(),
           email: patient.email,
           role: "patient",
         };
@@ -359,14 +361,9 @@ class PatientAuthService implements IPatientAuthService {
         300
       );
 
-      const jwtPayload: ITokenPayload = {
-        email: payload.email,
-        role: "patient",
-      };
 
-      const { accessToken, refreshToken } = generateTokens(jwtPayload);
+      return { newPatient, partialUser: true };
 
-      return { newPatient, accessToken, refreshToken, partialUser: true };
     } catch (error) {
       logger.error("error google signin", error);
       if (error instanceof AppError) {
@@ -379,15 +376,49 @@ class PatientAuthService implements IPatientAuthService {
     }
   }
 
-  async completeProfileAndSignUp(patientData: IPatient): Promise<IPatient> {
+  async completeProfileAndSignUp(patientData: IPatient): Promise<{ patient: IPatient, accessToken: string, refreshToken: string}> {
     try {
-      const patient = await this.patientRepository.createPatient(patientData);
-
+      const jsonGoogleData = await this.cacheService.retrieve(`google:${patientData.email}`);
+  
+      type GoogleData = {
+        email: string;
+        firstName: string; 
+        lastName: string;
+        profilePicture: string;
+      };
+      let googleData: GoogleData | null = null;
+  
+      if (jsonGoogleData) {
+        googleData = JSON.parse(jsonGoogleData) as GoogleData;
+      }
+  
+      // use google data if it exists for email and profile picture
+      const updatedPatientData = {
+        ...patientData,
+        email: googleData?.email || patientData.email,
+        profilePicture: googleData?.profilePicture || patientData.profilePicture,
+      } as IPatient
+  
+      const patient = await this.patientRepository.createPatient(updatedPatientData);
+  
       if (!patient) {
         throw new AppError("Failed to create New User");
       }
 
-      return patient;
+      const jwtPayload: ITokenPayload = {
+        id: patient._id!.toString(),
+        email: patient.email,
+        role: "patient",
+      };
+
+      const { accessToken, refreshToken } = generateTokens(jwtPayload);
+  
+      return {
+        patient,
+        accessToken,
+        refreshToken,
+      }
+
     } catch (error) {
       logger.error("error creating a new googleUser", error);
       if (error instanceof AppError) {

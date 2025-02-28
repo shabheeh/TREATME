@@ -5,7 +5,7 @@ interface IChat extends Document {
   isGroupChat: boolean;
   name?: string | null;
   lastMessage?: Types.ObjectId | null;
-  createdBy?: Types.ObjectId | null; 
+  createdBy?: Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
 }

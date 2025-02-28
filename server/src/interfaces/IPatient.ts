@@ -37,8 +37,8 @@ export type SignInResult =
     };
 
 export type googleSignInResult = {
-  accessToken: string;
-  refreshToken: string;
+  accessToken?: string;
+  refreshToken?: string;
   patient?: IPatient;
   newPatient?: Partial<IPatient>;
   partialUser: boolean;
@@ -68,7 +68,9 @@ export interface IPatientAuthService {
   verifyOtpForgotPassword(email: string, otp: string): Promise<boolean>;
   resetPassword(id: string, password: string): Promise<void>;
   googleSignIn(credential: string): Promise<googleSignInResult>;
-  completeProfileAndSignUp(userData: IPatient): Promise<IPatient>;
+  completeProfileAndSignUp(
+    userData: IPatient
+  ): Promise<{ patient: IPatient; accessToken: string; refreshToken: string }>;
   resendOtp(email: string): Promise<void>;
   resendOtpForgotPassword(email: string): Promise<void>;
   checkActiveStatus(email: string): Promise<boolean>;

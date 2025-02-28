@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import logger from "../configs/logger";
+import { AuthError, AuthErrorCode } from "./errors";
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
@@ -10,6 +11,7 @@ if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
 
 // Types
 export interface ITokenPayload {
+  id: string;
   email: string;
   role: "admin" | "patient" | "doctor";
   exp?: number;
@@ -44,7 +46,7 @@ export const verifyAccessToken = <T>(token: string): T => {
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       logger.warn("Access token expired");
-      throw new Error("Token expired");
+      throw new AuthError(AuthErrorCode.TOKEN_EXPIRED);
     }
     logger.error("Error verifying accessToken:", error);
     throw new Error("Invalid access token");
@@ -57,7 +59,7 @@ export const verifyRefreshToken = <T>(token: string): T => {
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       logger.warn("RefreshToken expired");
-      throw new Error("Refresh token expired");
+      throw new AuthError(AuthErrorCode.TOKEN_EXPIRED);
     }
     logger.error("Error verifying refreshToken:", error);
     throw new Error("Invalid refresh token");

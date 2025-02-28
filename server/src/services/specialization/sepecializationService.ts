@@ -6,8 +6,8 @@ import logger from "../../configs/logger";
 import { AppError, ConflictError } from "../../utils/errors";
 import {
   uploadToCloudinary,
-  updateCloudinaryImage,
-} from "../../utils/uploadImage";
+  updateCloudinaryFile,
+} from "../../utils/cloudinary";
 class SpecializationService implements ISpecializationService {
   private specializationRepository: ISpecializationRepository;
 
@@ -121,7 +121,7 @@ class SpecializationService implements ISpecializationService {
         );
 
       if (imageFile && specialization?.imagePublicId) {
-        const newImage = await updateCloudinaryImage(
+        const newImage = await updateCloudinaryFile(
           specialization.imagePublicId,
           imageFile,
           `specializations`

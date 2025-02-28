@@ -5,8 +5,7 @@ import {
   IPatientAuthService,
   IPatientAuthController,
 } from "../../interfaces/IPatient";
-import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
-import { ITokenPayload } from "../../utils/jwt";
+import { BadRequestError } from "../../utils/errors";
 
 class PatientAuthController implements IPatientAuthController {
   private patientAuthService: IPatientAuthService;
@@ -196,20 +195,13 @@ class PatientAuthController implements IPatientAuthController {
         return;
       }
 
-      const { newPatient, accessToken, refreshToken, partialUser } = result;
-
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      const { newPatient, partialUser } = result;
 
       res.status(200).json({
         patient: newPatient,
-        accessToken,
         partialUser,
       });
+      
     } catch (error) {
       logger.error("Error during Google authentication:", error);
       next(error);
@@ -222,22 +214,26 @@ class PatientAuthController implements IPatientAuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      if (!req.user || !(req.user as ITokenPayload).email) {
-        throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
-      }
 
       const { patientData } = req.body;
 
-      const { email } = req.user as ITokenPayload;
-
-      patientData.email = email;
-
-      const patient =
+      const result =
         await this.patientAuthService.completeProfileAndSignUp(patientData);
+
+      const { patient, accessToken, refreshToken } = result;
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
 
       res.status(200).json({
         patient,
+        accessToken,
       });
+
     } catch (error) {
       logger.error("Error during Google authentication singup:", error);
       next(error);

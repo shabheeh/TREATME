@@ -3,8 +3,8 @@ import IDependentRepository from "../../repositories/patient/interface/IDependen
 import logger from "../../configs/logger";
 import {
   uploadToCloudinary,
-  updateCloudinaryImage,
-} from "../../utils/uploadImage";
+  updateCloudinaryFile,
+} from "../../utils/cloudinary";
 import { AppError } from "../../utils/errors";
 
 class DependentService implements IDependentService {
@@ -85,7 +85,7 @@ class DependentService implements IDependentService {
 
       if (imageFile) {
         if (dependent?.profilePicture && dependent.imagePublicId) {
-          const cloudinaryResponse = await updateCloudinaryImage(
+          const cloudinaryResponse = await updateCloudinaryFile(
             dependent.imagePublicId,
             imageFile,
             "ProfilePictures/Patient"

@@ -3,9 +3,9 @@ import IPatient, { IPatientAccountService } from "../../interfaces/IPatient";
 import { AppError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import {
-  updateCloudinaryImage,
+  updateCloudinaryFile,
   uploadToCloudinary,
-} from "../../utils/uploadImage";
+} from "../../utils/cloudinary";
 import ILifestyleRepository from "src/repositories/healthProfile/interface/ILifestyleRepository";
 import IHealthHistoryRepository from "src/repositories/healthProfile/interface/IHealthHistoryRepository";
 import IBehaviouralHealthRepository from "src/repositories/healthProfile/interface/IBehaviouralHealthRepository";
@@ -45,7 +45,7 @@ class PatientAcccountService implements IPatientAccountService {
 
       if (imageFile) {
         if (patient?.profilePicture && patient.imagePublicId) {
-          const cloudinaryResponse = await updateCloudinaryImage(
+          const cloudinaryResponse = await updateCloudinaryFile(
             patient.imagePublicId,
             imageFile,
             "ProfilePictures/Patient"

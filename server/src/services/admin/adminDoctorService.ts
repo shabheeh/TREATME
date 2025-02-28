@@ -9,7 +9,7 @@ import { IAdminDoctorService } from "src/interfaces/IAdmin";
 import { AppError } from "../../utils/errors";
 import { sendEmail } from "../../utils/mailer";
 import { generateWelcomeDoctorHtml } from "../../helpers/welcomeDoctor";
-import { uploadToCloudinary } from "../../utils/uploadImage";
+import { uploadToCloudinary } from "../../utils/cloudinary";
 
 class AdminDoctorService implements IAdminDoctorService {
   private doctorRepository: IDoctorRepository;

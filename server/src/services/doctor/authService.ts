@@ -31,6 +31,7 @@ class DoctorAuthService implements IDoctorAuthService {
       }
 
       const payload: ITokenPayload = {
+        id: doctor._id.toString(),
         email: doctor.email,
         role: "doctor",
       };
@@ -38,6 +39,7 @@ class DoctorAuthService implements IDoctorAuthService {
       const { accessToken, refreshToken } = generateTokens(payload);
 
       return { accessToken, refreshToken, doctor };
+      
     } catch (error) {
       logger.error("error doctor signin", error);
       if (error instanceof AppError) {

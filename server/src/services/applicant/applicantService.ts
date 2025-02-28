@@ -7,7 +7,7 @@ import {
   IApplicantsFilterResult,
 } from "../../interfaces/IApplicant";
 import IApplicantRepository from "../../repositories/doctor/interfaces/IApplicantRepository";
-import { uploadToCloudinary } from "../../utils/uploadImage";
+import { uploadToCloudinary } from "../../utils/cloudinary";
 import { sendEmail } from "../../utils/mailer";
 import ISpecialization from "src/interfaces/ISpecilazation";
 
