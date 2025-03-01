@@ -1,4 +1,4 @@
-import { AppError } from "src/utils/errors";
+import { AppError } from "../../utils/errors";
 import IMessageRepository from "./interfaces/IMessageRepository";
 import { IMessage } from "src/interfaces/IMessage";
 import { Model, Types } from "mongoose";
@@ -61,9 +61,9 @@ class MessageRepository implements IMessageRepository {
     }
   }
 
-  async markMessagesAsRead(chatId: string, userId: string): Promise<void> {
+  async markMessagesAsRead(chatId: string, userId: string): Promise<boolean> {
     try {
-      await this.model.updateMany(
+      const result = await this.model.updateMany(
         {
           chat: new Types.ObjectId(chatId),
           sender: { $ne: new Types.ObjectId(userId) },
@@ -71,6 +71,7 @@ class MessageRepository implements IMessageRepository {
         },
         { isRead: true }
       );
+      return result.modifiedCount > 0;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -78,6 +79,7 @@ class MessageRepository implements IMessageRepository {
       );
     }
   }
+
   async getUnreadCount(chatId: string, userId: string): Promise<number> {
     try {
       const count = await this.model.countDocuments({
@@ -92,6 +94,11 @@ class MessageRepository implements IMessageRepository {
         500
       );
     }
+  }
+
+  async deleteMessage(messageId: string): Promise<boolean> {
+    const result = await this.model.findByIdAndDelete(messageId).exec();
+    return !!result;
   }
 }
 

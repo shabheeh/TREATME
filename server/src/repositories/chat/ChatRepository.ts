@@ -192,6 +192,18 @@ class ChatRepository implements IChatRepository {
       );
     }
   }
+
+  async deleteChat(chatId: string): Promise<boolean> {
+    try {
+      const result = await this.model.findByIdAndDelete(chatId).exec();
+      return !!result;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
 }
 
 export default ChatRepository;

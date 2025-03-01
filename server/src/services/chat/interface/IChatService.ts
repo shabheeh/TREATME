@@ -21,6 +21,8 @@ export interface IChatService {
     content: string,
     attachments: IAttachment[]
   ): Promise<IMessage>;
-  markChatAsRead(chatId: string, userId: string): Promise<void>;
+  markChatAsRead(chatId: string, userId: string): Promise<boolean>;
   getUnreadMessageCount(chatId: string, userId: string): Promise<number>;
+  deleteChat(chatId: string): Promise<boolean>;
+  deleteMessage(messageId: string): Promise<boolean>;
 }

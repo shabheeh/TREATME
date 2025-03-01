@@ -9,6 +9,6 @@ export interface IChatController {
     removeFromGroup(req: Request, res: Response, next: NextFunction): Promise<void>;
     getMessages(req: Request, res: Response, next: NextFunction): Promise<void>;
     sendMessage(req: Request, res: Response, next: NextFunction): Promise<void>;
-    uploadMessages(req: Request, res: Response, next: NextFunction): Promise<void>;
+    uploadAttachments(req: Request, res: Response, next: NextFunction): Promise<void>;
     markAsRead(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

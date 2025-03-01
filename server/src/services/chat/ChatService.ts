@@ -4,6 +4,7 @@ import IMessageRepository from "src/repositories/chat/interfaces/IMessageReposit
 import { IChat } from "src/interfaces/IChat";
 import { IAttachment, IMessage } from "src/interfaces/IMessage";
 import { Types } from "mongoose";
+import { deleteCloudinaryFile } from "../../utils/cloudinary";
 
 class ChatService implements IChatService {
   private chatRepository: IChatRepository;
@@ -101,8 +102,8 @@ class ChatService implements IChatService {
     let messageType: "text" | "image" | "video" | "mixed" = "text";
 
     if (attachments.length > 0) {
-      const hasImage = attachments.some((a) => a.resource_type === "imgage");
-      const hasVideo = attachments.some((a) => a.resource_type === "video");
+      const hasImage = attachments.some((a) => a.resourceType === "imgage");
+      const hasVideo = attachments.some((a) => a.resourceType === "video");
 
       if (hasImage && !hasVideo) {
         messageType = "image";
@@ -113,7 +114,7 @@ class ChatService implements IChatService {
       }
     }
 
-    // create message 0bj
+    // create message obj
     const messageData = {
       sender: new Types.ObjectId(sender),
       senderType,
@@ -137,13 +138,42 @@ class ChatService implements IChatService {
     )) as IMessage;
   }
 
-  async markChatAsRead(chatId: string, userId: string): Promise<void> {
-    await this.messageRepository.markMessagesAsRead(chatId, userId);
+  async markChatAsRead(chatId: string, userId: string): Promise<boolean> {
+    return await this.messageRepository.markMessagesAsRead(chatId, userId);
   }
 
   async getUnreadMessageCount(chatId: string, userId: string): Promise<number> {
     return await this.messageRepository.getUnreadCount(chatId, userId);
   }
+
+  async deleteChat(chatId: string): Promise<boolean> {
+    return await this.chatRepository.deleteChat(chatId);
+  }
+
+  async deleteMessage(messageId: string): Promise<boolean> {
+    
+    // get the message first to find if any attachments
+    const message = await this.messageRepository.findById(messageId);
+
+    if (!message) {
+      return false;
+    }
+
+    // delete attachments from cloudinary if any
+    if (message.attachments && message.attachments.length > 0) {
+      for (const attachment of message.attachments) {
+        const publicId = attachment.publicId;
+        
+        if (publicId) {
+          await deleteCloudinaryFile(publicId);
+        }
+      }
+    }
+
+    // delete message from database
+    return await this.messageRepository.deleteMessage(messageId);
+  }
+
 }
 
 export default ChatService;

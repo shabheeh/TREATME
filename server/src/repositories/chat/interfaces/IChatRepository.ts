@@ -14,6 +14,7 @@ interface IChatRepository {
   addUserToGroup(chatId: string, userId: string): Promise<IChat | null>;
   removeUserFromGroup(chatId: string, userId: string): Promise<IChat | null>;
   renameGroup(chatId: string, newName: string): Promise<IChat | null>;
+  deleteChat(chatId: string): Promise<boolean>;
 }
 
 export default IChatRepository;

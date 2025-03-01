@@ -99,9 +99,11 @@ const createAxiosInstance = (role?: UserRole) => {
         const errorCode = data?.error || data?.message;
 
         // If login failed (Invalid Credentials), do NOT retry
-
-        if (errorCode !== "Token has expired") {
-          return Promise.reject(new Error("Invalid email or password."));
+        if (
+          errorCode !== "Token has expired" &&
+          errorCode !== "Invalid or expired token"
+        ) {
+          return Promise.reject(new Error("Token has expired"));
         }
 
         if (originalRequest._retry) {

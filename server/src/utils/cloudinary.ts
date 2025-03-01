@@ -57,6 +57,17 @@ export async function updateCloudinaryFile(
   }
 }
 
+export async function deleteCloudinaryFile(publicId: string) {
+  try {
+    const deleteResponse = await cloudinary.uploader.destroy(publicId);
+    console.log("File deleted from Cloudinary:", deleteResponse);
+    return deleteResponse;
+  } catch (error) {
+    console.error("Error deleting file from Cloudinary:", error);
+    throw new Error("Failed to delete file");
+  }
+}
+
 const getResourceType = (mimeType: string): "image" | "video" | "raw" => {
   if (mimeType.startsWith("image/")) {
     return "image";

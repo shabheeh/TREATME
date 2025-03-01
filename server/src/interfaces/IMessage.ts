@@ -2,8 +2,8 @@ import { Document, Types } from "mongoose";
 
 interface IAttachment {
   url: string;
-  public_id?: string;
-  resource_type?: string
+  publicId?: string;
+  resourceType?: string
 }
 
 interface IMessage extends Document {

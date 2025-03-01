@@ -20,8 +20,8 @@ const messageSchema = new Schema<IMessage>(
       type: [
         {
           url: String,
-          public_id: String,
-          resource_type: String,
+          publicId: String,
+          resourceType: String,
         },
       ],
       default: [],
