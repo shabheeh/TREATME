@@ -21,7 +21,7 @@ import { RootState } from "../../../redux/app/store";
 import { toast } from "sonner";
 import ConfirmActionModal from "../../basics/ConfirmActionModal";
 import { transitionStyles } from "../../../utils/viewTransition";
-import { useViewTransition } from "../../../hooks/viewTransitionHook";
+import { useViewTransition } from "../../../hooks/useViewTransition";
 
 interface MedicationsProps {
   medications: IMedication[];

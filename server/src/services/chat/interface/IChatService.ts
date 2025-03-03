@@ -23,6 +23,6 @@ export interface IChatService {
   ): Promise<IMessage>;
   markChatAsRead(chatId: string, userId: string): Promise<boolean>;
   getUnreadMessageCount(chatId: string, userId: string): Promise<number>;
-  deleteChat(chatId: string): Promise<boolean>;
-  deleteMessage(messageId: string): Promise<boolean>;
+  deleteChat(chatId: string, userId: string): Promise<boolean>;
+  deleteMessage(messageId: string, userId: string): Promise<boolean>;
 }

@@ -8,149 +8,11 @@ import {
   Paper,
 } from "@mui/material";
 import ChatList from "./ChatList";
-import MessageScreen from "./ChatScreen";
+import ChatScreen from "./ChatScreen";
 import { Menu as MenuIcon } from "@mui/icons-material";
-
-// Sample data
-const sampleChats = [
-  {
-    id: "1",
-    name: "John Doe",
-    lastMessage: "Hey, how are you doing?",
-    time: "10:30 AM",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    unread: 2,
-    online: true,
-  },
-  {
-    id: "2",
-    name: "Sarah Smith",
-    lastMessage: "The meeting is scheduled for tomorrow",
-    time: "Yesterday",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    unread: 0,
-    online: false,
-  },
-  {
-    id: "3",
-    name: "Tech Group",
-    lastMessage: "Alice: I found a solution to the bug",
-    time: "Yesterday",
-    avatar:
-      "https://images.unsplash.com/photo-1603539947678-cd3954ed515d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    unread: 5,
-    online: true,
-  },
-  {
-    id: "4",
-    name: "Mike Johnson",
-    lastMessage: "Can you send me the files?",
-    time: "Monday",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    unread: 0,
-    online: false,
-  },
-  {
-    id: "5",
-    name: "Emma Wilson",
-    lastMessage: "Thanks for your help!",
-    time: "Monday",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    unread: 0,
-    online: true,
-  },
-];
-
-const sampleMessages = {
-  "1": [
-    {
-      id: "1-1",
-      text: "Hey there!",
-      time: "10:00 AM",
-      sender: "them" as const,
-    },
-    {
-      id: "1-2",
-      text: "How are you doing?",
-      time: "10:05 AM",
-      sender: "them" as const,
-    },
-    {
-      id: "1-3",
-      text: "I'm good, thanks! How about you?",
-      time: "10:15 AM",
-      sender: "me" as const,
-    },
-    {
-      id: "1-4",
-      text: "Pretty good. Working on that project we discussed.",
-      time: "10:20 AM",
-      sender: "them" as const,
-    },
-    {
-      id: "1-5",
-      text: "How's it coming along?",
-      time: "10:30 AM",
-      sender: "them" as const,
-    },
-  ],
-  "2": [
-    {
-      id: "2-1",
-      text: "Hi Sarah, about tomorrow's meeting",
-      time: "3:00 PM",
-      sender: "me" as const,
-    },
-    {
-      id: "2-2",
-      text: "Yes, it's scheduled for 10 AM",
-      time: "3:05 PM",
-      sender: "them" as const,
-    },
-    {
-      id: "2-3",
-      text: "Perfect, I'll be there",
-      time: "3:10 PM",
-      sender: "me" as const,
-    },
-    {
-      id: "2-4",
-      text: "Don't forget to bring the presentation",
-      time: "Yesterday",
-      sender: "them" as const,
-    },
-  ],
-  "3": [
-    {
-      id: "3-1",
-      text: "Has anyone looked at the bug in the login page?",
-      time: "2:00 PM",
-      sender: "them" as const,
-    },
-    {
-      id: "3-2",
-      text: "I'm checking it now",
-      time: "2:15 PM",
-      sender: "me" as const,
-    },
-    {
-      id: "3-3",
-      text: "It seems to be a problem with the authentication service",
-      time: "2:30 PM",
-      sender: "me" as const,
-    },
-    {
-      id: "3-4",
-      text: "I found a solution to the bug",
-      time: "Yesterday",
-      sender: "them" as const,
-    },
-  ],
-};
+import { IChat, IMessage } from "../../../types/chat/chat.types";
+import chatService from "../../../services/chat/ChatService";
+import { toast } from "sonner";
 
 interface ChatPageProps {
   // Optional props for layout integration
@@ -158,16 +20,28 @@ interface ChatPageProps {
   sidebarWidth?: number | string;
 }
 
-const ChatPage: React.FC<ChatPageProps> = ({
+const Messages: React.FC<ChatPageProps> = ({
   navbarHeight = "64px",
   sidebarWidth = "0px",
 }) => {
-  const [activeChat, setActiveChat] = useState<string | null>(null);
-  const [messages, setMessages] = useState(sampleMessages);
+  const [activeChat, setActiveChat] = useState<IChat | null>(null);
+  const [chats, setChats] = useState<IChat[]>([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [chatsLoading, setChatsLoading] = useState<boolean>(false);
+  const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
   const [chatListOpen, setChatListOpen] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    if (!activeChat) return;
+    fetchMessages(activeChat._id);
+  }, [activeChat]);
 
   // Close chat list when selecting a chat on mobile
   useEffect(() => {
@@ -176,40 +50,68 @@ const ChatPage: React.FC<ChatPageProps> = ({
     }
   }, [activeChat, isMobile]);
 
-  const handleChatSelect = (chatId: string) => {
-    setActiveChat(chatId);
+  const fetchChats = async () => {
+    try {
+      setChatsLoading(true);
+      const chats = await chatService.getChats();
+      setChats(chats);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to fetch chats"
+      );
+    } finally {
+      setChatsLoading(false);
+    }
   };
 
-  const handleSendMessage = (text: string) => {
-    if (!activeChat) return;
-
-    const newMessage = {
-      id: `${activeChat}-${Date.now()}`,
-      text,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      sender: "me" as const,
-    };
-
-    setMessages((prev) => ({
-      ...prev,
-      [activeChat]: [...(prev[activeChat] || []), newMessage],
-    }));
+  const fetchMessages = async (chatId: string) => {
+    try {
+      setMessagesLoading(true);
+      const messages = await chatService.getMessages(chatId);
+      setMessages(messages);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to fetch Messages"
+      );
+    } finally {
+      setMessagesLoading(false);
+    }
   };
 
-  const getActiveContact = () => {
-    if (!activeChat) return null;
-    const chat = sampleChats.find((c) => c.id === activeChat);
-    if (!chat) return null;
-    return {
-      id: chat.id,
-      name: chat.name,
-      avatar: chat.avatar,
-      online: chat.online,
-    };
+  const handleChatSelect = (chat: IChat) => {
+    setActiveChat(chat);
   };
+
+  // const handleSendMessage = (text: string) => {
+  //   if (!activeChat) return;
+
+  //   const newMessage = {
+  //     id: `${activeChat}-${Date.now()}`,
+  //     text,
+  //     time: new Date().toLocaleTimeString([], {
+  //       hour: "2-digit",
+  //       minute: "2-digit",
+  //     }),
+  //     sender: "me" as const,
+  //   };
+
+  //   setMessages((prev) => ({
+  //     ...prev,
+  //     [activeChat]: [...(prev[activeChat] || []), newMessage],
+  //   }));
+  // };
+
+  // const getActiveContact = () => {
+  //   if (!activeChat) return null;
+  //   const chat = chats.find((c) => c._id === activeChat);
+  //   if (!chat) return null;
+  //   return {
+  //     id: chat.id,
+  //     name: chat.name,
+  //     avatar: chat.avatar,
+  //     online: chat.online,
+  //   };
+  // };
 
   const toggleChatList = () => {
     setChatListOpen(!chatListOpen);
@@ -249,7 +151,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
           }}
         >
           <ChatList
-            chats={sampleChats}
+            chats={chats}
             activeChat={activeChat}
             onChatSelect={handleChatSelect}
           />
@@ -268,7 +170,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
           }}
         >
           <ChatList
-            chats={sampleChats}
+            chats={chats}
             activeChat={activeChat}
             onChatSelect={handleChatSelect}
           />
@@ -306,10 +208,11 @@ const ChatPage: React.FC<ChatPageProps> = ({
           </IconButton>
         )}
 
-        <MessageScreen
-          contact={getActiveContact()}
-          messages={activeChat ? messages[activeChat] || [] : []}
-          onSendMessage={handleSendMessage}
+        <ChatScreen
+          sender={activeChat && activeChat.participants[1]}
+          // contact={getActiveContact()}
+          messages={messages}
+          // onSendMessage={handleSendMessage}
           onBackClick={isMobile ? toggleChatList : undefined}
           isMobile={isMobile}
           showBackButton={isMobile && activeChat !== null}
@@ -319,4 +222,4 @@ const ChatPage: React.FC<ChatPageProps> = ({
   );
 };
 
-export default ChatPage;
+export default Messages;

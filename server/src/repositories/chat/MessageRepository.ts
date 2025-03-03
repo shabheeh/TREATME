@@ -26,7 +26,7 @@ class MessageRepository implements IMessageRepository {
     try {
       const message = await this.model
         .findById(messageId)
-        .populate("sender", "firstName lastName email profilePicture")
+        .populate("sender", "_id firstName lastName email profilePicture")
         .populate("chat");
 
       return message;
@@ -46,7 +46,7 @@ class MessageRepository implements IMessageRepository {
     try {
       const messages = await this.model
         .find({ chat: new Types.ObjectId(chatId) })
-        .populate("sender", "firstName lastName profilePicture")
+        .populate("sender", "_id firstName lastName profilePicture")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)

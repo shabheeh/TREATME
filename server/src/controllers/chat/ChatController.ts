@@ -1,10 +1,11 @@
 import { IChatService } from "src/services/chat/interface/IChatService";
 import { IChatController } from "./interface/IChatController";
 import { Request, Response, NextFunction } from "express";
-import { AppError, AuthError, AuthErrorCode, BadRequestError } from "src/utils/errors";
-import logger from "src/configs/logger";
+import { AppError, AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
+import logger from "../../configs/logger";
 import { IAttachment } from "src/interfaces/IMessage";
-import { uploadToCloudinary } from "src/utils/cloudinary";
+import { uploadToCloudinary } from "../../utils/cloudinary";
+import { ITokenPayload } from "../../utils/jwt";
 
 class ChatController implements IChatController {
 
@@ -17,7 +18,7 @@ class ChatController implements IChatController {
     // create or get new one-on-one chat
     accessChat = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId1 = req.user?.id;
+            const userId1 = (req.user as ITokenPayload).id;
             const { userId2 } = req.body;
 
             if (!userId1) {
@@ -39,7 +40,7 @@ class ChatController implements IChatController {
 
     getChats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.id;
+            const userId = (req.user as ITokenPayload).id;
 
             if (!userId) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
@@ -55,7 +56,7 @@ class ChatController implements IChatController {
     createGroupChat = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { name, participants } = req.body;
-            const userId = req.user?.id;
+            const userId = (req.user as ITokenPayload).id;
 
             if (!userId) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
@@ -74,7 +75,7 @@ class ChatController implements IChatController {
 
     renameGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.id
+            const userId = (req.user as ITokenPayload).id;
             const { chatId, name } = req.body;
 
             if (!userId) {
@@ -137,7 +138,7 @@ class ChatController implements IChatController {
     getMessages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
 
-            const userId = req.user?.id;
+            const userId = (req.user as ITokenPayload).id;
             const { chatId } = req.params;
             const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
             const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
@@ -161,8 +162,8 @@ class ChatController implements IChatController {
 
     sendMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.id;
-            const userType = req.user?.role;
+            const userId = (req.user as ITokenPayload).id;
+            const userType =(req.user as ITokenPayload).role;
             const { chatId, content } = req.body;
 
             if (!userId || !userType) {
@@ -205,8 +206,8 @@ class ChatController implements IChatController {
                 throw new BadRequestError("No files uploaded");
             }
 
-            const userId = req.user?.id;
-            const userType = req.user?.role;
+            const userId = (req.user as ITokenPayload).id;
+            const userType = (req.user as ITokenPayload).role;
             const { chatId, content } = req.body;
 
             if (!userId || !userType) {
@@ -253,7 +254,7 @@ class ChatController implements IChatController {
 
     markAsRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user?.id;
+            const userId = (req.user as ITokenPayload).id;
             const {chatId} = req.body;
 
             if (!userId) {
@@ -271,4 +272,52 @@ class ChatController implements IChatController {
             next(error);
         }
     }
+
+    deleteChat = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = (req.user as ITokenPayload).id;
+            const { chatId } = req.params;
+            
+            if (!userId) {
+                throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+            }
+
+            if (!chatId) {
+                throw new BadRequestError("Missing Chat id");
+            }
+
+            await this.chatService.deleteChat(chatId, userId);
+
+            res.status(200).json({message: "Chat deleted successfully"})
+            
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : "Error deleting chat");
+            next(error);
+        }
+    }
+
+    deleteMessage = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = (req.user as ITokenPayload).id;
+            const { messageId } = req.params;
+            
+            if (!userId) {
+                throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+            }
+
+            if (!messageId) {
+                throw new BadRequestError("Missing Chat id");
+            }
+
+            await this.chatService.deleteMessage(messageId, userId);
+
+            res.status(200).json({message: "Message deleted successfully"})
+            
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : "Error deleting message");
+            next(error);
+        }
+    }
 }
+
+export default ChatController;

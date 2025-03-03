@@ -9,6 +9,7 @@ import adminRouter from "./routes/admin/adminRouter";
 import doctorRouter from "./routes/doctor/doctorRouter";
 import sharedRouter from "./routes/shared/sharedRouter";
 import { errorHandler } from "./middlewares/errorHandler";
+import chatRouter from "./routes/chat/chatRouter";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(cookieParser());
 app.use("/api/patient", patientRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
+app.use("/api/chats", chatRouter);
 app.use("/api", sharedRouter);
 
 app.use(errorHandler);

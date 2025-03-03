@@ -20,34 +20,23 @@ import {
   ArrowBack as ArrowBackIcon,
   Message as MessageIcon,
 } from "@mui/icons-material";
-
-interface Message {
-  id: string;
-  text: string;
-  time: string;
-  sender: "me" | "them";
-}
-
-interface Contact {
-  id: string;
-  name: string;
-  avatar: string;
-  online: boolean;
-}
+import { IMessage, ISender } from "../../../types/chat/chat.types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
 
 interface MessageScreenProps {
-  contact: Contact | null;
-  messages: Message[];
-  onSendMessage: (text: string) => void;
+  sender: ISender | null;
+  messages: IMessage[];
+  // onSendMessage: (text: string) => void;
   onBackClick?: () => void;
   isMobile?: boolean;
   showBackButton?: boolean;
 }
 
 const MessageScreen: React.FC<MessageScreenProps> = ({
-  contact,
+  sender,
   messages,
-  onSendMessage,
+  // onSendMessage,
   onBackClick,
   isMobile = false,
   showBackButton = false,
@@ -57,9 +46,15 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const doctor = useSelector((state: RootState) => state.user.admin);
+  const admin = useSelector((state: RootState) => state.user.doctor);
+  const patient = useSelector((state: RootState) => state.user.patient);
+
+  const currentUser = patient || admin || doctor;
+
   const handleSend = () => {
     if (newMessage.trim()) {
-      onSendMessage(newMessage);
+      // onSendMessage(newMessage);
       setNewMessage("");
     }
   };
@@ -75,39 +70,39 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (!contact) {
-    return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: "#f0f2f5",
-          flexDirection: "column",
-          border: 1,
-          borderColor: "teal",
-        }}
-      >
-        <Box sx={{ color: "teal", mb: 2 }}>
-          <MessageIcon sx={{ fontSize: 64 }} />
-        </Box>
-        <Typography
-          variant="h5"
-          sx={{ mb: 1, color: "#41525d", textAlign: "center", px: 2 }}
-        >
-          Welcome to Messages
-        </Typography>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{ textAlign: "center", px: 3 }}
-        >
-          Select a conversation to start chatting
-        </Typography>
-      </Box>
-    );
-  }
+  // if (!contact) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         height: "100%",
+  //         display: "flex",
+  //         alignItems: "center",
+  //         justifyContent: "center",
+  //         bgcolor: "#f0f2f5",
+  //         flexDirection: "column",
+  //         border: 1,
+  //         borderColor: "teal",
+  //       }}
+  //     >
+  //       <Box sx={{ color: "teal", mb: 2 }}>
+  //         <MessageIcon sx={{ fontSize: 64 }} />
+  //       </Box>
+  //       <Typography
+  //         variant="h5"
+  //         sx={{ mb: 1, color: "#41525d", textAlign: "center", px: 2 }}
+  //       >
+  //         Welcome to Messages
+  //       </Typography>
+  //       <Typography
+  //         variant="body1"
+  //         color="text.secondary"
+  //         sx={{ textAlign: "center", px: 3 }}
+  //       >
+  //         Select a conversation to start chatting
+  //       </Typography>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box
@@ -134,16 +129,16 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
             </IconButton>
           )}
           <Avatar
-            src={contact.avatar}
-            alt={contact.name}
+            src={sender?.profilePicture}
+            alt={sender?.fistName}
             sx={{ mr: 2, width: 40, height: 40 }}
           />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle1" noWrap>
-              {contact.name}
+              {sender?.fistName}
             </Typography>
             <Typography variant="caption" color="white">
-              {contact.online ? "Online" : "Offline"}
+              Online
             </Typography>
           </Box>
           <IconButton color="inherit" size="small">
@@ -164,11 +159,13 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       >
         {messages.map((message) => (
           <Box
-            key={message.id}
+            key={message._id}
             sx={{
               display: "flex",
               justifyContent:
-                message.sender === "me" ? "flex-end" : "flex-start",
+                message.sender._id === currentUser?._id
+                  ? "flex-end"
+                  : "flex-start",
               mb: 1,
             }}
           >
@@ -177,15 +174,21 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
                 maxWidth: { xs: "85%", sm: "70%" },
                 p: { xs: 1, sm: 1.5 },
                 borderRadius: 2,
-                borderTopRightRadius: message.sender === "me" ? 0 : 2,
-                borderTopLeftRadius: message.sender === "me" ? 2 : 0,
-                bgcolor: message.sender === "me" ? "teal" : "#E0F7F7 ",
-                color: message.sender === "me" ? "white" : "#003D3D ",
+                borderTopRightRadius:
+                  message.sender._id === currentUser?._id ? 0 : 2,
+                borderTopLeftRadius:
+                  message.sender._id === currentUser?._id ? 2 : 0,
+                bgcolor:
+                  message.sender._id === currentUser?._id ? "teal" : "#E0F7F7 ",
+                color:
+                  message.sender._id === currentUser?._id
+                    ? "white"
+                    : "#003D3D ",
                 boxShadow: "none",
               }}
             >
               <Typography variant="body1" sx={{ wordBreak: "break-word" }}>
-                {message.text}
+                {message.content}
               </Typography>
               <Typography
                 sx={{
@@ -195,7 +198,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
                   textAlign: "right",
                 }}
               >
-                {message.time}
+                {message.createdAt.toString()}
               </Typography>
             </Paper>
           </Box>

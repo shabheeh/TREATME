@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   ListItem,
@@ -14,35 +14,46 @@ import {
   Box,
   useMediaQuery,
   useTheme,
+  Menu,
+  MenuItem,
+
 } from "@mui/material";
 import {
   Search as SearchIcon,
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
-
-interface ChatItem {
-  id: string;
-  name: string;
-  lastMessage: string;
-  time: string;
-  avatar: string;
-  unread: number;
-}
+import { IChat } from "../../../types/chat/chat.types";
+import DoctorSearchModal from "./DoctorModal";
 
 interface ChatListProps {
-  chats: ChatItem[];
-  activeChat: string | null;
-  onChatSelect: (chatId: string) => void;
+  chats: IChat[];
+  activeChat: IChat | null;
+  onChatSelect: (chat: IChat) => void;
+  startNewChat: (userId: string) => void;
 }
 
 const ChatList: React.FC<ChatListProps> = ({
   chats,
   activeChat,
   onChatSelect,
+  startNewChat,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [isDoctorModalOpen, setDoctorModalOpen] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget); // Open menu at clicked position
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null); // Close menu
+  };
+
 
   return (
     <Box
@@ -62,9 +73,41 @@ const ChatList: React.FC<ChatListProps> = ({
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Messages
           </Typography>
-          <IconButton color="inherit" size="small">
+          <IconButton
+            color="inherit"
+            size="small"
+            onClick={handleMenuClick}
+            aria-label="more options"
+            aria-controls={open ? "chat-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+          >
             <MoreVertIcon />
           </IconButton>
+          <Menu
+            id="chat-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+          >
+            <MenuItem onClick={() => setDoctorModalOpen(true)}>
+              New Chat
+            </MenuItem>
+            {/* <MenuItem onClick={() => handleMenuItemClick("Leave Chat")}>
+              Leave Chat
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuItemClick("Settings")}>
+              Settings
+            </MenuItem> */}
+          </Menu>
         </Toolbar>
       </AppBar>
 
@@ -130,12 +173,12 @@ const ChatList: React.FC<ChatListProps> = ({
       >
         {chats.map((chat) => (
           <ListItem
-            key={chat.id}
+            key={chat._id}
             alignItems="flex-start"
-            onClick={() => onChatSelect(chat.id)}
+            onClick={() => onChatSelect(chat)}
             sx={{
               cursor: "pointer",
-              bgcolor: activeChat === chat.id ? "#E0F7F7" : "transparent",
+              bgcolor: activeChat?._id === chat._id ? "#E0F7F7" : "transparent",
               "&:hover": {
                 bgcolor: "#f5f5f5",
               },
@@ -143,7 +186,10 @@ const ChatList: React.FC<ChatListProps> = ({
             }}
           >
             <ListItemAvatar>
-              <Avatar alt={chat.name} src={chat.avatar} />
+              <Avatar
+                alt={chat.participants[1].fistName}
+                src={chat.participants[1].profilePicture}
+              />
             </ListItemAvatar>
             <ListItemText
               primary={
@@ -163,7 +209,7 @@ const ChatList: React.FC<ChatListProps> = ({
                     {chat.name}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {chat.time}
+                    {chat.createdAt.toString()}
                   </Typography>
                 </Box>
               }
@@ -188,11 +234,11 @@ const ChatList: React.FC<ChatListProps> = ({
                     variant="body2"
                     color="text.secondary"
                   >
-                    {chat.lastMessage}
+                    {chat.lastMessage?.content}
                   </Typography>
-                  {chat.unread > 0 && (
+                  {chat.participants.length > 0 && (
                     <Badge
-                      badgeContent={chat.unread}
+                      badgeContent={3}
                       sx={{
                         "& .MuiBadge-badge": {
                           bgcolor: "#00a884",
@@ -211,6 +257,13 @@ const ChatList: React.FC<ChatListProps> = ({
           </ListItem>
         ))}
       </List>
+      {isDoctorModalOpen && (
+        <DoctorSearchModal
+          isOpen={isDoctorModalOpen}
+          onClose={() => setDoctorModalOpen(false)}
+          onSelectDoctor={startNewChat}
+        />
+      )}
     </Box>
   );
 };

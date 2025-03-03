@@ -5,6 +5,8 @@ import { IChat } from "src/interfaces/IChat";
 import { IAttachment, IMessage } from "src/interfaces/IMessage";
 import { Types } from "mongoose";
 import { deleteCloudinaryFile } from "../../utils/cloudinary";
+import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
+import logger from "../../configs/logger";
 
 class ChatService implements IChatService {
   private chatRepository: IChatRepository;
@@ -36,7 +38,7 @@ class ChatService implements IChatService {
       limit,
       skip
     );
-    
+
     // returning messages in ascending order old messages will be first
     return messages.reverse();
   }
@@ -47,7 +49,7 @@ class ChatService implements IChatService {
     if (chat) {
       return chat;
     }
-    
+
     // if no existing chat create new one
     const chatData = {
       participants: [new Types.ObjectId(userId1), new Types.ObjectId(userId2)],
@@ -63,7 +65,6 @@ class ChatService implements IChatService {
     participants: string[],
     createdById: string
   ): Promise<IChat> {
-
     // ensuring admin is included
     if (!participants.includes(createdById)) {
       participants.push(createdById);
@@ -98,7 +99,6 @@ class ChatService implements IChatService {
     content: string,
     attachments: IAttachment[]
   ): Promise<IMessage> {
-    
     let messageType: "text" | "image" | "video" | "mixed" = "text";
 
     if (attachments.length > 0) {
@@ -146,34 +146,85 @@ class ChatService implements IChatService {
     return await this.messageRepository.getUnreadCount(chatId, userId);
   }
 
-  async deleteChat(chatId: string): Promise<boolean> {
-    return await this.chatRepository.deleteChat(chatId);
+  async deleteChat(chatId: string, userId: string): Promise<boolean> {
+    try {
+      // first get chat to verify the user is the creator
+      const chat = await this.chatRepository.findById(chatId);
+
+      if (!chat) {
+        throw new AppError("Chat not found", 404);
+      }
+
+      if (chat.createdBy?.toString() !== userId) {
+        throw new AuthError(
+          AuthErrorCode.UNAUTHORIZED,
+          "Only the creator can delete tha chat",
+          403
+        );
+      }
+
+      const success = await this.chatRepository.deleteChat(chatId);
+      if (!success) {
+        throw new AppError("Failed to delete chat", 400);
+      }
+      return success;
+
+    } catch (error) {
+      logger.error("Error deleting chat", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
   }
 
-  async deleteMessage(messageId: string): Promise<boolean> {
-    
-    // get the message first to find if any attachments
-    const message = await this.messageRepository.findById(messageId);
+  async deleteMessage(messageId: string, userId: string): Promise<boolean> {
+    try {
+      // get the message first to verify ownership & find if any attachments
+      const message = await this.messageRepository.findById(messageId);
 
-    if (!message) {
-      return false;
-    }
+      if (!message) {
+        throw new AppError("Message not found");
+      }
 
-    // delete attachments from cloudinary if any
-    if (message.attachments && message.attachments.length > 0) {
-      for (const attachment of message.attachments) {
-        const publicId = attachment.publicId;
-        
-        if (publicId) {
-          await deleteCloudinaryFile(publicId);
+      if (message.sender.toString() !== userId) {
+        throw new AuthError(AuthErrorCode.UNAUTHORIZED, "You can only delete your own messages", 403);
+      }
+
+      // delete attachments from cloudinary if any
+      if (message.attachments && message.attachments.length > 0) {
+        for (const attachment of message.attachments) {
+          const publicId = attachment.publicId;
+
+          if (publicId) {
+            await deleteCloudinaryFile(publicId);
+          }
         }
       }
+
+      // delete message from database
+      const success = await this.messageRepository.deleteMessage(messageId);
+
+      if (!success) {
+        throw new AppError("Failed to delete message", 400);
+      }
+
+      return success;
+
+    } catch (error) {
+      logger.error("Error deleting message", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
     }
-
-    // delete message from database
-    return await this.messageRepository.deleteMessage(messageId);
   }
-
 }
 
 export default ChatService;

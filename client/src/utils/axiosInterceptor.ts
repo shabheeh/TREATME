@@ -98,6 +98,7 @@ const createAxiosInstance = (role?: UserRole) => {
       if (status === 401) {
         const errorCode = data?.error || data?.message;
 
+        console.log(errorCode, "error")
         // If login failed (Invalid Credentials), do NOT retry
         if (
           errorCode !== "Token has expired" &&

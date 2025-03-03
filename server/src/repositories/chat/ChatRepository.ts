@@ -26,9 +26,9 @@ class ChatRepository implements IChatRepository {
     try {
       const chat = await this.model
         .findById(chatId)
-        .populate("participants", "firstName lastName email profilePicture")
+        .populate("participants", "_id firstName lastName email profilePicture")
         .populate("lastMessage")
-        .populate("createdBy", "firstName lastName email profilePicture");
+        .populate("createdBy", "_id firstName lastName email profilePicture");
 
       return chat;
     } catch (error) {
@@ -51,9 +51,9 @@ class ChatRepository implements IChatRepository {
             $size: 2,
           },
         })
-        .populate("partipants", "firstName lastName email profilePicture")
+        .populate("partipants", "_id firstName lastName email profilePicture")
         .populate("lastMessage")
-        .populate("createdBy", "firstName lastName email profilePicture");
+        .populate("createdBy", "_id firstName lastName email profilePicture");
 
       return chat;
     } catch (error) {
@@ -70,15 +70,15 @@ class ChatRepository implements IChatRepository {
         .find({
           participants: { $in: [new Types.ObjectId(userId)] },
         })
-        .populate("partipants", "firstName lastName email profilePicture")
+        .populate("partipants", "_id firstName lastName email profilePicture")
         .populate({
           path: "lastMessage",
           populate: {
             path: "sender",
-            select: "firstName lastName email profilePicture",
+            select: "_id firstName lastName email profilePicture",
           },
         })
-        .populate("createdBy", "firstName lastName email profilePicture")
+        .populate("createdBy", "_id firstName lastName email profilePicture")
         .sort({ updatedAt: -1 });
 
       return chats;
@@ -142,9 +142,9 @@ class ChatRepository implements IChatRepository {
           { $addToSet: { participants: new Types.ObjectId(userId) } },
           { new: true }
         )
-        .populate("partipants", "firstName lastName email profilePicture")
+        .populate("partipants", "_id firstName lastName email profilePicture")
         .populate("lastMessage")
-        .populate("createdBy", "firstName lastName email profilePicture");
+        .populate("createdBy", "_id firstName lastName email profilePicture");
 
       return chat;
     } catch (error) {
@@ -164,9 +164,9 @@ class ChatRepository implements IChatRepository {
         .findByIdAndUpdate(chatId, {
           $pull: { participants: new Types.ObjectId(userId) },
         })
-        .populate("partipants", "firstName lastName email profilePicture")
+        .populate("partipants", "_id firstName lastName email profilePicture")
         .populate("lastMessage")
-        .populate("createdBy", "firstName lastName email profilePicture");
+        .populate("createdBy", "_id firstName lastName email profilePicture");
       return chat;
     } catch (error) {
       throw new AppError(
@@ -180,9 +180,9 @@ class ChatRepository implements IChatRepository {
     try {
       const chat = this.model
         .findByIdAndUpdate(chatId, { name: newName }, { new: true })
-        .populate("partipants", "firstName lastName email profilePicture")
+        .populate("partipants", "_id firstName lastName email profilePicture")
         .populate("lastMessage")
-        .populate("createdBy", "firstName lastName email profilePicture");
+        .populate("createdBy", "_id firstName lastName email profilePicture");
 
       return chat;
     } catch (error) {
