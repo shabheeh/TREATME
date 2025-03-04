@@ -4,9 +4,20 @@ interface IAttachment {
   resourceType?: string;
 }
 
+export interface IParticipant {
+  user: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    profilePicture: string;
+  };
+  userType: "Patient" | "Doctor" | "Admin";
+}
+
 export interface ISender {
   _id: string;
-  fistName: string;
+  firstName: string;
   lastName: string;
   email: string;
   profilePicture: string;
@@ -15,7 +26,7 @@ export interface ISender {
 export interface IMessage {
   _id: string;
   sender: ISender;
-  senderType: "Patient" | "Dependent" | "Doctor" | "Admin";
+  senderType: "Patient" | "Doctor" | "Admin";
   content: string;
   attachments?: IAttachment[];
   type: "text" | "image" | "video" | "mixed";
@@ -27,7 +38,7 @@ export interface IMessage {
 
 export interface IChat {
   _id: string;
-  participants: ISender[];
+  participants: IParticipant[];
   isGroupChat: boolean;
   name?: string | null;
   lastMessage?: IMessage;
@@ -35,3 +46,11 @@ export interface IChat {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type SendMessageType = {
+  // sender: string;
+  // senderType: "Admin" | "Patient" | "Doctor";
+  chat: string;
+  content: string;
+  attachments: File[];
+};

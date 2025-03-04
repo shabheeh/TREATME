@@ -1,7 +1,8 @@
 import axios, { AxiosError } from "axios";
 import TokenManager from "./TokenMangager";
 import log from "loglevel";
-// import { store } from '../redux/app/store';
+import { store } from "../redux/app/store";
+import { setToken } from "../redux/features/auth/authSlice";
 // import { signOut } from '../redux/features/auth/authSlice';
 // import { clearUser } from '../redux/features/user/userSlice';
 
@@ -33,6 +34,7 @@ const createAxiosInstance = (role?: UserRole) => {
 
       const { accessToken } = response.data;
       tokenManager.setToken(accessToken);
+      store.dispatch(setToken({ token: accessToken }));
 
       return accessToken;
     } catch (error: unknown) {
@@ -52,7 +54,8 @@ const createAxiosInstance = (role?: UserRole) => {
 
   instance.interceptors.request.use(
     async (config) => {
-      const token = tokenManager.getAccessToken();
+      // const token = tokenManager.getAccessToken();
+      const token = store.getState().auth.token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -61,16 +64,16 @@ const createAxiosInstance = (role?: UserRole) => {
     (error) => Promise.reject(error)
   );
 
-  instance.interceptors.request.use(
-    async (config) => {
-      const token = tokenManager.getAccessToken();
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error)
-  );
+  // instance.interceptors.request.use(
+  //   async (config) => {
+  //     const token = tokenManager.getAccessToken();
+  //     if (token) {
+  //       config.headers.Authorization = `Bearer ${token}`;
+  //     }
+  //     return config;
+  //   },
+  //   (error) => Promise.reject(error)
+  // );
 
   instance.interceptors.response.use(
     (response) => response,
@@ -98,7 +101,6 @@ const createAxiosInstance = (role?: UserRole) => {
       if (status === 401) {
         const errorCode = data?.error || data?.message;
 
-        console.log(errorCode, "error")
         // If login failed (Invalid Credentials), do NOT retry
         if (
           errorCode !== "Token has expired" &&

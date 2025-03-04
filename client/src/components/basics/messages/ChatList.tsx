@@ -22,17 +22,19 @@ import {
   Search as SearchIcon,
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
-import { IChat } from "../../../types/chat/chat.types";
+import { IChat, ISender } from "../../../types/chat/chat.types";
 import DoctorSearchModal from "./DoctorModal";
 
 interface ChatListProps {
+  // user: ISender | null;
   chats: IChat[];
   activeChat: IChat | null;
   onChatSelect: (chat: IChat) => void;
-  startNewChat: (userId: string) => void;
+  startNewChat: (userId: string, userType2: string) => void;
 }
 
 const ChatList: React.FC<ChatListProps> = ({
+  // user,
   chats,
   activeChat,
   onChatSelect,
@@ -187,8 +189,8 @@ const ChatList: React.FC<ChatListProps> = ({
           >
             <ListItemAvatar>
               <Avatar
-                alt={chat.participants[1].fistName}
-                src={chat.participants[1].profilePicture}
+                alt={chat.participants[1].user.firstName}
+                src={chat.participants[1].user.profilePicture}
               />
             </ListItemAvatar>
             <ListItemText
@@ -206,7 +208,7 @@ const ChatList: React.FC<ChatListProps> = ({
                     noWrap
                     sx={{ maxWidth: { xs: "120px", sm: "150px", md: "180px" } }}
                   >
-                    {chat.name}
+                    {chat.participants[1].user.firstName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {chat.createdAt.toString()}

@@ -41,7 +41,7 @@ import { ISpecialization } from "../../../types/specialization/specialization.ty
 interface DoctorSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectDoctor: (userId: string) => void;
+  onSelectDoctor: (userId: string, userType2: string) => void;
 }
 
 const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
@@ -261,7 +261,7 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                   <ListItem
                     alignItems="center"
                     button
-                    onClick={() => onSelectDoctor(doctor._id)}
+                    onClick={() => onSelectDoctor(doctor._id, "Doctor")}
                     sx={{
                       height: 80, // Reduced height
                       borderRadius: 1,
@@ -275,7 +275,7 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                       <Avatar
                         alt={doctor.firstName}
                         src={doctor.profilePicture}
-                        sx={{ width: 40, height: 40, mx: 1 }} // Reduced size
+                        sx={{ width: 40, height: 40, mx: 1 }}
                       />
                     </ListItemAvatar>
 
@@ -318,7 +318,7 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                       color="primary"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onSelectDoctor(doctor._id);
+                        onSelectDoctor(doctor._id, "Doctor");
                       }}
                       sx={{
                         alignSelf: "center",

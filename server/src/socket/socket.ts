@@ -25,7 +25,8 @@ export class SocketService implements ISocketService {
         this.io = new SocketIOServer(server, {
             cors: {
                 origin: process.env.CORS_ORIGIN,
-                methods: ["GET", "POST"]
+                methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                credentials: true,
             }
         });
 
@@ -103,12 +104,23 @@ export class SocketService implements ISocketService {
 
     private async handleSendMessage(socket: Socket, data: IMessage): Promise<void> {
         try {
-            const { chat, sender, senderType, content, attachments = [] } = data;
+            const { chat, content, attachments = [] } = data;
             const userId = socket.data.user.id;
+            const userType = socket.data.user.role;
+
+            let senderType: "Admin" | "Doctor" | "Patient";
+
+            if (userType === "admin") {
+                senderType = "Admin"
+            } else if (userType === "doctor") {
+                senderType = "Doctor"
+            } else {
+                senderType = "Patient"
+            }
 
             if (!attachments.length) {
                 const message = await this.chatService.sendMessage(
-                    userId || sender.toString(),
+                    userId,
                     senderType,
                     chat.toString(),
                     content,

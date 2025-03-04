@@ -5,7 +5,7 @@ const messageSchema = new Schema<IMessage>(
   {
     sender: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      refPath: "senderType",
     },
     senderType: {
       type: String,

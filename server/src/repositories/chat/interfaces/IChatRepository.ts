@@ -8,10 +8,11 @@ interface IChatRepository {
   updateLastMessage(chatId: string, messageId: string): Promise<IChat | null>;
   createGroupChat(
     name: string,
-    participants: string[],
-    createdBy: string
+    participants: { userId: string; userType: string }[],
+    createdBy: string,
+    creatorType: string
   ): Promise<IChat>;
-  addUserToGroup(chatId: string, userId: string): Promise<IChat | null>;
+  addUserToGroup(chatId: string, userId: string, userType: string): Promise<IChat | null>;
   removeUserFromGroup(chatId: string, userId: string): Promise<IChat | null>;
   renameGroup(chatId: string, newName: string): Promise<IChat | null>;
   deleteChat(chatId: string): Promise<boolean>;

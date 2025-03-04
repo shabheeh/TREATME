@@ -1,15 +1,8 @@
 import { api } from "../../utils/axiosInterceptor";
-import TokenManager from "../../utils/TokenMangager";
 import { store } from "../../redux/app/store";
 import { signIn } from "../../redux/features/auth/authSlice";
 
 class AuthServiceAdmin {
-  private tokenManager: TokenManager;
-
-  constructor(tokenManager: TokenManager) {
-    this.tokenManager = tokenManager;
-  }
-
   async signIn(email: string, password: string): Promise<void> {
     try {
       const response = await api.admin.post("/auth/signin", {
@@ -18,8 +11,6 @@ class AuthServiceAdmin {
       });
 
       const { admin, accessToken } = response.data;
-
-      this.tokenManager.setToken(accessToken);
 
       store.dispatch(
         signIn({
@@ -40,7 +31,6 @@ class AuthServiceAdmin {
   }
 }
 
-const tokenManager = new TokenManager();
-const authServiceAdmin = new AuthServiceAdmin(tokenManager);
+const authServiceAdmin = new AuthServiceAdmin();
 
 export default authServiceAdmin;

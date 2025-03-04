@@ -13,7 +13,7 @@ import { Menu as MenuIcon } from "@mui/icons-material";
 import { IChat, IMessage } from "../../../types/chat/chat.types";
 import chatService from "../../../services/chat/ChatService";
 import { toast } from "sonner";
-
+import { useSocket } from "../../../hooks/useSocket";
 interface ChatPageProps {
   // Optional props for layout integration
   navbarHeight?: number | string;
@@ -30,9 +30,14 @@ const Messages: React.FC<ChatPageProps> = ({
   const [chatsLoading, setChatsLoading] = useState<boolean>(false);
   const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
   const [chatListOpen, setChatListOpen] = useState(true);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [isTyping, setTyping] = useState<boolean>(false);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+
+  const { socket } = useSocket();
 
   useEffect(() => {
     fetchChats();
@@ -55,6 +60,7 @@ const Messages: React.FC<ChatPageProps> = ({
       setChatsLoading(true);
       const chats = await chatService.getChats();
       setChats(chats);
+      console.log(chats, "chats");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to fetch chats"
@@ -82,36 +88,82 @@ const Messages: React.FC<ChatPageProps> = ({
     setActiveChat(chat);
   };
 
-  // const handleSendMessage = (text: string) => {
-  //   if (!activeChat) return;
+  useEffect(() => {
+    if (!socket) return; // Ensure socket exists
 
-  //   const newMessage = {
-  //     id: `${activeChat}-${Date.now()}`,
-  //     text,
-  //     time: new Date().toLocaleTimeString([], {
-  //       hour: "2-digit",
-  //       minute: "2-digit",
-  //     }),
-  //     sender: "me" as const,
-  //   };
+    // Handle new message
+    const handleNewMessage = (message: IMessage) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    };
 
-  //   setMessages((prev) => ({
-  //     ...prev,
-  //     [activeChat]: [...(prev[activeChat] || []), newMessage],
-  //   }));
-  // };
+    // Handle online users update
+    // socket.on("online users", (users: string[]) => {
+    //   setOnlineUsers(users);
+    // });
 
-  // const getActiveContact = () => {
-  //   if (!activeChat) return null;
-  //   const chat = chats.find((c) => c._id === activeChat);
-  //   if (!chat) return null;
-  //   return {
-  //     id: chat.id,
-  //     name: chat.name,
-  //     avatar: chat.avatar,
-  //     online: chat.online,
-  //   };
-  // };
+    // Handle new message received
+    socket.on("message received", handleNewMessage);
+
+    // Handle typing indicator
+    socket.on("typing", () => {
+      setTyping(true);
+    });
+
+    // Handle stop typing indicator
+    socket.on("stop-typing", () => {
+      setTyping(false);
+    });
+
+    // Handle user joined chat
+    socket.on("join-chat", (userId: string) => {
+      // console.log(`${userId} joined chat ${chatId}`);
+      // Optionally update chat participants or online users
+      setOnlineUsers((prev) =>
+        [...prev, userId].filter((id, idx, self) => self.indexOf(id) === idx)
+      );
+    });
+
+    // Handle user left chat
+    socket.on("leave-chat", (userId: string) => {
+      // console.log(`${userId} left chat ${chatId}`);
+      setOnlineUsers((prev) => prev.filter((id) => id !== userId));
+    });
+
+    // Handle chat updated (e.g., name change, new participants)
+    // socket.on("chat updated", (updatedChat: IChatDTO) => {
+    //   setChat(updatedChat);
+    // });
+
+    // Handle connection or server errors
+    socket.on("error", (error: { message: string }) => {
+      console.error("Socket error:", error.message);
+      // Optionally display error to user or retry connection
+    });
+
+    // Cleanup: Remove all event listeners
+    return () => {
+      socket.off("online-users");
+      socket.off("message received", handleNewMessage);
+      socket.off("typing");
+      socket.off("stop-typing");
+      socket.off("join-chat");
+      socket.off("leave-chat");
+      socket.off("chat-updated");
+      socket.off("error");
+    };
+  }, [socket, setOnlineUsers, setMessages, setTyping]);
+
+  useEffect(() => {
+    if (activeChat && socket) {
+      socket.emit("join-chat", activeChat._id);
+    }
+  }, [activeChat, socket]);
+
+  const startNewChat = async (userId2: string, userType2: string) => {
+    const result = await chatService.createOrAccessChat(userId2, userType2);
+    setChats((prev) => [result, ...prev]);
+    setActiveChat(result);
+  };
 
   const toggleChatList = () => {
     setChatListOpen(!chatListOpen);
@@ -151,6 +203,8 @@ const Messages: React.FC<ChatPageProps> = ({
           }}
         >
           <ChatList
+            // user={activeChat && activeChat?.participants[1]}
+            startNewChat={startNewChat}
             chats={chats}
             activeChat={activeChat}
             onChatSelect={handleChatSelect}
@@ -170,6 +224,7 @@ const Messages: React.FC<ChatPageProps> = ({
           }}
         >
           <ChatList
+            startNewChat={startNewChat}
             chats={chats}
             activeChat={activeChat}
             onChatSelect={handleChatSelect}
@@ -210,9 +265,9 @@ const Messages: React.FC<ChatPageProps> = ({
 
         <ChatScreen
           sender={activeChat && activeChat.participants[1]}
-          // contact={getActiveContact()}
           messages={messages}
           // onSendMessage={handleSendMessage}
+          activeChat={activeChat}
           onBackClick={isMobile ? toggleChatList : undefined}
           isMobile={isMobile}
           showBackButton={isMobile && activeChat !== null}

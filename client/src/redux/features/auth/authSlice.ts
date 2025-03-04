@@ -32,6 +32,10 @@ const authSlice = createSlice({
       state.token = token;
     },
 
+    setToken: (state, action: PayloadAction<{ token: string }>) => {
+      state.token = action.payload.token;
+    },
+
     setAuthState: (state) => {
       state.isAuthenticated = true;
     },
@@ -50,4 +54,4 @@ export const persistedAuthReducer = persistReducer(
   authPersistConfig,
   authSlice.reducer
 );
-export const { signIn, signOut, setAuthState } = authSlice.actions;
+export const { signIn, signOut, setToken, setAuthState } = authSlice.actions;

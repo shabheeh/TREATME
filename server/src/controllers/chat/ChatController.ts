@@ -19,18 +19,29 @@ class ChatController implements IChatController {
     accessChat = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId1 = (req.user as ITokenPayload).id;
-            const { userId2 } = req.body;
+            const userType =  (req.user as ITokenPayload).role;
+            const { userId2, userType2 } = req.body;
 
-            if (!userId1) {
+            if (!userId1 || !userType) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED)
             }
             
-            if (!userId2) {
-                throw new BadRequestError("User ID is required");
+            if (!userId2 || !userType2) {
+                throw new BadRequestError("Missing required fields");
             }
 
-            const chat = await this.chatService.accessChat(userId1, userId2);
+            let creatorType: "Admin" | "Patient" | "Doctor";
+            
+            if (userType === "admin") {
+                creatorType = "Admin";
+            }else if (userType === "doctor") {
+                creatorType = "Doctor";
+            }else {
+                creatorType = "Patient"
+            }
 
+            const chat = await this.chatService.accessChat(userId1, userId2, creatorType, userType2);
+ 
             res.status(200).json({chat})
         } catch (error) {
             logger.error(error instanceof Error ? error.message : "Error accessing chat");
@@ -41,7 +52,7 @@ class ChatController implements IChatController {
     getChats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = (req.user as ITokenPayload).id;
-
+            
             if (!userId) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
             }
@@ -57,15 +68,26 @@ class ChatController implements IChatController {
         try {
             const { name, participants } = req.body;
             const userId = (req.user as ITokenPayload).id;
+            const userType = (req.user as ITokenPayload).role;
 
-            if (!userId) {
+            if (!userId || !userType) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+            }
+
+            let creatorType: "Admin" | "Patient" | "Doctor";
+            
+            if (userType === "admin") {
+                creatorType = "Admin";
+            }else if (userType === "doctor") {
+                creatorType = "Doctor";
+            }else {
+                creatorType = "Patient"
             }
 
             if (!name || !participants || !Array.isArray(participants) || participants.length < 1) {
                 throw new BadRequestError("Please Provide all required fields")
             }
-            const groupchat = await this.chatService.createGroupChat(name, participants, userId);
+            const groupchat = await this.chatService.createGroupChat(name, participants, userId, creatorType,);
             res.status(200).json({groupchat});
         } catch (error) {
             logger.error(error instanceof Error ? error.message : "Failed to create group chat");
@@ -106,12 +128,12 @@ class ChatController implements IChatController {
 
     addToGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { chatId, userId } = req.body;
+            const { chatId, userId, userType } = req.body;
 
-            if (!chatId || !userId) {
+            if (!chatId || !userId || !userType) {
                 throw new BadRequestError("Missing required fields");
             }
-            const updatedChat = await this.chatService.addUserToGroup(chatId, userId);
+            const updatedChat = await this.chatService.addUserToGroup(chatId, userId, userType);
             res.status(200).json({updatedChat});
         } catch (error) {
             logger.error(error instanceof Error ? error.message : "Error adding new user to group");
@@ -164,13 +186,13 @@ class ChatController implements IChatController {
         try {
             const userId = (req.user as ITokenPayload).id;
             const userType =(req.user as ITokenPayload).role;
-            const { chatId, content } = req.body;
+            const { chat, content } = req.body;
 
             if (!userId || !userType) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
             }
 
-            if (!chatId || !content) {
+            if (!chat || !content) {
                 throw new BadRequestError("Missing required fields");
             }
 
@@ -187,7 +209,7 @@ class ChatController implements IChatController {
             const message = await this.chatService.sendMessage(
                 userId,
                 senderType,
-                chatId,
+                chat,
                 content,
                 []
             );
@@ -208,13 +230,13 @@ class ChatController implements IChatController {
 
             const userId = (req.user as ITokenPayload).id;
             const userType = (req.user as ITokenPayload).role;
-            const { chatId, content } = req.body;
+            const { chat, content } = req.body;
 
             if (!userId || !userType) {
                 throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
             }
 
-            if (!chatId) {
+            if (!chat) {
                 throw new BadRequestError("Missing required fields");
             }
 
@@ -238,7 +260,7 @@ class ChatController implements IChatController {
             const message = await this.chatService.sendMessage(
                 userId,
                 senderType,
-                chatId,
+                chat,
                 content || "",
                 attachments,
             )

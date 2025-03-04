@@ -1,7 +1,6 @@
 import { api } from "../../utils/axiosInterceptor";
 // import {  } from "../../types/auth/auth.types";
 import { IPatient } from "../../types/patient/patient.types";
-import TokenManager from "../../utils/TokenMangager";
 import log from "loglevel";
 import { store } from "../../redux/app/store";
 import { signIn, signOut } from "../../redux/features/auth/authSlice";
@@ -43,12 +42,6 @@ interface IAuthServicePatient {
 }
 
 class AuthServicePatient implements IAuthServicePatient {
-  private tokenManager: TokenManager;
-
-  constructor(tokenManager: TokenManager) {
-    this.tokenManager = tokenManager;
-  }
-
   async sendOtp(credentials: {
     email: string;
     password: string;
@@ -121,8 +114,6 @@ class AuthServicePatient implements IAuthServicePatient {
 
       const { accessToken, patient } = response.data;
 
-      this.tokenManager.setToken(accessToken);
-
       store.dispatch(
         signIn({
           email: patient.email,
@@ -151,8 +142,6 @@ class AuthServicePatient implements IAuthServicePatient {
   async signOut(): Promise<void> {
     try {
       await api.patient.post("/auth/signout");
-
-      this.tokenManager.clearToken();
       store.dispatch(clearUser());
       store.dispatch(signOut());
     } catch (error: unknown) {
@@ -172,8 +161,6 @@ class AuthServicePatient implements IAuthServicePatient {
       const response = await api.patient.post("/auth/google", { credential });
 
       const { patient, accessToken, partialUser } = response.data;
-
-      this.tokenManager.setToken(accessToken);
 
       if (partialUser) {
         store.dispatch(
@@ -289,8 +276,6 @@ class AuthServicePatient implements IAuthServicePatient {
 
       const { patient, accessToken } = response.data;
 
-      this.tokenManager.setToken(accessToken);
-
       store.dispatch(
         signIn({
           email: patient.email,
@@ -330,7 +315,6 @@ class AuthServicePatient implements IAuthServicePatient {
   }
 }
 
-const tokenManager = new TokenManager();
-const authServicePatient = new AuthServicePatient(tokenManager);
+const authServicePatient = new AuthServicePatient();
 
 export default authServicePatient;

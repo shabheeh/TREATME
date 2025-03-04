@@ -11,6 +11,9 @@ import {
   InputAdornment,
   useMediaQuery,
   useTheme,
+  Grid,
+  Chip,
+  Tooltip,
 } from "@mui/material";
 import {
   MoreVert as MoreVertIcon,
@@ -19,16 +22,26 @@ import {
   AttachFile as AttachFileIcon,
   ArrowBack as ArrowBackIcon,
   Message as MessageIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
-import { IMessage, ISender } from "../../../types/chat/chat.types";
+import axios from "axios";
+import {
+  IMessage,
+  ISender,
+  IAttachment,
+  SendMessageType,
+  IChat,
+  IParticipant,
+} from "../../../types/chat/chat.types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
+import { useSocket } from "../../../hooks/useSocket";
 
 interface MessageScreenProps {
-  sender: ISender | null;
+  sender: IParticipant | null;
   messages: IMessage[];
-  // onSendMessage: (text: string) => void;
   onBackClick?: () => void;
+  activeChat: IChat | null;
   isMobile?: boolean;
   showBackButton?: boolean;
 }
@@ -36,13 +49,16 @@ interface MessageScreenProps {
 const MessageScreen: React.FC<MessageScreenProps> = ({
   sender,
   messages,
-  // onSendMessage,
   onBackClick,
+  activeChat,
   isMobile = false,
   showBackButton = false,
 }) => {
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState<string>("");
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -52,57 +68,101 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
 
   const currentUser = patient || admin || doctor;
 
-  const handleSend = () => {
-    if (newMessage.trim()) {
-      // onSendMessage(newMessage);
-      setNewMessage("");
+  const { socket } = useSocket();
+
+  // Scroll to bottom when new messages are added
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Cleanup object URLs when attachments change or component unmounts
+  useEffect(() => {
+    return () => {
+      attachments.forEach((file) => URL.revokeObjectURL(file));
+    };
+  }, [attachments]);
+
+  // Handle file input change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setAttachments((prev) => {
+        // Revoke old URLs before adding new ones
+        prev.forEach((file) => URL.revokeObjectURL(file));
+        return [...files];
+      });
     }
   };
 
+  // Remove attachment from the list
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => {
+      const newAttachments = prev.filter((_, i) => i !== index);
+      // Revoke the URL of the removed file
+      prev[index] && URL.revokeObjectURL(prev[index]);
+      return newAttachments;
+    });
+  };
+
+  
+  const handleAttachmentButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
+  // Handle message sending
+  const handleSend = async () => {
+    if (!activeChat) return;
+    if (!newMessage.trim() && attachments.length === 0) return;
+
+    try {
+      // Upload attachments using Axios if they exist
+      let uploadedAttachments: IAttachment[] = [];
+      if (attachments.length > 0) {
+        const formData = new FormData();
+        attachments.forEach((file) => formData.append("attachments", file));
+
+        const response = await axios.post("/api/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        uploadedAttachments = response.data.map((file: any) => ({
+          fileName: file.fileName,
+          fileType: file.fileType,
+          size: file.size,
+          url: file.url,
+        }));
+      }
+
+      // Prepare message data
+      const messageData: Partial<SendMessageType> = {
+        chat: activeChat._id,
+        content: newMessage.trim(),
+        attachments: uploadedAttachments,
+      };
+
+      // Emit the message via WebSocket
+      if (socket) {
+        socket.emit("send-message", messageData);
+      }
+
+      // Clear input and attachments
+      setNewMessage("");
+      setAttachments([]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  // Handle key press for Enter key
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // if (!contact) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         height: "100%",
-  //         display: "flex",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //         bgcolor: "#f0f2f5",
-  //         flexDirection: "column",
-  //         border: 1,
-  //         borderColor: "teal",
-  //       }}
-  //     >
-  //       <Box sx={{ color: "teal", mb: 2 }}>
-  //         <MessageIcon sx={{ fontSize: 64 }} />
-  //       </Box>
-  //       <Typography
-  //         variant="h5"
-  //         sx={{ mb: 1, color: "#41525d", textAlign: "center", px: 2 }}
-  //       >
-  //         Welcome to Messages
-  //       </Typography>
-  //       <Typography
-  //         variant="body1"
-  //         color="text.secondary"
-  //         sx={{ textAlign: "center", px: 3 }}
-  //       >
-  //         Select a conversation to start chatting
-  //       </Typography>
-  //     </Box>
-  //   );
-  // }
+;
 
   return (
     <Box
@@ -129,16 +189,16 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
             </IconButton>
           )}
           <Avatar
-            src={sender?.profilePicture}
-            alt={sender?.fistName}
+            src={sender?.user.profilePicture}
+            alt={sender?.user.firstName}
             sx={{ mr: 2, width: 40, height: 40 }}
           />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle1" noWrap>
-              {sender?.fistName}
+              {sender?.user.firstName} {sender?.user.lastName}
             </Typography>
             <Typography variant="caption" color="white">
-              Online
+              {isTyping ? "Typing..." : "Online"}
             </Typography>
           </Box>
           <IconButton color="inherit" size="small">
@@ -190,6 +250,43 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
               <Typography variant="body1" sx={{ wordBreak: "break-word" }}>
                 {message.content}
               </Typography>
+              {message.attachments?.map((attachment, index) => (
+                <Box key={index} sx={{ mt: 1 }}>
+                  {attachment.fileType.startsWith("image/") ? (
+                    <a
+                      href={attachment.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Box
+                        component="img"
+                        src={attachment.url}
+                        alt="attachment"
+                        sx={{
+                          width: "100%",
+                          maxWidth: "300px",
+                          height: "auto",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </a>
+                  ) : (
+                    <Tooltip title={attachment.fileName}>
+                      <Chip
+                        icon={<AttachFileIcon />}
+                        label={attachment.fileName}
+                        sx={{
+                          maxWidth: "200px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      />
+                    </Tooltip>
+                  )}
+                </Box>
+              ))}
               <Typography
                 sx={{
                   fontSize: "0.7rem",
@@ -198,7 +295,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
                   textAlign: "right",
                 }}
               >
-                {message.createdAt.toString()}
+                {new Date(message.createdAt).toLocaleTimeString()}
               </Typography>
             </Paper>
           </Box>
@@ -206,20 +303,109 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
         <div ref={messagesEndRef} />
       </Box>
 
+      {/* Attachment Preview Section */}
+      {attachments.length > 0 && (
+        <Box
+          sx={{
+            p: 2,
+            bgcolor: "#f0f2f5",
+            borderBottom: "1px solid #ddd",
+            maxHeight: "200px",
+            overflowY: "auto",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
+          {attachments.map((file, index) => {
+            const fileUrl = URL.createObjectURL(file);
+            return (
+              <Box
+                key={index}
+                sx={{
+                  position: "relative",
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  border: "1px solid #ddd",
+                  cursor: "pointer",
+                }}
+              >
+                {file.type.startsWith("image/") ? (
+                  <Box
+                    component="img"
+                    src={fileUrl}
+                    alt="preview"
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor: "#e0e0e0",
+                    }}
+                  >
+                    <AttachFileIcon sx={{ fontSize: "3rem", color: "#aaa" }} />
+                  </Box>
+                )}
+                <IconButton
+                  onClick={() => removeAttachment(index)}
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bgcolor: "rgba(0, 0, 0, 0.5)",
+                    color: "#fff",
+                    "&:hover": { bgcolor: "rgba(0, 0, 0, 0.7)" },
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            );
+          })}
+        </Box>
+      )}
+
       {/* Input */}
       <Box sx={{ p: { xs: 1, sm: 2 }, bgcolor: "#f0f2f5" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {!isSmallScreen && (
-            <IconButton color="default" sx={{ color: "#54656f" }}>
-              <AttachFileIcon />
-            </IconButton>
+            <>
+              <IconButton
+                color="default"
+                sx={{ color: "#54656f" }}
+                onClick={handleAttachmentButtonClick}
+              >
+                <AttachFileIcon />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
+              </IconButton>
+            </>
           )}
           <TextField
             fullWidth
             variant="outlined"
             placeholder="Type a message"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => {
+              setNewMessage(e.target.value);
+              setIsTyping(!!e.target.value.trim());
+            }}
             onKeyDown={handleKeyPress}
             size="small"
             sx={{
@@ -232,19 +418,13 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  {newMessage.trim() ? (
-                    <IconButton
-                      edge="end"
-                      onClick={handleSend}
-                      sx={{ color: "#00a884" }}
-                    >
-                      <SendIcon />
-                    </IconButton>
-                  ) : (
-                    <IconButton edge="end" sx={{ color: "#54656f" }}>
-                      <MicIcon />
-                    </IconButton>
-                  )}
+                  <IconButton
+                    edge="end"
+                    onClick={handleSend}
+                    sx={{ color: "#00a884" }}
+                  >
+                    <SendIcon />
+                  </IconButton>
                 </InputAdornment>
               ),
             }}

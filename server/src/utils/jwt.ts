@@ -70,9 +70,9 @@ export const refreshAccessToken = (refreshToken: string): string => {
   try {
     const decoded = verifyRefreshToken<ITokenPayload>(refreshToken);
 
-    const { email, role } = decoded;
+    const { id, email, role } = decoded;
 
-    const accessToken = jwt.sign({ email, role }, JWT_ACCESS_SECRET, {
+    const accessToken = jwt.sign({ id, email, role }, JWT_ACCESS_SECRET, {
       expiresIn: "1h",
     });
 

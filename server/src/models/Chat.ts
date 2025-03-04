@@ -1,13 +1,20 @@
 import { Schema, model } from "mongoose";
 import { IChat } from "src/interfaces/IChat";
 
-const chatSchema = new Schema(
+const chatSchema = new Schema<IChat>(
   {
     participants: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+        user: {
+          type: Schema.Types.ObjectId,
+          required: true,
+          refPath: 'participants.userType',
+        },
+        userType: {
+          type: String,
+          required: true,
+          enum: ["Patient", "Doctor", "Admin"],
+        },
       },
     ],
     isGroupChat: {
@@ -21,13 +28,18 @@ const chatSchema = new Schema(
     },
     lastMessage: {
       type: Schema.Types.ObjectId,
-      ref: "ChatMessage",
+      ref: "Message",
       default: null,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      refPath: "creatorType",
       default: null,
+    },
+    creatorType: {
+      type: String,
+      enum: ["Patient", "Doctor", "Admin"],
+      required: true,
     },
   },
   { timestamps: true }

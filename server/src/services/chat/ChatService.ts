@@ -43,7 +43,7 @@ class ChatService implements IChatService {
     return messages.reverse();
   }
 
-  async accessChat(userId1: string, userId2: string): Promise<IChat> {
+  async accessChat(userId1: string, userId2: string, creatorType: "Patient" | "Doctor" | "Admin", userType2: "Patient" | "Doctor" | "Admin"): Promise<IChat> {
     let chat = await this.chatRepository.findOneOnOneChat(userId1, userId2);
 
     if (chat) {
@@ -52,9 +52,19 @@ class ChatService implements IChatService {
 
     // if no existing chat create new one
     const chatData = {
-      participants: [new Types.ObjectId(userId1), new Types.ObjectId(userId2)],
+      participants: [
+        {
+          user: new Types.ObjectId(userId1), 
+          userType: creatorType,
+        },
+        {
+          user: new Types.ObjectId(userId2),
+          userType: userType2,
+        }
+      ],
       isGroupChat: false,
       createdBy: new Types.ObjectId(userId1),
+      creatorType,
     };
 
     return await this.chatRepository.create(chatData);
@@ -62,23 +72,39 @@ class ChatService implements IChatService {
 
   async createGroupChat(
     name: string,
-    participants: string[],
-    createdById: string
+    participants: { userId: string; userType: string }[],
+    createdById: string,
+    creatorType: "Patient" | "Doctor" | "Admin",
   ): Promise<IChat> {
-    // ensuring admin is included
-    if (!participants.includes(createdById)) {
-      participants.push(createdById);
+    try {
+      // Ensure the creator (admin) is included in the participants list
+      const isAdminIncluded = participants.some(
+        (participant) => participant.userId === createdById
+      );
+  
+      if (!isAdminIncluded) {
+        // if not the admin to the participants list 
+        participants.push({ userId: createdById, userType: "Admin" });
+      }
+  
+      return await this.chatRepository.createGroupChat(
+        name,
+        participants,
+        createdById,
+        creatorType
+      );
+    } catch (error) {
+      throw new AppError(
+        `Failed to create group chat: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+        500
+      );
     }
-
-    return await this.chatRepository.createGroupChat(
-      name,
-      participants,
-      createdById
-    );
   }
 
-  async addUserToGroup(chatId: string, userId: string): Promise<IChat | null> {
-    return await this.chatRepository.addUserToGroup(chatId, userId);
+  async addUserToGroup(chatId: string, userId: string, userType: "Patient" | "Doctor" | "Admin"): Promise<IChat | null> {
+    return await this.chatRepository.addUserToGroup(chatId, userId, userType);
   }
 
   async removeUserFromGroup(

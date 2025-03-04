@@ -2,11 +2,12 @@ import { Model, Types } from "mongoose";
 import IChatRepository from "./interfaces/IChatRepository";
 import { IChat } from "src/interfaces/IChat";
 import { AppError } from "../../utils/errors";
+import { ChatModel } from "../../models/Chat";
 
 class ChatRepository implements IChatRepository {
   private readonly model: Model<IChat>;
 
-  constructor(model: Model<IChat>) {
+  constructor(model: Model<IChat> = ChatModel) {
     this.model = model;
   }
 
@@ -26,9 +27,15 @@ class ChatRepository implements IChatRepository {
     try {
       const chat = await this.model
         .findById(chatId)
-        .populate("participants", "_id firstName lastName email profilePicture")
+        .populate({
+          path: "participants.user",
+          select: "_id firstName lastName email profilePicture",
+        })
         .populate("lastMessage")
-        .populate("createdBy", "_id firstName lastName email profilePicture");
+        .populate({
+          path: "createdBy",
+          select: "_id firstName lastName email profilePicture",
+        });
 
       return chat;
     } catch (error) {
@@ -38,6 +45,7 @@ class ChatRepository implements IChatRepository {
       );
     }
   }
+
   async findOneOnOneChat(
     userId1: string,
     userId2: string
@@ -47,13 +55,22 @@ class ChatRepository implements IChatRepository {
         .findOne({
           isGroupChat: false,
           participants: {
-            $all: [new Types.ObjectId(userId1), new Types.ObjectId(userId2)],
+            $all: [
+              { user: new Types.ObjectId(userId1) },
+              { user: new Types.ObjectId(userId2) },
+            ],
             $size: 2,
           },
         })
-        .populate("partipants", "_id firstName lastName email profilePicture")
+        .populate({
+          path: "participants.user",
+          select: "_id firstName lastName email profilePicture",
+        })
         .populate("lastMessage")
-        .populate("createdBy", "_id firstName lastName email profilePicture");
+        .populate({
+          path: "createdBy",
+          select: "_id firstName lastName email profilePicture",
+        });
 
       return chat;
     } catch (error) {
@@ -68,9 +85,12 @@ class ChatRepository implements IChatRepository {
     try {
       const chats = await this.model
         .find({
-          participants: { $in: [new Types.ObjectId(userId)] },
+          "participants.user": { $in: [new Types.ObjectId(userId)] },
         })
-        .populate("partipants", "_id firstName lastName email profilePicture")
+        .populate({
+          path: "participants.user",
+          select: "_id firstName lastName email profilePicture",
+        })
         .populate({
           path: "lastMessage",
           populate: {
@@ -78,7 +98,10 @@ class ChatRepository implements IChatRepository {
             select: "_id firstName lastName email profilePicture",
           },
         })
-        .populate("createdBy", "_id firstName lastName email profilePicture")
+        .populate({
+          path: "createdBy",
+          select: "_id firstName lastName email profilePicture",
+        })
         .sort({ updatedAt: -1 });
 
       return chats;
@@ -112,17 +135,22 @@ class ChatRepository implements IChatRepository {
 
   async createGroupChat(
     name: string,
-    participants: string[],
-    createdBy: string
+    participants: { userId: string; userType: string }[],
+    createdBy: string,
+    creatorType: string
   ): Promise<IChat> {
     try {
-      const participantsIds = participants.map((id) => new Types.ObjectId(id));
+      const participantsData = participants.map(({ userId, userType }) => ({
+        user: new Types.ObjectId(userId),
+        userType: userType,
+      }));
 
       const groupChat = new this.model({
         name,
-        participants: participantsIds,
+        participants: participantsData,
         isGroupChat: true,
         createdBy: new Types.ObjectId(createdBy),
+        creatorType,
       });
 
       return await groupChat.save();
@@ -134,17 +162,34 @@ class ChatRepository implements IChatRepository {
     }
   }
 
-  async addUserToGroup(chatId: string, userId: string): Promise<IChat | null> {
+  async addUserToGroup(
+    chatId: string,
+    userId: string,
+    userType: string
+  ): Promise<IChat | null> {
     try {
       const chat = await this.model
         .findByIdAndUpdate(
           chatId,
-          { $addToSet: { participants: new Types.ObjectId(userId) } },
+          {
+            $addToSet: {
+              participants: {
+                user: new Types.ObjectId(userId),
+                userType: userType,
+              },
+            },
+          },
           { new: true }
         )
-        .populate("partipants", "_id firstName lastName email profilePicture")
+        .populate({
+          path: "participants.user",
+          select: "_id firstName lastName email profilePicture",
+        })
         .populate("lastMessage")
-        .populate("createdBy", "_id firstName lastName email profilePicture");
+        .populate({
+          path: "createdBy",
+          select: "_id firstName lastName email profilePicture",
+        });
 
       return chat;
     } catch (error) {
@@ -161,12 +206,25 @@ class ChatRepository implements IChatRepository {
   ): Promise<IChat | null> {
     try {
       const chat = await this.model
-        .findByIdAndUpdate(chatId, {
-          $pull: { participants: new Types.ObjectId(userId) },
+        .findByIdAndUpdate(
+          chatId,
+          {
+            $pull: {
+              participants: { user: new Types.ObjectId(userId) },
+            },
+          },
+          { new: true }
+        )
+        .populate({
+          path: "participants.user",
+          select: "_id firstName lastName email profilePicture",
         })
-        .populate("partipants", "_id firstName lastName email profilePicture")
         .populate("lastMessage")
-        .populate("createdBy", "_id firstName lastName email profilePicture");
+        .populate({
+          path: "createdBy",
+          select: "_id firstName lastName email profilePicture",
+        });
+
       return chat;
     } catch (error) {
       throw new AppError(
@@ -178,11 +236,17 @@ class ChatRepository implements IChatRepository {
 
   async renameGroup(chatId: string, newName: string): Promise<IChat | null> {
     try {
-      const chat = this.model
+      const chat = await this.model
         .findByIdAndUpdate(chatId, { name: newName }, { new: true })
-        .populate("partipants", "_id firstName lastName email profilePicture")
+        .populate({
+          path: "participants.user",
+          select: "_id firstName lastName email profilePicture",
+        })
         .populate("lastMessage")
-        .populate("createdBy", "_id firstName lastName email profilePicture");
+        .populate({
+          path: "createdBy",
+          select: "_id firstName lastName email profilePicture",
+        });
 
       return chat;
     } catch (error) {

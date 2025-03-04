@@ -24,7 +24,7 @@ export const authenticate = async (
   }
 
   try {
-    const decoded = (await verifyAccessToken(token)) as ITokenPayload;
+    const decoded = await verifyAccessToken(token) as ITokenPayload;
 
     req.user = decoded;
 

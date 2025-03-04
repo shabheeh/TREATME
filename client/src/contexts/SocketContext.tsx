@@ -1,6 +1,8 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { SocketContext } from "../hooks/useSocket";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/app/store";
 
 export interface SocketProviderProps {
   children: ReactNode;
@@ -9,21 +11,27 @@ export interface SocketProviderProps {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState<boolean>(false);
+  const token = useSelector((state: RootState) => state.auth.token);
 
   useEffect(() => {
+    if (!token) return;
+
     const socketInstance: Socket = io(import.meta.env.VITE_SERVER_ORIGIN, {
       withCredentials: true,
       reconnectionAttempts: 5,
       timeout: 10000,
+      auth: {
+        token,
+      },
     });
 
     socketInstance.on("connect", () => {
-      console.log("Conntected to socket server");
+      console.log("Connected to socket server");
       setConnected(true);
     });
 
     socketInstance.on("disconnect", () => {
-      console.log("Disonntected from socket server");
+      console.log("Disconnected from socket server");
       setConnected(false);
     });
 
@@ -33,11 +41,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     setSocket(socketInstance);
 
-    // disocnnect when component unmount
+    // Disconnect when component unmounts
     return () => {
       socketInstance.disconnect();
     };
-  }, []);
+  }, [token]);
 
   return (
     <SocketContext.Provider value={{ socket, connected }}>
