@@ -54,13 +54,13 @@ class ChatRepository implements IChatRepository {
       const chat = await this.model
         .findOne({
           isGroupChat: false,
-          participants: {
+          "participants.user": {
             $all: [
-              { user: new Types.ObjectId(userId1) },
-              { user: new Types.ObjectId(userId2) },
+              new Types.ObjectId(userId1),
+              new Types.ObjectId(userId2),
             ],
-            $size: 2,
           },
+          "participants": { $size: 2 }, 
         })
         .populate({
           path: "participants.user",
@@ -71,7 +71,7 @@ class ChatRepository implements IChatRepository {
           path: "createdBy",
           select: "_id firstName lastName email profilePicture",
         });
-
+  
       return chat;
     } catch (error) {
       throw new AppError(

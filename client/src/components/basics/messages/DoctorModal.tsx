@@ -319,6 +319,7 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelectDoctor(doctor._id, "Doctor");
+                        onClose();
                       }}
                       sx={{
                         alignSelf: "center",

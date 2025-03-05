@@ -36,6 +36,7 @@ router.post(
   upload.array("attachments", 5),
   chatController.uploadAttachments
 );
+router.get("/:chatId/messages/count", chatController.getUnreadMessagesCount)
 router.put("/messages", chatController.markAsRead);
 router.delete("/:messageId", chatController.deleteMessage)
 

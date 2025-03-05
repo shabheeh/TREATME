@@ -4,6 +4,7 @@ import { IAttachment, IMessage } from "src/interfaces/IMessage";
 export interface IChatService {
   getUserChats(userId: string): Promise<IChat[]>;
   getChatById(chatId: string): Promise<IChat | null>;
+  getMessageById(messageId: string): Promise<IMessage | null>;
   getChatMessages(chatId: string, limit: number, skip: number): Promise<IMessage[]>;
   accessChat(userId1: string, userId2: string, creatorType: "Patient" | "Doctor" | "Admin", userType2: "Patient" | "Doctor" | "Admin"): Promise<IChat>;
   createGroupChat(

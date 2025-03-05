@@ -10,6 +10,7 @@ export interface IChatController {
     getMessages(req: Request, res: Response, next: NextFunction): Promise<void>;
     sendMessage(req: Request, res: Response, next: NextFunction): Promise<void>;
     uploadAttachments(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getUnreadMessagesCount(req: Request, res: Response, next: NextFunction): Promise<void>;
     markAsRead(req: Request, res: Response, next: NextFunction): Promise<void>;
     deleteChat(req: Request, res: Response, next: NextFunction): Promise<void>;
     deleteMessage(req: Request, res: Response, next: NextFunction): Promise<void>;

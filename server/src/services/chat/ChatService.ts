@@ -28,6 +28,10 @@ class ChatService implements IChatService {
     return await this.chatRepository.findById(chatId);
   }
 
+ async getMessageById(messageId: string): Promise<IMessage | null> {
+   return await this.messageRepository.findById(messageId);
+ }
+
   async getChatMessages(
     chatId: string,
     limit = 50,
@@ -44,9 +48,12 @@ class ChatService implements IChatService {
   }
 
   async accessChat(userId1: string, userId2: string, creatorType: "Patient" | "Doctor" | "Admin", userType2: "Patient" | "Doctor" | "Admin"): Promise<IChat> {
+    console.log(userId1, userId2)
     let chat = await this.chatRepository.findOneOnOneChat(userId1, userId2);
 
+
     if (chat) {
+      console.log("chat fondddd")
       return chat;
     }
 

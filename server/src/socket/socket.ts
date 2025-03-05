@@ -71,9 +71,10 @@ export class SocketService implements ISocketService {
             socket.on('join-chat', (chatId: string) => this.handleJoinChat(socket, chatId));
             socket.on('leave-chat', (chatId: string) => this.handleLeaveChat(socket, chatId));
             socket.on('send-message', (data: any) => this.handleSendMessage(socket, data));
-            socket.on('typing', (data: any) => this.handleTyping(socket, data));
+            socket.on('typing', (data: { chatId: string; isTyping: boolean }) => this.handleTyping(socket, data));
             socket.on('stop-typing', (data: any) => this.handleStopTyping(socket, data));
             socket.on('read-messages', (chatId: string) => this.handleReadMessages(socket, chatId));
+            socket.on("message-sent",(data: { chat: string, messageId: string}) => this.handleMessageSent(socket, data))
 
             // Handle disconnection
             socket.on('disconnect', () => this.handleDisconnect(userId));
@@ -136,19 +137,32 @@ export class SocketService implements ISocketService {
         }
     }
 
-    private handleTyping(socket: Socket, data: { chatId: string }): void {
-        const { chatId } = data;
-        const userId = socket.data.user.id;
+    private async handleMessageSent(socket: Socket, data: {chat: string, messageId: string}) {
+        try {
+            const message = await this.chatService.getMessageById(data.messageId)
+            if (message) {
+                // emit the message to all users in the chat
+                this.io?.to(data.chat.toString()).emit("new-message", message);
+            }
+        } catch (error) {
+            logger.error(error instanceof Error ? error.message : "Error sending message");
+            socket.emit("error", { message: "Failed to send message"});
+        }
+    }
 
-        // emit typing event to all users in the chat except the sender
-        socket.to(chatId).emit("typing", { chatId, userId });
+    private handleTyping(socket: Socket, data: { chatId: string; isTyping: boolean }): void {
+        const { chatId, isTyping } = data;
+        const userId = socket.data.user.id;
+    
+        // emit typing event to all users 
+        socket.to(chatId).emit("typing", { chatId, userId, isTyping });
     }
 
     private handleStopTyping(socket: Socket, data: { chatId: string }): void {
         const { chatId } = data;
         const userId = socket.data.user.id;
 
-        // emit typing stopped event to all users in the chat except the sender
+        // emit typing stopped event to all users 
         socket.to(chatId).emit("stop-typing", { chatId, userId });
     }
 
@@ -159,7 +173,7 @@ export class SocketService implements ISocketService {
             const success = await this.chatService.markChatAsRead(chatId, userId);
 
             if (success) {
-                // Broadcast to all users in the chat that this user has read messages
+                // broadcast to read message
                 this.io?.to(chatId).emit("messages-read", {chatId, userId});
             }
         } catch (error) {

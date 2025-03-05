@@ -65,12 +65,31 @@ class ChatService {
 
   async sendMessage(messageData: FormData): Promise<IMessage> {
     try {
-      const response = await api.post("/messages/attachments", messageData);
+      const response = await api.post(
+        "/chats/messages/attachments",
+        messageData
+      );
       const { message } = response.data;
       return message;
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error sending message with files: ${error.message}`);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
+
+  async getUnreadMessagesCount(chatId: string): Promise<{ count: number }> {
+    try {
+      const response = await api.get(`/chats/${chatId}/messages/count`);
+      const { count } = response.data;
+      return count;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error getting unread messages count: ${error.message}`);
         throw new Error(error.message);
       }
 
