@@ -14,6 +14,13 @@ import { IChat, IMessage } from "../../../types/chat/chat.types";
 import chatService from "../../../services/chat/ChatService";
 import { toast } from "sonner";
 import { useSocket } from "../../../hooks/useSocket";
+import { useToastManager } from "../../../hooks/useToastMangager";
+import {
+  useNotification,
+  useToast,
+  useToaster,
+} from "../../../contexts/ToastContext";
+import { NotificationType } from "../../../types/notification/notification.types";
 
 interface ChatPageProps {
   // Optional props for layout integration
@@ -28,19 +35,20 @@ const Messages: React.FC<ChatPageProps> = ({
   const [activeChat, setActiveChat] = useState<IChat | null>(null);
   const [chats, setChats] = useState<IChat[]>([]);
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [chatsLoading, setChatsLoading] = useState<boolean>(false);
-  const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
+  const [isChatsLoading, setChatsLoading] = useState<boolean>(false);
+  const [isMessagesLoading, setMessagesLoading] = useState<boolean>(false);
   const [chatListOpen, setChatListOpen] = useState(true);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   const { socket } = useSocket();
+  const { addNotification } = useToaster();
 
   useEffect(() => {
     fetchChats();
+    showNotifications();
   }, []);
 
   useEffect(() => {
@@ -85,41 +93,45 @@ const Messages: React.FC<ChatPageProps> = ({
 
   const handleChatSelect = (chat: IChat) => {
     setActiveChat(chat);
+    if (isMobile) {
+      toggleChatList();
+    }
+  };
+
+  const showNotifications = () => {
+    addNotification({
+      title: "System Update",
+      message: "The system will undergo maintenance in 30 minutes",
+      type: "message",
+      actions: [
+        {
+          label: "Learn More",
+          onClick: () => console.log("Opening more info"),
+        },
+      ],
+    });
   };
 
   useEffect(() => {
-    if (!socket) return; // Ensure socket exists
+    if (!socket) return;
 
-    // Handle new message
+    // new message
     const handleNewMessage = (message: IMessage) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     };
 
-    // Handle online users update
-    // socket.on("online users", (users: string[]) => {
-    //   setOnlineUsers(users);
-    // });
-
-    // Handle new message received
     socket.on("new-message", handleNewMessage);
 
-    // Handle user joined chat
     socket.on("join-chat", (userId: string) => {
       setOnlineUsers((prev) =>
         [...prev, userId].filter((id, idx, self) => self.indexOf(id) === idx)
       );
     });
 
-    // Handle user left chat
+    // user left chat
     socket.on("leave-chat", (userId: string) => {
-      // console.log(`${userId} left chat ${chatId}`);
       setOnlineUsers((prev) => prev.filter((id) => id !== userId));
     });
-
-    // Handle chat updated (e.g., name change, new participants)
-    // socket.on("chat updated", (updatedChat: IChatDTO) => {
-    //   setChat(updatedChat);
-    // });
 
     // Handle connection or server errors
     socket.on("error", (error: { message: string }) => {
@@ -179,9 +191,8 @@ const Messages: React.FC<ChatPageProps> = ({
         position: "relative",
       }}
     >
-      {/* Chat List - Responsive handling */}
+      {/* Chat List */}
       {isMobile ? (
-        // Mobile: Drawer for chat list
         <Drawer
           anchor="left"
           open={chatListOpen}
@@ -202,7 +213,7 @@ const Messages: React.FC<ChatPageProps> = ({
           }}
         >
           <ChatList
-            // user={activeChat && activeChat?.participants[1]}
+            isChatsLoading={isChatsLoading}
             startNewChat={startNewChat}
             chats={chats}
             activeChat={activeChat}
@@ -210,11 +221,10 @@ const Messages: React.FC<ChatPageProps> = ({
           />
         </Drawer>
       ) : (
-        // Desktop/Tablet: Side panel for chat list
         <Paper
           elevation={0}
           sx={{
-            width: isTablet ? "280px" : "350px",
+            width: isMobile ? "280px" : "350px",
             height: "100%",
             display: chatListOpen ? "block" : "none",
             borderRight: 1,
@@ -223,6 +233,7 @@ const Messages: React.FC<ChatPageProps> = ({
           }}
         >
           <ChatList
+            isChatsLoading={isChatsLoading}
             startNewChat={startNewChat}
             chats={chats}
             activeChat={activeChat}
@@ -263,6 +274,7 @@ const Messages: React.FC<ChatPageProps> = ({
         )}
 
         <ChatScreen
+          isMessagesLoading={isMessagesLoading}
           messages={messages}
           // onSendMessage={handleSendMessage}
           activeChat={activeChat}

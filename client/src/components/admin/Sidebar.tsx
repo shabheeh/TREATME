@@ -37,9 +37,9 @@ const menuItems = [
     path: "/admin/specializations",
   },
   {
-    text: "Recruitements",
+    text: "Applications",
     icon: <PersonSearch />,
-    path: "/admin/recruitements",
+    path: "/admin/applications",
   },
 ];
 

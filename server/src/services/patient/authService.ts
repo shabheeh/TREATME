@@ -361,9 +361,7 @@ class PatientAuthService implements IPatientAuthService {
         300
       );
 
-
       return { newPatient, partialUser: true };
-
     } catch (error) {
       logger.error("error google signin", error);
       if (error instanceof AppError) {
@@ -376,31 +374,37 @@ class PatientAuthService implements IPatientAuthService {
     }
   }
 
-  async completeProfileAndSignUp(patientData: IPatient): Promise<{ patient: IPatient, accessToken: string, refreshToken: string}> {
+  async completeProfileAndSignUp(
+    patientData: IPatient
+  ): Promise<{ patient: IPatient; accessToken: string; refreshToken: string }> {
     try {
-      const jsonGoogleData = await this.cacheService.retrieve(`google:${patientData.email}`);
-  
+      const jsonGoogleData = await this.cacheService.retrieve(
+        `google:${patientData.email}`
+      );
+
       type GoogleData = {
         email: string;
-        firstName: string; 
+        firstName: string;
         lastName: string;
         profilePicture: string;
       };
       let googleData: GoogleData | null = null;
-  
+
       if (jsonGoogleData) {
         googleData = JSON.parse(jsonGoogleData) as GoogleData;
       }
-  
+
       // use google data if it exists for email and profile picture
       const updatedPatientData = {
         ...patientData,
         email: googleData?.email || patientData.email,
-        profilePicture: googleData?.profilePicture || patientData.profilePicture,
-      } as IPatient
-  
-      const patient = await this.patientRepository.createPatient(updatedPatientData);
-  
+        profilePicture:
+          googleData?.profilePicture || patientData.profilePicture,
+      } as IPatient;
+
+      const patient =
+        await this.patientRepository.createPatient(updatedPatientData);
+
       if (!patient) {
         throw new AppError("Failed to create New User");
       }
@@ -412,13 +416,12 @@ class PatientAuthService implements IPatientAuthService {
       };
 
       const { accessToken, refreshToken } = generateTokens(jwtPayload);
-  
+
       return {
         patient,
         accessToken,
         refreshToken,
-      }
-
+      };
     } catch (error) {
       logger.error("error creating a new googleUser", error);
       if (error instanceof AppError) {

@@ -8,7 +8,7 @@ const chatSchema = new Schema<IChat>(
         user: {
           type: Schema.Types.ObjectId,
           required: true,
-          refPath: 'participants.userType',
+          refPath: "participants.userType",
         },
         userType: {
           type: String,

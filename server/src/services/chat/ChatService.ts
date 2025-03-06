@@ -28,9 +28,9 @@ class ChatService implements IChatService {
     return await this.chatRepository.findById(chatId);
   }
 
- async getMessageById(messageId: string): Promise<IMessage | null> {
-   return await this.messageRepository.findById(messageId);
- }
+  async getMessageById(messageId: string): Promise<IMessage | null> {
+    return await this.messageRepository.findById(messageId);
+  }
 
   async getChatMessages(
     chatId: string,
@@ -47,13 +47,17 @@ class ChatService implements IChatService {
     return messages.reverse();
   }
 
-  async accessChat(userId1: string, userId2: string, creatorType: "Patient" | "Doctor" | "Admin", userType2: "Patient" | "Doctor" | "Admin"): Promise<IChat> {
-    console.log(userId1, userId2)
-    let chat = await this.chatRepository.findOneOnOneChat(userId1, userId2);
-
+  async accessChat(
+    userId1: string,
+    userId2: string,
+    creatorType: "Patient" | "Doctor" | "Admin",
+    userType2: "Patient" | "Doctor" | "Admin"
+  ): Promise<IChat> {
+    console.log(userId1, userId2);
+    const chat = await this.chatRepository.findOneOnOneChat(userId1, userId2);
 
     if (chat) {
-      console.log("chat fondddd")
+      console.log("chat fondddd");
       return chat;
     }
 
@@ -61,13 +65,13 @@ class ChatService implements IChatService {
     const chatData = {
       participants: [
         {
-          user: new Types.ObjectId(userId1), 
+          user: new Types.ObjectId(userId1),
           userType: creatorType,
         },
         {
           user: new Types.ObjectId(userId2),
           userType: userType2,
-        }
+        },
       ],
       isGroupChat: false,
       createdBy: new Types.ObjectId(userId1),
@@ -81,19 +85,19 @@ class ChatService implements IChatService {
     name: string,
     participants: { userId: string; userType: string }[],
     createdById: string,
-    creatorType: "Patient" | "Doctor" | "Admin",
+    creatorType: "Patient" | "Doctor" | "Admin"
   ): Promise<IChat> {
     try {
       // Ensure the creator (admin) is included in the participants list
       const isAdminIncluded = participants.some(
         (participant) => participant.userId === createdById
       );
-  
+
       if (!isAdminIncluded) {
-        // if not the admin to the participants list 
+        // if not the admin to the participants list
         participants.push({ userId: createdById, userType: "Admin" });
       }
-  
+
       return await this.chatRepository.createGroupChat(
         name,
         participants,
@@ -110,7 +114,11 @@ class ChatService implements IChatService {
     }
   }
 
-  async addUserToGroup(chatId: string, userId: string, userType: "Patient" | "Doctor" | "Admin"): Promise<IChat | null> {
+  async addUserToGroup(
+    chatId: string,
+    userId: string,
+    userType: "Patient" | "Doctor" | "Admin"
+  ): Promise<IChat | null> {
     return await this.chatRepository.addUserToGroup(chatId, userId, userType);
   }
 
@@ -201,7 +209,6 @@ class ChatService implements IChatService {
         throw new AppError("Failed to delete chat", 400);
       }
       return success;
-
     } catch (error) {
       logger.error("Error deleting chat", error);
       if (error instanceof AppError) {
@@ -224,7 +231,11 @@ class ChatService implements IChatService {
       }
 
       if (message.sender.toString() !== userId) {
-        throw new AuthError(AuthErrorCode.UNAUTHORIZED, "You can only delete your own messages", 403);
+        throw new AuthError(
+          AuthErrorCode.UNAUTHORIZED,
+          "You can only delete your own messages",
+          403
+        );
       }
 
       // delete attachments from cloudinary if any
@@ -246,7 +257,6 @@ class ChatService implements IChatService {
       }
 
       return success;
-
     } catch (error) {
       logger.error("Error deleting message", error);
       if (error instanceof AppError) {

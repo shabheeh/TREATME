@@ -11,15 +11,13 @@ import MessageRepository from "./repositories/chat/MessageRepository";
 import { MessageModel } from "./models/Message";
 import { ChatModel } from "./models/Chat";
 
-
-
 // create http server
 const server = http.createServer(app);
 
 // initialize services
-const messageRepository = new MessageRepository(MessageModel)
-const chatRepository = new ChatRepository(ChatModel)
-const chatService = new ChatService(chatRepository, messageRepository)
+const messageRepository = new MessageRepository(MessageModel);
+const chatRepository = new ChatRepository(ChatModel);
+const chatService = new ChatService(chatRepository, messageRepository);
 const socketService = new SocketService(chatService);
 
 socketService.initialize(server);
@@ -28,14 +26,14 @@ socketService.initialize(server);
 connectDB();
 
 process.on("unhandledRejection", (reason, promise) => {
-    logger.error("Unhandled Rejection at:", promise, "reason:", reason);
-  });
-  
-  process.on("uncaughtException", (error) => {
-    logger.error("Uncaught Exception thrown:", error);
-  });
+  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
 
- // Start the server
+process.on("uncaughtException", (error) => {
+  logger.error("Uncaught Exception thrown:", error);
+});
+
+// Start the server
 const PORT: string | undefined = process.env.PORT;
 
 if (!PORT) {
@@ -45,4 +43,3 @@ if (!PORT) {
 server.listen(PORT, () => {
   logger.info(`Server is running on http://localhost:${PORT}`);
 });
-

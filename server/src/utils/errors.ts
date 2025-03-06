@@ -8,7 +8,7 @@ export enum AuthErrorCode {
   USER_BLOCKED = "USER_BLOCKED",
   USER_NOT_FOUND = "USER_NOT_FOUND",
   UNAUTHENTICATED = "UNAUTHENTICATED",
-  UNAUTHORIZED = "UNAUTHORIZED"
+  UNAUTHORIZED = "UNAUTHORIZED",
 }
 
 export class AppError extends Error {
@@ -53,7 +53,7 @@ export class AuthError extends AppError {
       [AuthErrorCode.USER_BLOCKED]: "User account has been blocked",
       [AuthErrorCode.USER_NOT_FOUND]: "User not found",
       [AuthErrorCode.UNAUTHENTICATED]: "User is not Authenticated",
-      [AuthErrorCode.UNAUTHORIZED]: "Not Authorized"
+      [AuthErrorCode.UNAUTHORIZED]: "Not Authorized",
     };
 
     super(message || defaultMessages[code], statusCode, "fail");

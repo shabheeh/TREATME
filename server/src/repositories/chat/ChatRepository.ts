@@ -55,12 +55,9 @@ class ChatRepository implements IChatRepository {
         .findOne({
           isGroupChat: false,
           "participants.user": {
-            $all: [
-              new Types.ObjectId(userId1),
-              new Types.ObjectId(userId2),
-            ],
+            $all: [new Types.ObjectId(userId1), new Types.ObjectId(userId2)],
           },
-          "participants": { $size: 2 }, 
+          participants: { $size: 2 },
         })
         .populate({
           path: "participants.user",
@@ -71,7 +68,7 @@ class ChatRepository implements IChatRepository {
           path: "createdBy",
           select: "_id firstName lastName email profilePicture",
         });
-  
+
       return chat;
     } catch (error) {
       throw new AppError(

@@ -12,7 +12,11 @@ interface IChatRepository {
     createdBy: string,
     creatorType: string
   ): Promise<IChat>;
-  addUserToGroup(chatId: string, userId: string, userType: string): Promise<IChat | null>;
+  addUserToGroup(
+    chatId: string,
+    userId: string,
+    userType: string
+  ): Promise<IChat | null>;
   removeUserFromGroup(chatId: string, userId: string): Promise<IChat | null>;
   renameGroup(chatId: string, newName: string): Promise<IChat | null>;
   deleteChat(chatId: string): Promise<boolean>;

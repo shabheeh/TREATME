@@ -3,7 +3,7 @@ import { Document, Types } from "mongoose";
 interface IAttachment {
   url: string;
   publicId?: string;
-  resourceType?: string
+  resourceType?: string;
 }
 
 interface IMessage extends Document {

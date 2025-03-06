@@ -26,7 +26,7 @@ router.put("/group/rename", chatController.renameGroup);
 router.put("/group/add", chatController.addToGroup);
 router.put("/group/remove", chatController.removeFromGroup);
 
-router.delete('/:chatId', chatController.deleteChat);
+router.delete("/:chatId", chatController.deleteChat);
 
 // message routes
 router.get("/:chatId/messages", chatController.getMessages);
@@ -36,8 +36,8 @@ router.post(
   upload.array("attachments", 5),
   chatController.uploadAttachments
 );
-router.get("/:chatId/messages/count", chatController.getUnreadMessagesCount)
+router.get("/:chatId/messages/count", chatController.getUnreadMessagesCount);
 router.put("/messages", chatController.markAsRead);
-router.delete("/:messageId", chatController.deleteMessage)
+router.delete("/:messageId", chatController.deleteMessage);
 
 export default router;

@@ -39,7 +39,6 @@ class DoctorAuthService implements IDoctorAuthService {
       const { accessToken, refreshToken } = generateTokens(payload);
 
       return { accessToken, refreshToken, doctor };
-      
     } catch (error) {
       logger.error("error doctor signin", error);
       if (error instanceof AppError) {

@@ -93,10 +93,7 @@ router.post(
 );
 router.patch("/auth/reset-password", patientAuthController.resetPassword);
 router.post("/auth/google", patientAuthController.googleSignIn);
-router.post(
-  "/auth/complete-profile",
-  patientAuthController.completeProfile
-);
+router.post("/auth/complete-profile", patientAuthController.completeProfile);
 router.post("/auth/resend-otp", patientAuthController.resendOtp);
 router.post(
   "/auth/forgot-password/resend-otp",

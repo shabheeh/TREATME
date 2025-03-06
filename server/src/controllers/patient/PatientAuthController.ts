@@ -201,7 +201,6 @@ class PatientAuthController implements IPatientAuthController {
         patient: newPatient,
         partialUser,
       });
-      
     } catch (error) {
       logger.error("Error during Google authentication:", error);
       next(error);
@@ -214,7 +213,6 @@ class PatientAuthController implements IPatientAuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-
       const { patientData } = req.body;
 
       const result =
@@ -233,7 +231,6 @@ class PatientAuthController implements IPatientAuthController {
         patient,
         accessToken,
       });
-
     } catch (error) {
       logger.error("Error during Google authentication singup:", error);
       next(error);

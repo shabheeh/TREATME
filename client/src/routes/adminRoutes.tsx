@@ -12,6 +12,7 @@ import SignIn from "../components/admin/SignIn";
 import EditSpecialization from "../components/admin/EditSpecialization";
 import AntiProtectedRoute from "./AntiProtectedRoute";
 import ApplicantDetails from "../components/admin/ApplicantDetails";
+import Messages from "../components/basics/messages/Messages";
 
 export const adminRoutes = [
   <Route
@@ -33,7 +34,8 @@ export const adminRoutes = [
     <Route path="" element={<Dashboard />} />
     <Route path="patients" element={<Patients />} />
     <Route path="doctors" element={<Doctors />} />
-    <Route path="recruitements" element={<Applicants />} />
+    <Route path="messages" element={<Messages />} />
+    <Route path="applications" element={<Applicants />} />
     <Route path="recruitements/:id" element={<ApplicantDetails />} />
     <Route path="add-doctor" element={<AddDoctor />} />
     <Route path="specializations" element={<Specializations />} />

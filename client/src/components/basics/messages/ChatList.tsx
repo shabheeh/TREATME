@@ -6,27 +6,28 @@ import {
   ListItemText,
   Avatar,
   Typography,
-  Badge,
   InputBase,
   AppBar,
   Toolbar,
   IconButton,
   Box,
-  useMediaQuery,
   useTheme,
   Menu,
   MenuItem,
-
+  Skeleton,
 } from "@mui/material";
 import {
   Search as SearchIcon,
   MoreVert as MoreVertIcon,
 } from "@mui/icons-material";
-import { IChat, ISender } from "../../../types/chat/chat.types";
+import { IChat } from "../../../types/chat/chat.types";
 import DoctorSearchModal from "./DoctorModal";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
+import { formatMessageTime } from "../../../utils/dateUtils";
 
 interface ChatListProps {
-  // user: ISender | null;
+  isChatsLoading: boolean;
   chats: IChat[];
   activeChat: IChat | null;
   onChatSelect: (chat: IChat) => void;
@@ -34,19 +35,22 @@ interface ChatListProps {
 }
 
 const ChatList: React.FC<ChatListProps> = ({
-  // user,
+  isChatsLoading,
   chats,
   activeChat,
   onChatSelect,
   startNewChat,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [isDoctorModalOpen, setDoctorModalOpen] = useState(false);
-
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const doctor = useSelector((state: RootState) => state.user.admin);
+  const admin = useSelector((state: RootState) => state.user.doctor);
+  const patient = useSelector((state: RootState) => state.user.patient);
+
+  const currentUser = patient || admin || doctor;
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget); // Open menu at clicked position
@@ -55,7 +59,6 @@ const ChatList: React.FC<ChatListProps> = ({
   const handleMenuClose = () => {
     setAnchorEl(null); // Close menu
   };
-
 
   return (
     <Box
@@ -133,7 +136,7 @@ const ChatList: React.FC<ChatListProps> = ({
         >
           <Box
             sx={{
-              p: "0 16px", // theme.spacing(0, 2)
+              p: "0 16px",
               height: "100%",
               position: "absolute",
               pointerEvents: "none",
@@ -146,14 +149,14 @@ const ChatList: React.FC<ChatListProps> = ({
             <SearchIcon />
           </Box>
           <InputBase
-            placeholder="Search or start new chat"
+            placeholder="Search chats"
             inputProps={{ "aria-label": "search" }}
             sx={{
               color: "inherit",
               width: "100%",
               "& .MuiInputBase-input": {
-                p: "8px 8px 8px 0", // theme.spacing(1, 1, 1, 0)
-                pl: "calc(1em + 32px)", // calc(1em + theme.spacing(4))
+                p: "8px 8px 8px 0",
+                pl: "calc(1em + 32px)",
                 transition: theme.transitions.create("width"),
                 width: "100%",
               },
@@ -162,104 +165,197 @@ const ChatList: React.FC<ChatListProps> = ({
         </Box>
       </Box>
 
-      {/* Chat List */}
-      <List
-        sx={{
-          flexGrow: 1,
-          overflow: "auto",
-          p: 0,
-          "& .MuiListItem-root": {
-            borderBottom: "1px solid #f0f2f5",
-          },
-        }}
-      >
-        {chats.map((chat) => (
-          
-          <ListItem
-            key={chat._id}
-            alignItems="flex-start"
-            onClick={() => onChatSelect(chat)}
-            sx={{
-              cursor: "pointer",
-              bgcolor: activeChat?._id === chat._id ? "#E0F7F7" : "transparent",
-              "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
-              py: 1,
-            }}
-          >
-            <ListItemAvatar>
-              <Avatar
-                alt={chat.participants[1].user.firstName}
-                src={chat.participants[1].user.profilePicture}
-              />
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    component="span"
-                    noWrap
-                    sx={{ maxWidth: { xs: "120px", sm: "150px", md: "180px" } }}
-                  >
-                    {chat.participants[1].user.firstName}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {chat.createdAt.toString()}
-                  </Typography>
-                </Box>
-              }
-              secondary={
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mt: 0.5,
-                  }}
-                >
-                  <Typography
+      {isChatsLoading ? (
+        <List
+          sx={{
+            flexGrow: 1,
+            overflow: "auto",
+            p: 0,
+            "& .MuiListItem-root": {
+              borderBottom: "1px solid #f0f2f5",
+            },
+          }}
+        >
+          {Array.from({ length: 4 }).map((_, index) => (
+            <ListItem
+              key={index}
+              alignItems="flex-start"
+              sx={{
+                cursor: "pointer",
+                py: 1,
+              }}
+            >
+              {/* Avatar */}
+              <ListItemAvatar>
+                <Avatar>
+                  <Skeleton variant="circular" width={40} height={40} />
+                </Avatar>
+              </ListItemAvatar>
+
+              {/* Text Content */}
+              <ListItemText
+                primary={
+                  <Box
                     sx={{
-                      display: "inline",
-                      maxWidth: { xs: "120px", sm: "150px", md: "180px" },
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
-                    component="span"
-                    variant="body2"
-                    color="text.secondary"
                   >
-                    {chat.lastMessage?.content}
-                  </Typography>
-                  {chat.participants.length > 0 && (
-                    <Badge
-                      badgeContent={3}
+                    {/* Name */}
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        width: { xs: "70px", sm: "90px", md: "100px" },
+                      }}
+                    />
+
+                    {/* Timestamp */}
+                    <Skeleton variant="text" width={60} />
+                  </Box>
+                }
+                secondary={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mt: 0.5,
+                    }}
+                  >
+                    {/* Last Message */}
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        width: { xs: "100px", sm: "130px", md: "150px" },
+                      }}
+                    />
+
+                    {/* Unread Count */}
+                    {/* <Badge
+                      badgeContent={
+                        <Skeleton variant="circular" width={18} height={18} />
+                      }
                       sx={{
                         "& .MuiBadge-badge": {
-                          bgcolor: "#00a884",
-                          color: "#fff",
                           fontSize: 10,
                           minWidth: 18,
                           height: 18,
                           p: "0 4px",
                         },
                       }}
-                    />
-                  )}
-                </Box>
-              }
-            />
-          </ListItem>
-        ))}
-      </List>
+                    /> */}
+                  </Box>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      ) : (
+        <List
+          sx={{
+            flexGrow: 1,
+            overflow: "auto",
+            p: 0,
+            "& .MuiListItem-root": {
+              borderBottom: "1px solid #f0f2f5",
+            },
+          }}
+        >
+          {chats.map((chat) => (
+            <ListItem
+              key={chat._id}
+              alignItems="flex-start"
+              onClick={() => onChatSelect(chat)}
+              sx={{
+                cursor: "pointer",
+                bgcolor:
+                  activeChat?._id === chat._id ? "#E0F7F7" : "transparent",
+                "&:hover": {
+                  bgcolor: "#f5f5f5",
+                },
+                py: 1,
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar
+                  alt={chat.participants[1].user.firstName}
+                  src={chat.participants[1].user.profilePicture}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      component="span"
+                      noWrap
+                      sx={{
+                        maxWidth: { xs: "120px", sm: "150px", md: "180px" },
+                      }}
+                    >
+                      {chat.participants[1].user.firstName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {chat.lastMessage &&
+                        formatMessageTime(chat.lastMessage?.createdAt)}
+                    </Typography>
+                  </Box>
+                }
+                secondary={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mt: 0.5,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        display: "inline",
+                        maxWidth: { xs: "120px", sm: "150px", md: "180px" },
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                      component="span"
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      {chat.lastMessage?.sender._id === currentUser?._id &&
+                        "You:"}{" "}
+                      {chat.lastMessage?.content}
+                    </Typography>
+                    {/* {chat.participants.length > 0 && (
+                      <Badge
+                        badgeContent={3}
+                        sx={{
+                          "& .MuiBadge-badge": {
+                            bgcolor: "#00a884",
+                            color: "#fff",
+                            fontSize: 10,
+                            minWidth: 18,
+                            height: 18,
+                            p: "0 4px",
+                          },
+                        }}
+                      />
+                    )} */}
+                  </Box>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      )}
+
       {isDoctorModalOpen && (
         <DoctorSearchModal
           isOpen={isDoctorModalOpen}

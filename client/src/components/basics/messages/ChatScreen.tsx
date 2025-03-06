@@ -9,9 +9,6 @@ import {
   TextField,
   Paper,
   InputAdornment,
-  useMediaQuery,
-  useTheme,
-  Grid,
   Chip,
   Tooltip,
   Divider,
@@ -33,8 +30,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { useSocket } from "../../../hooks/useSocket";
 import chatService from "../../../services/chat/ChatService";
+import Loading from "../Loading";
+import { formatTime } from "../../../utils/dateUtils";
 
 interface MessageScreenProps {
+  isMessagesLoading: boolean;
   messages: IMessage[];
   onBackClick?: () => void;
   activeChat: IChat | null;
@@ -43,6 +43,7 @@ interface MessageScreenProps {
 }
 
 const MessageScreen: React.FC<MessageScreenProps> = ({
+  isMessagesLoading,
   messages,
   onBackClick,
   activeChat,
@@ -53,10 +54,9 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [isSenderTyping, setSenderTyping] = useState<boolean>(false);
+  const [isUserOnline, setUserOnline] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const doctor = useSelector((state: RootState) => state.user.admin);
   const admin = useSelector((state: RootState) => state.user.doctor);
@@ -127,6 +127,29 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       }
     };
   }, [socket, activeChat?._id, currentUser?._id, sender?.user._id]);
+
+  useEffect(() => {
+    if (!socket || !sender?.user._id) return;
+
+    socket.on("user-online", (data) => {
+      if (data.userId === sender.user._id) {
+        setUserOnline(true);
+      }
+    });
+
+    socket.on("user-offline", ({ userId }) => {
+      if (userId === sender.user._id) {
+        setUserOnline(false);
+      }
+    });
+
+    return () => {
+      if (socket) {
+        socket.off("user-online");
+        socket.off("user-offline");
+      }
+    };
+  }, [socket, sender?.user]);
 
   // Handle message sending
   const handleSend = async () => {
@@ -242,7 +265,11 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
               {sender?.user.firstName} {sender?.user.lastName}
             </Typography>
             <Typography variant="caption" color="white">
-              {isSenderTyping ? "Typing..." : "Online"}
+              {isSenderTyping
+                ? "Typing..."
+                : isUserOnline
+                  ? "Online"
+                  : "Offline"}
             </Typography>
           </Box>
           <IconButton color="inherit" size="small">
@@ -252,155 +279,155 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       </AppBar>
 
       {/* Messages */}
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflow: "auto",
-          p: { xs: 1, sm: 2 },
-          backgroundRepeat: "repeat",
-          backgroundSize: "contain",
-        }}
-      >
-        {messages.map((message, index) => {
-          const isUnread = unreadMessages.some(
-            (unreadMessage) =>
-              unreadMessage._id === message._id &&
-              unreadMessage.sender._id !== currentUser?._id
-          );
-          const showDivider =
-            isUnread &&
-            (index === 0 ||
-              !unreadMessages.some(
-                (unreadMessage) => unreadMessage._id === messages[index - 1]._id
-              ));
+      {isMessagesLoading ? (
+        <Loading />
+      ) : (
+        <Box
+          sx={{
+            flexGrow: 1,
+            overflow: "auto",
+            p: { xs: 1, sm: 2 },
+            backgroundRepeat: "repeat",
+            backgroundSize: "contain",
+          }}
+        >
+          {messages.map((message, index) => {
+            const isUnread = unreadMessages.some(
+              (unreadMessage) =>
+                unreadMessage._id === message._id &&
+                unreadMessage.sender._id !== currentUser?._id
+            );
+            const showDivider =
+              isUnread &&
+              (index === 0 ||
+                !unreadMessages.some(
+                  (unreadMessage) =>
+                    unreadMessage._id === messages[index - 1]._id
+                ));
 
-          return (
-            <React.Fragment key={message._id}>
-              {showDivider && (
-                <Divider sx={{ my: 2, borderColor: "teal" }}>
-                  <Typography variant="caption" color="teal">
-                    Unread Messages
-                  </Typography>
-                </Divider>
-              )}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent:
-                    message.sender._id === currentUser?._id
-                      ? "flex-end"
-                      : "flex-start",
-                  mb: 1,
-                }}
-              >
-                <Paper
+            return (
+              <React.Fragment key={message._id}>
+                {showDivider && (
+                  <Divider sx={{ my: 2, borderColor: "teal" }}>
+                    <Typography variant="caption" color="teal">
+                      Unread Messages
+                    </Typography>
+                  </Divider>
+                )}
+                <Box
                   sx={{
-                    maxWidth: { xs: "85%", sm: "70%" },
-                    p: { xs: 1, sm: 1.5 },
-                    borderRadius: 2,
-                    borderTopRightRadius:
-                      message.sender._id === currentUser?._id ? 0 : 2,
-                    borderTopLeftRadius:
-                      message.sender._id === currentUser?._id ? 2 : 0,
-                    bgcolor:
+                    display: "flex",
+                    justifyContent:
                       message.sender._id === currentUser?._id
-                        ? "teal"
-                        : "#E0F7F7",
-                    color:
-                      message.sender._id === currentUser?._id
-                        ? "white"
-                        : "#003D3D",
-                    boxShadow: "none",
+                        ? "flex-end"
+                        : "flex-start",
+                    mb: 1,
                   }}
                 >
-                  {/* Show attachments first */}
-                  {message.attachments?.map((attachment, index) => (
-                    <Box key={index} sx={{ mt: 1 }}>
-                      {attachment.resourceType === "image" ? (
-                        <Box>
-                          <a
-                            href={attachment.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Box
-                              component="img"
-                              src={attachment.url}
-                              alt="attachment"
-                              sx={{
-                                width: { xs: "100%", sm: "200px" },
-                                maxWidth: "200px",
-                                aspectRatio: "1 / 1",
-                                height: "auto",
-                                borderRadius: "8px",
-                                objectFit: "cover",
-                              }}
-                            />
-                          </a>
-                          {/* Text below the image */}
-                          {message.content && (
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                wordBreak: "break-word",
-                                mt: 1,
-                                fontSize: "0.875rem",
-                                color:
-                                  message.sender._id === currentUser?._id
-                                    ? "white"
-                                    : "#003D3D",
-                              }}
-                            >
-                              {message.content}
-                            </Typography>
-                          )}
-                        </Box>
-                      ) : (
-                        // Non-image attachments
-                        <Tooltip title={attachment.fileName}>
-                          <Chip
-                            icon={<AttachFileIcon />}
-                            label={attachment.fileName}
-                            sx={{
-                              maxWidth: "200px",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          />
-                        </Tooltip>
-                      )}
-                    </Box>
-                  ))}
-
-                  {/* Show text-only messages if no attachments */}
-                  {!message.attachments?.length && (
-                    <Typography
-                      variant="body1"
-                      sx={{ wordBreak: "break-word" }}
-                    >
-                      {message.content}
-                    </Typography>
-                  )}
-
-                  {/* Timestamp */}
-                  <Typography
+                  <Paper
                     sx={{
-                      fontSize: "0.7rem",
-                      color: "#8696a0",
-                      mt: 0.5,
-                      textAlign: "right",
+                      maxWidth: { xs: "85%", sm: "70%" },
+                      p: { xs: 1, sm: 1.5 },
+                      borderRadius: 2,
+                      borderTopRightRadius:
+                        message.sender._id === currentUser?._id ? 0 : 2,
+                      borderTopLeftRadius:
+                        message.sender._id === currentUser?._id ? 2 : 0,
+                      bgcolor:
+                        message.sender._id === currentUser?._id
+                          ? "teal"
+                          : "#E0F7F7",
+                      color:
+                        message.sender._id === currentUser?._id
+                          ? "white"
+                          : "#003D3D",
+                      boxShadow: "none",
                     }}
                   >
-                    {new Date(message.createdAt).toLocaleTimeString()}
-                  </Typography>
-                </Paper>
-              </Box>
-            </React.Fragment>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </Box>
+                    {message.attachments?.map((attachment, index) => (
+                      <Box key={index} sx={{ mt: 1 }}>
+                        {attachment.resourceType === "image" ? (
+                          <Box>
+                            <a
+                              href={attachment.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Box
+                                component="img"
+                                src={attachment.url}
+                                alt="attachment"
+                                sx={{
+                                  width: { xs: "100%", sm: "200px" },
+                                  maxWidth: "200px",
+                                  aspectRatio: "1 / 1",
+                                  height: "auto",
+                                  borderRadius: "8px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </a>
+                            {message.content && (
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  wordBreak: "break-word",
+                                  mt: 1,
+                                  fontSize: "0.875rem",
+                                  color:
+                                    message.sender._id === currentUser?._id
+                                      ? "white"
+                                      : "#003D3D",
+                                }}
+                              >
+                                {message.content}
+                              </Typography>
+                            )}
+                          </Box>
+                        ) : (
+                          <Tooltip title={attachment.resourceType}>
+                            <Chip
+                              icon={<AttachFileIcon />}
+                              label={attachment.resourceType}
+                              sx={{
+                                maxWidth: "200px",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            />
+                          </Tooltip>
+                        )}
+                      </Box>
+                    ))}
+                    {!message.attachments?.length && (
+                      <Typography
+                        variant="body1"
+                        sx={{ wordBreak: "break-word" }}
+                      >
+                        {message.content}
+                      </Typography>
+                    )}
+
+                    {/* Timestamp */}
+                    <Typography
+                      sx={{
+                        fontSize: "0.7rem",
+                        color: "#8696a0",
+                        mt: 0.5,
+                        textAlign: "right",
+                      }}
+                    >
+                      {formatTime(message.createdAt)}
+                    </Typography>
+                  </Paper>
+                </Box>
+              </React.Fragment>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </Box>
+      )}
 
       {/* Attachment Preview Section */}
       {attachments.length > 0 && (
@@ -478,7 +505,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       {/* Input */}
       <Box sx={{ p: { xs: 1, sm: 2 }, bgcolor: "#f0f2f5" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          {!isSmallScreen && (
+          {!isMobile && (
             <>
               <IconButton
                 color="default"
