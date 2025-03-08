@@ -48,7 +48,8 @@ export interface IAppointmentService {
   updateAppointment(
     appointmentId: string,
     updateData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>>;
+  ): Promise<IAppointment>;
+  cancelAppointment(appointmentId: string): Promise<void>;
   getAppointmentsByUserId(
     userId: string,
     role: string
@@ -75,6 +76,11 @@ export interface IAppointmentController {
     next: NextFunction
   ): Promise<void>;
   updateAppointment(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  cancelAppointment(
     req: Request,
     res: Response,
     next: NextFunction

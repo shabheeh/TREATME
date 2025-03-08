@@ -81,6 +81,29 @@ class AppointmentController implements IAppointmentController {
     }
   };
 
+  cancelAppointment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { appointmentId } = req.params;
+      const { updateData } = req.body;
+
+      if (!appointmentId || !updateData) {
+        throw new BadRequestError("Bad Request: Missing info");
+      }
+
+      const appointment =
+        await this.appointmentService.cancelAppointment(appointmentId);
+
+      res.status(200).json({ appointment });
+    } catch (error) {
+      logger.error("Failed to update appointment");
+      next(error);
+    }
+  };
+
   getAppointmentsByUserId = async (
     req: Request,
     res: Response,

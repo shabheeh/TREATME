@@ -122,7 +122,6 @@ const DoctorProfile = () => {
     }
   };
 
-  // Calculate average rating
   const averageRating = reviews?.length
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0;

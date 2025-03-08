@@ -72,7 +72,7 @@ class DoctorController implements IDoctorController {
         page: parseInt(req.query.page as string),
         limit: parseInt(req.query.limit as string),
       };
-      console.log(query, "query");
+
       const result = await this.doctorService.getDoctors(query);
       res.status(200).json({ result });
     } catch (error) {

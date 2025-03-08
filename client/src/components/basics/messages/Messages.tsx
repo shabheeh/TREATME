@@ -48,7 +48,7 @@ const Messages: React.FC<ChatPageProps> = ({
 
   useEffect(() => {
     fetchChats();
-    showNotifications();
+    // showNotifications();
   }, []);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Messages: React.FC<ChatPageProps> = ({
     fetchMessages(activeChat._id);
   }, [activeChat]);
 
-  // Close chat list when selecting a chat on mobile
+
   useEffect(() => {
     if (isMobile && activeChat) {
       setChatListOpen(false);

@@ -122,7 +122,11 @@ export const ToasterProvider: React.FC<ToasterProviderProps> = ({
               )}
             </Box>
 
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 0.5 }}
+            >
               {notification.timestamp.toLocaleTimeString()}
             </Typography>
           </NotificationItem>

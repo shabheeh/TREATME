@@ -29,6 +29,10 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
     navigate("/visitnow");
   };
 
+  const handleNotificationClick = () => {
+    navigate("/notifications");
+  };
+
   return (
     <AppBar
       position="fixed"
@@ -68,7 +72,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
             <Button
               variant="text"
               sx={{ minWidth: "auto", padding: 1 }}
-              // onClick={handleNotificationClick}
+              onClick={handleNotificationClick}
             >
               <IoIosNotificationsOutline size={30} />
             </Button>

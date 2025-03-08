@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   List,
   ListItem,
@@ -45,6 +45,8 @@ const ChatList: React.FC<ChatListProps> = ({
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const [filteredChats, setFilteredChats] = useState<IChat[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const doctor = useSelector((state: RootState) => state.user.admin);
   const admin = useSelector((state: RootState) => state.user.doctor);
@@ -53,12 +55,21 @@ const ChatList: React.FC<ChatListProps> = ({
   const currentUser = patient || admin || doctor;
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget); // Open menu at clicked position
+    setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null); // Close menu
+    setAnchorEl(null);
   };
+
+  useEffect(() => {
+    const filterChats = chats.filter((chat) =>
+      chat.participants.some((user) =>
+        user.user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+    setFilteredChats(filterChats);
+  }, [searchQuery, chats]);
 
   return (
     <Box
@@ -151,6 +162,8 @@ const ChatList: React.FC<ChatListProps> = ({
           <InputBase
             placeholder="Search chats"
             inputProps={{ "aria-label": "search" }}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             sx={{
               color: "inherit",
               width: "100%",
@@ -262,7 +275,7 @@ const ChatList: React.FC<ChatListProps> = ({
             },
           }}
         >
-          {chats.map((chat) => (
+          {filteredChats.map((chat) => (
             <ListItem
               key={chat._id}
               alignItems="flex-start"

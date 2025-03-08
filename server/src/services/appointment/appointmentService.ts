@@ -11,17 +11,26 @@ import { extractDate, extractTime } from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
 import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
 import Stripe from "stripe";
+import { generateBookingCancellationHtml } from "../../helpers/bookingCancellationHtml";
+import { generateBookingConfirmationHtmlForDoctor } from "../../helpers/bookingConfirmationHtmlForDoctor";
+import { generateBookingCancellationHtmlForDoctor } from "../../helpers/bookingCancellationHtmlForDoctor";
+import { INotificationService } from "../notification/interface/INotificationService";
+import { INotification } from "src/interfaces/INotification";
+import { ObjectId, Types } from "mongoose";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
   private scheduleRepo: IScheduleRepository;
+  private notificationService: INotificationService;
 
   constructor(
     appointmentRepo: IAppointmentRepository,
-    scheduleRepo: IScheduleRepository
+    scheduleRepo: IScheduleRepository,
+    notificationService: INotificationService
   ) {
     this.appointmentRepo = appointmentRepo;
     this.scheduleRepo = scheduleRepo;
+    this.notificationService = notificationService;
   }
 
   async createAppointment(
@@ -51,9 +60,14 @@ class AppointmentService implements IAppointmentService {
         populatedAppointment.patient &&
         populatedAppointment.date
       ) {
-        const { firstName: doctorFirstName, lastName: doctorLastName } =
-          populatedAppointment.doctor;
         const {
+          _id: doctorId,
+          firstName: doctorFirstName,
+          lastName: doctorLastName,
+          email: doctorEmail,
+        } = populatedAppointment.doctor;
+        const {
+          _id: patientId,
           firstName: patientFirstName,
           lastName: patientLastName,
           email: patientEmail,
@@ -61,13 +75,39 @@ class AppointmentService implements IAppointmentService {
 
         const date = extractDate(populatedAppointment.date);
         const time = extractTime(populatedAppointment.date);
-        const html = generateBookingConfirmationHtml(
+
+        const patientHtml = generateBookingConfirmationHtml(
           `${doctorFirstName} ${doctorLastName}`,
           `${patientFirstName} ${patientLastName}`,
           date,
           time
         );
-        await sendEmail(patientEmail, "Booking Confirmation", undefined, html);
+        const doctorHtml = generateBookingConfirmationHtmlForDoctor(
+          `${doctorFirstName} ${doctorLastName}`,
+          `${patientFirstName} ${patientLastName}`,
+          date,
+          time
+        );
+
+        await Promise.all([
+          sendEmail(
+            patientEmail,
+            "Booking Confirmation",
+            undefined,
+            patientHtml
+          ),
+          sendEmail(doctorEmail, "Booking Confirmation", undefined, doctorHtml),
+        ]);
+
+        const notificationData: Partial<INotification> = {
+          user: patientId as Types.ObjectId,
+          userType: "Patient",
+          message: `Your appointment has been schedulued with dr. ${doctorFirstName} ${doctorLastName} on ${date} at ${time}`,
+          type: "appointments",
+          priority: "medium",
+        };
+
+        await this.notificationService.createNotification(notificationData);
       }
 
       return populatedAppointment;
@@ -94,7 +134,7 @@ class AppointmentService implements IAppointmentService {
   async updateAppointment(
     appointmentId: string,
     updateData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>> {
+  ): Promise<IAppointment> {
     try {
       const { doctor, slotId, dayId, status } = updateData;
 
@@ -121,45 +161,53 @@ class AppointmentService implements IAppointmentService {
       );
 
       // Handle email notifications based on appointment status
-      if (status === "confirmed" || status === "cancelled") {
+      if (status === "confirmed") {
         const appointmentData = await this.getAppointmentById(appointmentId);
 
         if (appointmentData?.doctor && appointmentData.patient) {
-          const { firstName: doctorFirstName, lastName: doctorLastName } =
-            appointmentData.doctor;
+          const {
+            firstName: doctorFirstName,
+            lastName: doctorLastName,
+            email: doctorEmail,
+          } = appointmentData.doctor;
           const {
             firstName: patientFirstName,
             lastName: patientLastName,
             email: patientEmail,
           } = appointmentData.patient;
 
-          if (status === "confirmed" && appointmentData.date) {
+          if (appointmentData.date) {
             // Send booking confirmation email
             const date = extractDate(appointmentData.date);
             const time = extractTime(appointmentData.date);
-            const html = generateBookingConfirmationHtml(
+
+            const patientHtml = generateBookingConfirmationHtml(
               `${doctorFirstName} ${doctorLastName}`,
               `${patientFirstName} ${patientLastName}`,
               date,
               time
             );
-            await sendEmail(
-              patientEmail,
-              "Booking Confirmation",
-              undefined,
-              html
+            const doctorHtml = generateBookingConfirmationHtmlForDoctor(
+              `${doctorFirstName} ${doctorLastName}`,
+              `${patientFirstName} ${patientLastName}`,
+              date,
+              time
             );
-          } else if (
-            status === "cancelled" &&
-            appointmentData.dayId &&
-            appointmentData.slotId
-          ) {
-            // Toggle booking status for cancelled appointment
-            await this.scheduleRepo.toggleBookingStatus(
-              appointmentData.doctor._id,
-              appointmentData.dayId,
-              appointmentData.slotId
-            );
+
+            await Promise.all([
+              sendEmail(
+                patientEmail,
+                "Booking Confirmation",
+                undefined,
+                patientHtml
+              ),
+              sendEmail(
+                doctorEmail,
+                "Booking Confirmation",
+                undefined,
+                doctorHtml
+              ),
+            ]);
           }
         }
       }
@@ -167,6 +215,82 @@ class AppointmentService implements IAppointmentService {
       return updatedAppointment;
     } catch (error) {
       logger.error("Error updating appointment", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async cancelAppointment(appointmentId: string): Promise<void> {
+    try {
+      // get existing appointment
+      const appointmentData =
+        await this.appointmentRepo.getAppointmentById(appointmentId);
+
+      // dont allow cancellation if the appointment is 2hrs from now
+      const now = new Date();
+      const appointmentDate = new Date(appointmentData.date);
+      const timeDifference = appointmentDate.getTime() - now.getTime();
+      const twoHoursInMillis = 2 * 60 * 60 * 1000;
+
+      if (timeDifference < twoHoursInMillis) {
+        throw new AppError(
+          "Cancellation not allowed within 2 hours of the appointment",
+          400
+        );
+      }
+
+      // toggle booking status for cancelled appointment
+      await this.scheduleRepo.toggleBookingStatus(
+        appointmentData.doctor._id,
+        appointmentData.dayId,
+        appointmentData.slotId
+      );
+
+      // update the appointment status to "cancelled"
+      await this.appointmentRepo.updateAppointment(appointmentId, {
+        status: "cancelled",
+      });
+
+      // Send cancellation email
+      const {
+        firstName: doctorFirstName,
+        lastName: doctorLastName,
+        email: doctorEmail,
+      } = appointmentData.doctor;
+      const {
+        firstName: patientFirstName,
+        lastName: patientLastName,
+        email: patientEmail,
+      } = appointmentData.patient;
+
+      const date = extractDate(appointmentData.date);
+      const time = extractTime(appointmentData.date);
+
+      const patientHtml = generateBookingCancellationHtml(
+        `${doctorFirstName} ${doctorLastName}`,
+        `${patientFirstName} ${patientLastName}`,
+        date,
+        time
+      );
+
+      const doctorHtml = generateBookingCancellationHtmlForDoctor(
+        `${doctorFirstName} ${doctorLastName}`,
+        `${patientFirstName} ${patientLastName}`,
+        date,
+        time
+      );
+
+      await Promise.all([
+        sendEmail(patientEmail, "Booking Cancellation", undefined, patientHtml),
+        sendEmail(doctorEmail, "Booking Cancellation", undefined, doctorHtml),
+      ]);
+    } catch (error) {
+      logger.error("Error cancelling appointment", error);
       if (error instanceof AppError) {
         throw error;
       }

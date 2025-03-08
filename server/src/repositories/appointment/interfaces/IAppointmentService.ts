@@ -8,7 +8,7 @@ interface IAppointmentRepository {
   updateAppointment(
     id: string,
     appointmentData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>>;
+  ): Promise<IAppointment>;
   getAppointmentsByPatientId(patientId: string): Promise<IAppointment[]>;
   getAppointmentsByDoctorId(doctorId: string): Promise<IAppointment[]>;
   getAppointments(): Promise<IAppointment[]>;

@@ -2,12 +2,11 @@ import { Model, Types } from "mongoose";
 import IChatRepository from "./interfaces/IChatRepository";
 import { IChat } from "src/interfaces/IChat";
 import { AppError } from "../../utils/errors";
-import { ChatModel } from "../../models/Chat";
 
 class ChatRepository implements IChatRepository {
   private readonly model: Model<IChat>;
 
-  constructor(model: Model<IChat> = ChatModel) {
+  constructor(model: Model<IChat>) {
     this.model = model;
   }
 

@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Box, Typography, Button } from "@mui/material";
+import Navbar from "./Navbar";
 
 const Unauthorized: React.FC = () => {
   const navigate = useNavigate();
@@ -9,26 +11,74 @@ const Unauthorized: React.FC = () => {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100 ">
-      <div className="max-w-xl mx-auto sm:px-6 lg:px-8">
-        <div className="flex items-center pt-8 sm:justify-start sm:pt-0">
-          <div className="px-4 text-lg text-gray-500 border-r border-gray-400 tracking-wider">
-            401
-          </div>
-          <div className="ml-4 text-lg text-gray-500 uppercase tracking-wider">
-            Unauthorized
-          </div>
-        </div>
-      </div>
-      <div className="absolute bottom-8 text-center">
-        <button
-          onClick={handleBack}
-          className="ml-4 text-sm text-gray-500 uppercase hover:underline tracking-wider "
+    <>
+      <Navbar />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          backgroundColor: "#f7f7f7",
+          pt: 8,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            maxWidth: "500px",
+            mx: "auto",
+            px: 2,
+            py: 4,
+          }}
         >
-          Back
-        </button>
-      </div>
-    </div>
+          <Typography
+            variant="h5"
+            sx={{
+              fontSize: "1.25rem",
+              color: "#a0aec0",
+              borderRight: "1px solid #cbd5e0",
+              pr: 2,
+            }}
+          >
+            401
+          </Typography>
+          <Typography
+            variant="h5"
+            sx={{
+              ml: 2,
+              fontSize: "1.25rem",
+              color: "#a0aec0",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            Unauthorized
+          </Typography>
+        </Box>
+
+        {/* Back Button */}
+        <Box sx={{ position: "absolute", bottom: 16, textAlign: "center" }}>
+          <Button
+            onClick={handleBack}
+            sx={{
+              textTransform: "uppercase",
+              fontSize: "0.875rem",
+              color: "#a0aec0",
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+                color: "#718096",
+              },
+            }}
+          >
+            Back
+          </Button>
+        </Box>
+      </Box>
+    </>
   );
 };
 

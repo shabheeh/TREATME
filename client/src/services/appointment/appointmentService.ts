@@ -78,7 +78,7 @@ class AppointmentService {
   async updateAppointment(
     id: string,
     updateData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>> {
+  ): Promise<IAppointment> {
     try {
       const response = await api.put(`/appointments/${id}`, {
         updateData,
