@@ -16,7 +16,7 @@ import { generateBookingConfirmationHtmlForDoctor } from "../../helpers/bookingC
 import { generateBookingCancellationHtmlForDoctor } from "../../helpers/bookingCancellationHtmlForDoctor";
 import { INotificationService } from "../notification/interface/INotificationService";
 import { INotification } from "src/interfaces/INotification";
-import { ObjectId, Types } from "mongoose";
+import { Types } from "mongoose";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
@@ -99,7 +99,7 @@ class AppointmentService implements IAppointmentService {
           sendEmail(doctorEmail, "Booking Confirmation", undefined, doctorHtml),
         ]);
 
-        const notificationData: Partial<INotification> = {
+        const notificationForPatient: Partial<INotification> = {
           user: patientId as Types.ObjectId,
           userType: "Patient",
           message: `Your appointment has been schedulued with dr. ${doctorFirstName} ${doctorLastName} on ${date} at ${time}`,
@@ -107,7 +107,20 @@ class AppointmentService implements IAppointmentService {
           priority: "medium",
         };
 
-        await this.notificationService.createNotification(notificationData);
+        const notificationForDoctor: Partial<INotification> = {
+          user: doctorId as unknown as Types.ObjectId,
+          userType: "Doctor",
+          message: `An Appointment scheduled with ${patientFirstName} ${patientLastName} on ${date} at ${time}`,
+          type: "appointments",
+          priority: "medium",
+        };
+
+        await this.notificationService.createNotification(
+          notificationForPatient
+        );
+        await this.notificationService.createNotification(
+          notificationForDoctor
+        );
       }
 
       return populatedAppointment;
@@ -231,7 +244,7 @@ class AppointmentService implements IAppointmentService {
       const appointmentData =
         await this.appointmentRepo.getAppointmentById(appointmentId);
 
-      // dont allow cancellation if the appointment is 2hrs from now
+      // don't allow cancellation if the appointment is 2hrs from now
       const now = new Date();
       const appointmentDate = new Date(appointmentData.date);
       const timeDifference = appointmentDate.getTime() - now.getTime();

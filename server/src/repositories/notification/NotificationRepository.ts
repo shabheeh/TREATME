@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import INotificationRepository from "./interface/INotificationRepository";
-import { INotification } from "src/interfaces/INotification";
-import { AppError } from "src/utils/errors";
+import { INotification } from "../../interfaces/INotification";
+import { AppError } from "../../utils/errors";
 
 class NotificationRepository implements INotificationRepository {
   private model: Model<INotification>;

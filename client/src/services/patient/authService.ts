@@ -206,16 +206,16 @@ class AuthServicePatient implements IAuthServicePatient {
 
   async verifyEmail(email: string): Promise<verifyEmailResult> {
     try {
-      console.log(email);
-
       const response = await api.patient.post(
         "/auth/forgot-password/verify-email",
         { email }
       );
 
-      store.dispatch(setTempUser({ tempUser: response.data.patient }));
+      const { patient } = response.data;
 
-      return { patient: response.data.patient };
+      store.dispatch(setTempUser({ tempUser: patient }));
+
+      return patient;
     } catch (error: unknown) {
       if (error instanceof Error) {
         log.error(`Error when otp sending: ${error.message}`, error);

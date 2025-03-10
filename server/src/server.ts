@@ -10,6 +10,9 @@ import ChatRepository from "./repositories/chat/ChatRepository";
 import MessageRepository from "./repositories/chat/MessageRepository";
 import { MessageModel } from "./models/Message";
 import { ChatModel } from "./models/Chat";
+import { NotificationModel } from "./models/Notification";
+import NotificationService from "./services/notification/NotificationService";
+import NotificationRepository from "./repositories/notification/NotificationRepository";
 
 // create http server
 const server = http.createServer(app);
@@ -19,6 +22,12 @@ const messageRepository = new MessageRepository(MessageModel);
 const chatRepository = new ChatRepository(ChatModel);
 const chatService = new ChatService(chatRepository, messageRepository);
 const socketService = new SocketService(chatService);
+
+const notificationRepository = new NotificationRepository(NotificationModel);
+export const notificationService = new NotificationService(
+  notificationRepository,
+  socketService
+);
 
 socketService.initialize(server);
 

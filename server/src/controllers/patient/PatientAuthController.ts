@@ -118,10 +118,11 @@ class PatientAuthController implements IPatientAuthController {
     try {
       const { email } = req.body;
 
-      const user = await this.patientAuthService.sendOtpForgotPassword(email);
+      const patient =
+        await this.patientAuthService.sendOtpForgotPassword(email);
 
       res.status(200).json({
-        user,
+        patient,
       });
     } catch (error) {
       logger.error("error sedning otp fogotpassword", error);
@@ -303,6 +304,8 @@ class PatientAuthController implements IPatientAuthController {
       next(error);
     }
   };
+
+  
 }
 
 export default PatientAuthController;

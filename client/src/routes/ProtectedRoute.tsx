@@ -6,6 +6,9 @@ import sharedService from "../services/shared/sharedService";
 import { signOut } from "../redux/features/auth/authSlice";
 import { clearUser } from "../redux/features/user/userSlice";
 import Loading from "../components/basics/Loading";
+import { useSocket } from "../hooks/useSocket";
+import { toast } from "sonner";
+import { INotification } from "../types/notification/notification.types";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -22,6 +25,23 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const [isActive, setIsActive] = useState(true);
   const [loading, setLoading] = useState(true);
+
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNotification = (data: INotification) => {
+      toast.info(data.message);
+      console.log("new notif");
+    };
+
+    socket.on("appointment-notification", handleNotification);
+
+    return () => {
+      socket.off("appointment-notification", handleNotification);
+    };
+  }, [socket]);
 
   useEffect(() => {
     const checkStatus = async () => {

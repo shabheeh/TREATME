@@ -39,6 +39,11 @@ import ReviewRepository from "../../repositories/review/reviewRepository";
 import { ReviewModel } from "../../models/Review";
 import ReviewService from "../../services/review/reviewService";
 import ReviewController from "../../controllers/review/reviewController";
+// import NotificationRepository from "../../repositories/notification/NotificationRepository";
+// import { NotificationModel } from "../../models/Notification";
+// import NotificationService from "../../services/notification/NotificationService";
+// import { socketService } from "../../server";
+import { notificationService } from "../../server";
 
 const router = express.Router();
 
@@ -94,13 +99,20 @@ const behaviouralHealController = new BehaviouralHealthController(
   behavioralHealthService
 );
 
+// const notificationRepository = new NotificationRepository(NotificationModel);
+// const notificationService = new NotificationService(
+//   notificationRepository,
+//   socketService
+// );
+
 // appointment di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
 
 const appointmentRepository = new AppointmentRepository(AppointmentModel);
 const appointmentService = new AppointmentService(
   appointmentRepository,
-  scheduleRepository
+  scheduleRepository,
+  notificationService
 );
 const appointmentController = new AppointmentController(appointmentService);
 

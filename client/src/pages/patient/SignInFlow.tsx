@@ -10,7 +10,7 @@ import CompleteProfile from "../../components/patient/auth/CompleteProfile";
 type Steps =
   | "signin"
   | "forgot-password"
-  | "verfy-otp"
+  | "verify-otp"
   | "reset-password"
   | "complete-profile";
 
@@ -19,13 +19,15 @@ const SignInFlow: React.FC = () => {
   const [partialUser, setPartialUser] = useState(false);
 
   const goToForgotPassword = () => setStep("forgot-password");
-  const gotVerifyOtp = () => setStep("verfy-otp");
+  const gotVerifyOtp = () => setStep("verify-otp");
   const goToRestPassword = () => setStep("reset-password");
   const goToCompleteProfile = () => {
     setPartialUser(true);
     setStep("complete-profile");
   };
   const goToSignIn = () => setStep("signin");
+
+  console.log(step, "step");
 
   return (
     <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
@@ -39,7 +41,7 @@ const SignInFlow: React.FC = () => {
       {step === "forgot-password" && (
         <ForgotPassword onVerifyEmail={gotVerifyOtp} />
       )}
-      {step === "verfy-otp" && (
+      {step === "verify-otp" && (
         <Otp isVerifyEmail={false} onVerifySignIn={goToRestPassword} />
       )}
       {step === "reset-password" && (

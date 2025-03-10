@@ -6,7 +6,7 @@ export interface NotificationAction {
   primary?: boolean;
 }
 
-export interface Notification {
+export interface INotification {
   id: string;
   title: string;
   message: string;

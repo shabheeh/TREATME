@@ -34,10 +34,10 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onVerifyEmail }) => {
   const onSubmit = async ({ email }: { email: string }) => {
     try {
       setLoading(true);
-      const result = await authServicePatient.verifyEmail(email);
-      if ("user" in result) {
-        onVerifyEmail();
-      }
+      await authServicePatient.verifyEmail(email);
+
+      onVerifyEmail();
+
       setLoading(false);
     } catch (error) {
       setLoading(false);

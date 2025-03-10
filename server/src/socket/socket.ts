@@ -6,9 +6,15 @@ import { IChat } from "src/interfaces/IChat";
 import { IMessage } from "src/interfaces/IMessage";
 import { IChatService } from "src/services/chat/interface/IChatService";
 import { ITokenPayload, verifyAccessToken } from "../utils/jwt";
+import { INotification } from "src/interfaces/INotification";
 
 export interface ISocketService {
   initialize(server: HttpServer): void;
+  emitNewMessage(chatId: string, message: IMessage): void;
+  emitChatUpdated(chatId: string, chat: IChat): void;
+  emitUserOnline(userId: string): void;
+  emitUserOffline(userId: string): void;
+  emitAppointmentNotification(userId: string, data: INotification): void;
 }
 
 export class SocketService implements ISocketService {
@@ -231,6 +237,16 @@ export class SocketService implements ISocketService {
     logger.info(`User: ${userId} disconnected`);
   }
 
+  // Emit event to a specific user
+  public emitToUser<T>(userId: string, eventName: string, data: T): void {
+    const socketId = this.connectedUsers.get(userId);
+    if (socketId && this.io) {
+      this.io.to(socketId).emit(eventName, data);
+    } else {
+      logger.error(`User ${userId} is not connected.`);
+    }
+  }
+
   // public methods for sending events from outside the socket service
   public emitNewMessage(chatId: string, message: IMessage): void {
     this.io?.to(chatId).emit("new-message", message);
@@ -252,6 +268,15 @@ export class SocketService implements ISocketService {
     chatIds.forEach((chatId) => {
       this.io?.to(chatId).emit("user-offline", { userId });
     });
+  }
+
+  // Appointment Notification
+  public emitAppointmentNotification(
+    userId: string,
+    data: INotification
+  ): void {
+    console.log("calrrrrrrrrrrrrrrrrled");
+    this.emitToUser(userId, "appointment-notification", data);
   }
 
   // Helper methods
