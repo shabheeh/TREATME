@@ -1,4 +1,4 @@
-import { Model, ObjectId, Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import IScheduleRepository from "./interfaces/IScheduleRepository";
 import { ISchedule } from "../../interfaces/ISchedule";
 import { AppError } from "../../utils/errors";
@@ -69,15 +69,15 @@ class ScheduleRepository implements IScheduleRepository {
   }
 
   async updateBookingStatus(
-    doctorId: ObjectId,
+    doctorId: string,
     dayId: string,
     slotId: string
   ): Promise<void> {
     try {
       const document = await this.model.findOne({
-        doctorId: doctorId,
-        "availability._id": dayId,
-        "availability.slots._id": slotId,
+        doctorId: new Types.ObjectId(doctorId),
+        "availability._id": new Types.ObjectId(dayId),
+        "availability.slots._id": new Types.ObjectId(slotId),
       });
 
       if (!document) {
@@ -130,15 +130,15 @@ class ScheduleRepository implements IScheduleRepository {
   }
 
   async toggleBookingStatus(
-    doctorId: ObjectId,
+    doctorId: string,
     dayId: string,
     slotId: string
   ): Promise<void> {
     try {
       const document = await this.model.findOne({
-        doctorId: doctorId,
-        "availability._id": dayId,
-        "availability.slots._id": slotId,
+        doctorId: new Types.ObjectId(doctorId),
+        "availability._id": new Types.ObjectId(dayId),
+        "availability.slots._id": new Types.ObjectId(slotId),
       });
 
       console.log(doctorId, dayId, slotId);

@@ -16,11 +16,15 @@ const notificationSchema = new Schema<INotification>(
     type: {
       type: String,
       required: true,
-      enum: ["appointments", "messages", "Admin"],
+      enum: ["appointments", "messages", "general"],
+    },
+    title: {
+      type: String,
+      required: true,
     },
     message: {
       type: String,
-      optional: true,
+      required: true,
     },
     isRead: {
       type: Boolean,

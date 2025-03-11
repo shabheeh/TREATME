@@ -7,8 +7,8 @@ import { signOut } from "../redux/features/auth/authSlice";
 import { clearUser } from "../redux/features/user/userSlice";
 import Loading from "../components/basics/Loading";
 import { useSocket } from "../hooks/useSocket";
-import { toast } from "sonner";
 import { INotification } from "../types/notification/notification.types";
+import { useToaster } from "../contexts/ToastContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -27,19 +27,30 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const [loading, setLoading] = useState(true);
 
   const { socket } = useSocket();
+  const { addNotification } = useToaster()
+  // const naviagte = useNavigate()
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleNotification = (data: INotification) => {
-      toast.info(data.message);
-      console.log("new notif");
+    const showNotifications = (notification: INotification) => {
+      addNotification({
+        title: notification.title,
+        message: notification.message,
+        type: notification.type,
+        // actions: [
+        //   {
+        //     label: "view",
+        //     onClick: () => naviagte(),
+        //   },
+        // ],
+      });
     };
 
-    socket.on("appointment-notification", handleNotification);
+    socket.on("appointment-notification", showNotifications);
 
     return () => {
-      socket.off("appointment-notification", handleNotification);
+      socket.off("appointment-notification");
     };
   }, [socket]);
 

@@ -39,11 +39,12 @@ import ReviewRepository from "../../repositories/review/reviewRepository";
 import { ReviewModel } from "../../models/Review";
 import ReviewService from "../../services/review/reviewService";
 import ReviewController from "../../controllers/review/reviewController";
-// import NotificationRepository from "../../repositories/notification/NotificationRepository";
-// import { NotificationModel } from "../../models/Notification";
-// import NotificationService from "../../services/notification/NotificationService";
+import NotificationRepository from "../../repositories/notification/NotificationRepository";
+import { NotificationModel } from "../../models/Notification";
+import NotificationService from "../../services/notification/NotificationService";
+import NotificationController from "../../controllers/notification/NotificationController";
 // import { socketService } from "../../server";
-import { notificationService } from "../../server";
+// import { notificationService } from "../../server";
 
 const router = express.Router();
 
@@ -99,11 +100,13 @@ const behaviouralHealController = new BehaviouralHealthController(
   behavioralHealthService
 );
 
-// const notificationRepository = new NotificationRepository(NotificationModel);
-// const notificationService = new NotificationService(
-//   notificationRepository,
-//   socketService
-// );
+const notificationRepository = new NotificationRepository(NotificationModel);
+const notificationService = new NotificationService(
+  notificationRepository
+  // socketService
+);
+
+const notificationController = new NotificationController(notificationService);
 
 // appointment di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
@@ -273,6 +276,13 @@ router.get(
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   reviewController.getDoctorReviews
+);
+
+router.get(
+  "/notifications",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  notificationController.getNotfications
 );
 
 export default router;

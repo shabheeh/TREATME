@@ -7,11 +7,13 @@ export interface NotificationAction {
 }
 
 export interface INotification {
-  id: string;
+  _id: string;
+  userId: string;
+  userType: "Admin" | "Doctor" | "Patient";
   title: string;
   message: string;
   type: NotificationType;
-  timestamp: Date;
-  actions?: NotificationAction[];
-  route?: string;
+  priority: "low" | "medium" | "high";
+  isRead: boolean;
+  createdAt: Date;
 }

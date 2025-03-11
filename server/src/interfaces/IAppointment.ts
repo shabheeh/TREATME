@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
-import { Document, ObjectId } from "mongoose";
+import { Document, Types } from "mongoose";
 import IDoctor from "./IDoctor";
 import IPatient from "./IPatient";
 import IDependent from "./IDependent";
 
 export interface IAppointment extends Document {
-  patient: ObjectId;
+  patient: Types.ObjectId;
   patientType: "Patient" | "Dependent";
-  doctor: ObjectId;
-  specialization: ObjectId;
+  doctor: Types.ObjectId;
+  specialization: Types.ObjectId;
   date: Date;
   duration: string;
   reason: string;

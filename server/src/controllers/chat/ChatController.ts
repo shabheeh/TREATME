@@ -316,7 +316,6 @@ class ChatController implements IChatController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      console.log(req.files, "files");
       if (
         !req.files ||
         !Array.isArray(req.files) ||

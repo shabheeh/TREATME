@@ -7,6 +7,7 @@ import { IMessage } from "src/interfaces/IMessage";
 import { IChatService } from "src/services/chat/interface/IChatService";
 import { ITokenPayload, verifyAccessToken } from "../utils/jwt";
 import { INotification } from "src/interfaces/INotification";
+import { INotificationService } from "src/services/notification/interface/INotificationService";
 
 export interface ISocketService {
   initialize(server: HttpServer): void;
@@ -18,12 +19,23 @@ export interface ISocketService {
 }
 
 export class SocketService implements ISocketService {
+  private static instance: SocketService;
   private io: SocketIOServer | null = null;
   private connectedUsers: Map<string, string> = new Map();
   private chatService: IChatService;
+  private notificationService: INotificationService;
 
-  constructor(chatService: IChatService) {
+  constructor(chatService: IChatService, notificationService: INotificationService) {
     this.chatService = chatService;
+    this.notificationService = notificationService;
+
+  }
+
+  public static getInstance(chatService?: IChatService): SocketService {
+    if (!SocketService.instance && chatService) {
+      SocketService.instance = new SocketService(chatService);
+    }
+    return SocketService.instance;
   }
 
   initialize(server: HttpServer): void {
@@ -270,13 +282,13 @@ export class SocketService implements ISocketService {
     });
   }
 
-  // Appointment Notification
-  public emitAppointmentNotification(
+  // other events
+  public emitNotification(
     userId: string,
+    event: string,
     data: INotification
   ): void {
-    console.log("calrrrrrrrrrrrrrrrrled");
-    this.emitToUser(userId, "appointment-notification", data);
+    this.emitToUser(userId, event, data);
   }
 
   // Helper methods

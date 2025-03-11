@@ -2,19 +2,21 @@ import INotificationRepository from "src/repositories/notification/interface/INo
 import { INotificationService } from "./interface/INotificationService";
 import { INotification } from "../../interfaces/INotification";
 import { AppError } from "../../utils/errors";
-import { ISocketService } from "../../socket/socket";
+// import { ISocketService } from "../../socket/socket";
 import logger from "../../configs/logger";
+// import { socketService } from "src/server";
+import { SocketService } from "../../socket/socket";
 
 class NotificationService implements INotificationService {
   private notificationRepo: INotificationRepository;
-  private socketService: ISocketService;
+  // private socketService: ISocketService;
 
   constructor(
-    notificationRepo: INotificationRepository,
-    socketService: ISocketService
+    notificationRepo: INotificationRepository
+    // socketService: ISocketService
   ) {
     this.notificationRepo = notificationRepo;
-    this.socketService = socketService;
+    // this.socketService = socketService;
   }
 
   async createNotification(
@@ -23,14 +25,22 @@ class NotificationService implements INotificationService {
     try {
       const notification = await this.notificationRepo.create(notificationData);
 
-      console.log("SocketService instance:", this.socketService);
-      if (!this.socketService) {
-        throw new AppError("socketService is not initialized");
-      }
-      this.socketService.emitAppointmentNotification(
+      // console.log("SocketService instance:", this.socketService);
+      // if (!this.socketService) {
+      //   throw new AppError("socketService is not initialized");
+      // }
+      // this.socketService.emitAppointmentNotification(
+      //   notification.user._id.toString(),
+      //   notification
+      // );
+      const socketService = SocketService.getInstance();
+
+      socketService.emitNotification(
         notification.user._id.toString(),
+        ""
         notification
       );
+
       return notification;
     } catch (error) {
       logger.error("Failded to create notification", error);
@@ -53,6 +63,19 @@ class NotificationService implements INotificationService {
 
   async markAsRead(notificationId: string): Promise<boolean> {
     return await this.notificationRepo.markAsRead(notificationId);
+  }
+
+  async getNotifications(
+    userId: string,
+    type: string,
+    limit: number
+  ): Promise<INotification[]> {
+    const notfications = await this.notificationRepo.getNotifications(
+      userId,
+      type,
+      limit
+    );
+    return notfications;
   }
 }
 

@@ -20,6 +20,8 @@ import {
   ArrowBack as ArrowBackIcon,
   Message as MessageIcon,
   Close as CloseIcon,
+  Done as DoneIcon,
+  DoneAll as DoneAllIcon,
 } from "@mui/icons-material";
 import {
   IMessage,
@@ -327,7 +329,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
                   <Paper
                     sx={{
                       maxWidth: { xs: "85%", sm: "70%" },
-                      p: { xs: 1, sm: 1.5 },
+                      p: { xs: 0.5, sm: 0.5 },
                       borderRadius: 2,
                       borderTopRightRadius:
                         message.sender._id === currentUser?._id ? 0 : 2,
@@ -342,84 +344,199 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
                           ? "white"
                           : "#003D3D",
                       boxShadow: "none",
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: 1,
+                      justifyContent: "space-between",
                     }}
                   >
-                    {message.attachments?.map((attachment, index) => (
-                      <Box key={index} sx={{ mt: 1 }}>
-                        {attachment.resourceType === "image" ? (
-                          <Box>
-                            <a
-                              href={attachment.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Box
-                                component="img"
-                                src={attachment.url}
-                                alt="attachment"
+                    <Box>
+                      {message.attachments?.map((attachment, index) => (
+                        <Box key={index} sx={{ mt: 1 }}>
+                          {attachment.resourceType === "image" ? (
+                            <Box sx={{ position: "relative" }}>
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Box
+                                  component="img"
+                                  src={attachment.url}
+                                  alt="attachment"
+                                  sx={{
+                                    width: { xs: "100%", sm: "200px" },
+                                    maxWidth: "200px",
+                                    aspectRatio: "1 / 1",
+                                    height: "auto",
+                                    borderRadius: "8px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </a>
+                              {message.content && (
+                                <Box
+                                  display="flex"
+                                  justifyContent="space-between"
+                                  alignItems="flex-end"
+                                  sx={{ mt: 1 }}
+                                >
+                                  <Typography
+                                    variant="body1"
+                                    sx={{
+                                      wordBreak: "break-word",
+                                      flexGrow: 1,
+                                    }}
+                                  >
+                                    {message.content}
+                                  </Typography>
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    sx={{ ml: 1 }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: "0.7rem",
+                                        color: "#8696a0",
+                                        textAlign: "right",
+                                      }}
+                                    >
+                                      {formatTime(message.createdAt)}
+                                    </Typography>
+                                    {message.sender._id ===
+                                      currentUser?._id && (
+                                      <>
+                                        {message.isRead ? (
+                                          <DoneAllIcon
+                                            sx={{
+                                              width: 15,
+                                              marginLeft: 0.5,
+                                            }}
+                                          />
+                                        ) : (
+                                          <DoneIcon
+                                            sx={{
+                                              width: 15,
+                                              marginLeft: 0.5,
+                                            }}
+                                          />
+                                        )}
+                                      </>
+                                    )}
+                                  </Box>
+                                </Box>
+                              )}
+                              {!message.content && (
+                                <Box
+                                  sx={{
+                                    position: "absolute",
+                                    bottom: 0,
+                                    right: 0,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      padding: "2px 4px",
+                                      fontSize: "0.75rem",
+                                      color: "rgba(255, 255, 255, 0.8)",
+                                      textShadow:
+                                        "1px 1px 2px rgba(0, 0, 0, 0.5)",
+                                    }}
+                                  >
+                                    {formatTime(message.createdAt)}
+                                  </Typography>
+                                  {message.sender._id === currentUser?._id && (
+                                    <>
+                                      {message.isRead ? (
+                                        <DoneAllIcon
+                                          sx={{
+                                            width: 15,
+                                            marginLeft: 0.5,
+                                          }}
+                                        />
+                                      ) : (
+                                        <DoneIcon
+                                          sx={{
+                                            width: 15,
+                                            marginLeft: 0.5,
+                                          }}
+                                        />
+                                      )}
+                                    </>
+                                  )}
+                                </Box>
+                              )}
+                            </Box>
+                          ) : (
+                            <Tooltip title={attachment.resourceType}>
+                              <Chip
+                                icon={<AttachFileIcon />}
+                                label={attachment.resourceType}
                                 sx={{
-                                  width: { xs: "100%", sm: "200px" },
                                   maxWidth: "200px",
-                                  aspectRatio: "1 / 1",
-                                  height: "auto",
-                                  borderRadius: "8px",
-                                  objectFit: "cover",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
                                 }}
                               />
-                            </a>
-                            {message.content && (
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  wordBreak: "break-word",
-                                  mt: 1,
-                                  fontSize: "0.875rem",
-                                  color:
-                                    message.sender._id === currentUser?._id
-                                      ? "white"
-                                      : "#003D3D",
-                                }}
-                              >
-                                {message.content}
-                              </Typography>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      ))}
+                      {!message.attachments?.length && (
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="flex-end"
+                          sx={{ mt: 1 }}
+                        >
+                          <Typography
+                            variant="body1"
+                            sx={{ wordBreak: "break-word", flexGrow: 1 }}
+                          >
+                            {message.content}
+                          </Typography>
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            sx={{ ml: 1 }}
+                          >
+                            <Typography
+                              sx={{
+                                fontSize: "0.7rem",
+                                color: "#8696a0",
+                                textAlign: "right",
+                              }}
+                            >
+                              {formatTime(message.createdAt)}
+                            </Typography>
+                            {message.sender._id === currentUser?._id && (
+                              <>
+                                {message.isRead ? (
+                                  <DoneAllIcon
+                                    sx={{
+                                      width: 15,
+                                      marginLeft: 0.5,
+                                    }}
+                                  />
+                                ) : (
+                                  <DoneIcon
+                                    sx={{
+                                      width: 15,
+                                      marginLeft: 0.5,
+                                    }}
+                                  />
+                                )}
+                              </>
                             )}
                           </Box>
-                        ) : (
-                          <Tooltip title={attachment.resourceType}>
-                            <Chip
-                              icon={<AttachFileIcon />}
-                              label={attachment.resourceType}
-                              sx={{
-                                maxWidth: "200px",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            />
-                          </Tooltip>
-                        )}
-                      </Box>
-                    ))}
-                    {!message.attachments?.length && (
-                      <Typography
-                        variant="body1"
-                        sx={{ wordBreak: "break-word" }}
-                      >
-                        {message.content}
-                      </Typography>
-                    )}
-
-                    {/* Timestamp */}
-                    <Typography
-                      sx={{
-                        fontSize: "0.7rem",
-                        color: "#8696a0",
-                        mt: 0.5,
-                        textAlign: "right",
-                      }}
-                    >
-                      {formatTime(message.createdAt)}
-                    </Typography>
+                        </Box>
+                      )}
+                    </Box>
                   </Paper>
                 </Box>
               </React.Fragment>

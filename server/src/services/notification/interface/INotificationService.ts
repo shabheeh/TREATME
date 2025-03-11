@@ -6,4 +6,9 @@ export interface INotificationService {
   ): Promise<INotification>;
   findNotificationById(notificationId: string): Promise<INotification | null>;
   markAsRead(notificationId: string): Promise<boolean>;
+  getNotifications(
+    userId: string,
+    type: string,
+    limit: number
+  ): Promise<INotification[]>;
 }

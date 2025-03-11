@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+// import {  } from "mongoose";
 import { ISchedule } from "../../../interfaces/ISchedule";
 
 interface IScheduleRepository {
@@ -8,12 +8,12 @@ interface IScheduleRepository {
     updateData: Partial<ISchedule>
   ): Promise<ISchedule>;
   updateBookingStatus(
-    doctorId: ObjectId,
+    doctorId: string,
     dayId: string,
     slotId: string
   ): Promise<void>;
   toggleBookingStatus(
-    doctorId: ObjectId,
+    doctorId: string,
     dayId: string,
     slotId: string
   ): Promise<void>;

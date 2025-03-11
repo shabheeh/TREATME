@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import INotificationRepository from "./interface/INotificationRepository";
 import { INotification } from "../../interfaces/INotification";
 import { AppError } from "../../utils/errors";
@@ -42,6 +42,31 @@ class NotificationRepository implements INotificationRepository {
         .findByIdAndUpdate(notificationId, { isRead: true }, { new: true })
         .exec();
       return isUpdated !== null;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getNotifications(
+    userId: string,
+    type: string,
+    limit: number
+  ): Promise<INotification[]> {
+    try {
+      const notifications = await this.model
+        .find({
+          user: new Types.ObjectId(userId),
+          type: type,
+        })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .lean()
+        .exec();
+
+      return notifications;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

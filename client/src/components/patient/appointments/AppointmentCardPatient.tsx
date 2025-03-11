@@ -108,8 +108,6 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
     }
   };
 
-  console.log(status, "status");
-
   return (
     <Card
       variant="outlined"

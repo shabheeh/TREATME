@@ -6,7 +6,6 @@ import {
 } from "src/repositories/doctor/interfaces/IDoctorRepository";
 
 export default interface IDoctor extends Document {
-  _id: ObjectId;
   email: string;
   password: string;
   firstName: string;

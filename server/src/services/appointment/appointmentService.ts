@@ -41,7 +41,11 @@ class AppointmentService implements IAppointmentService {
 
       // Update booking status
       if (doctor && slotId && dayId) {
-        await this.scheduleRepo.updateBookingStatus(doctor, dayId, slotId);
+        await this.scheduleRepo.updateBookingStatus(
+          doctor.toString(),
+          dayId,
+          slotId
+        );
       }
 
       // Create the appointment
@@ -102,25 +106,25 @@ class AppointmentService implements IAppointmentService {
         const notificationForPatient: Partial<INotification> = {
           user: patientId as Types.ObjectId,
           userType: "Patient",
+          title: "Appointment Confirmation",
           message: `Your appointment has been schedulued with dr. ${doctorFirstName} ${doctorLastName} on ${date} at ${time}`,
           type: "appointments",
           priority: "medium",
         };
 
         const notificationForDoctor: Partial<INotification> = {
-          user: doctorId as unknown as Types.ObjectId,
+          user: doctorId as Types.ObjectId,
           userType: "Doctor",
-          message: `An Appointment scheduled with ${patientFirstName} ${patientLastName} on ${date} at ${time}`,
+          title: "New Appointment",
+          message: `An Appointment has been scheduled with ${patientFirstName} ${patientLastName} on ${date} at ${time}`,
           type: "appointments",
           priority: "medium",
         };
 
-        await this.notificationService.createNotification(
-          notificationForPatient
-        );
-        await this.notificationService.createNotification(
-          notificationForDoctor
-        );
+        await Promise.all([
+          this.notificationService.createNotification(notificationForPatient),
+          this.notificationService.createNotification(notificationForDoctor),
+        ]);
       }
 
       return populatedAppointment;
@@ -149,7 +153,7 @@ class AppointmentService implements IAppointmentService {
     updateData: Partial<IAppointment>
   ): Promise<IAppointment> {
     try {
-      const { doctor, slotId, dayId, status } = updateData;
+      const { doctor, slotId, dayId } = updateData;
 
       // Fetch the existing appointment
       const existingAppointment =
@@ -159,12 +163,16 @@ class AppointmentService implements IAppointmentService {
       if (doctor && slotId && dayId) {
         if (existingAppointment.dayId && existingAppointment.slotId) {
           await this.scheduleRepo.toggleBookingStatus(
-            doctor,
+            doctor.toString(),
             existingAppointment.dayId,
             existingAppointment.slotId
           );
         }
-        await this.scheduleRepo.updateBookingStatus(doctor, dayId, slotId);
+        await this.scheduleRepo.updateBookingStatus(
+          doctor.toString(),
+          dayId,
+          slotId
+        );
       }
 
       // Update the appointment
@@ -172,18 +180,19 @@ class AppointmentService implements IAppointmentService {
         appointmentId,
         updateData
       );
+      const appointmentData = await this.getAppointmentById(appointmentId);
 
       // Handle email notifications based on appointment status
-      if (status === "confirmed") {
-        const appointmentData = await this.getAppointmentById(appointmentId);
-
+      if (appointmentData.status === "confirmed") {
         if (appointmentData?.doctor && appointmentData.patient) {
           const {
+            _id: doctorId,
             firstName: doctorFirstName,
             lastName: doctorLastName,
             email: doctorEmail,
           } = appointmentData.doctor;
           const {
+            _id: patientId,
             firstName: patientFirstName,
             lastName: patientLastName,
             email: patientEmail,
@@ -191,6 +200,8 @@ class AppointmentService implements IAppointmentService {
 
           if (appointmentData.date) {
             // Send booking confirmation email
+            const oldDate = extractDate(existingAppointment.date);
+            const oldTime = extractTime(existingAppointment.date);
             const date = extractDate(appointmentData.date);
             const time = extractTime(appointmentData.date);
 
@@ -219,6 +230,33 @@ class AppointmentService implements IAppointmentService {
                 "Booking Confirmation",
                 undefined,
                 doctorHtml
+              ),
+            ]);
+
+            const notificationForPatient: Partial<INotification> = {
+              user: patientId as Types.ObjectId,
+              userType: "Patient",
+              title: "Appointment Rescheduled",
+              message: `Your appointment with dr. ${doctorFirstName} ${doctorLastName} on ${oldDate} at ${oldTime} has been rescheduled to ${date} at ${time}`,
+              type: "appointments",
+              priority: "medium",
+            };
+
+            const notificationForDoctor: Partial<INotification> = {
+              user: doctorId as Types.ObjectId,
+              userType: "Doctor",
+              title: "Appointment Rescheduled",
+              message: `Your appointment with patient ${patientFirstName} ${patientLastName} on ${oldDate} at ${oldTime} has been rescheduled to ${date} at ${time}`,
+              type: "appointments",
+              priority: "medium",
+            };
+
+            await Promise.all([
+              this.notificationService.createNotification(
+                notificationForPatient
+              ),
+              this.notificationService.createNotification(
+                notificationForDoctor
               ),
             ]);
           }
@@ -257,9 +295,14 @@ class AppointmentService implements IAppointmentService {
         );
       }
 
+      const doctorId =
+        typeof appointmentData.doctor._id === "string"
+          ? appointmentData.doctor._id.toString()
+          : "";
+
       // toggle booking status for cancelled appointment
       await this.scheduleRepo.toggleBookingStatus(
-        appointmentData.doctor._id,
+        doctorId,
         appointmentData.dayId,
         appointmentData.slotId
       );

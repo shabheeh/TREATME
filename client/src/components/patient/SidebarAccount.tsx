@@ -10,14 +10,24 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import { VpnKey, Group, Person } from "@mui/icons-material";
+import {
+  VpnKey as VpnKeyIcon,
+  Group as GroupIcon,
+  Person as PersonIcon,
+  Wallet as WalletIcon,
+} from "@mui/icons-material";
 
 const drawerWidth = 250;
 
 const menuItems = [
-  { text: "Account Details", icon: <Person />, path: "/account" },
-  { text: "Security", icon: <VpnKey />, path: "/account/security" },
-  { text: "Family Members", icon: <Group />, path: "/account/family-members" },
+  { text: "Account Details", icon: <PersonIcon />, path: "/account" },
+  { text: "Security", icon: <VpnKeyIcon />, path: "/account/security" },
+  {
+    text: "Family Members",
+    icon: <GroupIcon />,
+    path: "/account/family-members",
+  },
+  { text: "Wallet", icon: <WalletIcon />, path: "/account/wallet" },
 ];
 
 interface SidebarProps {
