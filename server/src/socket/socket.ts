@@ -7,7 +7,7 @@ import { IMessage } from "src/interfaces/IMessage";
 import { IChatService } from "src/services/chat/interface/IChatService";
 import { ITokenPayload, verifyAccessToken } from "../utils/jwt";
 import { INotification } from "src/interfaces/INotification";
-import { INotificationService } from "src/services/notification/interface/INotificationService";
+import { eventBus } from "../eventBus";
 
 export interface ISocketService {
   initialize(server: HttpServer): void;
@@ -15,28 +15,29 @@ export interface ISocketService {
   emitChatUpdated(chatId: string, chat: IChat): void;
   emitUserOnline(userId: string): void;
   emitUserOffline(userId: string): void;
-  emitAppointmentNotification(userId: string, data: INotification): void;
 }
 
 export class SocketService implements ISocketService {
-  private static instance: SocketService;
+  // private static instance: SocketService;
   private io: SocketIOServer | null = null;
   private connectedUsers: Map<string, string> = new Map();
   private chatService: IChatService;
-  private notificationService: INotificationService;
 
-  constructor(chatService: IChatService, notificationService: INotificationService) {
+  constructor(chatService: IChatService) {
     this.chatService = chatService;
-    this.notificationService = notificationService;
 
+    eventBus.subscribe(
+      "appointment-notification",
+      this.handleAppointmentNotification.bind(this)
+    );
   }
 
-  public static getInstance(chatService?: IChatService): SocketService {
-    if (!SocketService.instance && chatService) {
-      SocketService.instance = new SocketService(chatService);
-    }
-    return SocketService.instance;
-  }
+  // public static getInstance(chatService?: IChatService): SocketService {
+  //   if (!SocketService.instance && chatService) {
+  //     SocketService.instance = new SocketService(chatService);
+  //   }
+  //   return SocketService.instance;
+  // }
 
   initialize(server: HttpServer): void {
     this.io = new SocketIOServer(server, {
@@ -110,6 +111,7 @@ export class SocketService implements ISocketService {
       socket.on("read-messages", (chatId: string) =>
         this.handleReadMessages(socket, chatId)
       );
+      // for message sent with attachments
       socket.on("message-sent", (data: { chat: string; messageId: string }) =>
         this.handleMessageSent(socket, data)
       );
@@ -249,6 +251,17 @@ export class SocketService implements ISocketService {
     logger.info(`User: ${userId} disconnected`);
   }
 
+  // notification events
+  private handleAppointmentNotification({
+    userId,
+    notification,
+  }: {
+    userId: string;
+    notification: INotification;
+  }): void {
+    this.emitToUser(userId, "appointment-notification", notification);
+  }
+
   // Emit event to a specific user
   public emitToUser<T>(userId: string, eventName: string, data: T): void {
     const socketId = this.connectedUsers.get(userId);
@@ -280,15 +293,6 @@ export class SocketService implements ISocketService {
     chatIds.forEach((chatId) => {
       this.io?.to(chatId).emit("user-offline", { userId });
     });
-  }
-
-  // other events
-  public emitNotification(
-    userId: string,
-    event: string,
-    data: INotification
-  ): void {
-    this.emitToUser(userId, event, data);
   }
 
   // Helper methods

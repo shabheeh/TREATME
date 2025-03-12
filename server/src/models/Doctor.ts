@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 import IDoctor from "../interfaces/IDoctor";
 
 const doctorSchema = new Schema<IDoctor>(
@@ -29,4 +29,7 @@ const doctorSchema = new Schema<IDoctor>(
   }
 );
 
-export const DoctorModel = model<IDoctor>("Doctor", doctorSchema);
+export const DoctorModel: Model<IDoctor> = model<IDoctor>(
+  "Doctor",
+  doctorSchema
+);

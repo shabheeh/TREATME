@@ -20,7 +20,6 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
     return <Loading />;
   }
 
-
   return (
     <Box>
       {appointments.length === 0 ? (

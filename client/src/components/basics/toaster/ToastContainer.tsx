@@ -1,7 +1,6 @@
 import { Box, Paper } from "@mui/material";
 import { styled } from "@mui/system";
 
-
 export const ToasterContainer = styled(Box)(({ theme }) => ({
   position: "fixed",
   top: theme.spacing(2),

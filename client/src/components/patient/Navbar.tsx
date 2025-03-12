@@ -5,14 +5,17 @@ import {
   Button,
   IconButton,
   Avatar,
+  Badge,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import logoNavbar from "../../assets/logo.navbar.svg";
 import { RootState } from "../../redux/app/store";
-import { IoIosNotificationsOutline } from "react-icons/io";
-import React from "react";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import React, { useEffect } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
+import notificationService from "../../services/notification/notificationService";
+import { setUnreadCount } from "../../redux/features/notification/notificationSlice";
 
 interface NavbarProps {
   onProfileClick: () => void;
@@ -23,7 +26,24 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
   const currentPatient = useSelector(
     (state: RootState) => state.user.currentUser
   );
+  const unreadCount = useSelector(
+    (state: RootState) => state.notfication.unreadCount
+  );
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchNotificationsUnreadCount = async () => {
+      try {
+        const count = await notificationService.getUnreadCounts();
+        console.log(count, "countt");
+        dispatch(setUnreadCount(count));
+      } catch (error) {
+        console.log("error fetching notification count", error);
+      }
+    };
+    fetchNotificationsUnreadCount();
+  }, [dispatch]);
 
   const handleLogoClick = () => {
     navigate("/visitnow");
@@ -69,13 +89,15 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
               ml: "auto",
             }}
           >
-            <Button
-              variant="text"
-              sx={{ minWidth: "auto", padding: 1 }}
+            <IconButton
+              aria-label="show new notifications"
+              color="inherit"
               onClick={handleNotificationClick}
             >
-              <IoIosNotificationsOutline size={30} />
-            </Button>
+              <Badge badgeContent={unreadCount} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
             <Button
               variant="text"
               sx={{ minWidth: "auto", padding: 1 }}

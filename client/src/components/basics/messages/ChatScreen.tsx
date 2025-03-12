@@ -49,7 +49,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
   messages,
   onBackClick,
   activeChat,
-  isMobile = false,
   showBackButton = false,
 }) => {
   const [newMessage, setNewMessage] = useState<string>("");
@@ -546,7 +545,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
         </Box>
       )}
 
-      {/* Attachment Preview Section */}
+      {/* preview attchmnts */}
       {attachments.length > 0 && (
         <Box
           sx={{
@@ -622,24 +621,23 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       {/* Input */}
       <Box sx={{ p: { xs: 1, sm: 2 }, bgcolor: "#f0f2f5" }}>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          {!isMobile && (
-            <>
-              <IconButton
-                color="default"
-                sx={{ color: "#54656f" }}
-                onClick={handleAttachmentButtonClick}
-              >
-                <AttachFileIcon />
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  style={{ display: "none" }}
-                  onChange={handleFileChange}
-                />
-              </IconButton>
-            </>
-          )}
+          <>
+            <IconButton
+              color="default"
+              sx={{ color: "#54656f" }}
+              onClick={handleAttachmentButtonClick}
+            >
+              <AttachFileIcon />
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+            </IconButton>
+          </>
+
           <TextField
             fullWidth
             variant="outlined"

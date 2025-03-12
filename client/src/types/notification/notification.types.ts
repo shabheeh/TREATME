@@ -1,4 +1,4 @@
-export type NotificationType = "message" | "appointment" | "general";
+export type NotificationType = "messages" | "appointments" | "general";
 
 export interface NotificationAction {
   label: string;

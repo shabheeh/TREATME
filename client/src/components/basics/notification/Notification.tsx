@@ -18,23 +18,26 @@ import notificationService from "../../../services/notification/notificationServ
 import { toast } from "sonner";
 import Loading from "../Loading";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
+import { useDispatch } from "react-redux";
+import { setUnreadCount } from "../../../redux/features/notification/notificationSlice";
 
 const Notifications = () => {
-  // State for active filter
   const [activeFilter, setActiveFilter] = useState<string | "">("");
+  const [limit, setLimit] = useState<number>(5);
   const [loading, setLoading] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [activeFilter, limit]);
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
       const notifications = await notificationService.getNotifications(
         activeFilter,
-        15
+        limit
       );
       setNotifications(notifications);
     } catch (error) {
@@ -46,22 +49,23 @@ const Notifications = () => {
     }
   };
 
-  const filteredNotifications =
-    activeFilter && activeFilter !== "all"
-      ? notifications.filter((notif) => notif.type === activeFilter)
-      : notifications;
+  const handleMarkAllRead = async () => {
+    try {
+      await notificationService.markAllAsRead();
+      dispatch(setUnreadCount(0));
+      fetchNotifications();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "something went wrong"
+      );
+    }
+  };
 
-  // const sortedNotifications = [...filteredNotifications].sort((a, b) => {
-  //   const priorityOrder = { high: 0, medium: 1, low: 2 };
-  //   return priorityOrder[a.priority] - priorityOrder[b.priority];
-  // });
-
-  // Get notification icon based on type
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case "appointment":
+      case "appointments":
         return <CalendarTodayIcon fontSize="small" color="primary" />;
-      case "message":
+      case "messages":
         return <MessageIcon fontSize="small" color="secondary" />;
       case "general":
         return <AnnouncementIcon fontSize="small" color="action" />;
@@ -125,13 +129,14 @@ const Notifications = () => {
           sx={{ display: "flex", alignItems: "center" }}
         >
           <NotificationsIcon sx={{ mr: 1 }} />
-          Notifications ({filteredNotifications.filter((n) => !n.read).length})
+          Notifications
         </Typography>
         <Button
           variant="text"
           size="small"
           startIcon={<MarkEmailReadIcon />}
           color="primary"
+          onClick={handleMarkAllRead}
         >
           Mark all read
         </Button>
@@ -142,7 +147,7 @@ const Notifications = () => {
       <Grid container spacing={3}>
         {/* Notifications list */}
         <Grid item xs={12} md={9}>
-          {filteredNotifications.map((notification) => (
+          {notifications.map((notification) => (
             <Card
               key={notification._id}
               variant="outlined"
@@ -170,15 +175,13 @@ const Notifications = () => {
                           <Box sx={{ mr: 1 }}>
                             {getNotificationIcon(notification.type)}
                           </Box>
-                          {/* <Typography variant="subtitle1">
-                            {notification.user
-                              ? notification.user.name
-                              : "System Notification"}
-                          </Typography> */}
+                          <Typography variant="subtitle1">
+                            {notification.title}
+                          </Typography>
                         </Box>
-                        <Typography variant="body2" color="text.secondary">
+                        {/* <Typography variant="body2" color="text.secondary">
                           {notification.title}
-                        </Typography>
+                        </Typography> */}
                       </Box>
                       <Box
                         sx={{
@@ -196,15 +199,6 @@ const Notifications = () => {
                       </Box>
                     </Box>
 
-                    {/* <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-                      <PriorityIndicator priority={notification.priority} />
-                      <Typography variant="caption" color="text.secondary">
-                        {notification.priority.charAt(0).toUpperCase() +
-                          notification.priority.slice(1)}{" "}
-                        priority
-                      </Typography>
-                    </Box> */}
-
                     <Typography
                       variant="body2"
                       sx={{
@@ -220,20 +214,22 @@ const Notifications = () => {
               </CardContent>
             </Card>
           ))}
-          {filteredNotifications.length > 0 && (
+          {notifications.length > 0 && (
             <Box sx={{ textAlign: "center", mt: 2 }}>
-              <Button variant="outlined" size="small">
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setLimit((prev) => prev + 15)}
+              >
                 Load more notifications
               </Button>
             </Box>
           )}
-        </Grid>
-
-        {/* Simple filter list on the right */}
+        </Grid>{" "}
         <Grid item xs={12} md={3}>
           <Box sx={{ ml: { md: 4 } }}>
-            <FilterOption label="Appointments" value="appointment" />
-            <FilterOption label="Messages" value="message" />
+            <FilterOption label="Appointments" value="appointments" />
+            {/* <FilterOption label="Messages" value="messages" /> */}
             <FilterOption label="General" value="general" />
             <FilterOption label="All" value="all" />
           </Box>

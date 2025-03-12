@@ -2,21 +2,15 @@ import INotificationRepository from "src/repositories/notification/interface/INo
 import { INotificationService } from "./interface/INotificationService";
 import { INotification } from "../../interfaces/INotification";
 import { AppError } from "../../utils/errors";
-// import { ISocketService } from "../../socket/socket";
+
 import logger from "../../configs/logger";
-// import { socketService } from "src/server";
-import { SocketService } from "../../socket/socket";
+import { eventBus } from "../../eventBus";
 
 class NotificationService implements INotificationService {
   private notificationRepo: INotificationRepository;
-  // private socketService: ISocketService;
 
-  constructor(
-    notificationRepo: INotificationRepository
-    // socketService: ISocketService
-  ) {
+  constructor(notificationRepo: INotificationRepository) {
     this.notificationRepo = notificationRepo;
-    // this.socketService = socketService;
   }
 
   async createNotification(
@@ -25,21 +19,10 @@ class NotificationService implements INotificationService {
     try {
       const notification = await this.notificationRepo.create(notificationData);
 
-      // console.log("SocketService instance:", this.socketService);
-      // if (!this.socketService) {
-      //   throw new AppError("socketService is not initialized");
-      // }
-      // this.socketService.emitAppointmentNotification(
-      //   notification.user._id.toString(),
-      //   notification
-      // );
-      const socketService = SocketService.getInstance();
-
-      socketService.emitNotification(
-        notification.user._id.toString(),
-        ""
-        notification
-      );
+      eventBus.publish("appointment-notification", {
+        userId: notification.user._id.toString(),
+        notification,
+      });
 
       return notification;
     } catch (error) {
@@ -62,7 +45,45 @@ class NotificationService implements INotificationService {
   }
 
   async markAsRead(notificationId: string): Promise<boolean> {
-    return await this.notificationRepo.markAsRead(notificationId);
+    try {
+      const result = await this.notificationRepo.markAsRead(notificationId);
+      if (!result) {
+        throw new AppError("Failed to mark notification as read");
+      }
+      return result;
+    } catch (error) {
+      logger.error("Failded to mark notification", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async markAllAsRead(userId: string): Promise<boolean> {
+    try {
+      const result = await this.notificationRepo.markAllAsRead(userId);
+      if (!result) {
+        throw new AppError("Failed to mark notification as read");
+      }
+      return result;
+    } catch (error) {
+      logger.error("Failded to mark notification", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getUnreadCount(userId: string): Promise<number> {
+    return await this.notificationRepo.getUnreadCount(userId);
   }
 
   async getNotifications(

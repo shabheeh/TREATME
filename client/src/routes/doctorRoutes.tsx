@@ -10,6 +10,7 @@ import Schedule from "../pages/doctor/Schedule";
 import Appointments from "../pages/doctor/Appointments";
 import PatientProfile from "../pages/doctor/PatientProfile";
 import Messages from "../components/basics/messages/Messages";
+import Notifications from "../components/basics/notification/Notification";
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
@@ -34,6 +35,7 @@ export const doctorRoutes = [
     <Route path="appointments" element={<Appointments />} />
     <Route path="messages" element={<Messages />} />
     <Route path="schedules" element={<Schedule />} />
+    <Route path="notifications" element={<Notifications />} />
     <Route path="patients/health" element={<PatientProfile />} />
   </Route>,
 ];

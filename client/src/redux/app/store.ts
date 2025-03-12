@@ -12,6 +12,7 @@ import { persistedAuthReducer } from "../features/auth/authSlice";
 import { persistedUserReducer } from "../features/user/userSlice";
 import { persistAppointmentReducer } from "../features/appointment/appointmentSlice";
 import tempReducer from "../features/auth/tempSlice";
+import notificationReducer from "../features/notification/notificationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     user: persistedUserReducer,
     tempUser: tempReducer,
     appointment: persistAppointmentReducer,
+    notfication: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

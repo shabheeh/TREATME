@@ -21,8 +21,8 @@ const server = http.createServer(app);
 const messageRepository = new MessageRepository(MessageModel);
 const chatRepository = new ChatRepository(ChatModel);
 const chatService = new ChatService(chatRepository, messageRepository);
-// export const socketService = new SocketService(chatService);
-const socketService = SocketService.getInstance(chatService);
+export const socketService = new SocketService(chatService);
+// const socketService = SocketService.getInstance(chatService);
 
 // const notificationRepository = new NotificationRepository(NotificationModel);
 // export const notificationService = new NotificationService(

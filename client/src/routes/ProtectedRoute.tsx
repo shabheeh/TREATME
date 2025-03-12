@@ -9,6 +9,8 @@ import Loading from "../components/basics/Loading";
 import { useSocket } from "../hooks/useSocket";
 import { INotification } from "../types/notification/notification.types";
 import { useToaster } from "../contexts/ToastContext";
+import { incrementUnreadCount } from "../redux/features/notification/notificationSlice";
+import { IMessage } from "../types/chat/chat.types";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -27,30 +29,38 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const [loading, setLoading] = useState(true);
 
   const { socket } = useSocket();
-  const { addNotification } = useToaster()
-  // const naviagte = useNavigate()
+
+  const { showNotification } = useToaster();
 
   useEffect(() => {
     if (!socket) return;
 
     const showNotifications = (notification: INotification) => {
-      addNotification({
-        title: notification.title,
-        message: notification.message,
-        type: notification.type,
-        // actions: [
-        //   {
-        //     label: "view",
-        //     onClick: () => naviagte(),
-        //   },
-        // ],
+      showNotification(notification);
+
+      dispatch(incrementUnreadCount());
+    };
+
+    const handleNewMessageNotifications = (message: IMessage) => {
+      showNotification({
+        _id: message._id,
+        title: "New Message",
+        message: `Recieved message from ${message.sender.firstName}`,
+        isRead: message.isRead,
+        priority: "low",
+        type: "messages",
+        userType: message.senderType,
+        createdAt: message.createdAt,
+        userId: message.sender._id,
       });
     };
 
     socket.on("appointment-notification", showNotifications);
+    socket.on("new-message", handleNewMessageNotifications);
 
     return () => {
       socket.off("appointment-notification");
+      socket.off("new-message");
     };
   }, [socket]);
 

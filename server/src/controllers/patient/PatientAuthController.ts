@@ -304,8 +304,6 @@ class PatientAuthController implements IPatientAuthController {
       next(error);
     }
   };
-
-  
 }
 
 export default PatientAuthController;

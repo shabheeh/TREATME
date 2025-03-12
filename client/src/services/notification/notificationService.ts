@@ -14,7 +14,43 @@ class NotificationService {
       return notifications;
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error(`Failed to notifications: ${error.message}`, error);
+        console.error(`Failed to get notifications: ${error.message}`, error);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error occurred`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
+
+  async markAllAsRead(): Promise<void> {
+    try {
+      await api.patch("/notifications");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          `Failed to mark notifications read: ${error.message}`,
+          error
+        );
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error occurred`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
+
+  async getUnreadCounts(): Promise<number> {
+    try {
+      const response = await api.get("/notifications/count");
+      const unreadCount = response.data.unreadCount;
+      return unreadCount;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          `Failed to get notifications unread count: ${error.message}`,
+          error
+        );
         throw new Error(error.message);
       }
 

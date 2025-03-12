@@ -141,8 +141,6 @@ class ScheduleRepository implements IScheduleRepository {
         "availability.slots._id": new Types.ObjectId(slotId),
       });
 
-      console.log(doctorId, dayId, slotId);
-
       if (!document) {
         throw new AppError("document not found");
       }

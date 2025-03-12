@@ -14,13 +14,6 @@ import { IChat, IMessage } from "../../../types/chat/chat.types";
 import chatService from "../../../services/chat/ChatService";
 import { toast } from "sonner";
 import { useSocket } from "../../../hooks/useSocket";
-import { useToastManager } from "../../../hooks/useToastMangager";
-import {
-  useNotification,
-  useToast,
-  useToaster,
-} from "../../../contexts/ToastContext";
-import { NotificationType } from "../../../types/notification/notification.types";
 
 interface ChatPageProps {
   // Optional props for layout integration
@@ -44,18 +37,15 @@ const Messages: React.FC<ChatPageProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const { socket } = useSocket();
-  const { addNotification } = useToaster();
 
   useEffect(() => {
     fetchChats();
-    // showNotifications();
   }, []);
 
   useEffect(() => {
     if (!activeChat) return;
     fetchMessages(activeChat._id);
   }, [activeChat]);
-
 
   useEffect(() => {
     if (isMobile && activeChat) {
@@ -98,20 +88,6 @@ const Messages: React.FC<ChatPageProps> = ({
     }
   };
 
-  const showNotifications = () => {
-    addNotification({
-      title: "System Update",
-      message: "The system will undergo maintenance in 30 minutes",
-      type: "message",
-      actions: [
-        {
-          label: "Learn More",
-          onClick: () => console.log("Opening more info"),
-        },
-      ],
-    });
-  };
-
   useEffect(() => {
     if (!socket) return;
 
@@ -128,18 +104,13 @@ const Messages: React.FC<ChatPageProps> = ({
       );
     });
 
-    // user left chat
     socket.on("leave-chat", (userId: string) => {
       setOnlineUsers((prev) => prev.filter((id) => id !== userId));
     });
 
-    // Handle connection or server errors
     socket.on("error", (error: { message: string }) => {
       console.error("Socket error:", error.message);
-      // Optionally display error to user or retry connection
     });
-
-    // Cleanup: Remove all event listeners
     return () => {
       socket.off("online-users");
       socket.off("new-message", handleNewMessage);
@@ -162,7 +133,6 @@ const Messages: React.FC<ChatPageProps> = ({
     try {
       const chat = await chatService.createOrAccessChat(userId2, userType2);
 
-      // check if the chat already exists in the chats
       const isChatAlreadyPresent = chats.some(
         (existingChat) => existingChat._id === chat._id
       );

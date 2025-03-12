@@ -285,4 +285,18 @@ router.get(
   notificationController.getNotfications
 );
 
+router.patch(
+  "/notifications",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  notificationController.markAllNotificationRead
+);
+
+router.get(
+  "/notifications/count",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  notificationController.getUnreadNotificationsCount
+);
+
 export default router;

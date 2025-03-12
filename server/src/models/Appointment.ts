@@ -1,10 +1,10 @@
-import { model, Schema, Types } from "mongoose";
+import { Model, model, Schema } from "mongoose";
 import IAppointment from "../interfaces/IAppointment";
 
 const appointmentSchema = new Schema<IAppointment>(
   {
     patient: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: true,
       refPath: "patientType",
     },
@@ -13,9 +13,9 @@ const appointmentSchema = new Schema<IAppointment>(
       enum: ["Patient", "Dependent"],
       required: true,
     },
-    doctor: { type: Types.ObjectId, ref: "Doctor" },
+    doctor: { type: Schema.Types.ObjectId, ref: "Doctor" },
     specialization: {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Specialization",
       required: true,
     },
@@ -34,7 +34,7 @@ const appointmentSchema = new Schema<IAppointment>(
   }
 );
 
-export const AppointmentModel = model<IAppointment>(
+export const AppointmentModel: Model<IAppointment> = model<IAppointment>(
   "Appointment",
   appointmentSchema
 );

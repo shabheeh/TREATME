@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Button, Typography, Box, IconButton } from "@mui/material";
+import { ToasterContext } from "../../../contexts/ToastContext";
+import { ToasterContainer, NotificationItem } from "./ToastContainer";
+import { INotification } from "../../../types/notification/notification.types";
+import { formatTime } from "../../../utils/dateUtils";
+import { Typography, Box, IconButton } from "@mui/material";
 import {
   Close as CloseIcon,
   Info as InfoIcon,
   Event as EventIcon,
   Message as MessageIcon,
 } from "@mui/icons-material";
-import { ToasterContext } from "../../../contexts/ToastContext";
-import { NotificationItem, ToasterContainer } from "./ToastContainer";
-import { Notification } from "../../../types/notification/notification.types";
-
 type NavigationHandler = (route: string) => void;
 
 interface ToasterProviderProps {
@@ -19,52 +19,35 @@ interface ToasterProviderProps {
 
 export const ToasterProvider: React.FC<ToasterProviderProps> = ({
   children,
-  navigationHandler = (route: string) =>
-    console.log(
-      `Navigation to ${route} requested. Provide a navigationHandler prop to enable routing.`
-    ),
 }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [currentNotification, setCurrentNotification] =
+    useState<INotification | null>(null);
 
-  const addNotification = (
-    notification: Omit<Notification, "id" | "timestamp">
-  ) => {
-    const id = Math.random().toString(36).substring(2, 9);
-    const timestamp = new Date();
+  const showToast = (notification: INotification) => {
+    setCurrentNotification(notification);
 
-    setNotifications((prev) => [...prev, { ...notification, id, timestamp }]);
-
-    // Auto-dismiss after 5 seconds
     setTimeout(() => {
-      removeNotification(id);
-    }, 5000);
-  };
-
-  const removeNotification = (id: string) => {
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.id !== id)
-    );
-  };
-
-  const clearAll = () => {
-    setNotifications([]);
+      setCurrentNotification(null);
+    }, 3000);
   };
 
   return (
     <ToasterContext.Provider
-      value={{ notifications, addNotification, removeNotification, clearAll }}
+      value={{
+        showNotification: showToast,
+      }}
     >
       {children}
       <ToasterContainer>
-        {notifications.map((notification) => (
+        {currentNotification && (
           <NotificationItem
-            key={notification.id}
+            key={currentNotification._id}
             sx={{
               "&::before": {
                 bgcolor:
-                  notification.type === "message"
+                  currentNotification.type === "messages"
                     ? "primary.main"
-                    : notification.type === "appointment"
+                    : currentNotification.type === "appointments"
                       ? "secondary.main"
                       : "info.main",
               },
@@ -76,20 +59,22 @@ export const ToasterProvider: React.FC<ToasterProviderProps> = ({
               justifyContent="space-between"
             >
               <Box display="flex" alignItems="center" gap={1}>
-                {notification.type === "message" && (
+                {currentNotification.type === "messages" && (
                   <MessageIcon color="primary" />
                 )}
-                {notification.type === "appointment" && (
+                {currentNotification.type === "appointments" && (
                   <EventIcon color="secondary" />
                 )}
-                {notification.type === "general" && <InfoIcon color="info" />}
+                {currentNotification.type === "general" && (
+                  <InfoIcon color="info" />
+                )}
                 <Typography variant="subtitle1" fontWeight="bold">
-                  {notification.title}
+                  {currentNotification.title}
                 </Typography>
               </Box>
               <IconButton
                 size="small"
-                onClick={() => removeNotification(notification.id)}
+                onClick={() => setCurrentNotification(null)}
                 aria-label="close"
               >
                 <CloseIcon fontSize="small" />
@@ -97,40 +82,18 @@ export const ToasterProvider: React.FC<ToasterProviderProps> = ({
             </Box>
 
             <Typography variant="body2" sx={{ mt: 1, mb: 1 }}>
-              {notification.message}
+              {currentNotification.message}
             </Typography>
-
-            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-              {notification.actions?.map((action, index) => (
-                <Button
-                  key={index}
-                  size="small"
-                  variant={action.primary ? "contained" : "text"}
-                  onClick={action.onClick}
-                >
-                  {action.label}
-                </Button>
-              ))}
-              {notification.route && (
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={() => navigationHandler(notification.route || "/")}
-                >
-                  View
-                </Button>
-              )}
-            </Box>
 
             <Typography
               variant="caption"
               color="text.secondary"
               sx={{ mt: 0.5 }}
             >
-              {notification.timestamp.toLocaleTimeString()}
+              {formatTime(currentNotification.createdAt)}
             </Typography>
           </NotificationItem>
-        ))}
+        )}
       </ToasterContainer>
     </ToasterContext.Provider>
   );

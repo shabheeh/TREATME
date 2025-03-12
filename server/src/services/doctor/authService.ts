@@ -31,7 +31,7 @@ class DoctorAuthService implements IDoctorAuthService {
       }
 
       const payload: ITokenPayload = {
-        id: doctor._id.toString(),
+        id: doctor._id!.toString(),
         email: doctor.email,
         role: "doctor",
       };
