@@ -43,8 +43,12 @@ import NotificationRepository from "../../repositories/notification/Notification
 import { NotificationModel } from "../../models/Notification";
 import NotificationService from "../../services/notification/NotificationService";
 import NotificationController from "../../controllers/notification/NotificationController";
-// import { socketService } from "../../server";
-// import { notificationService } from "../../server";
+import WalletRepository from "../../repositories/wallet/WalletRepository";
+import { WalletModel } from "../../models/Wallet";
+import WalletService from "../../services/wallet/WalletService";
+import WalletController from "../../controllers/wallet/WalletController";
+import StripeService from "../../services/stripe/StripeService";
+import StripeController from "../../controllers/stripe/StripeController";
 
 const router = express.Router();
 
@@ -111,17 +115,28 @@ const notificationController = new NotificationController(notificationService);
 // appointment di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
 
+// wallet
+const walletRepository = new WalletRepository(WalletModel);
+const walletService = new WalletService(walletRepository);
+const walletController = new WalletController(walletService);
+
 const appointmentRepository = new AppointmentRepository(AppointmentModel);
 const appointmentService = new AppointmentService(
   appointmentRepository,
   scheduleRepository,
-  notificationService
+  notificationService,
+  walletService
 );
 const appointmentController = new AppointmentController(appointmentService);
 
+// reviews di
 const reviewRepository = new ReviewRepository(ReviewModel);
 const reviewService = new ReviewService(reviewRepository);
 const reviewController = new ReviewController(reviewService);
+
+// stripe
+const stripeService = new StripeService(appointmentService, walletService);
+const stripeController = new StripeController(stripeService);
 
 router.post("/auth/refresh-token", tokenController.handleRefreshToken);
 
@@ -251,10 +266,10 @@ router.get(
 router.post(
   "/create-payment-intent",
   authenticate,
-  appointmentController.stripePayment
+  stripeController.createPaymentIntent
 );
 
-router.post("/webhooks", appointmentController.handleWebHook);
+router.post("/webhooks", stripeController.handleWebhook);
 
 router.get(
   "/appointment/payment/:paymentId",
@@ -297,6 +312,13 @@ router.get(
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   notificationController.getUnreadNotificationsCount
+);
+
+router.get(
+  "/wallet",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  walletController.accessWallet
 );
 
 export default router;

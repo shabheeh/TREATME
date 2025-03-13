@@ -9,28 +9,31 @@ import { AppError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
 import { extractDate, extractTime } from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
-import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
-import Stripe from "stripe";
 import { generateBookingCancellationHtml } from "../../helpers/bookingCancellationHtml";
 import { generateBookingConfirmationHtmlForDoctor } from "../../helpers/bookingConfirmationHtmlForDoctor";
 import { generateBookingCancellationHtmlForDoctor } from "../../helpers/bookingCancellationHtmlForDoctor";
 import { INotificationService } from "../notification/interface/INotificationService";
 import { INotification } from "src/interfaces/INotification";
 import { Types } from "mongoose";
+import { IWalletService } from "../wallet/interface/IWalletService";
+import { ITransaction } from "src/interfaces/IWallet";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
   private scheduleRepo: IScheduleRepository;
   private notificationService: INotificationService;
+  private walletService: IWalletService;
 
   constructor(
     appointmentRepo: IAppointmentRepository,
     scheduleRepo: IScheduleRepository,
-    notificationService: INotificationService
+    notificationService: INotificationService,
+    walletService: IWalletService
   ) {
     this.appointmentRepo = appointmentRepo;
     this.scheduleRepo = scheduleRepo;
     this.notificationService = notificationService;
+    this.walletService = walletService;
   }
 
   async createAppointment(
@@ -109,7 +112,7 @@ class AppointmentService implements IAppointmentService {
           title: "Appointment Confirmation",
           message: `Your appointment has been schedulued with dr. ${doctorFirstName} ${doctorLastName} on ${date} at ${time}`,
           type: "appointments",
-          priority: "medium",
+          priority: "high",
         };
 
         const notificationForDoctor: Partial<INotification> = {
@@ -118,7 +121,7 @@ class AppointmentService implements IAppointmentService {
           title: "New Appointment",
           message: `An Appointment has been scheduled with ${patientFirstName} ${patientLastName} on ${date} at ${time}`,
           type: "appointments",
-          priority: "medium",
+          priority: "high",
         };
 
         await Promise.all([
@@ -239,7 +242,7 @@ class AppointmentService implements IAppointmentService {
               title: "Appointment Rescheduled",
               message: `Your appointment with dr. ${doctorFirstName} ${doctorLastName} on ${oldDate} at ${oldTime} has been rescheduled to ${date} at ${time}`,
               type: "appointments",
-              priority: "medium",
+              priority: "high",
             };
 
             const notificationForDoctor: Partial<INotification> = {
@@ -248,7 +251,7 @@ class AppointmentService implements IAppointmentService {
               title: "Appointment Rescheduled",
               message: `Your appointment with patient ${patientFirstName} ${patientLastName} on ${oldDate} at ${oldTime} has been rescheduled to ${date} at ${time}`,
               type: "appointments",
-              priority: "medium",
+              priority: "high",
             };
 
             await Promise.all([
@@ -295,14 +298,9 @@ class AppointmentService implements IAppointmentService {
         );
       }
 
-      const doctorId =
-        typeof appointmentData.doctor._id === "string"
-          ? appointmentData.doctor._id.toString()
-          : "";
-
       // toggle booking status for cancelled appointment
       await this.scheduleRepo.toggleBookingStatus(
-        doctorId,
+        appointmentData.doctor._id as string,
         appointmentData.dayId,
         appointmentData.slotId
       );
@@ -314,11 +312,13 @@ class AppointmentService implements IAppointmentService {
 
       // Send cancellation email
       const {
+        _id: doctorId,
         firstName: doctorFirstName,
         lastName: doctorLastName,
         email: doctorEmail,
       } = appointmentData.doctor;
       const {
+        _id: patientId,
         firstName: patientFirstName,
         lastName: patientLastName,
         email: patientEmail,
@@ -341,10 +341,41 @@ class AppointmentService implements IAppointmentService {
         time
       );
 
+      const notificationForPatient: Partial<INotification> = {
+        user: patientId as Types.ObjectId,
+        userType: "Patient",
+        title: "Appointment Cancelled",
+        message: `Your appointment with dr. ${doctorFirstName} ${doctorLastName} on ${date} at ${time} has been cancelled`,
+        type: "appointments",
+        priority: "high",
+      };
+
+      const notificationForDoctor: Partial<INotification> = {
+        user: doctorId as Types.ObjectId,
+        userType: "Doctor",
+        title: "Appointment Cancelled",
+        message: `Your appointment with patient ${patientFirstName} ${patientLastName} on ${date} at ${time} has been cancelled`,
+        type: "appointments",
+        priority: "high",
+      };
+
+      await Promise.all([
+        this.notificationService.createNotification(notificationForPatient),
+        this.notificationService.createNotification(notificationForDoctor),
+      ]);
+
       await Promise.all([
         sendEmail(patientEmail, "Booking Cancellation", undefined, patientHtml),
         sendEmail(doctorEmail, "Booking Cancellation", undefined, doctorHtml),
       ]);
+      const transaction: ITransaction = {
+        amount: appointmentData.fee,
+        status: "success",
+        type: "credit",
+        date: new Date(),
+        description: "Refund for Appointment Cancellation",
+      };
+      await this.walletService.addTransaction(patientId as string, transaction);
     } catch (error) {
       logger.error("Error cancelling appointment", error);
       if (error instanceof AppError) {
@@ -402,138 +433,12 @@ class AppointmentService implements IAppointmentService {
     }
   }
 
-  async stripePayment(
-    appointmentData: IAppointment
-  ): Promise<{ clientSecret: string }> {
-    try {
-      const paymentIntent = await createPaymentIntent(
-        appointmentData.fee,
-        "inr",
-        appointmentData
-      );
-      return { clientSecret: paymentIntent.client_secret || "" };
-    } catch (error) {
-      logger.error(`Error stripe payment`, error);
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
-    }
-  }
-
-  async handleWebHook(payload: Buffer, sig: string) {
-    try {
-      if (!process.env.STRIPE_WEBHOOK_SECRET) {
-        throw new Error("STRIPE_WEBHOOK_SECRET is not configured");
-      }
-
-      const event = await constructWebhookEvent(
-        payload,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-
-      switch (event.type) {
-        case "payment_intent.succeeded":
-          await this.handlePaymentIntentSucceeded(event.data.object);
-          break;
-
-        case "payment_intent.payment_failed":
-          await this.handlePaymentIntentFailed(event.data.object);
-          break;
-
-        case "payment_intent.canceled":
-          await this.handlePaymentIntentCanceled(event.data.object);
-          break;
-
-        default:
-          logger.info(`Unhandled event type: ${event.type}`);
-      }
-    } catch (error) {
-      logger.error(`Error stripe payment`, error);
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
-    }
-  }
-
   async getAppointmentByPaymentId(
     paymentIntentId: string
   ): Promise<IAppointmentPopulated> {
     const appointment =
       await this.appointmentRepo.getAppointmentByPaymentId(paymentIntentId);
     return appointment;
-  }
-
-  private async handlePaymentIntentSucceeded(
-    paymentIntent: Stripe.PaymentIntent
-  ) {
-    if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
-    }
-
-    const appointment = {
-      ...this.createAppointmentObject(paymentIntent.metadata),
-      status: "confirmed",
-      paymentStatus: "completed",
-      paymentIntentId: paymentIntent.id,
-    } as unknown as IAppointment;
-
-    await this.createAppointment(appointment);
-  }
-
-  private async handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
-    if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
-    }
-
-    const appointment = {
-      ...this.createAppointmentObject(paymentIntent.metadata),
-      status: "pending",
-      paymentStatus: "failed",
-      paymentIntentId: paymentIntent.id,
-    } as unknown as IAppointment;
-
-    await this.createAppointment(appointment);
-  }
-
-  private async handlePaymentIntentCanceled(
-    paymentIntent: Stripe.PaymentIntent
-  ) {
-    if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
-    }
-
-    const appointment = {
-      ...this.createAppointmentObject(paymentIntent.metadata),
-      status: "cancelled",
-      paymentStatus: "cancelled",
-      paymentIntentId: paymentIntent.id,
-    } as unknown as IAppointment;
-
-    await this.createAppointment(appointment);
-  }
-
-  private createAppointmentObject(metadata: Stripe.Metadata) {
-    return {
-      doctor: metadata.doctor,
-      patientType: metadata.patientType,
-      patient: metadata.patient,
-      specialization: metadata.specialization,
-      date: metadata.date,
-      duration: metadata.duration,
-      reason: metadata.reason,
-      fee: Number(metadata.fee),
-      slotId: metadata.slotId,
-      dayId: metadata.dayId,
-    };
   }
 }
 

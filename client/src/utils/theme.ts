@@ -1,14 +1,19 @@
 import { createTheme } from "@mui/material/styles";
 
-import "@fontsource/noto-sans/300.css";
-import "@fontsource/noto-sans/400.css";
-import "@fontsource/noto-sans/500.css";
-import "@fontsource/noto-sans/700.css";
+import "@fontsource/montserrat/300.css";
+import "@fontsource/montserrat/400.css";
+import "@fontsource/montserrat/500.css";
+import "@fontsource/montserrat/700.css";
+
+// import "@fontsource/poppins/300.css";
+// import "@fontsource/poppins/400.css";
+// import "@fontsource/poppins/500.css";
+// import "@fontsource/poppins/700.css";
 
 export const theme = createTheme({
   typography: {
     fontFamily: [
-      "Noto Sans",
+      "Montserrat",
       "-apple-system",
       "BlinkMacSystemFont",
       "Arial",

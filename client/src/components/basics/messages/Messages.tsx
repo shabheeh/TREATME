@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { useSocket } from "../../../hooks/useSocket";
 
 interface ChatPageProps {
-  // Optional props for layout integration
   navbarHeight?: number | string;
   sidebarWidth?: number | string;
 }

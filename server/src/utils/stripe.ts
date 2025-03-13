@@ -1,35 +1,36 @@
-import IAppointment from "src/interfaces/IAppointment";
-import logger from "../configs/logger";
 import Stripe from "stripe";
+import logger from "../configs/logger";
 import { AppError } from "./errors";
-
-const appointmentToMetadata = (
-  appointment: IAppointment
-): Record<string, string | number> => {
-  return {
-    doctor: appointment.doctor.toString(),
-    patientType: appointment.patientType,
-    patient: appointment.patient.toString(),
-    specialization: appointment.specialization.toString(),
-    date: appointment.date.toString(),
-    duration: appointment.duration,
-    reason: appointment.reason,
-    fee: appointment.fee,
-    slotId: appointment.slotId,
-    dayId: appointment.dayId,
-    status: appointment.status,
-    paymentStatus: appointment.paymentStatus,
-  };
-};
+import IAppointment from "src/interfaces/IAppointment";
+import { ITransaction } from "src/interfaces/IWallet";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-01-27.acacia",
 });
 
+type PaymentMetadata = Record<string, string | number>;
+
+const generateMetadata = (
+  userId: string,
+  data: IAppointment | ITransaction,
+  paymentType: "appointment_fee" | "wallet_topup"
+): Record<string, string | number> => {
+  const metadata: PaymentMetadata = { paymentType, userId };
+
+  Object.entries(data).forEach(([key, value]) => {
+    metadata[key] =
+      typeof value === "object" ? JSON.stringify(value) : value.toString();
+  });
+
+  return metadata;
+};
+
 export const createPaymentIntent = async (
+  userId: string,
   amount: number,
   currency = "inr",
-  appointmentData: IAppointment
+  paymentData: IAppointment | ITransaction,
+  paymentType: "appointment_fee" | "wallet_topup"
 ) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -38,7 +39,7 @@ export const createPaymentIntent = async (
       automatic_payment_methods: {
         enabled: true,
       },
-      metadata: appointmentToMetadata(appointmentData),
+      metadata: generateMetadata(userId, paymentData, paymentType),
     });
     return paymentIntent;
   } catch (error) {

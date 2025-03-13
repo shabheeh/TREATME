@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 import { IChat } from "src/interfaces/IChat";
 
 const chatSchema = new Schema<IChat>(
@@ -45,4 +45,4 @@ const chatSchema = new Schema<IChat>(
   { timestamps: true }
 );
 
-export const ChatModel = model<IChat>("Chat", chatSchema);
+export const ChatModel: Model<IChat> = model<IChat>("Chat", chatSchema);

@@ -53,11 +53,10 @@ class ChatService implements IChatService {
     creatorType: "Patient" | "Doctor" | "Admin",
     userType2: "Patient" | "Doctor" | "Admin"
   ): Promise<IChat> {
-    console.log(userId1, userId2);
+
     const chat = await this.chatRepository.findOneOnOneChat(userId1, userId2);
 
     if (chat) {
-      console.log("chat fondddd");
       return chat;
     }
 

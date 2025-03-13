@@ -1,13 +1,18 @@
 import IAppointment from "../../types/appointment/appointment.types";
+import { ITransaction } from "../../types/wallet/wallet.types";
 import { api } from "../../utils/axiosInterceptor";
 import { PaymentIntent } from "@stripe/stripe-js";
 
 export const createPaymentIntent = async (
-  appointmentData: Partial<IAppointment>
+  paymentData: Partial<IAppointment | ITransaction>,
+  paymentType: string,
+  amount: number
 ) => {
   try {
     const response = await api.post("/create-payment-intent", {
-      appointmentData,
+      paymentData,
+      paymentType,
+      amount,
     });
     console.log(response.data);
     return response.data;
