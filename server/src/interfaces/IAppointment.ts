@@ -58,6 +58,10 @@ export interface IAppointmentService {
   getAppointmentByPaymentId(
     paymentIntentId: string
   ): Promise<IAppointmentPopulated>;
+  getAppointmentByPatientIdAndDoctorId(
+    patientId: string,
+    doctorId: string
+  ): Promise<IAppointment | null>;
 }
 
 export interface IAppointmentController {

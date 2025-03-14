@@ -8,11 +8,14 @@ import {
   Divider,
   Grid,
 } from "@mui/material";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import MessageIcon from "@mui/icons-material/Message";
-import AnnouncementIcon from "@mui/icons-material/Announcement";
+import {
+  Notifications as NotificationsIcon,
+  MarkEmailRead as MarkEmailReadIcon,
+  CalendarToday as CalendarTodayIcon,
+  Message as MessageIcon,
+  Announcement as AnnouncementIcon,
+  NotificationsOff as NotificationsOffIcon,
+} from "@mui/icons-material"
 import { INotification } from "../../../types/notification/notification.types";
 import notificationService from "../../../services/notification/notificationService";
 import { toast } from "sonner";
@@ -147,6 +150,24 @@ const Notifications = () => {
       <Grid container spacing={3}>
         {/* Notifications list */}
         <Grid item xs={12} md={9}>
+          {notifications.length === 0 && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              sx={{ height: "60vh", textAlign: "center" }}
+            >
+              <NotificationsOffIcon sx={{ fontSize: 50, color: "gray" }} />
+              <Typography variant="h6" sx={{ marginTop: 2 }}>
+                No Notifications
+              </Typography>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                You have no new notifications at this time.
+              </Typography>
+            </Box>
+          )}
+
           {notifications.map((notification) => (
             <Card
               key={notification._id}

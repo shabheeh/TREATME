@@ -97,7 +97,6 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
         date,
       });
 
-      toast.success("Reschedule request submitted successfully");
       onClose();
       onReschedule();
     } catch (error) {

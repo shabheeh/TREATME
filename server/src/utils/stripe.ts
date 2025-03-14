@@ -13,9 +13,10 @@ type PaymentMetadata = Record<string, string | number>;
 const generateMetadata = (
   userId: string,
   data: IAppointment | ITransaction,
-  paymentType: "appointment_fee" | "wallet_topup"
+  paymentType: "appointment_fee" | "wallet_topup",
+  amount: number
 ): Record<string, string | number> => {
-  const metadata: PaymentMetadata = { paymentType, userId };
+  const metadata: PaymentMetadata = { paymentType, userId, amount };
 
   Object.entries(data).forEach(([key, value]) => {
     metadata[key] =
@@ -39,7 +40,7 @@ export const createPaymentIntent = async (
       automatic_payment_methods: {
         enabled: true,
       },
-      metadata: generateMetadata(userId, paymentData, paymentType),
+      metadata: generateMetadata(userId, paymentData, paymentType, amount),
     });
     return paymentIntent;
   } catch (error) {

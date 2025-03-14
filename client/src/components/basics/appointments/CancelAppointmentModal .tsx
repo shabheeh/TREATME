@@ -134,9 +134,13 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
           />
         </Box> */}
 
-        <Alert severity="info" sx={{ mb: 3 }}>
+        {/* <Alert severity="info" sx={{ mb: 3 }}>
           Please note that cancellations made less than 24 hours before your
           scheduled appointment may be subject to a cancellation fee of 50rs.
+        </Alert> */}
+
+        <Alert severity="info" sx={{ mb: 3 }}>
+          Cancellation witin 2 hrs from appointment not applicable
         </Alert>
 
         <Stack direction="row" spacing={2} justifyContent="flex-end">

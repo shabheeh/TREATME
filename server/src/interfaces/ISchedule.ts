@@ -21,6 +21,16 @@ export interface ISchedule extends Document {
 export interface IScheduleService {
   getSchedule(doctorId: string): Promise<ISchedule | null>;
   updateSchedule(doctorId: string, updateData: ISchedule): Promise<ISchedule>;
+  updateBookingStatus(
+    doctorId: string,
+    dayId: string,
+    slotId: string
+  ): Promise<void>;
+  toggleBookingStatus(
+    doctorId: string,
+    dayId: string,
+    slotId: string
+  ): Promise<void>;
 }
 
 export interface IScheduleController {

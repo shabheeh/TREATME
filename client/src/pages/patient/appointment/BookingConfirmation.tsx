@@ -38,23 +38,23 @@ const BookingConfirmation = () => {
   // const clientSecret = searchParams.get("payment_intent_client_secret");
   // const paymentId = searchParams.get("payment_intent");
   const paymentIntentId = location.state.paymentIntentId;
+  const appointmentId = location.state.appointmentId;
 
   useEffect(() => {
-    if (!paymentIntentId) {
+    if (!paymentIntentId && !appointmentId) {
       throw new Error("Payment verification failed");
     }
     const fetchAppointment = async () => {
       try {
-        // const { paymentIntent } =
-        //   await stripe.retrievePaymentIntent(clientSecret);
-
-        // if (!paymentIntent) {
-        //   return null;
-        // }
-
-        const appointment =
-          await appointmentService.getAppointmentByPaymentId(paymentIntentId);
-        setAppointment(appointment);
+        if (paymentIntentId) {
+          const appointment =
+            await appointmentService.getAppointmentByPaymentId(paymentIntentId);
+          setAppointment(appointment);
+        } else if (appointmentId) {
+          const appointment =
+            await appointmentService.getAppointment(appointmentId);
+          setAppointment(appointment);
+        }
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Something went wrong"
@@ -64,7 +64,7 @@ const BookingConfirmation = () => {
       }
     };
     setTimeout(fetchAppointment, 2000);
-  }, [navigate, paymentIntentId]);
+  }, [navigate, paymentIntentId, appointmentId]);
 
   useEffect(() => {
     const handlePopState = () => {

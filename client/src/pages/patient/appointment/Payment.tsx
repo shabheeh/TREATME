@@ -10,6 +10,13 @@ import {
   Avatar,
   Button,
   Skeleton,
+  ToggleButtonGroup,
+  ToggleButton,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -34,15 +41,22 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import walletService from "../../../services/wallet/walletService";
+import appointmentService from "../../../services/appointment/appointmentService";
+import IAppointment from "../../../types/appointment/appointment.types";
 
 const Payment: React.FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [exitModalOpen, setExitModalOpen] = useState(false);
   const [isPaymentLoading, setPaymentLoading] = useState(false);
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState<IDoctor | null>(null);
   const [specialization, setSpecialization] = useState<ISpecialization | null>(
     null
+  );
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "stripe">(
+    "stripe"
   );
 
   const stripe = useStripe();
@@ -55,6 +69,14 @@ const Payment: React.FC = () => {
     (state: RootState) => state.appointment.appointmentData
   );
   const dispatch = useDispatch();
+
+  const enoughMoneyInWallet = () => {
+    if (!walletBalance || !appointmentData?.fee) {
+      return false;
+    } else {
+      return walletBalance >= appointmentData.fee;
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +111,58 @@ const Payment: React.FC = () => {
     fetchData();
   }, [appointmentData, navigate]);
 
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const wallet = await walletService.accessWallet();
+        if (wallet) {
+          setWalletBalance(wallet.balance);
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      }
+    };
+    fetchWallet();
+  }, []);
+
   const handlePaymentClick = async () => {
+    setPaymentLoading(true);
+    if (paymentMethod === "wallet") {
+      handleWalletPayment();
+    } else {
+      handleStripePayment();
+    }
+    setPaymentLoading(false);
+  };
+
+  const handleWalletPayment = async () => {
+    if (!appointmentData) return;
+    try {
+      setPaymentLoading(true)
+      const updatedAppointmentData = {
+        ...appointmentData,
+        status: "confirmed",
+        paymentStatus: "completed",
+      } as IAppointment;
+
+      const appointment = await appointmentService.createAppointment(
+        updatedAppointmentData
+      );
+      toast.success("Appointment scheduled successfully");
+
+      navigate("/confirmation", { state: { appointmentId: appointment._id } });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const handleStripePayment = async () => {
     if (!appointmentData || !stripe || !elements) {
       return;
     }
@@ -398,31 +471,56 @@ const Payment: React.FC = () => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Box display="flex" flexDirection="column" gap={1}>
+            <Box display="flex" flexDirection="column" gap={2}>
               <Card variant="outlined" sx={{ border: "1px solid teal" }}>
                 <CardContent>
                   <Typography variant="h6" sx={{ mb: 2 }}>
                     Payment Details
                   </Typography>
+                  <FormControl component="fieldset" sx={{ mb: 2 }}>
+                    <FormLabel component="legend">
+                      Select Payment Method
+                    </FormLabel>
+                    <RadioGroup
+                      value={paymentMethod}
+                      onChange={(e) =>
+                        setPaymentMethod(e.target.value as "stripe" | "wallet")
+                      }
+                    >
+                      <FormControlLabel
+                        value="stripe"
+                        control={<Radio />}
+                        label="Pay with Card"
+                      />
+                      <FormControlLabel
+                        value="wallet"
+                        control={<Radio />}
+                        label={`Pay with Wallet (₹${walletBalance && walletBalance.toFixed(2)})`}
+                        disabled={!enoughMoneyInWallet()}
+                      />
+                    </RadioGroup>
+                  </FormControl>
 
-                  {/* Stripe Payment Element - handles all payment methods */}
-                  <Box
-                    sx={{
-                      border: 1,
-                      borderColor: "grey.300",
-                      borderRadius: 1,
-                      p: 2,
-                      mb: 1,
-                    }}
-                  >
-                    <PaymentElement
-                      options={{
-                        paymentMethodOrder: ["card", "upi", "netbanking"],
-                        layout: "tabs",
+                  {paymentMethod === "stripe" && (
+                    <Box
+                      sx={{
+                        border: 1,
+                        borderColor: "grey.300",
+                        borderRadius: 1,
+                        p: 2,
+                        mb: 1,
                       }}
-                    />
-                  </Box>
+                    >
+                      <PaymentElement
+                        options={{
+                          paymentMethodOrder: ["card", "upi", "netbanking"],
+                          layout: "tabs",
+                        }}
+                      />
+                    </Box>
+                  )}
 
+                  {/* Amount Due */}
                   <Box
                     display="flex"
                     justifyContent="space-between"
@@ -436,7 +534,7 @@ const Payment: React.FC = () => {
                   >
                     <Typography>Amount Due</Typography>
                     <Typography>
-                      ₹{appointmentData.fee && appointmentData.fee.toFixed(2)}
+                      ₹{appointmentData.fee && appointmentData?.fee.toFixed(2)}
                     </Typography>
                   </Box>
 
@@ -451,9 +549,12 @@ const Payment: React.FC = () => {
                 </CardContent>
               </Card>
 
+              {/* Payment Button */}
               <Box>
                 <Button
-                  disabled={isPaymentLoading || !stripe}
+                  disabled={
+                    isPaymentLoading || (paymentMethod === "stripe" && !stripe)
+                  }
                   fullWidth
                   onClick={handlePaymentClick}
                   variant="contained"

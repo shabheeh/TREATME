@@ -4,55 +4,34 @@ import {
   Card,
   CardContent,
   Typography,
-  Divider,
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
   Chip,
-  Avatar,
   Grid,
   Button,
   Tab,
   Tabs,
   IconButton,
   useTheme,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
 } from "@mui/material";
-import {
-  AccountBalanceWallet,
-  MoreVert,
-  Refresh,
-  Payment,
-  Add,
-  Schedule,
-  LocalHospital,
-  Medication,
-  VideoCall,
-} from "@mui/icons-material";
+import { Refresh, Add, Schedule } from "@mui/icons-material";
 import { IWallet } from "../../../types/wallet/wallet.types";
 import walletService from "../../../services/wallet/walletService";
 import { toast } from "sonner";
-import AddFundsModal from "../../../services/wallet/AddFundsModal";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import AddFundsModal from "./AddFundsModal";
+import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 
 const WalletPatient: React.FC = () => {
   const theme = useTheme();
-  const [tabValue, setTabValue] = useState(0);
+  // const [tabValue, setTabValue] = useState(0);
   const [isAddFundsModalOpen, setAddFundsModalOpen] = useState<boolean>(false);
-  const [clientSecret, setClientSecret] = useState(null);
-  const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
   const [wallet, setWallet] = useState<IWallet | null>(null);
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  // const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+  //   setTabValue(newValue);
+  // };
 
   useEffect(() => {
     fetchWallet();
@@ -71,23 +50,11 @@ const WalletPatient: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return theme.palette.success.main;
-      case "pending":
-        return theme.palette.warning.main;
-      case "failed":
-        return theme.palette.error.main;
-      default:
-        return theme.palette.text.secondary;
-    }
-  };
+  const reversedTransactions = wallet?.transactions.slice().reverse();
 
   return (
     <Box sx={{ maxWidth: 800, margin: "0 auto", p: 2 }}>
       <Grid container spacing={2}>
-        {/* Wallet Balance */}
         <Grid item xs={12}>
           <Card
             elevation={2}
@@ -104,10 +71,14 @@ const WalletPatient: React.FC = () => {
                 alignItems="center"
               >
                 <Typography variant="h6" fontWeight="light">
-                  Healthcare Wallet
+                  Treetme Wallet
                 </Typography>
                 <Box display="flex" gap={1}>
-                  <IconButton size="small" sx={{ color: "white" }}>
+                  <IconButton
+                    size="small"
+                    sx={{ color: "white" }}
+                    onClick={fetchWallet}
+                  >
                     <Refresh />
                   </IconButton>
                 </Box>
@@ -115,10 +86,11 @@ const WalletPatient: React.FC = () => {
 
               <Box mt={3} mb={2}>
                 <Typography variant="h3" fontWeight="bold">
-                  {wallet?.balance}
+                  ₹{wallet?.balance.toFixed(2)}
                 </Typography>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                  Last updated: {wallet?.updatedAt.toString()}
+                  Last updated:{" "}
+                  {wallet?.updatedAt && formatMonthDay(wallet?.updatedAt)}
                 </Typography>
               </Box>
 
@@ -142,7 +114,7 @@ const WalletPatient: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* Transactions Section - Without Card */}
+        {/* Transactions */}
         <Grid item xs={12}>
           <Box sx={{ mt: 2, mb: 2 }}>
             <Box
@@ -160,7 +132,7 @@ const WalletPatient: React.FC = () => {
             </Box>
 
             <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-              <Tabs
+              {/* <Tabs
                 value={tabValue}
                 onChange={handleTabChange}
                 indicatorColor="primary"
@@ -169,12 +141,12 @@ const WalletPatient: React.FC = () => {
                 <Tab label="All" />
                 <Tab label="Consultations" />
                 <Tab label="Medications" />
-              </Tabs>
+              </Tabs> */}
             </Box>
 
             <List disablePadding>
-              {wallet?.transactions && wallet?.transactions.length > 0 ? (
-                wallet?.transactions.map((transaction) => (
+              {reversedTransactions && reversedTransactions.length > 0 ? (
+                reversedTransactions.map((transaction) => (
                   <React.Fragment key={transaction._id}>
                     <ListItem
                       alignItems="flex-start"
@@ -184,24 +156,33 @@ const WalletPatient: React.FC = () => {
                         borderBottom: `1px solid ${theme.palette.divider}`,
                       }}
                     >
-                      <ListItemIcon>
+                      {/* <ListItemIcon>
                         <Avatar
                           sx={{
                             bgcolor: theme.palette.primary.light,
                           }}
                         >
-                          {/* {getServiceIcon(transaction.serviceType)} */}
+                          {getServiceIcon(transaction.serviceType)}
                         </Avatar>
-                      </ListItemIcon>
+                      </ListItemIcon> */}
                       <ListItemText
                         primary={
                           <Box display="flex" justifyContent="space-between">
                             <Typography fontWeight="medium">
                               {transaction.description}
                             </Typography>
-                            <Typography fontWeight="bold" color="error.main">
-                              -{transaction.amount.toFixed()}
-                            </Typography>
+                            {transaction.type === "debit" ? (
+                              <Typography fontWeight="bold" color="error.main">
+                                -{transaction.amount.toFixed()}
+                              </Typography>
+                            ) : (
+                              <Typography
+                                fontWeight="bold"
+                                color="success.main"
+                              >
+                                +{transaction.amount.toFixed()}
+                              </Typography>
+                            )}
                           </Box>
                         }
                         secondary={
@@ -218,15 +199,19 @@ const WalletPatient: React.FC = () => {
                                 variant="body2"
                                 color="text.secondary"
                               >
-                                {transaction.date.toString()}
+                                {formatMonthDay(transaction.date)}{" "}
+                                {formatTime(transaction.date)}
                               </Typography>
                             </Box>
                             <Chip
                               label={transaction.status}
                               size="small"
                               sx={{
-                                color: getStatusColor(transaction.status),
-                                backgroundColor: `${getStatusColor(transaction.status)}20`,
+                                color: "white",
+                                backgroundColor:
+                                  transaction.status === "success"
+                                    ? "success.main"
+                                    : "error.main",
                                 fontWeight: "medium",
                                 fontSize: "0.7rem",
                                 height: 24,
@@ -247,11 +232,11 @@ const WalletPatient: React.FC = () => {
               )}
             </List>
 
-            {wallet && wallet?.transactions.length > 0 && (
+            {/* {wallet && wallet?.transactions.length > 0 && (
               <Box display="flex" justifyContent="center" mt={2}>
                 <Button color="primary">View More</Button>
               </Box>
-            )}
+            )} */}
           </Box>
         </Grid>
       </Grid>
@@ -259,7 +244,7 @@ const WalletPatient: React.FC = () => {
       <AddFundsModal
         open={isAddFundsModalOpen}
         onClose={() => setAddFundsModalOpen(false)}
-        wallet={wallet}
+        fetchWallet={fetchWallet}
       />
     </Box>
   );

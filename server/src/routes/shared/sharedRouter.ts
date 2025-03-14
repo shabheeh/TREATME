@@ -49,6 +49,7 @@ import WalletService from "../../services/wallet/WalletService";
 import WalletController from "../../controllers/wallet/WalletController";
 import StripeService from "../../services/stripe/StripeService";
 import StripeController from "../../controllers/stripe/StripeController";
+import ScheduleService from "../../services/doctor/scheduleService.ts";
 
 const router = express.Router();
 
@@ -114,6 +115,7 @@ const notificationController = new NotificationController(notificationService);
 
 // appointment di
 const scheduleRepository = new ScheduleRepository(ScheduleModel);
+const scheduleService = new ScheduleService(scheduleRepository);
 
 // wallet
 const walletRepository = new WalletRepository(WalletModel);
@@ -123,7 +125,7 @@ const walletController = new WalletController(walletService);
 const appointmentRepository = new AppointmentRepository(AppointmentModel);
 const appointmentService = new AppointmentService(
   appointmentRepository,
-  scheduleRepository,
+  scheduleService,
   notificationService,
   walletService
 );

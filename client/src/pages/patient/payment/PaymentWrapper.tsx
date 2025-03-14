@@ -25,7 +25,13 @@ const PaymentWrapper: React.FC = () => {
 
     const initializePayment = async () => {
       try {
-        const response = await createPaymentIntent(appointmentData);
+        const amount = appointmentData.fee;
+        if (!amount) return;
+        const response = await createPaymentIntent(
+          appointmentData,
+          "appointment_fee",
+          amount
+        );
         setClientSecret(response.clientSecret);
       } catch (error) {
         console.error("Payment Intent Error:", error);

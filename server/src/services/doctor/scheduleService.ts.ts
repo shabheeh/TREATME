@@ -57,6 +57,22 @@ class ScheduleService implements IScheduleService {
       );
     }
   }
+
+  async updateBookingStatus(
+    doctorId: string,
+    dayId: string,
+    slotId: string
+  ): Promise<void> {
+    await this.scheduleRepo.updateBookingStatus(doctorId, dayId, slotId);
+  }
+
+  async toggleBookingStatus(
+    doctorId: string,
+    dayId: string,
+    slotId: string
+  ): Promise<void> {
+    await this.toggleBookingStatus(doctorId, dayId, slotId);
+  }
 }
 
 export default ScheduleService;

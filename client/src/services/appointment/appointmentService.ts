@@ -5,8 +5,8 @@ import { api } from "../../utils/axiosInterceptor";
 
 class AppointmentService {
   async createAppointment(
-    appointmentData: Partial<IAppointment>
-  ): Promise<Partial<IAppointment>> {
+    appointmentData: IAppointment
+  ): Promise<IAppointment> {
     try {
       const response = await api.post("/appointments", {
         appointmentData,

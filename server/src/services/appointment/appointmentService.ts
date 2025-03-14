@@ -1,10 +1,9 @@
-import IScheduleRepository from "src/repositories/doctor/interfaces/IScheduleRepository";
 import logger from "../../configs/logger";
 import IAppointment, {
   IAppointmentPopulated,
   IAppointmentService,
 } from "../../interfaces/IAppointment";
-import IAppointmentRepository from "../../repositories/appointment/interfaces/IAppointmentService";
+import IAppointmentRepository from "../../repositories/appointment/interfaces/IAppointmentRepository";
 import { AppError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
 import { extractDate, extractTime } from "../../utils/dateUtils";
@@ -17,21 +16,22 @@ import { INotification } from "src/interfaces/INotification";
 import { Types } from "mongoose";
 import { IWalletService } from "../wallet/interface/IWalletService";
 import { ITransaction } from "src/interfaces/IWallet";
+import { IScheduleService } from "src/interfaces/ISchedule";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
-  private scheduleRepo: IScheduleRepository;
+  private scheduleService: IScheduleService;
   private notificationService: INotificationService;
   private walletService: IWalletService;
 
   constructor(
     appointmentRepo: IAppointmentRepository,
-    scheduleRepo: IScheduleRepository,
+    scheduleService: IScheduleService,
     notificationService: INotificationService,
     walletService: IWalletService
   ) {
     this.appointmentRepo = appointmentRepo;
-    this.scheduleRepo = scheduleRepo;
+    this.scheduleService = scheduleService;
     this.notificationService = notificationService;
     this.walletService = walletService;
   }
@@ -44,7 +44,7 @@ class AppointmentService implements IAppointmentService {
 
       // Update booking status
       if (doctor && slotId && dayId) {
-        await this.scheduleRepo.updateBookingStatus(
+        await this.scheduleService.updateBookingStatus(
           doctor.toString(),
           dayId,
           slotId
@@ -128,6 +128,18 @@ class AppointmentService implements IAppointmentService {
           this.notificationService.createNotification(notificationForPatient),
           this.notificationService.createNotification(notificationForDoctor),
         ]);
+
+        const transaction: ITransaction = {
+          amount: appointmentData.fee,
+          status: "success",
+          type: "debit",
+          date: new Date(),
+          description: "Funds deducted from wallet for scheduled appointment",
+        };
+        await this.walletService.addTransaction(
+          patientId as string,
+          transaction
+        );
       }
 
       return populatedAppointment;
@@ -165,13 +177,13 @@ class AppointmentService implements IAppointmentService {
       // Handle slot booking status updates
       if (doctor && slotId && dayId) {
         if (existingAppointment.dayId && existingAppointment.slotId) {
-          await this.scheduleRepo.toggleBookingStatus(
+          await this.scheduleService.toggleBookingStatus(
             doctor.toString(),
             existingAppointment.dayId,
             existingAppointment.slotId
           );
         }
-        await this.scheduleRepo.updateBookingStatus(
+        await this.scheduleService.updateBookingStatus(
           doctor.toString(),
           dayId,
           slotId
@@ -299,7 +311,7 @@ class AppointmentService implements IAppointmentService {
       }
 
       // toggle booking status for cancelled appointment
-      await this.scheduleRepo.toggleBookingStatus(
+      await this.scheduleService.toggleBookingStatus(
         appointmentData.doctor._id as string,
         appointmentData.dayId,
         appointmentData.slotId
@@ -368,6 +380,10 @@ class AppointmentService implements IAppointmentService {
         sendEmail(patientEmail, "Booking Cancellation", undefined, patientHtml),
         sendEmail(doctorEmail, "Booking Cancellation", undefined, doctorHtml),
       ]);
+      await this.walletService.accessOrCreateWallet(
+        patientId as string,
+        "Patient"
+      );
       const transaction: ITransaction = {
         amount: appointmentData.fee,
         status: "success",
@@ -438,6 +454,18 @@ class AppointmentService implements IAppointmentService {
   ): Promise<IAppointmentPopulated> {
     const appointment =
       await this.appointmentRepo.getAppointmentByPaymentId(paymentIntentId);
+    return appointment;
+  }
+
+  async getAppointmentByPatientIdAndDoctorId(
+    patientId: string,
+    doctorId: string
+  ): Promise<IAppointment | null> {
+    const appointment =
+      await this.appointmentRepo.getAppointmentByPatientAndDoctorId(
+        patientId,
+        doctorId
+      );
     return appointment;
   }
 }

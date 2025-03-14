@@ -32,13 +32,6 @@ export class SocketService implements ISocketService {
     );
   }
 
-  // public static getInstance(chatService?: IChatService): SocketService {
-  //   if (!SocketService.instance && chatService) {
-  //     SocketService.instance = new SocketService(chatService);
-  //   }
-  //   return SocketService.instance;
-  // }
-
   initialize(server: HttpServer): void {
     this.io = new SocketIOServer(server, {
       cors: {

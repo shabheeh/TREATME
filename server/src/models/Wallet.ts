@@ -11,6 +11,11 @@ const transactionSchema = new Schema<ITransaction>({
     enum: ["credit", "debit"],
     required: true,
   },
+  status: {
+    type: String,
+    enum: ["success", "failed"],
+    required: true,
+  },
   date: {
     type: Date,
     default: Date.now,

@@ -2,7 +2,7 @@ import { Model } from "mongoose";
 import IAppointment, {
   IAppointmentPopulated,
 } from "../../interfaces/IAppointment";
-import IAppointmentRepository from "./interfaces/IAppointmentService";
+import IAppointmentRepository from "./interfaces/IAppointmentRepository";
 import { AppError } from "../../utils/errors";
 
 class AppointmentRepository implements IAppointmentRepository {
@@ -189,6 +189,25 @@ class AppointmentRepository implements IAppointmentRepository {
         throw new AppError("");
       }
       return appointment as unknown as IAppointmentPopulated;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getAppointmentByPatientAndDoctorId(
+    patientId: string,
+    doctorId: string
+  ): Promise<IAppointment | null> {
+    try {
+      const appointment = await this.model
+        .findOne({ patient: patientId, doctor: doctorId })
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .lean();
+      return appointment;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

@@ -7,17 +7,23 @@ import { Types } from "mongoose";
 import { deleteCloudinaryFile } from "../../utils/cloudinary";
 import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
+import { IAppointmentService } from "src/interfaces/IAppointment";
+import { getDaysDifference } from "../../helpers/getDaysDifference";
 
 class ChatService implements IChatService {
   private chatRepository: IChatRepository;
   private messageRepository: IMessageRepository;
+  private appointmentService: IAppointmentService;
 
   constructor(
     chatRepository: IChatRepository,
-    messageRepository: IMessageRepository
+    messageRepository: IMessageRepository,
+    appointmentService: IAppointmentService
   ) {
     this.chatRepository = chatRepository;
     this.messageRepository = messageRepository;
+    this.appointmentService = appointmentService;
+    console.log("cnstrrr", this.appointmentService)
   }
 
   async getUserChats(userId: string): Promise<IChat[]> {
@@ -53,7 +59,6 @@ class ChatService implements IChatService {
     creatorType: "Patient" | "Doctor" | "Admin",
     userType2: "Patient" | "Doctor" | "Admin"
   ): Promise<IChat> {
-
     const chat = await this.chatRepository.findOneOnOneChat(userId1, userId2);
 
     if (chat) {
@@ -152,6 +157,10 @@ class ChatService implements IChatService {
       } else if (hasImage || hasVideo) {
         messageType = "mixed";
       }
+    }
+
+    if (senderType === "Patient") {
+      await this.validateMessagingRestriction(chatId, sender);
     }
 
     // create message obj
@@ -256,6 +265,51 @@ class ChatService implements IChatService {
       }
 
       return success;
+    } catch (error) {
+      logger.error("Error deleting message", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  private async validateMessagingRestriction(chatId: string, sender: string) {
+    try {
+      const chat = await this.chatRepository.findById(chatId);
+      let receiver;
+      if (chat?.participants.length === 2) {
+        receiver = chat.participants.find(
+          (participant) => participant.userType === "Doctor"
+        );
+      }
+      if (!receiver) {
+        return;
+      }
+
+      console.log(this.appointmentService, "appssddsfsdafsdafsdf")
+      const receiverId = receiver.user._id.toString();
+      const appointment =
+        await this.appointmentService.getAppointmentByPatientIdAndDoctorId(
+          sender,
+          receiverId
+        );
+      if (!appointment) {
+        throw new AppError(
+          "You need to make appointment with this doctor to send message"
+        );
+      }
+      const daysAfterLastAppointment = getDaysDifference(
+        appointment.date.toString()
+      );
+      if (daysAfterLastAppointment < 7) {
+        throw new AppError(
+          "You need to make appointment with this doctor to send more messages"
+        );
+      }
     } catch (error) {
       logger.error("Error deleting message", error);
       if (error instanceof AppError) {

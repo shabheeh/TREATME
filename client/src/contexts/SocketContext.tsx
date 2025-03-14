@@ -3,6 +3,8 @@ import { io, Socket } from "socket.io-client";
 import { SocketContext } from "../hooks/useSocket";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/app/store";
+import { toast } from "sonner";
+import { error } from "loglevel";
 
 export interface SocketProviderProps {
   children: ReactNode;
@@ -37,6 +39,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     socketInstance.on("connect_error", (error: Error) => {
       console.error("Connection error", error);
+    });
+
+    socketInstance.on("error", (error: string) => {
+      toast.error(error);
     });
 
     setSocket(socketInstance);

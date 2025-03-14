@@ -196,6 +196,8 @@ class StripeService implements IStripeService {
       throw new AppError("userId not found in paymentIntent.metadata", 404);
     }
 
+    console.log(paymentIntent.metadata.amount, "payment aoutsaf");
+
     const transaction: ITransaction = {
       amount: Number(paymentIntent.metadata.amount),
       status: "failed",

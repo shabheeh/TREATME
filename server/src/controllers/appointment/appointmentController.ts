@@ -69,6 +69,13 @@ class AppointmentController implements IAppointmentController {
         throw new BadRequestError("Bad Request: Missing info");
       }
 
+      if (updateData.status === "cancelled") {
+        const appointment =
+          await this.appointmentService.cancelAppointment(appointmentId);
+
+        res.status(200).json({ appointment });
+      }
+
       const appointment = await this.appointmentService.updateAppointment(
         appointmentId,
         updateData
