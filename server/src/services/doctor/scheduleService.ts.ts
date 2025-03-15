@@ -71,7 +71,7 @@ class ScheduleService implements IScheduleService {
     dayId: string,
     slotId: string
   ): Promise<void> {
-    await this.toggleBookingStatus(doctorId, dayId, slotId);
+    await this.scheduleRepo.toggleBookingStatus(doctorId, dayId, slotId);
   }
 }
 

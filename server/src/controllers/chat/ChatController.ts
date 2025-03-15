@@ -293,6 +293,16 @@ class ChatController implements IChatController {
         senderType = "Patient";
       }
 
+      if (senderType === "Patient") {
+        const result = await this.chatService.validateMessagingRestriction(
+          chat,
+          userId
+        );
+        if (!result.success) {
+          throw new AppError(result.message, 400);
+        }
+      }
+
       const message = await this.chatService.sendMessage(
         userId,
         senderType,
@@ -344,6 +354,16 @@ class ChatController implements IChatController {
         senderType = "Doctor";
       } else {
         senderType = "Patient";
+      }
+
+      if (senderType === "Patient") {
+        const result = await this.chatService.validateMessagingRestriction(
+          chat,
+          userId
+        );
+        if (!result.success) {
+          throw new AppError(result.message, 400);
+        }
       }
 
       const attachments: IAttachment[] = [];

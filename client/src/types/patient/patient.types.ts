@@ -38,3 +38,13 @@ export interface IDependent {
   profilePicture?: string;
   imagePublicId?: string;
 }
+
+export interface IPatientForDoctor {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  isDependent: boolean;
+  primaryPatientId?: string;
+  lastVisit: Date;
+}

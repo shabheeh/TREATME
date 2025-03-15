@@ -11,6 +11,8 @@ import Appointments from "../pages/doctor/Appointments";
 import PatientProfile from "../pages/doctor/PatientProfile";
 import Messages from "../components/basics/messages/Messages";
 import Notifications from "../components/basics/notification/Notification";
+import PatientListPage from "../components/doctor/PatientsList";
+import PatientProfile2 from "../pages/doctor/PatientProfile2"
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
@@ -31,11 +33,13 @@ export const doctorRoutes = [
       </ProtectedRoute>
     }
   >
-    <Route path="" element={<Dashboard />} />
+    <Route path="dashboard" element={<Dashboard />} />
     <Route path="appointments" element={<Appointments />} />
     <Route path="messages" element={<Messages />} />
     <Route path="schedules" element={<Schedule />} />
     <Route path="notifications" element={<Notifications />} />
+    <Route path="patients" element={<PatientListPage />} />
     <Route path="patients/health" element={<PatientProfile />} />
+    <Route path="patients/health2" element={<PatientProfile2 />} />
   </Route>,
 ];

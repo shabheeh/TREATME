@@ -70,7 +70,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           layout: "tabs",
         }}
       />
-      <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+      <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button onClick={handleBack} variant="outlined">
           Back
         </Button>

@@ -34,6 +34,7 @@ import { useSocket } from "../../../hooks/useSocket";
 import chatService from "../../../services/chat/ChatService";
 import Loading from "../Loading";
 import { formatTime } from "../../../utils/dateUtils";
+import { toast } from "sonner";
 
 interface MessageScreenProps {
   isMessagesLoading: boolean;
@@ -187,6 +188,9 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
       setAttachments([]);
     } catch (error) {
       console.error("Error sending message:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     }
   };
 

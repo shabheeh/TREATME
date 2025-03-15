@@ -22,9 +22,8 @@ import {
 } from "@mui/icons-material";
 import { IChat } from "../../../types/chat/chat.types";
 import DoctorSearchModal from "./DoctorModal";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/app/store";
 import { formatMessageTime } from "../../../utils/dateUtils";
+import useCurrentUser from "../../../hooks/useCurrentUser";
 
 interface ChatListProps {
   isChatsLoading: boolean;
@@ -48,11 +47,7 @@ const ChatList: React.FC<ChatListProps> = ({
   const [filteredChats, setFilteredChats] = useState<IChat[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const doctor = useSelector((state: RootState) => state.user.admin);
-  const admin = useSelector((state: RootState) => state.user.doctor);
-  const patient = useSelector((state: RootState) => state.user.patient);
-
-  const currentUser = patient || admin || doctor;
+  const currentUser = useCurrentUser();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

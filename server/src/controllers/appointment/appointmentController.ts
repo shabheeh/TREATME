@@ -179,6 +179,26 @@ class AppointmentController implements IAppointmentController {
       next(error);
     }
   };
+
+  getPatientsForDoctor = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const doctorId = (req.user as ITokenPayload).id;
+
+      const patients =
+        await this.appointmentService.getPatientsByDoctor(doctorId);
+
+      res.status(200).json({ patients });
+    } catch (error) {
+      logger.error(
+        error instanceof Error ? error.message : "failed to fetch patients"
+      );
+      next(error);
+    }
+  };
 }
 
 export default AppointmentController;

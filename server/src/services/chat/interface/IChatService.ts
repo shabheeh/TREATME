@@ -40,4 +40,8 @@ export interface IChatService {
   getUnreadMessageCount(chatId: string, userId: string): Promise<number>;
   deleteChat(chatId: string, userId: string): Promise<boolean>;
   deleteMessage(messageId: string, userId: string): Promise<boolean>;
+  validateMessagingRestriction(
+    chatId: string,
+    sender: string
+  ): Promise<{ success: boolean; message: string }>;
 }

@@ -158,6 +158,18 @@ export class SocketService implements ISocketService {
         senderType = "Patient";
       }
 
+      if (senderType === "Patient") {
+        const result = await this.chatService.validateMessagingRestriction(
+          chat.toString(),
+          userId
+        );
+
+        if (!result.success) {
+          this.emitToUser(userId, "message-restriction", result.message);
+          return;
+        }
+      }
+
       if (!attachments.length) {
         const message = await this.chatService.sendMessage(
           userId,

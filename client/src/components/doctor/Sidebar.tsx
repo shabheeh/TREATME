@@ -24,7 +24,11 @@ import { RiHealthBookFill } from "react-icons/ri";
 const drawerWidth = 250;
 
 const menuItems = [
-  { text: "Dashboard", icon: <FaHouseMedical size={23} />, path: "/doctor" },
+  {
+    text: "Dashboard",
+    icon: <FaHouseMedical size={23} />,
+    path: "/doctor/dashboard",
+  },
   { text: "Appointments", icon: <EventNote />, path: "/doctor/appointments" },
   { text: "Messages", icon: <Message />, path: "/doctor/messages" },
   {
@@ -96,10 +100,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               <ListItemIcon
                 sx={{
                   minWidth: "40px",
-                  color:
-                    location.pathname === item.path
-                      ? "#00897b"
-                      : "rgba(0, 0, 0, 0.54)",
+                  color: location.pathname.startsWith(item.path)
+                    ? "#00897b"
+                    : "rgba(0, 0, 0, 0.54)",
                 }}
               >
                 {item.icon}
@@ -108,9 +111,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 primary={item.text}
                 sx={{
                   "& .MuiTypography-root": {
-                    fontWeight: location.pathname === item.path ? 600 : 400,
-                    color:
-                      location.pathname === item.path ? "#00897b" : "inherit",
+                    fontWeight: location.pathname.startsWith(item.path)
+                      ? 600
+                      : 400,
+                    color: location.pathname.startsWith(item.path)
+                      ? "#00897b"
+                      : "inherit",
                   },
                 }}
               />

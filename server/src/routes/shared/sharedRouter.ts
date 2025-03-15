@@ -32,7 +32,7 @@ import BehaviouralHealthController from "../../controllers/healthProfile/behavio
 import AppointmentRepository from "../../repositories/appointment/AppointmentRepository";
 import { AppointmentModel } from "../../models/Appointment";
 import AppointmentController from "../../controllers/appointment/appointmentController";
-import AppointmentService from "../../services/appointment/appointmentService";
+import AppointmentService from "../../services/appointment/AppointmentService";
 import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
 import { ScheduleModel } from "../../models/Schedule";
 import ReviewRepository from "../../repositories/review/reviewRepository";
@@ -263,6 +263,13 @@ router.get(
   authenticate,
   authorize("admin"),
   appointmentController.getAppointments
+);
+
+router.get(
+  "/appointments/patient",
+  authenticate,
+  authorize("doctor"),
+  appointmentController.getPatientsForDoctor
 );
 
 router.post(

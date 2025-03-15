@@ -23,7 +23,6 @@ class ChatService implements IChatService {
     this.chatRepository = chatRepository;
     this.messageRepository = messageRepository;
     this.appointmentService = appointmentService;
-    console.log("cnstrrr", this.appointmentService)
   }
 
   async getUserChats(userId: string): Promise<IChat[]> {
@@ -82,7 +81,14 @@ class ChatService implements IChatService {
       creatorType,
     };
 
-    return await this.chatRepository.create(chatData);
+    const newChat = await this.chatRepository.create(chatData);
+    const populatedChat = await this.chatRepository.findById(
+      newChat._id!.toString()
+    );
+    if (!populatedChat) {
+      throw new AppError("Failed to Start new chat");
+    }
+    return populatedChat;
   }
 
   async createGroupChat(
@@ -159,9 +165,9 @@ class ChatService implements IChatService {
       }
     }
 
-    if (senderType === "Patient") {
-      await this.validateMessagingRestriction(chatId, sender);
-    }
+    // if (senderType === "Patient") {
+    //   await this.validateMessagingRestriction(chatId, sender);
+    // }
 
     // create message obj
     const messageData = {
@@ -175,16 +181,17 @@ class ChatService implements IChatService {
     };
 
     // update last message in chat
-    const message = await this.messageRepository.create(messageData);
+    const newMessage = await this.messageRepository.create(messageData);
 
     await this.chatRepository.updateLastMessage(
       chatId,
-      message._id!.toString()
+      newMessage._id!.toString()
     );
 
-    return (await this.messageRepository.findById(
-      message._id!.toString()
-    )) as IMessage;
+    const message = await this.messageRepository.findById(
+      newMessage._id!.toString()
+    );
+    return message as IMessage;
   }
 
   async markChatAsRead(chatId: string, userId: string): Promise<boolean> {
@@ -277,7 +284,10 @@ class ChatService implements IChatService {
     }
   }
 
-  private async validateMessagingRestriction(chatId: string, sender: string) {
+  async validateMessagingRestriction(
+    chatId: string,
+    sender: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const chat = await this.chatRepository.findById(chatId);
       let receiver;
@@ -287,10 +297,13 @@ class ChatService implements IChatService {
         );
       }
       if (!receiver) {
-        return;
+        return {
+          success: false,
+          message: "receiver not found",
+        };
       }
 
-      console.log(this.appointmentService, "appssddsfsdafsdafsdf")
+      console.log(this.appointmentService, "appssddsfsdafsdafsdf");
       const receiverId = receiver.user._id.toString();
       const appointment =
         await this.appointmentService.getAppointmentByPatientIdAndDoctorId(
@@ -298,20 +311,30 @@ class ChatService implements IChatService {
           receiverId
         );
       if (!appointment) {
-        throw new AppError(
-          "You need to make appointment with this doctor to send message"
-        );
+        return {
+          success: false,
+          message:
+            "You need to make appointment with this doctor to send message",
+        };
       }
+
       const daysAfterLastAppointment = getDaysDifference(
         appointment.date.toString()
       );
       if (daysAfterLastAppointment < 7) {
-        throw new AppError(
-          "You need to make appointment with this doctor to send more messages"
-        );
+        return {
+          success: false,
+          message:
+            "You need to make appointment with this doctor to send more messages",
+        };
       }
+
+      return {
+        success: true,
+        message: "eligible for sending messages",
+      };
     } catch (error) {
-      logger.error("Error deleting message", error);
+      logger.error("Error validating message sending restriction", error);
       if (error instanceof AppError) {
         throw error;
       }

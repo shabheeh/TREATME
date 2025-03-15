@@ -7,15 +7,14 @@ import {
   Avatar,
   Badge,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import logoNavbar from "../../assets/logo.navbar.svg";
 import { RootState } from "../../redux/app/store";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import React, { useEffect } from "react";
+import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
-import notificationService from "../../services/notification/notificationService";
-import { setUnreadCount } from "../../redux/features/notification/notificationSlice";
+import { useUnreadNotifications } from "../../hooks/useUnreadNotifications";
 
 interface NavbarProps {
   onProfileClick: () => void;
@@ -26,24 +25,8 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
   const currentPatient = useSelector(
     (state: RootState) => state.user.currentUser
   );
-  const unreadCount = useSelector(
-    (state: RootState) => state.notfication.unreadCount
-  );
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const fetchNotificationsUnreadCount = async () => {
-      try {
-        const count = await notificationService.getUnreadCounts();
-        console.log(count, "countt");
-        dispatch(setUnreadCount(count));
-      } catch (error) {
-        console.log("error fetching notification count", error);
-      }
-    };
-    fetchNotificationsUnreadCount();
-  }, [dispatch]);
+  const unreadCount = useUnreadNotifications();
 
   const handleLogoClick = () => {
     navigate("/visitnow");

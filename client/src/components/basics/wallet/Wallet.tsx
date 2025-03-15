@@ -10,8 +10,6 @@ import {
   Chip,
   Grid,
   Button,
-  Tab,
-  Tabs,
   IconButton,
   useTheme,
 } from "@mui/material";
@@ -19,8 +17,10 @@ import { Refresh, Add, Schedule } from "@mui/icons-material";
 import { IWallet } from "../../../types/wallet/wallet.types";
 import walletService from "../../../services/wallet/walletService";
 import { toast } from "sonner";
-import AddFundsModal from "./AddFundsModal";
+import AddFundsModal from "../../patient/wallet/AddFundsModal";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
 
 const WalletPatient: React.FC = () => {
   const theme = useTheme();
@@ -32,6 +32,8 @@ const WalletPatient: React.FC = () => {
   // const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
   //   setTabValue(newValue);
   // };
+
+  const userRole = useSelector((state: RootState) => state.auth.role);
 
   useEffect(() => {
     fetchWallet();
@@ -94,22 +96,24 @@ const WalletPatient: React.FC = () => {
                 </Typography>
               </Box>
 
-              <Box display="flex" justifyContent="flex-end">
-                <Button
-                  variant="contained"
-                  startIcon={<Add />}
-                  onClick={() => setAddFundsModalOpen(true)}
-                  sx={{
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.3)",
-                    },
-                  }}
-                >
-                  Add Funds
-                </Button>
-              </Box>
+              {userRole === "patient" && (
+                <Box display="flex" justifyContent="flex-end">
+                  <Button
+                    variant="contained"
+                    startIcon={<Add />}
+                    onClick={() => setAddFundsModalOpen(true)}
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.3)",
+                      },
+                    }}
+                  >
+                    Add Funds
+                  </Button>
+                </Box>
+              )}
             </CardContent>
           </Card>
         </Grid>

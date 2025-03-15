@@ -3,6 +3,7 @@ import { Document, Types } from "mongoose";
 import IDoctor from "./IDoctor";
 import IPatient from "./IPatient";
 import IDependent from "./IDependent";
+import { IPatientForDoctor } from "src/repositories/appointment/interfaces/IAppointmentRepository";
 
 export interface IAppointment extends Document {
   patient: Types.ObjectId;
@@ -62,6 +63,7 @@ export interface IAppointmentService {
     patientId: string,
     doctorId: string
   ): Promise<IAppointment | null>;
+  getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]>;
 }
 
 export interface IAppointmentController {
@@ -96,6 +98,11 @@ export interface IAppointmentController {
     next: NextFunction
   ): Promise<void>;
   getAppointmentByPaymentId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  getPatientsForDoctor(
     req: Request,
     res: Response,
     next: NextFunction

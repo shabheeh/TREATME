@@ -5,14 +5,16 @@ import {
   Button,
   IconButton,
   Avatar,
+  Badge,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import logoNavbar from "../../assets/logo.navbar.svg";
 import { RootState } from "../../redux/app/store";
-import { IoIosNotificationsOutline } from "react-icons/io";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
+import { useUnreadNotifications } from "../../hooks/useUnreadNotifications";
 
 interface NavbarProps {
   onProfileClick: () => void;
@@ -22,9 +24,14 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
   const doctor = useSelector((state: RootState) => state.user.doctor);
   const navigate = useNavigate();
+  const unreadCount = useUnreadNotifications();
 
   const handleLogoClick = () => {
     navigate("/doctor");
+  };
+
+  const handleNotificationClick = () => {
+    navigate("/doctor/notifications");
   };
 
   return (
@@ -63,13 +70,15 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
               ml: "auto",
             }}
           >
-            <Button
-              variant="text"
-              sx={{ minWidth: "auto", padding: 1 }}
-              // onClick={handleNotificationClick}
+            <IconButton
+              aria-label="show new notifications"
+              color="inherit"
+              onClick={handleNotificationClick}
             >
-              <IoIosNotificationsOutline size={30} />
-            </Button>
+              <Badge badgeContent={unreadCount} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
             <Button
               variant="text"
               sx={{ minWidth: "auto", padding: 1 }}

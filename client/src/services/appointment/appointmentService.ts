@@ -1,6 +1,7 @@
 import IAppointment, {
   IAppointmentPopulated,
 } from "../../types/appointment/appointment.types";
+import { IPatientForDoctor } from "../../types/patient/patient.types";
 import { api } from "../../utils/axiosInterceptor";
 
 class AppointmentService {
@@ -105,6 +106,22 @@ class AppointmentService {
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error fetching appointment: ${error.message}`);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
+
+  async getPatientsByDoctor(): Promise<IPatientForDoctor[]> {
+    try {
+      const response = await api.get("/appointments/patient");
+      const { patients } = response.data;
+      return patients;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error fetching patients for doctor: ${error.message}`);
         throw new Error(error.message);
       }
 

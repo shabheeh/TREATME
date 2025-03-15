@@ -159,7 +159,7 @@ const DoctorProfile = () => {
     <Container sx={{ py: 4 }}>
       <Button
         startIcon={<ArrowBackIcon />}
-        sx={{ mb: 3, color: "#0288d1" }}
+        sx={{ mb: 3 }}
         onClick={() => navigate(-1)}
       >
         Back

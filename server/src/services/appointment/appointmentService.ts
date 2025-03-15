@@ -3,7 +3,9 @@ import IAppointment, {
   IAppointmentPopulated,
   IAppointmentService,
 } from "../../interfaces/IAppointment";
-import IAppointmentRepository from "../../repositories/appointment/interfaces/IAppointmentRepository";
+import IAppointmentRepository, {
+  IPatientForDoctor,
+} from "../../repositories/appointment/interfaces/IAppointmentRepository";
 import { AppError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
 import { extractDate, extractTime } from "../../utils/dateUtils";
@@ -297,19 +299,6 @@ class AppointmentService implements IAppointmentService {
       const appointmentData =
         await this.appointmentRepo.getAppointmentById(appointmentId);
 
-      // don't allow cancellation if the appointment is 2hrs from now
-      const now = new Date();
-      const appointmentDate = new Date(appointmentData.date);
-      const timeDifference = appointmentDate.getTime() - now.getTime();
-      const twoHoursInMillis = 2 * 60 * 60 * 1000;
-
-      if (timeDifference < twoHoursInMillis) {
-        throw new AppError(
-          "Cancellation not allowed within 2 hours of the appointment",
-          400
-        );
-      }
-
       // toggle booking status for cancelled appointment
       await this.scheduleService.toggleBookingStatus(
         appointmentData.doctor._id as string,
@@ -380,18 +369,45 @@ class AppointmentService implements IAppointmentService {
         sendEmail(patientEmail, "Booking Cancellation", undefined, patientHtml),
         sendEmail(doctorEmail, "Booking Cancellation", undefined, doctorHtml),
       ]);
+
       await this.walletService.accessOrCreateWallet(
         patientId as string,
         "Patient"
       );
-      const transaction: ITransaction = {
-        amount: appointmentData.fee,
-        status: "success",
-        type: "credit",
-        date: new Date(),
-        description: "Refund for Appointment Cancellation",
-      };
-      await this.walletService.addTransaction(patientId as string, transaction);
+
+      // if the cancelling appointment within 2hr from appointment deduct 100 rs
+      const now = new Date();
+      const appointmentDate = new Date(appointmentData.date);
+      const timeDifference = appointmentDate.getTime() - now.getTime();
+      const twoHoursInMillis = 2 * 60 * 60 * 1000;
+
+      if (timeDifference < twoHoursInMillis) {
+        const feeAfterDuduction = appointmentData.fee - 100;
+        const transaction: ITransaction = {
+          amount: feeAfterDuduction,
+          status: "success",
+          type: "credit",
+          date: new Date(),
+          description:
+            "Refund for Appointment Cancellation  after 100rs duduction for late cancellation",
+        };
+        await this.walletService.addTransaction(
+          patientId as string,
+          transaction
+        );
+      } else {
+        const transaction: ITransaction = {
+          amount: appointmentData.fee,
+          status: "success",
+          type: "credit",
+          date: new Date(),
+          description: "Refund for Appointment Cancellation",
+        };
+        await this.walletService.addTransaction(
+          patientId as string,
+          transaction
+        );
+      }
     } catch (error) {
       logger.error("Error cancelling appointment", error);
       if (error instanceof AppError) {
@@ -467,6 +483,10 @@ class AppointmentService implements IAppointmentService {
         doctorId
       );
     return appointment;
+  }
+
+  async getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]> {
+    return await this.appointmentRepo.getPatientsByDoctor(doctorId);
   }
 }
 

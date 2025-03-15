@@ -29,7 +29,7 @@ const SignIn: React.FC = () => {
     try {
       setLoading(true);
       await doctorAuthService.signIn(data.email, data.password);
-      navigate("/doctor");
+      navigate("/doctor/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

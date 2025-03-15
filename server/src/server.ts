@@ -10,25 +10,46 @@ import ChatRepository from "./repositories/chat/ChatRepository";
 import MessageRepository from "./repositories/chat/MessageRepository";
 import { MessageModel } from "./models/Message";
 import { ChatModel } from "./models/Chat";
-// import { NotificationModel } from "./models/Notification";
-// import NotificationService from "./services/notification/NotificationService";
-// import NotificationRepository from "./repositories/notification/NotificationRepository";
+import AppointmentService from "./services/appointment/AppointmentService";
+import AppointmentRepository from "./repositories/appointment/AppointmentRepository";
+import { AppointmentModel } from "./models/Appointment";
+import ScheduleRepository from "./repositories/doctor/ScheduleRepository";
+import { ScheduleModel } from "./models/Schedule";
+import ScheduleService from "./services/doctor/scheduleService.ts";
+import NotificationRepository from "./repositories/notification/NotificationRepository";
+import { NotificationModel } from "./models/Notification";
+import NotificationService from "./services/notification/NotificationService";
+import WalletRepository from "./repositories/wallet/WalletRepository";
+import { WalletModel } from "./models/Wallet";
+import WalletService from "./services/wallet/WalletService";
 
 // create http server
 const server = http.createServer(app);
 
+const scheduleRepository = new ScheduleRepository(ScheduleModel);
+const scheduleService = new ScheduleService(scheduleRepository);
+const notificationRepository = new NotificationRepository(NotificationModel);
+const notificationService = new NotificationService(notificationRepository);
+const walletRepository = new WalletRepository(WalletModel);
+const walletService = new WalletService(walletRepository);
+
+const appointmentRepository = new AppointmentRepository(AppointmentModel);
+const appointmentService = new AppointmentService(
+  appointmentRepository,
+  scheduleService,
+  notificationService,
+  walletService
+);
+
 // initialize services
 const messageRepository = new MessageRepository(MessageModel);
 const chatRepository = new ChatRepository(ChatModel);
-const chatService = new ChatService(chatRepository, messageRepository);
+const chatService = new ChatService(
+  chatRepository,
+  messageRepository,
+  appointmentService
+);
 export const socketService = new SocketService(chatService);
-// const socketService = SocketService.getInstance(chatService);
-
-// const notificationRepository = new NotificationRepository(NotificationModel);
-// export const notificationService = new NotificationService(
-//   notificationRepository,
-//   // socketService
-// );
 
 socketService.initialize(server);
 

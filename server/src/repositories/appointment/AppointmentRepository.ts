@@ -1,8 +1,10 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import IAppointment, {
   IAppointmentPopulated,
 } from "../../interfaces/IAppointment";
-import IAppointmentRepository from "./interfaces/IAppointmentRepository";
+import IAppointmentRepository, {
+  IPatientForDoctor,
+} from "./interfaces/IAppointmentRepository";
 import { AppError } from "../../utils/errors";
 
 class AppointmentRepository implements IAppointmentRepository {
@@ -208,6 +210,105 @@ class AppointmentRepository implements IAppointmentRepository {
         .limit(1)
         .lean();
       return appointment;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  // function to get the patients treated by doctor
+  async getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]> {
+    try {
+      const patients = await this.model.aggregate([
+        {
+          $match: {
+            doctor: new Types.ObjectId(doctorId),
+            status: "confirmed",
+          },
+        },
+
+        {
+          $lookup: {
+            from: "patients",
+            localField: "patient",
+            foreignField: "_id",
+            as: "patientDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$patientDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
+        {
+          $lookup: {
+            from: "dependents",
+            localField: "patient",
+            foreignField: "_id",
+            as: "dependentDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$dependentDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
+        // merge patients and dependents
+        {
+          $project: {
+            _id: { $ifNull: ["$patientDetails._id", "$dependentDetails._id"] },
+            firstName: {
+              $ifNull: [
+                "$patientDetails.firstName",
+                "$dependentDetails.firstName",
+              ],
+            },
+            lastName: {
+              $ifNull: [
+                "$patientDetails.lastName",
+                "$dependentDetails.lastName",
+              ],
+            },
+            profilePicture: {
+              $ifNull: [
+                "$patientDetails.profilePicture",
+                "$dependentDetails.profilePicture",
+              ],
+            },
+            isDependent: {
+              $cond: {
+                if: { $ne: ["$dependentDetails", null] },
+                then: true,
+                else: false,
+              },
+            },
+            primaryPatientId: "$dependentDetails.primaryPatient",
+            lastVisit: "$createdAt",
+          },
+        },
+
+        {
+          $group: {
+            _id: "$_id",
+            firstName: { $first: "$firstName" },
+            lastName: { $first: "$lastName" },
+            profilePicture: { $first: "$profilePicture" },
+            isDependent: { $first: "$isDependent" },
+            primaryPatientId: { $first: "$primaryPatientId" },
+            lastVisit: { $max: "$lastVisit" },
+          },
+        },
+
+        { $sort: { lastVisit: -1 } },
+      ]);
+
+      return patients;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

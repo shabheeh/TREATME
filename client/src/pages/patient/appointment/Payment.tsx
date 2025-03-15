@@ -140,7 +140,7 @@ const Payment: React.FC = () => {
   const handleWalletPayment = async () => {
     if (!appointmentData) return;
     try {
-      setPaymentLoading(true)
+      setPaymentLoading(true);
       const updatedAppointmentData = {
         ...appointmentData,
         status: "confirmed",

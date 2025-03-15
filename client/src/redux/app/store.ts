@@ -20,7 +20,7 @@ export const store = configureStore({
     user: persistedUserReducer,
     tempUser: tempReducer,
     appointment: persistAppointmentReducer,
-    notfication: notificationReducer,
+    notification: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

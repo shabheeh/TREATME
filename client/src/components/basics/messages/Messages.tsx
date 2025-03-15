@@ -112,7 +112,7 @@ const Messages: React.FC<ChatPageProps> = ({
     });
     return () => {
       socket.off("online-users");
-      socket.off("new-message", handleNewMessage);
+      socket.off("new-message");
       socket.off("typing");
       socket.off("stop-typing");
       socket.off("join-chat");
