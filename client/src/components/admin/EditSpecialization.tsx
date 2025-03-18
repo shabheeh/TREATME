@@ -23,6 +23,7 @@ interface FormInputs {
   description: string;
   note: string;
   fee: number | null;
+  durationInMinutes: number | null;
   image: File | null;
 }
 
@@ -46,6 +47,7 @@ const EditSpecialization = () => {
           description: specialization.description,
           note: specialization.note,
           fee: specialization.fee,
+          durationInMinutes: specialization.durationInMinutes,
           image: null,
         });
       } catch (error) {
@@ -72,6 +74,7 @@ const EditSpecialization = () => {
       description: specialization?.description || "",
       note: specialization?.note || "",
       fee: specialization?.fee || null,
+      durationInMinutes: specialization?.durationInMinutes || null,
       image: null,
     },
   });
@@ -112,6 +115,7 @@ const EditSpecialization = () => {
 
   const onSubmit = async (data: FormInputs) => {
     data.fee = Number(data.fee);
+    data.durationInMinutes = Number(data.durationInMinutes);
 
     if (data.image && data.image instanceof File) {
       const { size, type } = data.image;
@@ -134,6 +138,7 @@ const EditSpecialization = () => {
       formData.append("description", data.description);
       formData.append("note", data.note);
       formData.append("fee", data.fee.toString());
+      formData.append("durationInMinutes", data.durationInMinutes.toString());
 
       if (data.image instanceof File) {
         formData.append("image", data.image);
@@ -295,6 +300,24 @@ const EditSpecialization = () => {
               variant="outlined"
               error={!!errors.fee}
               helperText={errors.fee?.message}
+            />
+          </Box>
+          <Box sx={{ width: "90%", my: 2 }}>
+            <TextField
+              {...register("durationInMinutes", {
+                required: "Duration is required",
+                min: {
+                  value: 15,
+                  message: "Duration must be a valid number",
+                },
+              })}
+              fullWidth
+              type="number"
+              InputLabelProps={{ shrink: true }}
+              label="Duration in minutes"
+              variant="outlined"
+              error={!!errors.durationInMinutes}
+              helperText={errors.durationInMinutes?.message}
             />
           </Box>
           <Button

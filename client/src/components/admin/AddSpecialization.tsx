@@ -23,6 +23,7 @@ interface FormInputs {
   description: string;
   note: string;
   fee: number | null;
+  durationInMinutes: number | null;
   image: File | null;
 }
 
@@ -38,6 +39,7 @@ const AddSpecialization = () => {
       description: "",
       note: "",
       fee: null,
+      durationInMinutes: null,
       image: null,
     },
   });
@@ -77,6 +79,7 @@ const AddSpecialization = () => {
 
   const onSubmit = async (data: FormInputs) => {
     data.fee = Number(data.fee);
+    data.durationInMinutes = Number(data.durationInMinutes);
 
     if (!data.image) {
       toast.error("Image is required");
@@ -102,6 +105,7 @@ const AddSpecialization = () => {
       formData.append("description", data.description);
       formData.append("note", data.note);
       formData.append("fee", data.fee.toString());
+      formData.append("durationInMinutes", data.durationInMinutes.toString());
 
       if (data.image instanceof File) {
         formData.append("image", data.image);
@@ -262,6 +266,23 @@ const AddSpecialization = () => {
               variant="outlined"
               error={!!errors.fee}
               helperText={errors.fee?.message}
+            />
+          </Box>
+          <Box sx={{ width: "90%", my: 2 }}>
+            <TextField
+              {...register("durationInMinutes", {
+                required: "duration is required",
+                min: {
+                  value: 15,
+                  message: "duration must be a valid number",
+                },
+              })}
+              fullWidth
+              type="number"
+              label="Duration in Minutes"
+              variant="outlined"
+              error={!!errors.durationInMinutes}
+              helperText={errors.durationInMinutes?.message}
             />
           </Box>
           <Box

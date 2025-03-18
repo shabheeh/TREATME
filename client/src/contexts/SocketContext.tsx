@@ -53,7 +53,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     });
 
     socketInstance.on("message-restriction", (message: string) => {
-      console.log("rstricted")
       toast.error(message);
     });
 

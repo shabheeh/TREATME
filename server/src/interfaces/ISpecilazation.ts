@@ -6,6 +6,7 @@ export default interface ISpecialization extends Document {
   description: string;
   note: string;
   fee: number;
+  durationInMinutes: number;
   image: string;
   imagePublicId: string;
 }

@@ -227,12 +227,26 @@ router.patch(
   behaviouralHealController.updateBehavouralHealth
 );
 
+router.get(
+  "/appointments",
+  authenticate,
+  authorize("admin"),
+  appointmentController.getAppointments
+);
+
 router.post(
   "/appointments",
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   authorize("patient", "doctor"),
   appointmentController.createAppointment
+);
+
+router.get(
+  "/appointments/patients",
+  authenticate,
+  authorize("doctor"),
+  appointmentController.getPatientsForDoctor
 );
 
 router.get(
@@ -256,20 +270,6 @@ router.get(
   isUserActive(patientAuthService, doctorAuthService),
   authorize("patient", "doctor"),
   appointmentController.getAppointmentsByUserId
-);
-
-router.get(
-  "/appointments",
-  authenticate,
-  authorize("admin"),
-  appointmentController.getAppointments
-);
-
-router.get(
-  "/appointments/patient",
-  authenticate,
-  authorize("doctor"),
-  appointmentController.getPatientsForDoctor
 );
 
 router.post(

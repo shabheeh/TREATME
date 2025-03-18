@@ -4,6 +4,7 @@ import { patientRoutes } from "./patientRoutes";
 import { doctorRoutes } from "./doctorRoutes";
 import FourNotFour from "../components/basics/404";
 import Unauthorized from "../components/basics/401";
+import VideoCall from "../components/basics/Consultation/VideoCall";
 
 function AppRouter() {
   return (
@@ -15,6 +16,7 @@ function AppRouter() {
         {patientRoutes}
         {adminRoutes}
         {doctorRoutes}
+        <Route path="/video" element={<VideoCall />}/>
         <Route path="/*" element={<FourNotFour />} />
       </Routes>
     </Router>

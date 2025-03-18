@@ -114,11 +114,19 @@ class AppointmentService {
     }
   }
 
-  async getPatientsByDoctor(): Promise<IPatientForDoctor[]> {
+  async getPatientsByDoctor(
+    page: number,
+    limit: number,
+    searchTerm: string
+  ): Promise<{
+    patients: IPatientForDoctor[];
+    totalPatients: number;
+  }> {
     try {
-      const response = await api.get("/appointments/patient");
-      const { patients } = response.data;
-      return patients;
+      const response = await api.get(
+        `/appointments/patients?page=${page}&limit=${limit}&searchTerm=${searchTerm}`
+      );
+      return response.data;
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error fetching patients for doctor: ${error.message}`);

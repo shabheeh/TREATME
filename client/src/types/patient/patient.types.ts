@@ -43,8 +43,11 @@ export interface IPatientForDoctor {
   _id: string;
   firstName: string;
   lastName: string;
+  email: string;
+  dateOfBirth: string;
+  gender: "male" | "female";
   profilePicture?: string;
   isDependent: boolean;
   primaryPatientId?: string;
-  lastVisit: Date;
+  lastVisit: string;
 }

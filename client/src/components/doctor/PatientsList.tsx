@@ -15,156 +15,65 @@ import {
 } from "@mui/material";
 import {
   Search as SearchIcon,
-  FilterList as FilterListIcon,
   CalendarToday as CalendarIcon,
   ArrowForward as ArrowForwardIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-
-interface Patient {
-  id: number;
-  name: string;
-  age: number;
-  gender: string;
-  lastVisit: string;
-  profileImage?: string;
-  email: string;
-  phone: string;
-}
-
-const samplePatients: Patient[] = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    age: 45,
-    gender: "Female",
-    lastVisit: "2025-03-12",
-    email: "sarah.j@example.com",
-    phone: "(555) 123-4567",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    age: 32,
-    gender: "Male",
-    lastVisit: "2025-03-10",
-    email: "michael.c@example.com",
-    phone: "(555) 234-5678",
-  },
-  {
-    id: 3,
-    name: "Emma Rodriguez",
-    age: 28,
-    gender: "Female",
-    lastVisit: "2025-03-05",
-    email: "emma.r@example.com",
-    phone: "(555) 345-6789",
-  },
-  {
-    id: 4,
-    name: "John Smith",
-    age: 58,
-    gender: "Male",
-    lastVisit: "2025-03-01",
-    email: "john.s@example.com",
-    phone: "(555) 456-7890",
-  },
-  {
-    id: 5,
-    name: "Aisha Patel",
-    age: 36,
-    gender: "Female",
-    lastVisit: "2025-02-25",
-    email: "aisha.p@example.com",
-    phone: "(555) 567-8901",
-  },
-  {
-    id: 6,
-    name: "Robert Wilson",
-    age: 62,
-    gender: "Male",
-    lastVisit: "2025-02-20",
-    email: "robert.w@example.com",
-    phone: "(555) 678-9012",
-  },
-  {
-    id: 7,
-    name: "Linda Garcia",
-    age: 51,
-    gender: "Female",
-    lastVisit: "2025-02-18",
-    email: "linda.g@example.com",
-    phone: "(555) 789-0123",
-  },
-  {
-    id: 8,
-    name: "David Kim",
-    age: 40,
-    gender: "Male",
-    lastVisit: "2025-02-15",
-    email: "david.k@example.com",
-    phone: "(555) 890-1234",
-  },
-  {
-    id: 9,
-    name: "Maria Lopez",
-    age: 33,
-    gender: "Female",
-    lastVisit: "2025-02-10",
-    email: "maria.l@example.com",
-    phone: "(555) 901-2345",
-  },
-  {
-    id: 10,
-    name: "Thomas Wright",
-    age: 55,
-    gender: "Male",
-    lastVisit: "2025-02-08",
-    email: "thomas.w@example.com",
-    phone: "(555) 012-3456",
-  },
-  {
-    id: 11,
-    name: "Jennifer Lee",
-    age: 42,
-    gender: "Female",
-    lastVisit: "2025-02-05",
-    email: "jennifer.l@example.com",
-    phone: "(555) 123-4567",
-  },
-  {
-    id: 12,
-    name: "Omar Hassan",
-    age: 38,
-    gender: "Male",
-    lastVisit: "2025-02-01",
-    email: "omar.h@example.com",
-    phone: "(555) 234-5678",
-  },
-];
+import { IPatientForDoctor } from "../../types/patient/patient.types";
+import appointmentService from "../../services/appointment/appointmentService";
+import { toast } from "sonner";
+import { calculateAge } from "../../helpers/ageCalculator";
 
 const PatientCardListPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(6);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalPatients, setTotalPatients] = useState<number>(0);
+  const [patients, setPatients] = useState<IPatientForDoctor[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const theme = useTheme();
   const navigate = useNavigate();
 
-  // Filtered patients based on search term
-  const filteredPatients = samplePatients.filter(
-    (patient) =>
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 500);
 
-  // Get current page of patients
-  const currentPatients = filteredPatients.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    fetchPatients();
+  }, [page, rowsPerPage, debouncedSearch]);
+
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const result = await appointmentService.getPatientsByDoctor(
+        page + 1,
+        rowsPerPage,
+        debouncedSearch
+      );
+      setPatients(result.patients);
+      setTotalPatients(result.totalPatients);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const filteredPatients = patients.filter(
+  //   (patient) =>
+  //     patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     patient.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
@@ -180,13 +89,12 @@ const PatientCardListPage: React.FC = () => {
     setPage(0);
   };
 
-  // Reset to first page when search terms change
   useEffect(() => {
     setPage(0);
   }, [searchTerm]);
 
-  const viewHealthProfile = () => {
-    navigate("/doctor/patients/health", { state: { patient } });
+  const viewHealthProfile = (patient: IPatientForDoctor) => {
+    navigate("/doctor/patients/health2", { state: { patient } });
   };
 
   const formatDate = (dateString: string) => {
@@ -273,8 +181,8 @@ const PatientCardListPage: React.FC = () => {
       <Divider sx={{ mb: 3 }} />
 
       <Grid container spacing={3}>
-        {currentPatients.map((patient) => (
-          <Grid item xs={12} sm={6} md={4} key={patient.id}>
+        {patients.map((patient) => (
+          <Grid item xs={12} sm={6} md={4} key={patient._id}>
             <Card
               sx={{
                 borderRadius: 2,
@@ -292,11 +200,11 @@ const PatientCardListPage: React.FC = () => {
                   alignItems: "center",
                   p: 2,
                   backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText
+                  color: theme.palette.primary.contrastText,
                 }}
               >
                 <Avatar
-                //   src={patient.image}
+                  src={patient.profilePicture}
                   sx={{
                     width: 56,
                     height: 56,
@@ -305,15 +213,14 @@ const PatientCardListPage: React.FC = () => {
                 />
                 <Box>
                   <Typography variant="h6" component="h2">
-                    {patient.name}
+                    {patient.firstName} {patient.lastName}
                   </Typography>
                   <Typography variant="body2">
-                    {patient.age} years • {patient.gender}
+                    {calculateAge(patient.dateOfBirth)} years • {patient.gender}
                   </Typography>
                 </Box>
               </Box>
               <CardContent>
-
                 <Box sx={{ mb: 1.5 }}>
                   <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                     <CalendarIcon
@@ -341,14 +248,14 @@ const PatientCardListPage: React.FC = () => {
                     </Typography>
                   </Box>
 
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                  {/* <Box sx={{ display: "flex", alignItems: "center" }}>
                     <PhoneIcon
                       sx={{ fontSize: 18, color: "primary.main", mr: 1 }}
                     />
                     <Typography variant="body2" color="text.secondary">
                       {patient.phone}
                     </Typography>
-                  </Box>
+                  </Box> */}
                 </Box>
 
                 <Box
@@ -359,7 +266,7 @@ const PatientCardListPage: React.FC = () => {
                   }}
                 >
                   <Button
-                    onClick={viewHealthProfile}
+                    onClick={() => viewHealthProfile(patient)}
                     variant="outlined"
                     size="small"
                     color="primary"
@@ -375,7 +282,7 @@ const PatientCardListPage: React.FC = () => {
         ))}
       </Grid>
 
-      {filteredPatients.length === 0 && (
+      {patients.length === 0 && (
         <Box sx={{ textAlign: "center", py: 4 }}>
           <Typography variant="body1" color="text.secondary">
             No patients found matching your search criteria.
@@ -387,7 +294,7 @@ const PatientCardListPage: React.FC = () => {
       <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
         <TablePagination
           component="div"
-          count={filteredPatients.length}
+          count={patients.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}

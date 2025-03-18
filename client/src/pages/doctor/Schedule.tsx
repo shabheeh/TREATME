@@ -31,14 +31,6 @@ import scheduleService from "../../services/doctor/scheduleService";
 
 dayjs.extend(isBetween);
 
-const SPECIALIZATION_DURATION: { [key: string]: number } = {
-  Dermatology: 20,
-  "Urgent Care": 15,
-  Therapy: 45,
-  Psychiatry: 30,
-  Default: 30,
-};
-
 export default function ScheduleManagement() {
   const today = dayjs();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(today);
@@ -98,10 +90,7 @@ export default function ScheduleManagement() {
   const addTimeSlot = async () => {
     if (!newTimeSlot.startTime) return;
 
-    const specialization = doctor?.specialization?.name || "Default";
-    const slotDuration =
-      SPECIALIZATION_DURATION[specialization] ||
-      SPECIALIZATION_DURATION["Default"];
+    const slotDuration = doctor?.specialization.durationInMinutes || 30;
 
     const startTime = dayjs(selectedDate)
       .set("hour", newTimeSlot.startTime.hour())
@@ -369,7 +358,7 @@ export default function ScheduleManagement() {
             {doctor?.specialization?.name && (
               <Typography variant="body2" color="text.secondary">
                 {doctor.specialization.name} - Default Slot Duration:{" "}
-                {SPECIALIZATION_DURATION[doctor.specialization.name] || 30} mins
+                {doctor.specialization.durationInMinutes || 30} mins
               </Typography>
             )}
           </DialogTitle>
@@ -385,9 +374,7 @@ export default function ScheduleManagement() {
                     startTime: newValue as Dayjs,
                     endTime: newValue
                       ? newValue.add(
-                          SPECIALIZATION_DURATION[
-                            doctor?.specialization?.name || "default"
-                          ] || 30,
+                          doctor?.specialization?.durationInMinutes || 30,
                           "minute"
                         )
                       : null,

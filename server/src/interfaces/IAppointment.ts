@@ -63,7 +63,12 @@ export interface IAppointmentService {
     patientId: string,
     doctorId: string
   ): Promise<IAppointment | null>;
-  getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]>;
+  getPatientsByDoctor(
+    doctorId: string,
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }>;
 }
 
 export interface IAppointmentController {

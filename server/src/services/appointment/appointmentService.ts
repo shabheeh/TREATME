@@ -485,8 +485,18 @@ class AppointmentService implements IAppointmentService {
     return appointment;
   }
 
-  async getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]> {
-    return await this.appointmentRepo.getPatientsByDoctor(doctorId);
+  async getPatientsByDoctor(
+    doctorId: string,
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }> {
+    return await this.appointmentRepo.getPatientsByDoctor(
+      doctorId,
+      page,
+      limit,
+      searchQuery
+    );
   }
 }
 

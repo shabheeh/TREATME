@@ -17,7 +17,12 @@ interface IAppointmentRepository {
     patientId: string,
     doctorId: string
   ): Promise<IAppointment | null>;
-  getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]>;
+  getPatientsByDoctor(
+    doctorId: string,
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }>;
 }
 
 export default IAppointmentRepository;
@@ -26,7 +31,10 @@ export interface IPatientForDoctor {
   _id: string;
   firstName: string;
   lastName: string;
+  email: string;
   profilePicture?: string;
+  dateOfBirth: string;
+  gender: "male" | "female";
   isDependent: boolean;
   primaryPatientId?: string;
   lastVisit: Date;

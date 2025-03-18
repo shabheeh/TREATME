@@ -118,7 +118,7 @@ class AppointmentController implements IAppointmentController {
   ): Promise<void> => {
     try {
       const { userId } = req.params;
-      const { role } = req.user as ITokenPayload;
+      const role = (req.user as ITokenPayload).role;
 
       if (!userId || !role) {
         throw new BadRequestError("Bad Request: Missing information");
@@ -188,10 +188,19 @@ class AppointmentController implements IAppointmentController {
     try {
       const doctorId = (req.user as ITokenPayload).id;
 
-      const patients =
-        await this.appointmentService.getPatientsByDoctor(doctorId);
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 6;
+      const searchQuery = String(req.query.searchTerm) || "";
 
-      res.status(200).json({ patients });
+      const { patients, totalPatients } =
+        await this.appointmentService.getPatientsByDoctor(
+          doctorId,
+          page,
+          limit,
+          searchQuery
+        );
+
+      res.status(200).json({ patients, totalPatients });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "failed to fetch patients"

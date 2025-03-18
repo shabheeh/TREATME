@@ -83,7 +83,7 @@ export class SocketService implements ISocketService {
       logger.info(`user connected: ${userId} with socket id: ${socket.id}`);
 
       // join user to their chat rooms
-      this.joinUserChats(userId, socket);
+      // this.joinUserChats(userId, socket);
 
       // handle client events
       socket.on("join-chat", (chatId: string) =>
@@ -109,25 +109,45 @@ export class SocketService implements ISocketService {
         this.handleMessageSent(socket, data)
       );
 
+      socket.on("offer", (data) => {
+        console.log("offer emitted");
+        socket.to(data.roomId).emit("offer", data);
+      });
+
+      socket.on("answer", (data) => {
+        console.log("anwer emited");
+        socket.to(data.roomId).emit("answer", data);
+      });
+
+      socket.on("candidate", (data) => {
+        console.log("candidate emitted");
+        socket.to(data.roomId).emit("candidate", data);
+      });
+
+      socket.on("join-room", (roomId) => {
+        socket.join(roomId);
+        console.log(`User joined room: ${roomId}`);
+      });
+
       // Handle disconnection
       socket.on("disconnect", () => this.handleDisconnect(userId));
     });
   }
 
-  private async joinUserChats(userId: string, socket: Socket): Promise<void> {
-    try {
-      const chats = await this.chatService.getUserChats(userId);
-      chats.forEach((chat) => {
-        socket.join(chat._id!.toString());
-        logger.info(`User ${userId} joined chat room: ${chat._id}`);
-      });
-      this.emitUserOnline(userId);
-    } catch (error) {
-      logger.error(
-        error instanceof Error ? error.message : "Error joining user chats"
-      );
-    }
-  }
+  // private async joinUserChats(userId: string, socket: Socket): Promise<void> {
+  //   try {
+  //     const chats = await this.chatService.getUserChats(userId);
+  //     chats.forEach((chat) => {
+  //       socket.join(chat._id!.toString());
+  //       logger.info(`User ${userId} joined chat room: ${chat._id}`);
+  //     });
+  //     this.emitUserOnline(userId);
+  //   } catch (error) {
+  //     logger.error(
+  //       error instanceof Error ? error.message : "Error joining user chats"
+  //     );
+  //   }
+  // }
 
   private handleJoinChat(socket: Socket, chatId: string): void {
     socket.join(chatId);

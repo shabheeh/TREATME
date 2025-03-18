@@ -59,8 +59,12 @@ const ChatList: React.FC<ChatListProps> = ({
 
   useEffect(() => {
     const filterChats = chats.filter((chat) =>
-      chat.participants.some((user) =>
-        user.user.firstName.toLowerCase().includes(searchQuery.toLowerCase())
+      chat.participants.some(
+        (user) =>
+          user.user.firstName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          user.user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
     setFilteredChats(filterChats);

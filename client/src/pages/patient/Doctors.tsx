@@ -18,6 +18,7 @@ import {
   Container,
   InputAdornment,
   SelectChangeEvent,
+  Divider,
 } from "@mui/material";
 import DoctorCard from "../../components/admin/DoctorCard";
 import SearchIcon from "@mui/icons-material/Search";
@@ -29,6 +30,7 @@ import {
   getDoctorsQuery,
   getDoctorsResult,
 } from "../../types/doctor/doctor.types";
+import Loading from "../../components/basics/Loading";
 
 const Doctors: React.FC = () => {
   const [data, setData] = useState<getDoctorsResult | null>(null);
@@ -152,9 +154,28 @@ const Doctors: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg">
       {/* Search and Filters */}
-      <Card sx={{ mb: 4, p: 3 }}>
+      <Box sx={{ mb: 4, p: 3 }}>
+        <Box display="flex" flexDirection="column" mb={5}>
+          <Typography
+            variant="h5"
+            component="h1"
+            color="text.primary"
+            fontWeight="500"
+          >
+            Your Patients
+          </Typography>
+          <Typography
+            variant="body2"
+            component="h5"
+            color="text.secondary"
+            fontWeight="500"
+          >
+            View and manage your patient records. Click on a patient to see more
+            details.
+          </Typography>
+        </Box>
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={4}>
             <TextField
@@ -224,7 +245,7 @@ const Doctors: React.FC = () => {
             />
           </Grid>
         </Grid>
-      </Card>
+      </Box>
 
       {(genderFilter !== "all" ||
         specializationFilter.id !== "all" ||
@@ -260,44 +281,45 @@ const Doctors: React.FC = () => {
         </Box>
       )}
 
+      <Divider sx={{ mb: 3 }} />
+
       {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="30vh"
-        >
-          <CircularProgress />
-        </Box>
+        <Loading />
       ) : (
         <>
           <Box sx={{ mb: 4 }}>
-            {data?.doctors && data.doctors.length > 0 ? (
-              data.doctors.map((doctor) => (
-                <Box key={doctor._id} sx={{ mb: 2 }}>
-                  <DoctorCard
-                    doctor={doctor}
-                    nextAvailable="354353"
-                    rating={4}
-                    todayAppointments={3}
-                    totalAppointments={33}
-                  />
-                </Box>
-              ))
-            ) : (
-              <Paper sx={{ p: 3, textAlign: "center" }}>
-                <Typography variant="h6">
-                  No doctors found matching your criteria.
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  Try adjusting your search or filters.
-                </Typography>
-              </Paper>
-            )}
+            <Grid container spacing={3}>
+              {data?.doctors && data.doctors.length > 0 ? (
+                data.doctors.map((doctor) => (
+                  <Grid item xs={12} sm={6} md={4} key={doctor._id}>
+                    <DoctorCard doctor={doctor} />
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      p: 3,
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="h6">
+                      No doctors found matching your criteria.
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      Try adjusting your search or filters.
+                    </Typography>
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
           </Box>
 
           {/* Pagination */}

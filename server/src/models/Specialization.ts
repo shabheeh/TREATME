@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { Model, model, Schema } from "mongoose";
 import ISpecialization from "src/interfaces/ISpecilazation";
 
 const specializationSchema = new Schema<ISpecialization>(
@@ -7,6 +7,7 @@ const specializationSchema = new Schema<ISpecialization>(
     description: { type: String, required: true },
     note: { type: String, required: true },
     fee: { type: Number, required: true },
+    durationInMinutes: { type: Number, default: 0, required: true },
     image: { type: String, required: true },
     imagePublicId: { type: String, required: true },
   },
@@ -15,7 +16,5 @@ const specializationSchema = new Schema<ISpecialization>(
   }
 );
 
-export const SpecializationModel = model<ISpecialization>(
-  "Specialization",
-  specializationSchema
-);
+export const SpecializationModel: Model<ISpecialization> =
+  model<ISpecialization>("Specialization", specializationSchema);

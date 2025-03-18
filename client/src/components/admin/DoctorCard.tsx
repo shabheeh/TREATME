@@ -5,11 +5,14 @@ import {
   Box,
   Typography,
   Avatar,
-  Stack,
-  Link,
+  useTheme,
+  Button,
 } from "@mui/material";
-import EmailIcon from "@mui/icons-material/Email";
-import PhoneIcon from "@mui/icons-material/Phone";
+import {
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  ArrowForward as ArrowForwardIcon,
+} from "@mui/icons-material";
 import { IDoctor } from "../../types/doctor/doctor.types";
 import { useNavigate } from "react-router-dom";
 
@@ -19,117 +22,86 @@ interface DoctorCardProps {
 
 const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
   return (
     <Card
       sx={{
-        width: "100%",
-        borderRadius: 3,
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        transition: "transform 0.2s ease-in-out",
+        borderRadius: 2,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+        transition: "transform 0.2s, box-shadow 0.2s",
         "&:hover": {
           transform: "translateY(-4px)",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
         },
       }}
     >
-      <CardContent sx={{ padding: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          p: 2,
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+        }}
+      >
+        <Avatar
+          src={doctor.profilePicture}
+          sx={{
+            width: 56,
+            height: 56,
+            mr: 2,
+          }}
+        />
+        <Box>
+          <Typography variant="h6" component="h2">
+            {doctor.firstName} {doctor.lastName}
+          </Typography>
+          <Typography variant="body2">{doctor.specialization.name}</Typography>
+        </Box>
+      </Box>
+      <CardContent>
+        <Box sx={{ mb: 1.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+            <EmailIcon sx={{ fontSize: 18, color: "primary.main", mr: 1 }} />
+            <Typography variant="body2" color="text.secondary">
+              {doctor.email}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <PhoneIcon sx={{ fontSize: 18, color: "primary.main", mr: 1 }} />
+            <Typography variant="body2" color="text.secondary">
+              {doctor.phone}
+            </Typography>
+          </Box>
+        </Box>
+
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 2,
+            justifyContent: "flex-end",
+            mt: 2,
           }}
         >
-          {/* Left Section: Avatar and Name */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar
-              src={doctor.profilePicture}
-              sx={{
-                width: 64,
-                height: 64,
-                border: "2px solid #f5f5f5",
-              }}
-            />
-            <Box>
-              <Typography
-                component="span"
-                onClick={() => navigate(`/doctors/${doctor._id}`)}
-                sx={{
-                  fontWeight: 600,
-                  color: "primary.main",
-                  textDecoration: "none",
-                  cursor: "pointer",
-                  "&:hover": {
-                    textDecoration: "underline",
-                  },
-                }}
-              >
-                {doctor.firstName} {doctor.lastName}
-              </Typography>
-              ;
-              <Typography color="text.secondary" sx={{ fontSize: "0.95rem" }}>
-                {doctor.specialization.name}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Middle Section: Contact Info */}
-          <Stack direction="column" spacing={1} sx={{ flex: 1, minWidth: 0 }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <EmailIcon
-                fontSize="small"
-                sx={{ color: "text.secondary", mr: 0.5 }}
-              />
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  fontSize: "0.85rem",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {doctor.email}
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <PhoneIcon
-                fontSize="small"
-                sx={{ color: "text.secondary", mr: 0.5 }}
-              />
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  fontSize: "0.85rem",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {doctor.phone}
-              </Typography>
-            </Box>
-          </Stack>
-
-          {/* Right Section: Experience */}
-          <Box sx={{ textAlign: "right" }}>
-            <Typography color="text.secondary" sx={{ fontSize: "0.9rem" }}>
-              Experience
-            </Typography>
-            <Typography
-              variant="body1" // Changed from h6 to body1 for smaller size
-              sx={{
-                fontWeight: 500,
-                color: "#424242",
-                fontSize: "1.1rem", // Slightly smaller than h6
-              }}
-            >
-              {doctor.experience} years
-            </Typography>
-          </Box>
+          <Button
+            onClick={() => navigate(`/doctors/${doctor._id}`)}
+            variant="outlined"
+            size="small"
+            color="primary"
+            endIcon={<ArrowForwardIcon />}
+            sx={{ borderRadius: 2 }}
+          >
+            View Details
+          </Button>
         </Box>
       </CardContent>
     </Card>

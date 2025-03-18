@@ -219,8 +219,15 @@ class AppointmentRepository implements IAppointmentRepository {
   }
 
   // function to get the patients treated by doctor
-  async getPatientsByDoctor(doctorId: string): Promise<IPatientForDoctor[]> {
+  async getPatientsByDoctor(
+    doctorId: string,
+    page: number,
+    limit: number,
+    searchQuery: string = ""
+  ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }> {
     try {
+      const skip = (page - 1) * limit;
+
       const patients = await this.model.aggregate([
         {
           $match: {
@@ -259,7 +266,38 @@ class AppointmentRepository implements IAppointmentRepository {
           },
         },
 
-        // merge patients and dependents
+        // search query
+        {
+          $match: {
+            $or: [
+              {
+                "patientDetails.firstName": {
+                  $regex: searchQuery,
+                  $options: "i",
+                },
+              },
+              {
+                "patientDetails.lastName": {
+                  $regex: searchQuery,
+                  $options: "i",
+                },
+              },
+              {
+                "dependentDetails.firstName": {
+                  $regex: searchQuery,
+                  $options: "i",
+                },
+              },
+              {
+                "dependentDetails.lastName": {
+                  $regex: searchQuery,
+                  $options: "i",
+                },
+              },
+            ],
+          },
+        },
+
         {
           $project: {
             _id: { $ifNull: ["$patientDetails._id", "$dependentDetails._id"] },
@@ -275,11 +313,23 @@ class AppointmentRepository implements IAppointmentRepository {
                 "$dependentDetails.lastName",
               ],
             },
+            email: {
+              $ifNull: ["$patientDetails.email", "$dependentDetails.email"],
+            },
             profilePicture: {
               $ifNull: [
                 "$patientDetails.profilePicture",
                 "$dependentDetails.profilePicture",
               ],
+            },
+            dateOfBirth: {
+              $ifNull: [
+                "$patientDetails.dateOfBirth",
+                "$dependentDetails.dateOfBirth",
+              ],
+            },
+            gender: {
+              $ifNull: ["$patientDetails.gender", "$dependentDetails.gender"],
             },
             isDependent: {
               $cond: {
@@ -298,7 +348,10 @@ class AppointmentRepository implements IAppointmentRepository {
             _id: "$_id",
             firstName: { $first: "$firstName" },
             lastName: { $first: "$lastName" },
+            email: { $first: "$email" },
             profilePicture: { $first: "$profilePicture" },
+            dateOfBirth: { $first: "$dateOfBirth" },
+            gender: { $first: "$gender" },
             isDependent: { $first: "$isDependent" },
             primaryPatientId: { $first: "$primaryPatientId" },
             lastVisit: { $max: "$lastVisit" },
@@ -306,9 +359,16 @@ class AppointmentRepository implements IAppointmentRepository {
         },
 
         { $sort: { lastVisit: -1 } },
+        { $skip: skip },
+        { $limit: limit },
       ]);
 
-      return patients;
+      const totalPatients = await this.model.countDocuments({
+        doctor: new Types.ObjectId(doctorId),
+        status: "confirmed",
+      });
+
+      return { patients, totalPatients };
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

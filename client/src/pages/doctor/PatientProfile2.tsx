@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Container,
@@ -19,7 +19,6 @@ import {
   Card,
   CardContent,
   useTheme,
-  Stack,
   Button,
 } from "@mui/material";
 import {
@@ -275,7 +274,7 @@ const PatientProfile = () => {
                   sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
                 /> */}
                 <Chip
-                  label={`PCP: ${patient.email}`}
+                  label={`email: ${patient.email}`}
                   size="small"
                   sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
                 />
@@ -448,8 +447,15 @@ const PatientProfile = () => {
                 </Typography>
                 <Grid container spacing={3}>
                   {healthHistory?.healthConditions.map((condition, index) => (
-                    <Grid item xs={12} md={4} key={index}>
-                      <Card variant="outlined" sx={{ height: "100%" }}>
+                    <Grid item xs={12} md={12} key={index}>
+                      <Chip
+                        key={index}
+                        label={condition.condition}
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                      />
+                      {/* <Card variant="outlined" sx={{ height: "100%" }}>
                         <CardContent>
                           <Typography
                             variant="h6"
@@ -457,9 +463,9 @@ const PatientProfile = () => {
                             gutterBottom
                           >
                             {condition.condition}
-                          </Typography>
-                          <Divider sx={{ mb: 2 }} />
-                          {/* <Typography
+                          </Typography> */}
+                      {/* <Divider sx={{ mb: 2 }} /> */}
+                      {/* <Typography
                             variant="body2"
                             color="text.secondary"
                             gutterBottom
@@ -469,11 +475,11 @@ const PatientProfile = () => {
                               condition.diagnosisDate
                             ).toLocaleDateString()}
                           </Typography> */}
-                          {/* <Typography variant="body2" color="text.secondary">
+                      {/* <Typography variant="body2" color="text.secondary">
                             <strong>Status:</strong> {condition.status}
                           </Typography> */}
-                        </CardContent>
-                      </Card>
+                      {/* </CardContent>
+                      </Card> */}
                     </Grid>
                   ))}
                 </Grid>
@@ -592,14 +598,14 @@ const PatientProfile = () => {
                       <ListItemIcon>
                         <PsychologyIcon />
                       </ListItemIcon>
-                      {/* <ListItemText
-                    primary="Mental Health Conditions"
-                    secondary={
-                      behaviouralHealth?.conditions?.length > 0
-                        ? behaviouralHealth.conditions.join(", ")
-                        : "None recorded"
-                    }
-                  /> */}
+                      <ListItemText
+                        primary="Mental Health Conditions"
+                        secondary={
+                          behaviouralHealth?.conditions?.length > 0
+                            ? behaviouralHealth.conditions.join(", ")
+                            : "None recorded"
+                        }
+                      />
                     </ListItem>
                     <Divider />
 
@@ -795,7 +801,7 @@ const PatientProfile = () => {
                   </Box>
                 )}
 
-                <Grid container spacing={3}>
+                {/* <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
                     <Card variant="outlined" sx={{ height: "100%" }}>
                       <CardContent>
@@ -830,18 +836,29 @@ const PatientProfile = () => {
                             >
                               <strong>Anxiety Level:</strong>
                             </Typography>
-                            {/* <Chip
-                              label={behaviouralHealth?.anxietyLevel}
-                              color={
-                                behaviouralHealth?.anxietyLevel > 3 
-                                  ? "error"
-                                  : behaviouralHealth?.anxietyLevel ===
-                                      "Moderate"
-                                    ? "warning"
-                                    : "success"
-                              }
-                              size="small"
-                            /> */}
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth?.anxietyLevel
+                                        ? "warning.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
                           </Box>
 
                           <Box>
@@ -852,19 +869,29 @@ const PatientProfile = () => {
                             >
                               <strong>Depression Level:</strong>
                             </Typography>
-                            {/* <Chip
-                              label={behaviouralHealth?.depressionLevel}
-                              color={
-                                behaviouralHealth?.depressionLevel ===
-                                "High"
-                                  ? "error"
-                                  : behaviouralHealth?.depressionLevel ===
-                                      "Moderate"
-                                    ? "warning"
-                                    : "success"
-                              }
-                              size="small"
-                            /> */}
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth?.depressionLevel
+                                        ? "error.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
                           </Box>
 
                           <Box>
@@ -875,18 +902,29 @@ const PatientProfile = () => {
                             >
                               <strong>Stress Level:</strong>
                             </Typography>
-                            {/* <Chip
-                              label={behaviouralHealth?.stressLevel}
-                              color={
-                                behaviouralHealth?.stressLevel === "High"
-                                  ? "error"
-                                  : behaviouralHealth?.stressLevel ===
-                                      "Moderate"
-                                    ? "warning"
-                                    : "success"
-                              }
-                              size="small"
-                            /> */}
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth?.stressLevel
+                                        ? "info.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
                           </Box>
 
                           <Box>
@@ -965,7 +1003,7 @@ const PatientProfile = () => {
                       </CardContent>
                     </Card>
                   </Grid>
-                </Grid>
+                </Grid> */}
               </TabPanel>
             </Box>
           </Box>
