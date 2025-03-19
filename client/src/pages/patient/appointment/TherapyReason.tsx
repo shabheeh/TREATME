@@ -65,6 +65,7 @@ const TherapyReason = () => {
         fee: state.fee,
         patientType:
           currentPatient?._id === patient?._id ? "Patient" : "Dependent",
+        duration: state.duration,
       })
     );
 

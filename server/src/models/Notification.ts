@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { Model, model, Schema } from "mongoose";
 import { INotification } from "src/interfaces/INotification";
 
 const notificationSchema = new Schema<INotification>(
@@ -37,11 +37,15 @@ const notificationSchema = new Schema<INotification>(
       enum: ["low", "medium", "high"],
       default: "low",
     },
+    link: {
+      type: String,
+      optional: true,
+    },
   },
   { timestamps: true }
 );
 
-export const NotificationModel = model<INotification>(
+export const NotificationModel: Model<INotification> = model<INotification>(
   "Notification",
   notificationSchema
 );

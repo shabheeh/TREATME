@@ -143,10 +143,10 @@ class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  async getAppointments(): Promise<IAppointment[]> {
+  async getAppointments(): Promise<IAppointmentPopulated[]> {
     try {
       const appointments = await this.model
-        .find()
+        .find({ status: "confirmed" })
         .populate({
           path: "specialization",
           select: "name",
@@ -158,8 +158,9 @@ class AppointmentRepository implements IAppointmentRepository {
         .populate({
           path: "doctor",
           select: "firstName lastName profilePicture",
-        });
-      return appointments;
+        })
+        .lean();
+      return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

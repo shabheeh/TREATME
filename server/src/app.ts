@@ -10,6 +10,7 @@ import doctorRouter from "./routes/doctor/doctorRouter";
 import sharedRouter from "./routes/shared/sharedRouter";
 import { errorHandler } from "./middlewares/errorHandler";
 import chatRouter from "./routes/chat/chatRouter";
+import { startAppointmentNotifyJob } from "./utils/cronJobs/appointmentNotifier";
 
 const app = express();
 
@@ -19,6 +20,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
+
+startAppointmentNotifyJob();
 
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
 

@@ -15,7 +15,7 @@ import {
   Message as MessageIcon,
   Announcement as AnnouncementIcon,
   NotificationsOff as NotificationsOffIcon,
-} from "@mui/icons-material"
+} from "@mui/icons-material";
 import { INotification } from "../../../types/notification/notification.types";
 import notificationService from "../../../services/notification/notificationService";
 import { toast } from "sonner";
@@ -23,6 +23,7 @@ import Loading from "../Loading";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import { setUnreadCount } from "../../../redux/features/notification/notificationSlice";
+import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
   const [activeFilter, setActiveFilter] = useState<string | "">("");
@@ -30,6 +31,7 @@ const Notifications = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchNotifications();
@@ -63,6 +65,10 @@ const Notifications = () => {
       );
     }
   };
+
+  const onJoinNowClick = (link: string) => {
+    navigate(link)
+  }
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -200,9 +206,6 @@ const Notifications = () => {
                             {notification.title}
                           </Typography>
                         </Box>
-                        {/* <Typography variant="body2" color="text.secondary">
-                          {notification.title}
-                        </Typography> */}
                       </Box>
                       <Box
                         sx={{
@@ -230,6 +233,18 @@ const Notifications = () => {
                     >
                       {notification.message}
                     </Typography>
+                    {notification.link && (
+                      <Box sx={{ mt: 2 }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          onClick={() => onJoinNowClick(notification.link!)}
+                        >
+                          Join Now
+                        </Button>
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </CardContent>

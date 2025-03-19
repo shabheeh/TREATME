@@ -448,7 +448,8 @@ class AppointmentService implements IAppointmentService {
     }
   }
 
-  async getAppointments(): Promise<IAppointment[]> {
+
+  async getAppointments(): Promise<IAppointmentPopulated[]> {
     try {
       const appointments = await this.appointmentRepo.getAppointments();
 

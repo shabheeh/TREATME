@@ -67,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
           }}
         >
           <ListItemButton
-            selected={location.pathname === item.path}
+            selected={location.pathname.startsWith(item.path)}
             onClick={() => handleNavigate(item.path)}
             sx={{
               borderRadius: "8px",
@@ -97,10 +97,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               <ListItemIcon
                 sx={{
                   minWidth: "40px",
-                  color:
-                    location.pathname === item.path
-                      ? "#00897b"
-                      : "rgba(0, 0, 0, 0.54)",
+                  color: location.pathname.startsWith(item.path)
+                    ? "#00897b"
+                    : "rgba(0, 0, 0, 0.54)",
                 }}
               >
                 {item.icon}
@@ -109,9 +108,12 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 primary={item.text}
                 sx={{
                   "& .MuiTypography-root": {
-                    fontWeight: location.pathname === item.path ? 600 : 400,
-                    color:
-                      location.pathname === item.path ? "#00897b" : "inherit",
+                    fontWeight: location.pathname.startsWith(item.path)
+                      ? 600
+                      : 400,
+                    color: location.pathname.startsWith(item.path)
+                      ? "#00897b"
+                      : "inherit",
                   },
                 }}
               />

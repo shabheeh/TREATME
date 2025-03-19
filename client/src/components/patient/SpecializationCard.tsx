@@ -16,6 +16,7 @@ type SpecializationCardProps = {
   image: string;
   link: string;
   id: string;
+  duration: number;
 };
 
 const SpecializationCard: React.FC<SpecializationCardProps> = ({
@@ -26,14 +27,16 @@ const SpecializationCard: React.FC<SpecializationCardProps> = ({
   image,
   link,
   id,
+  duration,
 }) => {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
     navigate(link, {
-      state: { specializationId: id, fee: fee } as {
+      state: { specializationId: id, fee: fee, duration: duration } as {
         specializationId: string;
         fee: number;
+        duration: number;
       },
     });
   };

@@ -28,6 +28,7 @@ class SpecializationController implements ISpecializationController {
         description: req.body.description,
         note: req.body.note,
         fee: req.body.fee,
+        durationInMinutes: req.body.durationInMinutes,
       } as ISpecialization;
 
       const imageFile = req.file;
@@ -109,6 +110,7 @@ class SpecializationController implements ISpecializationController {
         description: req.body.description,
         note: req.body.note,
         fee: req.body.fee,
+        durationInMinutes: req.body.durationInMinutes,
       } as ISpecialization;
 
       const imageFile: Express.Multer.File | undefined = req.file;

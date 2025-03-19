@@ -8,4 +8,5 @@ export interface INotification extends Document {
   message: string;
   isRead: boolean;
   priority: "low" | "medium" | "high";
+  link?: string;
 }

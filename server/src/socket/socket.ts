@@ -129,6 +129,11 @@ export class SocketService implements ISocketService {
         console.log(`User joined room: ${roomId}`);
       });
 
+      socket.on("leave-room", (roomId) => {
+        socket.leave(roomId);
+        socket.to(roomId).emit("user-disconnected", socket.id);
+      });
+
       // Handle disconnection
       socket.on("disconnect", () => this.handleDisconnect(userId));
     });

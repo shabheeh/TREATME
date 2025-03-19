@@ -12,7 +12,7 @@ import PatientProfile from "../pages/doctor/PatientProfile";
 import Messages from "../components/basics/messages/Messages";
 import Notifications from "../components/basics/notification/Notification";
 import PatientListPage from "../components/doctor/PatientsList";
-import PatientProfile2 from "../pages/doctor/PatientProfile2"
+import PatientProfile2 from "../pages/doctor/PatientProfile2";
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,

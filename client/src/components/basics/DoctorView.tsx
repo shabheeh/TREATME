@@ -320,7 +320,6 @@ const DoctorProfile = () => {
         </Grid>
       </Grid>
 
-      {/* Review Dialog */}
       <Dialog
         open={reviewDialogOpen}
         onClose={() => setReviewDialogOpen(false)}
@@ -346,7 +345,7 @@ const DoctorProfile = () => {
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
               fullWidth
-              placeholder="Share your experience with Dr. Smith..."
+              placeholder={`Share your experience with Dr. ${doctor.firstName}`}
             />
           </Box>
         </DialogContent>

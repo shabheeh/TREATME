@@ -21,7 +21,7 @@ const appointmentSchema = new Schema<IAppointment>(
     },
     reason: { type: String, required: true },
     date: { type: Date },
-    duration: { type: String },
+    duration: { type: Number },
     status: { type: String, required: true },
     fee: { type: Number, required: true },
     dayId: { type: String },

@@ -16,4 +16,5 @@ export interface INotification {
   priority: "low" | "medium" | "high";
   isRead: boolean;
   createdAt: Date;
+  link?: string;
 }

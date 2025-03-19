@@ -175,7 +175,7 @@ class StripeService implements IStripeService {
       patient: metadata.patient,
       specialization: metadata.specialization,
       date: metadata.date,
-      duration: metadata.duration,
+      duration: Number(metadata.duration),
       reason: metadata.reason,
       fee: Number(metadata.fee),
       slotId: metadata.slotId,

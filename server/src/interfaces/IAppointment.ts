@@ -11,7 +11,7 @@ export interface IAppointment extends Document {
   doctor: Types.ObjectId;
   specialization: Types.ObjectId;
   date: Date;
-  duration: string;
+  duration: number;
   reason: string;
   status: "pending" | "requested" | "confirmed" | "completed" | "cancelled";
   fee: number;
@@ -29,7 +29,7 @@ export interface IAppointmentPopulated extends Document {
   doctor: IDoctor;
   specialization: { name: string };
   date: Date;
-  duration: string;
+  duration: number;
   reason: string;
   status: "pending" | "requested" | "confirmed" | "completed" | "cancelled";
   fee: number;
@@ -55,7 +55,7 @@ export interface IAppointmentService {
     userId: string,
     role: string
   ): Promise<IAppointment[]>;
-  getAppointments(): Promise<IAppointment[]>;
+  getAppointments(): Promise<IAppointmentPopulated[]>;
   getAppointmentByPaymentId(
     paymentIntentId: string
   ): Promise<IAppointmentPopulated>;

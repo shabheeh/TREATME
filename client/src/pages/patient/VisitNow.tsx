@@ -116,6 +116,7 @@ const VisitNow = () => {
                     image={specialization.image}
                     link={`/${specialization.name.toLowerCase()}/reason`}
                     id={specialization._id}
+                    duration={specialization.durationInMinutes}
                   />
                 </Grid>
               ))}

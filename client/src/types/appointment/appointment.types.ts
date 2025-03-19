@@ -11,7 +11,7 @@ export default interface IAppointment {
   reason: string;
   fee: number;
   date: Date;
-  duration: string;
+  duration: number;
   status: string;
   slotId: string;
   dayId: string;
@@ -27,7 +27,7 @@ export interface IAppointmentPopulated {
   reason: string;
   fee: number;
   date: Date;
-  duration: string;
+  duration: number;
   status: string;
   paymentStatus: string;
 }
