@@ -51,9 +51,9 @@ class DoctorAuthService implements IDoctorAuthService {
     }
   }
 
-  async checkActiveStatus(email: string): Promise<boolean> {
+  async checkActiveStatus(id: string): Promise<boolean> {
     try {
-      const doctor = await this.doctorRepository.findDoctorByEmail(email);
+      const doctor = await this.doctorRepository.findDoctorById(id);
 
       if (!doctor) {
         throw new AuthError(AuthErrorCode.USER_NOT_FOUND);

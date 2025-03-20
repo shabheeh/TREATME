@@ -1,5 +1,7 @@
 import { Box, Container, Typography, TextField, Button } from "@mui/material";
-
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
 import { useForm } from "react-hook-form";
 import authServicePatient from "../../../services/patient/authService";
 import { toast } from "sonner";
@@ -11,9 +13,6 @@ interface ResetPasswordInputs {
 interface ResetPasswordProps {
   onResetPassword: () => void;
 }
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/app/store";
 
 const ResetPassword: React.FC<ResetPasswordProps> = ({ onResetPassword }) => {
   const {

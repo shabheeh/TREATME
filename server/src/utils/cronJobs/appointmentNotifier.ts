@@ -31,7 +31,7 @@ export const startAppointmentNotifyJob = () => {
             message: `Your appointment with dr. ${appointment.doctor.firstName} ${appointment.doctor.lastName}  starts in 5 minutes. You can join using the link below.`,
             type: "appointments",
             priority: "high",
-            link: `/video-consultation`,
+            link: `/video-consultation?room=${appointment._id}`,
           };
 
           const notificationForDoctor: Partial<INotification> = {
@@ -41,7 +41,7 @@ export const startAppointmentNotifyJob = () => {
             message: `Your appointment with patient ${appointment.patient.firstName} ${appointment.patient.lastName} starts in 5 minuts. Join the call using the link below`,
             type: "appointments",
             priority: "high",
-            link: `/video-consultation`,
+            link: `/video-consultation?room=${appointment._id}`,
           };
 
           await Promise.all([

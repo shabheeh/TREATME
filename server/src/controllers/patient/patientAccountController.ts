@@ -33,7 +33,7 @@ class PatientAcccountController implements IPatientAccountController {
         throw new AppError("User not authenticated");
       }
 
-      const { email } = req.user as ITokenPayload;
+      const { id } = req.user as ITokenPayload;
 
       const imageFile: Express.Multer.File | undefined = req.file;
 
@@ -46,7 +46,7 @@ class PatientAcccountController implements IPatientAccountController {
       }
 
       const updatedData = await this.patientAccountService.updateProfile(
-        email,
+        id,
         patientData,
         imageFile
       );

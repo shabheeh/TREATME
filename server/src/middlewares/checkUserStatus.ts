@@ -23,7 +23,7 @@ export const isUserActive = (
     next: NextFunction
   ): Promise<void> => {
     try {
-      if (!req.user || !(req.user as ITokenPayload).email) {
+      if (!req.user || !(req.user as ITokenPayload).id) {
         res.status(401).json({ message: "Unauthenticated" });
         return;
       }
@@ -36,11 +36,11 @@ export const isUserActive = (
 
       if ((req.user as ITokenPayload).role === "patient") {
         isActive = await patientService.checkActiveStatus(
-          (req.user as ITokenPayload).email
+          (req.user as ITokenPayload).id
         );
       } else if ((req.user as ITokenPayload).role === "doctor") {
         isActive = await doctorService.checkActiveStatus(
-          (req.user as ITokenPayload).email
+          (req.user as ITokenPayload).id
         );
       }
 

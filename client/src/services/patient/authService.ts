@@ -313,6 +313,24 @@ class AuthServicePatient implements IAuthServicePatient {
       log.error(`Unknown error occurred durin resenging otp`, error);
     }
   }
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    try {
+      await api.patient.patch("/auth/change-password", {
+        currentPassword,
+        newPassword,
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        log.error(`error changing password: ${error.message}`, error);
+
+        throw new Error(error.message);
+      }
+
+      log.error(`Unknown error occurred`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
 }
 
 const authServicePatient = new AuthServicePatient();

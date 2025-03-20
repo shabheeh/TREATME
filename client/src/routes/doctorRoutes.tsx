@@ -13,6 +13,8 @@ import Messages from "../components/basics/messages/Messages";
 import Notifications from "../components/basics/notification/Notification";
 import PatientListPage from "../components/doctor/PatientsList";
 import PatientProfile2 from "../pages/doctor/PatientProfile2";
+import LayoutAccount from "../Layouts/doctor/LayoutAccount";
+import WalletPatient from "../components/basics/wallet/Wallet";
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
@@ -25,6 +27,16 @@ export const doctorRoutes = [
       </AntiProtectedRoute>
     }
   />,
+  <Route
+    path="/doctor/account"
+    element={
+      <ProtectedRoute allowedRoles={["doctor"]}>
+        <LayoutAccount />
+      </ProtectedRoute>
+    }
+  >
+    <Route path="wallet" element={<WalletPatient />} />
+  </Route>,
   <Route
     path="/doctor"
     element={

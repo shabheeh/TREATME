@@ -15,7 +15,7 @@ export const checkUserStatus = (
     next: NextFunction
   ): Promise<void> => {
     try {
-      if (!req.user || !(req.user as ITokenPayload).email) {
+      if (!req.user || !(req.user as ITokenPayload).id) {
         throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
       }
 
@@ -23,13 +23,13 @@ export const checkUserStatus = (
 
       if ((req.user as ITokenPayload).role === "patient") {
         isActive = await patientService.checkActiveStatus(
-          (req.user as ITokenPayload).email
+          (req.user as ITokenPayload).id
         );
       }
 
       if ((req.user as ITokenPayload).role === "doctor") {
         isActive = await doctorService.checkActiveStatus(
-          (req.user as ITokenPayload).email
+          (req.user as ITokenPayload).id
         );
       }
 

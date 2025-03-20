@@ -3,7 +3,7 @@ import { Box, Grid, Paper, Divider, Skeleton } from "@mui/material";
 const BookingConfirmedSkeleton = () => {
   return (
     <Box sx={{ maxWidth: 1000, margin: "auto", p: 3, pt: 1 }}>
-      <Box sx={{ textAlign: "center", mb: 4, color: "teal" }}>
+      <Box sx={{ textAlign: "center", mb: 4 }}>
         <Skeleton variant="circular" width={64} height={64} sx={{ mb: 2 }} />
         <Skeleton variant="text" width={200} height={32} />
       </Box>

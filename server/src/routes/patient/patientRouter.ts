@@ -99,6 +99,11 @@ router.post(
   "/auth/forgot-password/resend-otp",
   patientAuthController.resendOtpForgotPassword
 );
+router.patch(
+  "/auth/change-password",
+  [...authenticateAndCheckStatus, authorize("patient")],
+  patientAuthController.changePassword
+);
 router.post("/auth/signout", patientAuthController.signOut);
 
 router.put(

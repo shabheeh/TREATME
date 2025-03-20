@@ -76,12 +76,12 @@ const VideoCall = () => {
           appointment.duration,
           "minute"
         );
-        console.log(appointment.duration, "app date")
-        const timePassed = now.diff(endTime);
-        console.log(endTime, "timepassed")
+        const timePassed = now.diff(endTime, "minutes");
+
         if (timePassed > 10) {
-          navigate(-1);
-          return;
+          // endCall();
+          // return;
+          toast.error("The appointment has already completed");
         }
       } catch (error) {
         console.log(error);
@@ -148,7 +148,20 @@ const VideoCall = () => {
     setIsConnected(false);
 
     if (appointment && userRole && userRole === "patient") {
-      setReviewModalOpen(true);
+      const now = dayjs();
+      const endTime = dayjs(appointment.date).add(
+        appointment.duration,
+        "minute"
+      );
+      const timePassed = endTime.diff(now, "minutes");
+
+      console.log(timePassed);
+
+      if (timePassed < 27 && timePassed > 0) {
+        setReviewModalOpen(true);
+      } else {
+        navigate(-1);
+      }
     } else {
       navigate(-1);
     }

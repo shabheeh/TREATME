@@ -1,4 +1,4 @@
-import mongoose, { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import IPatient, {
   IPatientsFilter,
   IPatientsFilterResult,
@@ -59,17 +59,13 @@ class PatientRepository implements IPatientRepository {
   }
 
   async updatePatient(
-    identifier: string,
+    userId: string,
     patientData: Partial<IPatient>
   ): Promise<IPatient | null> {
     try {
-      const query = mongoose.isValidObjectId(identifier)
-        ? { _id: identifier }
-        : { email: identifier };
-
       const updatedPatient = await this.model
         .findOneAndUpdate(
-          query,
+          { _id: new Types.ObjectId(userId) },
           { $set: patientData },
           {
             new: true,
@@ -120,6 +116,23 @@ class PatientRepository implements IPatientRepository {
         limit,
         totalPages: Math.ceil(total / limit),
       };
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getPatientWithPassword(userId: string): Promise<IPatient> {
+    try {
+      const patient = await this.model.findById(userId);
+
+      if (!patient) {
+        throw new AppError("User not found");
+      }
+
+      return patient;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

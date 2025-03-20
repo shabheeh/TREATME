@@ -9,10 +9,11 @@ interface IPatientRepository {
   findPatientByEmail(email: string): Promise<IPatient | null>;
   findPatientById(id: string): Promise<IPatient | null>;
   updatePatient(
-    identifier: string,
+    userId: string,
     patientData: Partial<IPatient>
   ): Promise<IPatient | null>;
   getPatients(filter: IPatientsFilter): Promise<IPatientsFilterResult>;
+  getPatientWithPassword(userId: string): Promise<IPatient>;
 }
 
 export default IPatientRepository;

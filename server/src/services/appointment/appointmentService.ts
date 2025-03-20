@@ -131,17 +131,19 @@ class AppointmentService implements IAppointmentService {
           this.notificationService.createNotification(notificationForDoctor),
         ]);
 
-        const transaction: ITransaction = {
-          amount: appointmentData.fee,
-          status: "success",
-          type: "debit",
-          date: new Date(),
-          description: "Funds deducted from wallet for scheduled appointment",
-        };
-        await this.walletService.addTransaction(
-          patientId as string,
-          transaction
-        );
+        if (!appointment.paymentIntentId) {
+          const transaction: ITransaction = {
+            amount: appointmentData.fee,
+            status: "success",
+            type: "debit",
+            date: new Date(),
+            description: "Funds deducted from wallet for scheduled appointment",
+          };
+          await this.walletService.addTransaction(
+            patientId as string,
+            transaction
+          );
+        } 
       }
 
       return populatedAppointment;

@@ -6,7 +6,10 @@ import {
   Link,
   Button,
   Divider,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import SignupPath from "./SignupPath";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -45,9 +48,13 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
   const password = watch("password");
 
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const onSubmit = async (data: SignupFormInputs) => {
     try {
@@ -163,12 +170,21 @@ const SignUp: React.FC<SignUpProps> = ({ onSignUp, onCompleteProfile }) => {
                   "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character",
               },
             })}
-            type="text"
+            type={showPassword ? "text" : "password"}
             label="Password"
             variant="outlined"
             error={!!errors.password}
             helperText={errors.password?.message}
             sx={{ width: "80%", mx: "auto", my: "10px" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={togglePasswordVisibility} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <TextField
             {...register("confirmPassword", {

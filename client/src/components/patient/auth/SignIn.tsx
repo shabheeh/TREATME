@@ -6,7 +6,10 @@ import {
   Link,
   Button,
   Divider,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import authServicePatient from "../../../services/patient/authService";
 import React, { useState } from "react";
@@ -39,7 +42,12 @@ const SignIn: React.FC<SignInProps> = ({
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const onSubmit = async (data: SignInFormInputs) => {
     try {
@@ -135,11 +143,20 @@ const SignIn: React.FC<SignInProps> = ({
               required: "Password is required",
             })}
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             variant="outlined"
             error={!!errors.password}
             helperText={errors.password?.message}
             sx={{ width: "80%", margin: "10px auto" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={togglePasswordVisibility} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <Typography
             sx={{

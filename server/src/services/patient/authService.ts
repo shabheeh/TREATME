@@ -488,9 +488,9 @@ class PatientAuthService implements IPatientAuthService {
     }
   }
 
-  async checkActiveStatus(email: string): Promise<boolean> {
+  async checkActiveStatus(id: string): Promise<boolean> {
     try {
-      const patient = await this.patientRepository.findPatientByEmail(email);
+      const patient = await this.patientRepository.findPatientById(id);
 
       if (!patient) {
         throw new AuthError(AuthErrorCode.USER_NOT_FOUND);
@@ -499,6 +499,43 @@ class PatientAuthService implements IPatientAuthService {
       return patient.isActive;
     } catch (error) {
       logger.error("error checking patient status", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    try {
+      const patient =
+        await this.patientRepository.getPatientWithPassword(userId);
+
+      if (!patient?.password) {
+        throw new BadRequestError(
+          "User signed with google can't change password"
+        );
+      }
+
+      const isPasswordMatch = await bcrypt.compare(
+        currentPassword,
+        patient?.password
+      );
+
+      if (!isPasswordMatch) {
+        throw new BadRequestError("Incorrect current password");
+      }
+
+      await this.resetPassword(userId, newPassword);
+    } catch (error) {
+      logger.error("error changin password", error);
       if (error instanceof AppError) {
         throw error;
       }

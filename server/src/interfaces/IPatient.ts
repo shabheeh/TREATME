@@ -73,7 +73,12 @@ export interface IPatientAuthService {
   ): Promise<{ patient: IPatient; accessToken: string; refreshToken: string }>;
   resendOtp(email: string): Promise<void>;
   resendOtpForgotPassword(email: string): Promise<void>;
-  checkActiveStatus(email: string): Promise<boolean>;
+  checkActiveStatus(id: string): Promise<boolean>;
+  changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void>;
 }
 
 export interface IPatientAuthController {
@@ -101,6 +106,11 @@ export interface IPatientAuthController {
   ): Promise<void>;
   resendOtp(req: Request, res: Response, next: NextFunction): Promise<void>;
   resendOtpForgotPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  changePassword(
     req: Request,
     res: Response,
     next: NextFunction

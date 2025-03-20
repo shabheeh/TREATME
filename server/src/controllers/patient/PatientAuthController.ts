@@ -5,7 +5,8 @@ import {
   IPatientAuthService,
   IPatientAuthController,
 } from "../../interfaces/IPatient";
-import { BadRequestError } from "../../utils/errors";
+import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
+import { ITokenPayload } from "src/utils/jwt";
 
 class PatientAuthController implements IPatientAuthController {
   private patientAuthService: IPatientAuthService;
@@ -301,6 +302,40 @@ class PatientAuthController implements IPatientAuthController {
       });
     } catch (error) {
       logger.error("controller: Error resending otp:", error);
+      next(error);
+    }
+  };
+
+  changePassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const { id } = req.user as ITokenPayload;
+      if (!id) {
+        throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+      }
+
+      if (!currentPassword || !newPassword) {
+        throw new BadRequestError("Missing request info");
+      }
+
+      await this.patientAuthService.changePassword(
+        id,
+        currentPassword,
+        newPassword
+      );
+      res
+        .status(200)
+        .json({ success: true, message: "Password changed successfully" });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controller: Error changing password"
+      );
       next(error);
     }
   };

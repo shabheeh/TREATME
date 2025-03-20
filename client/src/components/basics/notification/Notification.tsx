@@ -67,7 +67,7 @@ const Notifications = () => {
   };
 
   const onJoinNowClick = (link: string) => {
-    navigate(link)
+    navigate(link);
   }
 
   const getNotificationIcon = (type: string) => {

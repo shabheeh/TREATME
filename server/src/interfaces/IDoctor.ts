@@ -48,7 +48,7 @@ export interface SignInResult {
 
 export interface IDoctorAuthService {
   signIn(email: string, password: string): Promise<SignInResult>;
-  checkActiveStatus(email: string): Promise<boolean>;
+  checkActiveStatus(id: string): Promise<boolean>;
 }
 
 export interface IDoctorAuthController {
