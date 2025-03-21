@@ -1,7 +1,12 @@
 import { IDoctorAuthService, SignInResult } from "../../interfaces/IDoctor";
 import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepository";
 import bcrypt from "bcryptjs";
-import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
+import {
+  AppError,
+  AuthError,
+  AuthErrorCode,
+  BadRequestError,
+} from "../../utils/errors";
 import logger from "../../configs/logger";
 import { generateTokens, ITokenPayload } from "../../utils/jwt";
 
@@ -62,6 +67,45 @@ class DoctorAuthService implements IDoctorAuthService {
       return doctor.isActive;
     } catch (error) {
       logger.error("error checking doctor status", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async changePassword(
+    doctorId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    try {
+      const doctor =
+        await this.doctorRepository.getDoctorWithPassword(doctorId);
+
+      const isPasswordMatch = await bcrypt.compare(
+        currentPassword,
+        doctor.password
+      );
+
+      if (!isPasswordMatch) {
+        throw new BadRequestError("Incorrect current password");
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      const updatedData = await this.doctorRepository.updateDoctor(doctorId, {
+        password: hashedPassword,
+      });
+
+      if (!updatedData) {
+        throw new AppError("Something went wrong");
+      }
+    } catch (error) {
+      logger.error("error changing password", error);
       if (error instanceof AppError) {
         throw error;
       }

@@ -15,6 +15,7 @@ import PatientListPage from "../components/doctor/PatientsList";
 import PatientProfile2 from "../pages/doctor/PatientProfile2";
 import LayoutAccount from "../Layouts/doctor/LayoutAccount";
 import WalletPatient from "../components/basics/wallet/Wallet";
+import Security from "../components/basics/Security";
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
@@ -36,6 +37,7 @@ export const doctorRoutes = [
     }
   >
     <Route path="wallet" element={<WalletPatient />} />
+    <Route path="security" element={<Security />} />
   </Route>,
   <Route
     path="/doctor"

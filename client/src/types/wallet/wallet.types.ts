@@ -1,5 +1,6 @@
 export interface ITransaction {
   _id: string;
+  walletId: string;
   amount: number;
   type: "credit" | "debit";
   status: "success" | "failed";
@@ -12,7 +13,6 @@ export interface IWallet {
   user: string;
   userType: "Patient" | "Doctor";
   balance: number;
-  transactions: ITransaction[];
   createdAt: Date;
   updatedAt: Date;
 }

@@ -14,10 +14,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Refresh, Add, Schedule } from "@mui/icons-material";
-import { IWallet } from "../../../types/wallet/wallet.types";
+import { ITransaction, IWallet } from "../../../types/wallet/wallet.types";
 import walletService from "../../../services/wallet/walletService";
 import { toast } from "sonner";
-import AddFundsModal from "../../patient/wallet/AddFundsModal";
+import AddFundsModal from "./AddFundsModal";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
@@ -28,7 +28,7 @@ const WalletPatient: React.FC = () => {
   const [isAddFundsModalOpen, setAddFundsModalOpen] = useState<boolean>(false);
 
   const [wallet, setWallet] = useState<IWallet | null>(null);
-
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
   // const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
   //   setTabValue(newValue);
   // };
@@ -41,9 +41,10 @@ const WalletPatient: React.FC = () => {
 
   const fetchWallet = async () => {
     try {
-      const wallet = await walletService.accessWallet();
+      const { wallet, transactions } = await walletService.accessWallet();
       if (wallet) {
         setWallet(wallet);
+        setTransactions(transactions);
       }
     } catch (error) {
       toast.error(
@@ -51,8 +52,6 @@ const WalletPatient: React.FC = () => {
       );
     }
   };
-
-  const reversedTransactions = wallet?.transactions.slice().reverse();
 
   return (
     <Box sx={{ maxWidth: 800, margin: "0 auto", p: 2 }}>
@@ -129,7 +128,7 @@ const WalletPatient: React.FC = () => {
             >
               <Typography variant="h6">Payment History</Typography>
               <Chip
-                label={`${wallet?.transactions.length} transactions`}
+                label={`${transactions.length || 0} transactions`}
                 size="small"
                 sx={{ backgroundColor: theme.palette.grey[200] }}
               />
@@ -149,8 +148,8 @@ const WalletPatient: React.FC = () => {
             </Box>
 
             <List disablePadding>
-              {reversedTransactions && reversedTransactions.length > 0 ? (
-                reversedTransactions.map((transaction) => (
+              {transactions && transactions.length > 0 ? (
+                transactions.map((transaction) => (
                   <React.Fragment key={transaction._id}>
                     <ListItem
                       alignItems="flex-start"

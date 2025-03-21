@@ -3,6 +3,9 @@ import { IWalletController } from "./interface/IWalletController";
 import { Request, Response, NextFunction } from "express";
 import { ITokenPayload } from "../../utils/jwt";
 import logger from "../../configs/logger";
+import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
+import { TransactionData } from "src/interfaces/IWallet";
+import { error } from "console";
 
 class WalletController implements IWalletController {
   private walletService: IWalletService;
@@ -26,11 +29,9 @@ class WalletController implements IWalletController {
       } else {
         userType = "Doctor";
       }
-      const wallet = await this.walletService.accessOrCreateWallet(
-        userId,
-        userType
-      );
-      res.status(200).json({ wallet });
+      const { wallet, transactions } =
+        await this.walletService.accessOrCreateWallet(userId, userType);
+      res.status(200).json({ wallet, transactions });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -41,26 +42,69 @@ class WalletController implements IWalletController {
     }
   };
 
-  updateWallet = async (
+  createWithdrawalRequest = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
       const userId = (req.user as ITokenPayload).id;
+      const { amount } = req.body;
 
-      const { walletData } = req.body;
+      if (!userId) {
+        throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
+      }
 
-      const wallet = await this.walletService.updateWallet(userId, walletData);
-      res.status(200).json({ wallet });
+      if (!amount) {
+        throw new BadRequestError("Amount is required");
+      }
+
+      const transactionData: TransactionData = {
+        amount: amount,
+        date: new Date(),
+        type: "request",
+        status: "pending",
+        description: "Wallet withdrawal request",
+      };
+      const transaction = await this.walletService.addTransaction(
+        userId,
+        transactionData
+      );
+      res.status(200).json({ transaction });
     } catch (error) {
       logger.error(
         error instanceof Error
           ? error.message
-          : "failed to create or access wallet"
+          : "controller: error creating withdrawal request"
       );
       next(error);
     }
+  };
+
+  updateTransaction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { transactionId, transactionData } = req.body;
+      if (!transactionId || !transactionData) {
+        throw new BadRequestError("Transaction is required");
+      }
+      const transaction = await this.walletService.updateTransaction(
+        transactionId,
+        transactionData
+      );
+
+      res.status(200).json({ transaction });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controler: error updating trasaction"
+      );
+    }
+    next(error);
   };
 }
 

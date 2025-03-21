@@ -95,6 +95,11 @@ router.delete(
 
 router.post("/auth/signin", signinValidation, doctorAuthController.signIn);
 router.post("/auth/signout", doctorAuthController.signOut);
+router.patch(
+  "/password",
+  [...authenticateAndCheckStatus, authorize("doctor")],
+  doctorAuthController.changePassword
+);
 
 router.get(
   "/schedules/:doctorId",

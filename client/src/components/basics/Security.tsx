@@ -12,8 +12,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/app/store";
-import authServicePatient from "../../../services/patient/authService";
+import { RootState } from "../../redux/app/store";
+import authServicePatient from "../../services/patient/authService";
+import doctorAuthService from "../../services/doctor/authService";
 
 interface ChangePasswordInputs {
   currentPassword: string;
@@ -26,6 +27,7 @@ const Security = () => {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<ChangePasswordInputs>({
     defaultValues: {
@@ -34,7 +36,7 @@ const Security = () => {
       confirmPassword: "",
     },
   });
-  const patient = useSelector((state: RootState) => state.user.patient);
+  const userRole = useSelector((state: RootState) => state.auth.role);
   const [loading, setLoading] = useState<boolean>(false);
   const password = watch("newPassword");
 
@@ -45,13 +47,24 @@ const Security = () => {
   const onSubmit = async (data: ChangePasswordInputs) => {
     try {
       setLoading(true);
-      if (!patient?._id) {
-        throw new Error("User id not found");
+      if (!userRole) {
+        throw new Error("user not found");
       }
-      await authServicePatient.changePassword(
-        data.currentPassword,
-        data.newPassword
-      );
+      if (userRole === "patient") {
+        await authServicePatient.changePassword(
+          data.currentPassword,
+          data.newPassword
+        );
+      } else if (userRole === "doctor") {
+        await doctorAuthService.changePassword(
+          data.currentPassword,
+          data.newPassword
+        );
+      }
+
+      reset();
+      toast.success("password changed successully");
+
       setLoading(false);
     } catch (error) {
       setLoading(false);

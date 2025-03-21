@@ -44,7 +44,7 @@ import { NotificationModel } from "../../models/Notification";
 import NotificationService from "../../services/notification/NotificationService";
 import NotificationController from "../../controllers/notification/NotificationController";
 import WalletRepository from "../../repositories/wallet/WalletRepository";
-import { WalletModel } from "../../models/Wallet";
+import { TransactionModel, WalletModel } from "../../models/Wallet";
 import WalletService from "../../services/wallet/WalletService";
 import WalletController from "../../controllers/wallet/WalletController";
 import StripeService from "../../services/stripe/StripeService";
@@ -118,7 +118,7 @@ const scheduleRepository = new ScheduleRepository(ScheduleModel);
 const scheduleService = new ScheduleService(scheduleRepository);
 
 // wallet
-const walletRepository = new WalletRepository(WalletModel);
+const walletRepository = new WalletRepository(WalletModel, TransactionModel);
 const walletService = new WalletService(walletRepository);
 const walletController = new WalletController(walletService);
 
@@ -328,6 +328,20 @@ router.get(
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   walletController.accessWallet
+);
+
+router.post(
+  "/wallet",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  walletController.createWithdrawalRequest
+);
+
+router.patch(
+  "/wallet",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  walletController.updateTransaction
 );
 
 export default router;

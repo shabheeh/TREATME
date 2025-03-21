@@ -27,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ onProfileClick, onMenuClick }) => {
   const unreadCount = useUnreadNotifications();
 
   const handleLogoClick = () => {
-    navigate("/doctor");
+    navigate("/doctor/dashboard");
   };
 
   const handleNotificationClick = () => {

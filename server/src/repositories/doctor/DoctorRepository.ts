@@ -48,6 +48,7 @@ class DoctorRepository implements IDoctorRepository {
     try {
       const doctor = await this.model
         .findById(doctorId)
+        .select("-password")
         .populate("specialization")
         .lean();
 
@@ -70,7 +71,7 @@ class DoctorRepository implements IDoctorRepository {
     try {
       const updatedDoctor = await this.model
         .findOneAndUpdate(
-          { _id: doctorId },
+          { _id: new Types.ObjectId(doctorId) },
           { $set: updateData },
           {
             new: true,
@@ -257,6 +258,22 @@ class DoctorRepository implements IDoctorRepository {
         currentPage: page,
         totalPages: Math.ceil(totalDoctorsCount / limit),
       };
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getDoctorWithPassword(doctorId: string): Promise<IDoctor> {
+    try {
+      const doctor = await this.model.findById(doctorId);
+
+      if (!doctor) {
+        throw new AppError("Doctor not found");
+      }
+      return doctor;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

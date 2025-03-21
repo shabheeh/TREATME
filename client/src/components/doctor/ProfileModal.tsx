@@ -48,6 +48,10 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
     }
   };
 
+  const handleMangageAccountClick = () => {
+    navigate("/doctor/account/wallet");
+  };
+
   return (
     <Dialog
       open={open}
@@ -128,7 +132,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
 
         <List sx={{ py: 1 }}>
           <ListItemButton
-            href="/account/wallet"
+            onClick={handleMangageAccountClick}
             sx={{
               px: 5,
               py: 1.5,

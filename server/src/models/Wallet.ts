@@ -2,18 +2,23 @@ import { model, Model, Schema } from "mongoose";
 import { ITransaction, IWallet } from "src/interfaces/IWallet";
 
 const transactionSchema = new Schema<ITransaction>({
+  walletId: {
+    type: Schema.Types.ObjectId,
+    ref: "Wallet",
+    required: true,
+  },
   amount: {
     type: Number,
     required: true,
   },
   type: {
     type: String,
-    enum: ["credit", "debit"],
+    enum: ["credit", "debit", "request"],
     required: true,
   },
   status: {
     type: String,
-    enum: ["success", "failed"],
+    enum: ["success", "failed", "pending"],
     required: true,
   },
   date: {
@@ -43,7 +48,6 @@ const walletSchema = new Schema<IWallet>(
       required: true,
       default: 0,
     },
-    transactions: [transactionSchema],
   },
   { timestamps: true }
 );
@@ -51,4 +55,9 @@ const walletSchema = new Schema<IWallet>(
 export const WalletModel: Model<IWallet> = model<IWallet>(
   "Wallet",
   walletSchema
+);
+
+export const TransactionModel: Model<ITransaction> = model<ITransaction>(
+  "Transaction",
+  transactionSchema
 );

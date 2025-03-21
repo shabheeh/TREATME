@@ -17,8 +17,9 @@ import { INotificationService } from "../notification/interface/INotificationSer
 import { INotification } from "src/interfaces/INotification";
 import { Types } from "mongoose";
 import { IWalletService } from "../wallet/interface/IWalletService";
-import { ITransaction } from "src/interfaces/IWallet";
+import { TransactionData } from "src/interfaces/IWallet";
 import { IScheduleService } from "src/interfaces/ISchedule";
+import { eventBus } from "../../utils/eventBus";
 
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
@@ -36,6 +37,11 @@ class AppointmentService implements IAppointmentService {
     this.scheduleService = scheduleService;
     this.notificationService = notificationService;
     this.walletService = walletService;
+
+    eventBus.subscribe(
+      "consultation-completed",
+      this.updateAppointmentStatus.bind(this)
+    );
   }
 
   async createAppointment(
@@ -132,7 +138,7 @@ class AppointmentService implements IAppointmentService {
         ]);
 
         if (!appointment.paymentIntentId) {
-          const transaction: ITransaction = {
+          const transaction: TransactionData = {
             amount: appointmentData.fee,
             status: "success",
             type: "debit",
@@ -143,7 +149,7 @@ class AppointmentService implements IAppointmentService {
             patientId as string,
             transaction
           );
-        } 
+        }
       }
 
       return populatedAppointment;
@@ -385,7 +391,7 @@ class AppointmentService implements IAppointmentService {
 
       if (timeDifference < twoHoursInMillis) {
         const feeAfterDuduction = appointmentData.fee - 100;
-        const transaction: ITransaction = {
+        const transaction: TransactionData = {
           amount: feeAfterDuduction,
           status: "success",
           type: "credit",
@@ -398,7 +404,7 @@ class AppointmentService implements IAppointmentService {
           transaction
         );
       } else {
-        const transaction: ITransaction = {
+        const transaction: TransactionData = {
           amount: appointmentData.fee,
           status: "success",
           type: "credit",
@@ -450,7 +456,6 @@ class AppointmentService implements IAppointmentService {
     }
   }
 
-
   async getAppointments(): Promise<IAppointmentPopulated[]> {
     try {
       const appointments = await this.appointmentRepo.getAppointments();
@@ -500,6 +505,47 @@ class AppointmentService implements IAppointmentService {
       limit,
       searchQuery
     );
+  }
+
+  private async updateAppointmentStatus({
+    appointmentId,
+  }: {
+    appointmentId: string;
+  }) {
+    try {
+      const appointment =
+        await this.appointmentRepo.getAppointmentById(appointmentId);
+
+      if (appointment.status === "completed") {
+        return;
+      } else if (appointment.status === "confirmed") {
+        await this.appointmentRepo.updateAppointment(appointmentId, {
+          status: "completed",
+        });
+      }
+      const deduction = appointment.fee * 0.1;
+      const transaction: TransactionData = {
+        amount: appointment.fee - deduction,
+        date: new Date(),
+        status: "success",
+        type: "credit",
+        description: "Consultation fee credited after platform deduction",
+      };
+
+      await this.walletService.addTransaction(
+        appointment.doctor._id!.toString(),
+        transaction
+      );
+    } catch (error) {
+      logger.error(`Error updating appointment status`, error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
   }
 }
 

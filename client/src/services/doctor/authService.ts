@@ -52,6 +52,26 @@ class DoctorAuthService {
       throw new Error(`Something went error`);
     }
   }
+
+  async changePassword(
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    try {
+      await api.doctor.patch("password", { currentPassword, newPassword });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(
+          `Error changing doctor password: ${error.message}`,
+          error
+        );
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
 }
 
 const doctorAuthService = new DoctorAuthService();

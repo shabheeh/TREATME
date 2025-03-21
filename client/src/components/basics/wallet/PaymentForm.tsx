@@ -47,7 +47,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         toast.error(result.error.message || "Payment failed");
       } else {
         if (result.paymentIntent.status === "succeeded") {
-          onSuccess();
+          setTimeout(onSuccess, 1000);
         } else {
           closeModal();
           toast.error("Failed to add funds to wallet");

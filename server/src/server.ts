@@ -20,7 +20,7 @@ import NotificationRepository from "./repositories/notification/NotificationRepo
 import { NotificationModel } from "./models/Notification";
 import NotificationService from "./services/notification/NotificationService";
 import WalletRepository from "./repositories/wallet/WalletRepository";
-import { WalletModel } from "./models/Wallet";
+import { TransactionModel, WalletModel } from "./models/Wallet";
 import WalletService from "./services/wallet/WalletService";
 
 // create http server
@@ -30,7 +30,7 @@ const scheduleRepository = new ScheduleRepository(ScheduleModel);
 const scheduleService = new ScheduleService(scheduleRepository);
 const notificationRepository = new NotificationRepository(NotificationModel);
 const notificationService = new NotificationService(notificationRepository);
-const walletRepository = new WalletRepository(WalletModel);
+const walletRepository = new WalletRepository(WalletModel, TransactionModel);
 const walletService = new WalletService(walletRepository);
 
 const appointmentRepository = new AppointmentRepository(AppointmentModel);

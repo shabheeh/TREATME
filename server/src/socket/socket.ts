@@ -7,7 +7,7 @@ import { IMessage } from "src/interfaces/IMessage";
 import { IChatService } from "src/services/chat/interface/IChatService";
 import { ITokenPayload, verifyAccessToken } from "../utils/jwt";
 import { INotification } from "src/interfaces/INotification";
-import { eventBus } from "../eventBus";
+import { eventBus } from "../utils/eventBus";
 
 export interface ISocketService {
   initialize(server: HttpServer): void;
@@ -110,17 +110,14 @@ export class SocketService implements ISocketService {
       );
 
       socket.on("offer", (data) => {
-        console.log("offer emitted");
         socket.to(data.roomId).emit("offer", data);
       });
 
       socket.on("answer", (data) => {
-        console.log("anwer emited");
         socket.to(data.roomId).emit("answer", data);
       });
 
       socket.on("candidate", (data) => {
-        console.log("candidate emitted");
         socket.to(data.roomId).emit("candidate", data);
       });
 
@@ -130,6 +127,7 @@ export class SocketService implements ISocketService {
       });
 
       socket.on("leave-room", (roomId) => {
+        eventBus.publish("consultation-completed", { appointmentId: roomId });
         socket.leave(roomId);
         socket.to(roomId).emit("user-disconnected", socket.id);
       });

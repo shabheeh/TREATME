@@ -1,7 +1,7 @@
 import { IStripeService } from "./interface/IStripeService";
 import { IWalletService } from "../wallet/interface/IWalletService";
 import IAppointment, { IAppointmentService } from "src/interfaces/IAppointment";
-import { ITransaction } from "src/interfaces/IWallet";
+import { ITransaction, TransactionData } from "src/interfaces/IWallet";
 import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
 import { AppError } from "../../utils/errors";
 import logger from "../../configs/logger";
@@ -198,7 +198,7 @@ class StripeService implements IStripeService {
 
     console.log(paymentIntent.metadata.amount, "payment aoutsaf");
 
-    const transaction: ITransaction = {
+    const transaction: TransactionData = {
       amount: Number(paymentIntent.metadata.amount),
       status: "failed",
       type: "credit",
@@ -222,7 +222,7 @@ class StripeService implements IStripeService {
       throw new AppError("userId not found in paymentIntent.metadata", 404);
     }
 
-    const transaction: ITransaction = {
+    const transaction: TransactionData = {
       amount: Number(paymentIntent.metadata.amount),
       status: "success",
       type: "credit",

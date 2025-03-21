@@ -49,11 +49,21 @@ export interface SignInResult {
 export interface IDoctorAuthService {
   signIn(email: string, password: string): Promise<SignInResult>;
   checkActiveStatus(id: string): Promise<boolean>;
+  changePassword(
+    doctorId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void>;
 }
 
 export interface IDoctorAuthController {
   signIn(req: Request, res: Response, next: NextFunction): Promise<void>;
   signOut(req: Request, res: Response, next: NextFunction): Promise<void>;
+  changePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
 }
 
 export interface IDoctorService {

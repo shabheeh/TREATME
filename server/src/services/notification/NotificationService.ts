@@ -4,7 +4,7 @@ import { INotification } from "../../interfaces/INotification";
 import { AppError } from "../../utils/errors";
 
 import logger from "../../configs/logger";
-import { eventBus } from "../../eventBus";
+import { eventBus } from "../../utils/eventBus";
 
 class NotificationService implements INotificationService {
   private notificationRepo: INotificationRepository;

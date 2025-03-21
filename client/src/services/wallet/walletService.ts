@@ -1,12 +1,15 @@
-import { IWallet } from "../../types/wallet/wallet.types";
+import { ITransaction, IWallet } from "../../types/wallet/wallet.types";
 import { api } from "../../utils/axiosInterceptor";
 
 class WalletService {
-  async accessWallet(): Promise<IWallet> {
+  async accessWallet(): Promise<{
+    wallet: IWallet;
+    transactions: ITransaction[];
+  }> {
     try {
       const response = await api.get("/wallet");
-      const { wallet } = response.data;
-      return wallet;
+      const { wallet, transactions } = response.data;
+      return { wallet, transactions };
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error accessing wallet: ${error.message}`, error);

@@ -1,21 +1,30 @@
-import { ITransaction, IWallet, WalletData } from "src/interfaces/IWallet";
+import { IWallet, ITransaction, TransactionData } from "src/interfaces/IWallet";
+import { Model, Types, ClientSession } from "mongoose";
+import { AppError, BadRequestError } from "../../utils/errors";
 import IWalletRepository from "./interface/IWalletRepository";
-import { Model, Types } from "mongoose";
-import { AppError } from "../../utils/errors";
 
 class WalletRepository implements IWalletRepository {
-  private readonly model: Model<IWallet>;
+  private readonly walletModel: Model<IWallet>;
+  private readonly transactionModel: Model<ITransaction>;
 
-  constructor(model: Model<IWallet>) {
-    this.model = model;
+  constructor(
+    walletModel: Model<IWallet>,
+    transactionModel: Model<ITransaction>
+  ) {
+    this.walletModel = walletModel;
+    this.transactionModel = transactionModel;
   }
 
-  async create(walletData: Partial<WalletData>): Promise<IWallet> {
+  async createWallet(
+    userId: string,
+    userType: "Patient" | "Doctor"
+  ): Promise<IWallet> {
     try {
-      const wallet = await this.model.create(walletData);
-      if (!wallet) {
-        throw new AppError("Failed to create wallet", 400);
-      }
+      const wallet = await this.walletModel.create({
+        user: userId,
+        userType,
+        balance: 0,
+      });
       return wallet;
     } catch (error) {
       throw new AppError(
@@ -25,18 +34,11 @@ class WalletRepository implements IWalletRepository {
     }
   }
 
-  async update(
-    walletId: string,
-    walletData: Partial<WalletData>
-  ): Promise<IWallet> {
+  async findWalletByUserId(userId: string): Promise<IWallet | null> {
     try {
-      const wallet = await this.model.findByIdAndUpdate(walletId, walletData, {
-        new: true,
+      return await this.walletModel.findOne({
+        user: new Types.ObjectId(userId),
       });
-      if (!wallet) {
-        throw new AppError("Something went wrong");
-      }
-      return wallet;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -47,47 +49,44 @@ class WalletRepository implements IWalletRepository {
 
   async addTransaction(
     userId: string,
-    transactionData: ITransaction
-  ): Promise<IWallet> {
-    const session = await this.model.startSession();
+    transactionData: TransactionData
+  ): Promise<ITransaction> {
+    const session: ClientSession = await this.walletModel.startSession();
     session.startTransaction();
 
     try {
-      const wallet = await this.model.findOneAndUpdate(
-        { user: userId },
-        {
-          $push: { transactions: transactionData },
-        },
-        { session, new: true }
+      const wallet = await this.walletModel
+        .findOne({ user: userId })
+        .session(session);
+      if (!wallet) throw new AppError("Wallet not found", 404);
+
+      const transaction = await this.transactionModel.create(
+        [{ ...transactionData, walletId: wallet._id }],
+        { session }
       );
 
-      if (!wallet) {
-        throw new AppError("Wallet not found", 404);
+      if (transactionData.status === "success") {
+        if (
+          transactionData.type === "debit" &&
+          wallet.balance < transactionData.amount
+        ) {
+          throw new BadRequestError("Insuffient Wallet balance");
+        }
+        const balanceUpdate =
+          transactionData.type === "credit"
+            ? transactionData.amount
+            : -transactionData.amount;
+        await this.walletModel.updateOne(
+          { _id: wallet._id },
+          { $inc: { balance: balanceUpdate } },
+          { session }
+        );
       }
 
-      if (transactionData.status === "failed") {
-        await session.commitTransaction();
-        return wallet;
-      }
-
-      // update the balance for successull transaction
-      const balanceUpdate =
-        transactionData.type === "credit"
-          ? transactionData.amount
-          : -transactionData.amount;
-
-      await this.model.findOneAndUpdate(
-        { user: userId },
-        {
-          $inc: { balance: balanceUpdate },
-        },
-        { session, new: true }
-      );
-
-      await session.commitTransaction(); // commit the balance update
-      return wallet;
+      await session.commitTransaction();
+      return transaction[0];
     } catch (error) {
-      await session.abortTransaction(); // rollback incase error
+      await session.abortTransaction();
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
         500
@@ -97,10 +96,83 @@ class WalletRepository implements IWalletRepository {
     }
   }
 
-  async findById(walletId: string): Promise<IWallet | null> {
+  async updateTransaction(
+    transactionId: string,
+    updatedData: Partial<TransactionData>
+  ): Promise<ITransaction> {
+    const session: ClientSession = await this.walletModel.startSession();
+    session.startTransaction();
+
     try {
-      const wallet = await this.model.findById(walletId);
-      return wallet;
+      const existingTransaction = await this.transactionModel
+        .findById(transactionId)
+        .session(session);
+      if (!existingTransaction)
+        throw new AppError("Transaction not found", 404);
+
+      const wallet = await this.walletModel
+        .findById(existingTransaction.walletId)
+        .session(session);
+      if (!wallet) throw new AppError("Wallet not found", 404);
+
+      if (existingTransaction.status === "success") {
+        const reverseBalance =
+          existingTransaction.type === "credit"
+            ? -existingTransaction.amount
+            : existingTransaction.amount;
+
+        await this.walletModel.updateOne(
+          { _id: wallet._id },
+          { $inc: { balance: reverseBalance } },
+          { session }
+        );
+      }
+
+      const updatedTransaction = await this.transactionModel.findByIdAndUpdate(
+        transactionId,
+        { $set: updatedData },
+        { new: true, session }
+      );
+
+      if (!updatedTransaction)
+        throw new AppError("Failed to update transaction", 500);
+
+      if (updatedTransaction.status === "success") {
+        if (
+          updatedTransaction.type === "debit" &&
+          wallet.balance < updatedTransaction.amount
+        ) {
+          throw new BadRequestError("Insufficient wallet balance");
+        }
+
+        const newBalanceChange =
+          updatedTransaction.type === "credit"
+            ? updatedTransaction.amount
+            : -updatedTransaction.amount;
+
+        await this.walletModel.updateOne(
+          { _id: wallet._id },
+          { $inc: { balance: newBalanceChange } },
+          { session }
+        );
+      }
+
+      await session.commitTransaction();
+      return updatedTransaction;
+    } catch (error) {
+      await session.abortTransaction();
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async getTransactionsByWalletId(walletId: string): Promise<ITransaction[]> {
+    try {
+      return await this.transactionModel.find({ walletId }).sort({ date: -1 });
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -109,12 +181,34 @@ class WalletRepository implements IWalletRepository {
     }
   }
 
-  async findByUserId(userId: string): Promise<IWallet | null> {
+  async getTransactions(): Promise<ITransaction[]> {
     try {
-      const wallet = await this.model.findOne({
+      return await this.transactionModel.find();
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getWalletWithTransactions(
+    userId: string
+  ): Promise<{ wallet: IWallet; transactions: ITransaction[] } | null> {
+    try {
+      const wallet = await this.walletModel.findOne({
         user: new Types.ObjectId(userId),
       });
-      return wallet;
+
+      if (!wallet) {
+        throw new AppError("Wallet not found", 404);
+      }
+
+      const transactions = await this.transactionModel
+        .find({ walletId: wallet._id })
+        .sort({ date: -1 });
+
+      return { wallet, transactions };
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

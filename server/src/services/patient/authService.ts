@@ -288,11 +288,11 @@ class PatientAuthService implements IPatientAuthService {
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const updateData = await this.patientRepository.updatePatient(id, {
+      const updatedData = await this.patientRepository.updatePatient(id, {
         password: hashedPassword,
       });
 
-      if (!updateData) {
+      if (!updatedData) {
         throw new BadRequestError("Error reseting password");
       }
     } catch (error) {

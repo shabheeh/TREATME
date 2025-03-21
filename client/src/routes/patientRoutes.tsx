@@ -27,7 +27,7 @@ import Doctors from "../pages/patient/Doctors";
 import Messages from "../components/basics/messages/Messages";
 import Notification from "../components/basics/notification/Notification";
 import WalletPatient from "../components/basics/wallet/Wallet";
-import Security from "../components/patient/profile/Security";
+import Security from "../components/basics/Security";
 // import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
 // import { Appearance } from "@stripe/stripe-js";
 // const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {

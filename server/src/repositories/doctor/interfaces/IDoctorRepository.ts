@@ -46,6 +46,7 @@ interface IDoctorRepository {
   getDoctorsWithSchedules(
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;
+  getDoctorWithPassword(doctorId: string): Promise<IDoctor>;
 }
 
 export default IDoctorRepository;

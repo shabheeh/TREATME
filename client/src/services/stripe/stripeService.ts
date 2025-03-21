@@ -14,7 +14,6 @@ export const createPaymentIntent = async (
       paymentType,
       amount,
     });
-    console.log(response.data);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {

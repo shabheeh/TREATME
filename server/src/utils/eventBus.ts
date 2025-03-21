@@ -1,9 +1,10 @@
-import { IMessage } from "./interfaces/IMessage";
-import { INotification } from "./interfaces/INotification";
+import { IMessage } from "../interfaces/IMessage";
+import { INotification } from "../interfaces/INotification";
 
 type EventMap = {
   "appointment-notification": { userId: string; notification: INotification };
   "new-message": { message: IMessage };
+  "consultation-completed": { appointmentId: string };
 };
 
 type EventName = keyof EventMap;

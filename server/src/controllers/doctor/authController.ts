@@ -4,6 +4,8 @@ import {
   IDoctorAuthController,
   IDoctorAuthService,
 } from "../../interfaces/IDoctor";
+import { BadRequestError } from "../../utils/errors";
+import { ITokenPayload } from "../../utils/jwt";
 
 class DoctorAuthController implements IDoctorAuthController {
   private doctorAuthService: IDoctorAuthService;
@@ -59,6 +61,37 @@ class DoctorAuthController implements IDoctorAuthController {
       });
     } catch (error) {
       logger.error("controller: Error resending otp:", error);
+      next(error);
+    }
+  };
+
+  changePassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const doctorId = (req.user as ITokenPayload).id;
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) {
+        throw new BadRequestError("Missing current and new password");
+      }
+
+      await this.doctorAuthService.changePassword(
+        doctorId,
+        currentPassword,
+        newPassword
+      );
+
+      res
+        .status(200)
+        .json({ success: true, message: "password changed successfully" });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Controller: error changing password"
+      );
       next(error);
     }
   };

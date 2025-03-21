@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import Loading from "../../basics/Loading";
+import Loading from "../Loading";
 import { toast } from "sonner";
 import { createPaymentIntent } from "../../../services/stripe/stripeService";
 import PaymentForm from "./PaymentForm";

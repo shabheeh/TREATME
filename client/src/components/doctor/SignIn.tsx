@@ -1,4 +1,5 @@
-import { Box, Container, Typography, TextField, Button } from "@mui/material";
+import { Box, Container, Typography, TextField, Button, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +24,13 @@ const SignIn: React.FC = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const onSubmit = async (data: SignInFormInputs) => {
     try {
@@ -97,11 +104,21 @@ const SignIn: React.FC = () => {
                 required: "Password is required",
               })}
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
+
               variant="outlined"
               error={!!errors.password}
               helperText={errors.password?.message}
               sx={{ width: "80%", margin: "10px auto" }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={togglePasswordVisibility} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               loading={loading}

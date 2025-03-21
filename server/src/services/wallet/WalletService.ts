@@ -1,6 +1,6 @@
 import IWalletRepository from "src/repositories/wallet/interface/IWalletRepository";
 import { IWalletService } from "./interface/IWalletService";
-import { ITransaction, IWallet, WalletData } from "src/interfaces/IWallet";
+import { ITransaction, IWallet, TransactionData } from "src/interfaces/IWallet";
 import { AppError } from "../../utils/errors";
 
 class WalletService implements IWalletService {
@@ -13,24 +13,21 @@ class WalletService implements IWalletService {
   async accessOrCreateWallet(
     userId: string,
     userType: "Patient" | "Doctor"
-  ): Promise<IWallet> {
+  ): Promise<{ wallet: IWallet; transactions: ITransaction[] }> {
     try {
       // if the user already has a wallet return that
-      const wallet = await this.walletRepo.findByUserId(userId);
+      const wallet = await this.walletRepo.findWalletByUserId(userId);
 
       if (wallet) {
-        return wallet;
+        const transactions = await this.walletRepo.getTransactionsByWalletId(
+          wallet._id!.toString()
+        );
+        return { wallet, transactions };
       }
 
       // if user has no wallet create one
-      const walletData = {
-        user: userId,
-        userType: userType,
-      };
-
-      const newWallet = await this.walletRepo.create(walletData);
-
-      return newWallet;
+      const newWallet = await this.walletRepo.createWallet(userId, userType);
+      return { wallet: newWallet, transactions: [] };
     } catch (error) {
       throw new AppError(
         `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -39,23 +36,34 @@ class WalletService implements IWalletService {
     }
   }
 
-  async updateWallet(
-    walletId: string,
-    walletData: Partial<WalletData>
-  ): Promise<IWallet> {
-    const updatedWallet = await this.walletRepo.update(walletId, walletData);
-    return updatedWallet;
-  }
+  // async updateWallet(
+  //   walletId: string,
+  //   walletData: Partial<WalletData>
+  // ): Promise<IWallet> {
+  //   const updatedWallet = await this.walletRepo.update(walletId, walletData);
+  //   return updatedWallet;
+  // }
 
   async addTransaction(
     userId: string,
-    transactionData: ITransaction
-  ): Promise<IWallet> {
-    const updatedWallet = await this.walletRepo.addTransaction(
+    transactionData: TransactionData
+  ): Promise<ITransaction> {
+    const transaction = await this.walletRepo.addTransaction(
       userId,
       transactionData
     );
-    return updatedWallet;
+    return transaction;
+  }
+
+  async updateTransaction(
+    transactionId: string,
+    transactionData: TransactionData
+  ): Promise<ITransaction> {
+    const transaction = await this.walletRepo.addTransaction(
+      transactionId,
+      transactionData
+    );
+    return transaction;
   }
 }
 
