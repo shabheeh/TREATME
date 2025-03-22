@@ -513,6 +513,7 @@ class AppointmentService implements IAppointmentService {
     appointmentId: string;
   }) {
     try {
+      logger.info("called update status");
       const appointment =
         await this.appointmentRepo.getAppointmentById(appointmentId);
 
@@ -522,20 +523,20 @@ class AppointmentService implements IAppointmentService {
         await this.appointmentRepo.updateAppointment(appointmentId, {
           status: "completed",
         });
-      }
-      const deduction = appointment.fee * 0.1;
-      const transaction: TransactionData = {
-        amount: appointment.fee - deduction,
-        date: new Date(),
-        status: "success",
-        type: "credit",
-        description: "Consultation fee credited after platform deduction",
-      };
+        const deduction = appointment.fee * 0.1;
+        const transaction: TransactionData = {
+          amount: appointment.fee - deduction,
+          date: new Date(),
+          status: "success",
+          type: "credit",
+          description: "Consultation fee credited after platform deduction",
+        };
 
-      await this.walletService.addTransaction(
-        appointment.doctor._id!.toString(),
-        transaction
-      );
+        await this.walletService.addTransaction(
+          appointment.doctor._id!.toString(),
+          transaction
+        );
+      }
     } catch (error) {
       logger.error(`Error updating appointment status`, error);
       if (error instanceof AppError) {

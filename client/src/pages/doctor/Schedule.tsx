@@ -48,10 +48,13 @@ export default function ScheduleManagement() {
   useEffect(() => {
     if (!doctor) return;
     const fetchSchedule = async () => {
+      console.log("called")
       try {
         const scheduleResponse: ISchedule | null =
           await scheduleService.getSchedule(doctor._id);
-        if (scheduleResponse && scheduleResponse.availability) {
+        
+          console.log(scheduleResponse, "resopnse")
+          if (scheduleResponse && scheduleResponse.availability) {
           const scheduleWithDayjsDates = scheduleResponse.availability.map(
             (avail: IDaySchedule) => ({
               _id: avail._id,
@@ -64,6 +67,7 @@ export default function ScheduleManagement() {
             })
           );
           setSchedules(scheduleWithDayjsDates);
+          console.log(scheduleWithDayjsDates, "shcc")
         } else {
           setSchedules([]);
         }

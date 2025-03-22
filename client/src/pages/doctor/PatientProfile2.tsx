@@ -239,7 +239,7 @@ const PatientProfile = () => {
                 >
                   {patient.firstName} {patient.lastName}
                 </Typography>
-                <IconButton
+                {/* <IconButton
                   color="inherit"
                   size="small"
                   sx={{
@@ -248,7 +248,7 @@ const PatientProfile = () => {
                   }}
                 >
                   <EditIcon />
-                </IconButton>
+                </IconButton> */}
               </Box>
 
               <Typography variant="h6" sx={{ mb: 1 }}>

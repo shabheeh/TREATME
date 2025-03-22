@@ -23,7 +23,7 @@ export const startAppointmentNotifyJob = () => {
       for (const appointment of upcomingAppointments) {
         const timeLeft = dayjs(appointment.date).diff(now, "minute");
 
-        if (timeLeft === 5) {
+        if (timeLeft === 3) {
           const notificationForPatient: Partial<INotification> = {
             user: appointment.patient._id as Types.ObjectId,
             userType: "Patient",

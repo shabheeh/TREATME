@@ -28,6 +28,7 @@ import Messages from "../components/basics/messages/Messages";
 import Notification from "../components/basics/notification/Notification";
 import WalletPatient from "../components/basics/wallet/Wallet";
 import Security from "../components/basics/Security";
+import HelpAndSupportPage from "../pages/patient/HelpAndSupport";
 // import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
 // import { Appearance } from "@stripe/stripe-js";
 // const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
@@ -137,6 +138,7 @@ export const patientRoutes = [
     <Route path="consultations" element={<Consultations />} />
     <Route path="doctors" element={<Doctors />} />,
     <Route path="messages" element={<Messages />} />,
+    <Route path="help" element={<HelpAndSupportPage />} />,
     <Route path="notifications" element={<Notification />} />
     <Route path="doctors/:doctorId" element={<DoctorView />} />,
   </Route>,

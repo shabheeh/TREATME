@@ -11,6 +11,7 @@ import { IAppointmentPopulated } from "../../types/appointment/appointment.types
 import { RootState } from "../../redux/app/store";
 import { useSelector } from "react-redux";
 import Loading from "../../components/basics/Loading";
+import Completed from "../../components/basics/appointments/Completed";
 
 const Appointments = () => {
   const [value, setValue] = useState(0);
@@ -44,7 +45,9 @@ const Appointments = () => {
     (appointment) => appointment.status === "confirmed"
   );
   // const requested = appointments.filter(appointment => appointment.status === 'requested')
-  // const completed = appointments.filter(appointment => appointment.status === 'completed')
+  const completed = appointments.filter(
+    (appointment) => appointment.status === "completed"
+  );
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -63,7 +66,7 @@ const Appointments = () => {
     // },
     {
       title: "Completed",
-      component: <div>tab 3</div>,
+      component: <Completed appointments={completed} />,
     },
   ];
 

@@ -303,7 +303,6 @@ class ChatService implements IChatService {
         };
       }
 
-      console.log(this.appointmentService, "appssddsfsdafsdafsdf");
       const receiverId = receiver.user._id.toString();
       const appointment =
         await this.appointmentService.getAppointmentByPatientIdAndDoctorId(
@@ -321,7 +320,8 @@ class ChatService implements IChatService {
       const daysAfterLastAppointment = getDaysDifference(
         appointment.date.toString()
       );
-      if (daysAfterLastAppointment < 7) {
+
+      if (daysAfterLastAppointment > 7) {
         return {
           success: false,
           message:

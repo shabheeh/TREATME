@@ -10,12 +10,12 @@ import { RootState } from "../../../redux/app/store";
 
 interface CompletedProps {
   appointments: IAppointmentPopulated[] | [];
-  onReschedule: () => void;
+  // onReschedule: () => void;
 }
 
 const Completed: React.FC<CompletedProps> = ({
   appointments,
-  onReschedule,
+  // onReschedule,
 }) => {
   const doctor = useSelector((state: RootState) => state.user.doctor);
 

@@ -12,13 +12,14 @@ class ScheduleRepository implements IScheduleRepository {
 
   async findSchedule(doctorId: string): Promise<ISchedule | null> {
     try {
-      const date = new Date();
+      const now = new Date();
+      const startOfDay = new Date(now.setHours(0, 0, 0, 0));
 
       const schedule = await this.model.aggregate([
         {
           $match: {
             doctorId: new Types.ObjectId(doctorId),
-            "availability.date": { $gte: date },
+            "availability.date": { $gte: startOfDay },
           },
         },
         {
@@ -28,14 +29,14 @@ class ScheduleRepository implements IScheduleRepository {
               $filter: {
                 input: "$availability",
                 as: "av",
-                cond: { $gte: ["$$av.date", date] },
+                cond: { $gte: ["$$av.date", now] },
               },
             },
           },
         },
       ]);
 
-      return schedule[0];
+      return schedule[0] || null;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

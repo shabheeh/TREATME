@@ -164,7 +164,7 @@ const Doctors: React.FC = () => {
             color="text.primary"
             fontWeight="500"
           >
-            Your Patients
+            Our Doctors
           </Typography>
           <Typography
             variant="body2"
@@ -172,8 +172,8 @@ const Doctors: React.FC = () => {
             color="text.secondary"
             fontWeight="500"
           >
-            View and manage your patient records. Click on a patient to see more
-            details.
+            {" "}
+            Click on a Doctors to see more details.
           </Typography>
         </Box>
         <Grid container spacing={3} alignItems="center">

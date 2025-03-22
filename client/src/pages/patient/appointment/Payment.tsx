@@ -114,7 +114,7 @@ const Payment: React.FC = () => {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const wallet = await walletService.accessWallet();
+        const { wallet } = await walletService.accessWallet();
         if (wallet) {
           setWalletBalance(wallet.balance);
         }
@@ -128,13 +128,11 @@ const Payment: React.FC = () => {
   }, []);
 
   const handlePaymentClick = async () => {
-    setPaymentLoading(true);
     if (paymentMethod === "wallet") {
       handleWalletPayment();
     } else {
       handleStripePayment();
     }
-    setPaymentLoading(false);
   };
 
   const handleWalletPayment = async () => {
@@ -559,6 +557,7 @@ const Payment: React.FC = () => {
                   onClick={handlePaymentClick}
                   variant="contained"
                   sx={{ p: 2 }}
+                  loading={isPaymentLoading}
                 >
                   {isPaymentLoading ? "Processing..." : "Book Appointment"}
                 </Button>

@@ -233,7 +233,7 @@ class AppointmentRepository implements IAppointmentRepository {
         {
           $match: {
             doctor: new Types.ObjectId(doctorId),
-            status: "confirmed",
+            status: "completed",
           },
         },
 
