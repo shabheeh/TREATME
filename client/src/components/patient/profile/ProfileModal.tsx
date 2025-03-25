@@ -92,6 +92,11 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
     navigate("/account");
   };
 
+  const handleHelpAndSupportClick = () => {
+    navigate("/help");
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
@@ -136,7 +141,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
         <Box sx={{ px: 0, py: 2 }}>
           {/* Primary User Profile */}
           <ListItemButton
-            onClick={() => handleSwitchUser(patient)}
+            onClick={() => handleSwitchUser(patient!)}
             sx={{
               px: 4,
               py: 2,
@@ -316,6 +321,7 @@ const ProfileDialog: React.FC<ProfileDialogProps> = ({ open, onClose }) => {
               },
               transition: "background-color 0.2s",
             }}
+            onClick={handleHelpAndSupportClick}
           >
             <ListItemIcon sx={{ minWidth: "35px" }}>
               <MdHelpOutline className="h-6 w-6 text-gray-600" />

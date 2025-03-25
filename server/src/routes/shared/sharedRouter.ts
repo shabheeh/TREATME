@@ -50,6 +50,10 @@ import WalletController from "../../controllers/wallet/WalletController";
 import StripeService from "../../services/stripe/StripeService";
 import StripeController from "../../controllers/stripe/StripeController";
 import ScheduleService from "../../services/doctor/scheduleService.ts";
+import DashboardService from "../../services/dashboard/DashboardService";
+import DependentRepository from "../../repositories/patient/DependentRepository";
+import DashboardController from "../../controllers/dashboard/DashboardController";
+import { DependentModel } from "src/models/Dependent";
 
 const router = express.Router();
 
@@ -139,6 +143,17 @@ const reviewController = new ReviewController(reviewService);
 // stripe
 const stripeService = new StripeService(appointmentService, walletService);
 const stripeController = new StripeController(stripeService);
+
+const dependentRepository = new DependentRepository(DependentModel);
+
+// dashboard
+const dashboardService = new DashboardService(
+  appointmentRepository,
+  patientRepository,
+  dependentRepository,
+  doctorRepository
+);
+const dashboardController = new DashboardController(dashboardService);
 
 router.post("/auth/refresh-token", tokenController.handleRefreshToken);
 
@@ -342,6 +357,13 @@ router.patch(
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   walletController.updateTransaction
+);
+
+router.get(
+  "/dashboard",
+  authenticate,
+  authorize("admin"),
+  dashboardController.getDashboardData
 );
 
 export default router;

@@ -91,6 +91,28 @@ class DependentRepository implements IDependentRepository {
       );
     }
   }
+
+  getDependentAges(): Promise<{ age: number }[]> {
+    try {
+      const currentYear = new Date().getFullYear();
+      const dependentsAge = this.model.aggregate([
+        {
+          $addFields: {
+            age: { $subtract: [currentYear, { $year: "$dob" }] },
+          },
+        },
+        {
+          $project: { age: 1, _id: 0 },
+        },
+      ]);
+      return dependentsAge;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
 }
 
 export default DependentRepository;

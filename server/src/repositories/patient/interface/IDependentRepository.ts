@@ -9,6 +9,7 @@ interface IDependentRepository {
   ): Promise<IDependent>;
   getDependents(primaryUserId: string): Promise<IDependent[] | []>;
   deleteDependent(id: string): Promise<void>;
+  getDependentAges(): Promise<{ age: number }[]>;
 }
 
 export default IDependentRepository;

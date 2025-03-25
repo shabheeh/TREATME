@@ -27,8 +27,6 @@ const SignInFlow: React.FC = () => {
   };
   const goToSignIn = () => setStep("signin");
 
-  console.log(step, "step");
-
   return (
     <Box sx={{ bgcolor: "whitesmoke", minHeight: "100vh", width: "100%" }}>
       <Navbar />

@@ -281,6 +281,49 @@ class DoctorRepository implements IDoctorRepository {
       );
     }
   }
+
+  async getDoctorsCountBySpecialization(): Promise<{
+    specialization: string;
+    count: number;
+  }> {
+    try {
+      const result = this.model.aggregate([
+        {
+          $group: {
+            _id: "$specialization",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: "specializations",
+            localField: "_id",
+            foreignField: "specialization",
+            as: "specializationDetails",
+          },
+        },
+        {
+          $unwind: "$specializationDetails",
+        },
+        {
+          $project: {
+            _id: 0,
+            specialization: "$specializationDetails.name",
+            count: 1,
+          },
+        },
+        {
+          $sort: { count: -1 },
+        },
+      ]);
+      return result as unknown as { specialization: string; count: number };
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
 }
 
 export default DoctorRepository;

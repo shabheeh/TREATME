@@ -4,6 +4,7 @@ import IAppointment, {
 } from "../../interfaces/IAppointment";
 import IAppointmentRepository, {
   IPatientForDoctor,
+  MonthlyRevenue,
 } from "./interfaces/IAppointmentRepository";
 import { AppError } from "../../utils/errors";
 
@@ -147,6 +148,44 @@ class AppointmentRepository implements IAppointmentRepository {
     try {
       const appointments = await this.model
         .find({ status: "confirmed" })
+        .populate({
+          path: "specialization",
+          select: "name",
+        })
+        .populate({
+          path: "patient",
+          select: "firstName lastName profilePicture",
+        })
+        .populate({
+          path: "doctor",
+          select: "firstName lastName profilePicture",
+        })
+        .sort({ createdAt: 1 })
+        .lean();
+      return appointments as unknown as IAppointmentPopulated[];
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getTodaysAppointments(): Promise<IAppointmentPopulated[]> {
+    try {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      const appointments = await this.model
+        .find({
+          status: "confirmed",
+          date: {
+            $gte: startOfDay,
+            $lt: endOfDay,
+          },
+        })
         .populate({
           path: "specialization",
           select: "name",
@@ -370,6 +409,132 @@ class AppointmentRepository implements IAppointmentRepository {
       });
 
       return { patients, totalPatients };
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getMonthlyRevenue(): Promise<MonthlyRevenue> {
+    try {
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+
+      const result = await this.model.aggregate([
+        {
+          $match: {
+            status: "completed",
+            date: { $gte: twelveMonthsAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+            },
+            monthlyRevenue: { $sum: { $multiply: ["$fee", 0.1] } },
+          },
+        },
+        {
+          $project: {
+            month: {
+              $dateToString: {
+                format: "%b",
+                date: {
+                  $dateFromParts: {
+                    year: "$_id.year",
+                    month: "$_id.month",
+                    day: 1,
+                  },
+                },
+              },
+            },
+            monthlyRevenue: 1,
+            _id: 0,
+          },
+        },
+        {
+          $sort: { month: 1 },
+        },
+        {
+          $group: {
+            _id: null,
+            monthlyData: {
+              $push: { month: "$month", revenue: "$monthlyRevenue" },
+            },
+            totalRevenue: { $sum: "$monthlyRevenue" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            monthlyData: 1,
+            totalRevenue: 1,
+          },
+        },
+      ]);
+
+      const formattedData =
+        result.length > 0 ? result[0] : { monthlyData: [], totalRevenue: 0 };
+
+      return formattedData;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getWeeklyAppointments(): Promise<{ day: string; count: number }> {
+    try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+
+      const result = await this.model.aggregate([
+        {
+          $match: {
+            status: "completed",
+            date: { $gte: sevenDaysAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+              day: { $dayOfMonth: "$date" },
+              dayOfWeek: { $dayOfWeek: "$date" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            day: {
+              $dateToString: {
+                format: "%a",
+                date: {
+                  $dateFromParts: {
+                    year: "$_id.year",
+                    month: "$_id.month",
+                    day: "$_id.day",
+                  },
+                },
+              },
+            },
+            count: 1,
+            _id: 0,
+          },
+        },
+        {
+          $sort: { day: 1 },
+        },
+      ]);
+      return result as unknown as { day: string; count: number };
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

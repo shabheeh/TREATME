@@ -12,6 +12,7 @@ interface IAppointmentRepository {
   getAppointmentsByPatientId(patientId: string): Promise<IAppointment[]>;
   getAppointmentsByDoctorId(doctorId: string): Promise<IAppointment[]>;
   getAppointments(): Promise<IAppointmentPopulated[]>;
+  getTodaysAppointments(): Promise<IAppointmentPopulated[]>;
   getAppointmentByPaymentId(id: string): Promise<IAppointmentPopulated>;
   getAppointmentByPatientAndDoctorId(
     patientId: string,
@@ -23,6 +24,8 @@ interface IAppointmentRepository {
     limit: number,
     searchQuery: string
   ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }>;
+  getMonthlyRevenue(): Promise<MonthlyRevenue>;
+  getWeeklyAppointments(): Promise<{ day: string; count: number }>;
 }
 
 export default IAppointmentRepository;
@@ -39,3 +42,11 @@ export interface IPatientForDoctor {
   primaryPatientId?: string;
   lastVisit: Date;
 }
+
+export type MonthlyRevenue = {
+  monthlyData: {
+    month: string;
+    revenue: number;
+  }[];
+  totalRevenue: number;
+};

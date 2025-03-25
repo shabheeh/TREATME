@@ -4,22 +4,16 @@ import {
   Typography,
   Container,
   Paper,
-  TextField,
   Button,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  List,
-  ListItem,
-  ListItemText,
   Card,
   CardContent,
   Grid,
-  InputAdornment,
 } from "@mui/material";
 import {
   ExpandMore,
-  Search,
   MedicalServices,
   CalendarMonth,
   Videocam,
@@ -31,17 +25,13 @@ import {
   Chat,
   ArrowForward,
   LiveHelp,
-  School,
-  AutoStories,
 } from "@mui/icons-material";
 
-// FAQ items type
 interface FAQItem {
   question: string;
   answer: string;
 }
 
-// Section type
 interface SectionType {
   title: string;
   icon: React.ReactNode;
@@ -58,19 +48,14 @@ const HelpAndSupportPage: React.FC = () => {
       icon: <MedicalServices color="primary" />,
       faqs: [
         {
-          question: "How do I create an account?",
-          answer:
-            'To create an account, click on the "Sign Up" button on our homepage. Fill in your personal details, including your name, email address, and a strong password. You\'ll receive a verification email to confirm your account. Follow the instructions in the email to complete your registration.',
-        },
-        {
           question: "Is my medical information secure?",
           answer:
-            "Yes, we take your privacy and security very seriously. All your medical information is encrypted and stored securely following HIPAA compliance guidelines. We use industry-standard security protocols to ensure your data remains confidential.",
+            "Yes, we take your privacy and security very seriously. All your medical information is encrypted and stored securely following DISHA compliance guidelines. We use industry-standard security protocols to ensure your data remains confidential.",
         },
         {
           question: "How do I complete my medical profile?",
           answer:
-            'After logging in, navigate to "My Profile" in the menu and select "Medical Information." Fill in your medical history, current medications, allergies, and other relevant health information. The more complete your profile is, the better our doctors can assist you.',
+            'After logging in, navigate to "Health Profile". Fill in your medical history, current medications, allergies, and other relevant health information. The more complete your profile is, the better our doctors can assist you.',
         },
       ],
     },
@@ -81,12 +66,12 @@ const HelpAndSupportPage: React.FC = () => {
         {
           question: "How do I schedule an appointment?",
           answer:
-            'Go to the "Book Appointment" section, select your preferred medical specialty, choose an available doctor, and pick a convenient date and time slot. Review your selection and confirm the appointment. You\'ll receive an email confirmation with the appointment details.',
+            'Go to the "Visit Now" section, select your preferred medical specialty, choose an available doctor, and pick a convenient date and time slot. Review your selection and confirm the appointment. You\'ll receive an email confirmation with the appointment details.',
         },
         {
           question: "Can I reschedule or cancel my appointment?",
           answer:
-            'Yes, you can reschedule or cancel appointments up to 6 hours before the scheduled time without any penalty. Go to "My Appointments," find the appointment you want to change, and click on "Reschedule" or "Cancel."',
+            'Yes, you can reschedule or cancel appointments up to 2 hours before the scheduled time without any penalty. Go to "Appointments," find the appointment you want to change, and click on "Reschedule" or "Cancel."',
         },
         {
           question: "What if I miss my appointment?",
@@ -102,13 +87,13 @@ const HelpAndSupportPage: React.FC = () => {
         {
           question: "How do I join a video consultation?",
           answer:
-            'Five minutes before your scheduled appointment, log in to your account and go to "My Appointments." You\'ll see a "Join Now" button for your upcoming appointment. Click it to enter the virtual waiting room. Make sure your camera and microphone are working properly.',
+            'Five minutes before your scheduled appointment, log in to your account and go to "Notifications." You\'ll see a "Join Now" button for your upcoming appointment. Click it to enter the virtual waiting room. Make sure your camera and microphone are working properly.',
         },
         {
           question:
             "What should I do if I have technical issues during my consultation?",
           answer:
-            "If you experience technical difficulties, first try refreshing your browser or restarting the app. Check your internet connection and device settings. If issues persist, you can contact our technical support team via the chat function or call our helpline for immediate assistance.",
+            "If you experience technical difficulties, first try refreshing your browser or restarting the app. Check your internet connection and device settings.",
         },
         {
           question: "What equipment do I need for a video consultation?",
@@ -118,23 +103,18 @@ const HelpAndSupportPage: React.FC = () => {
       ],
     },
     {
-      title: "Billing & Insurance",
+      title: "Billing ",
       icon: <CreditCard color="primary" />,
       faqs: [
         {
           question: "What payment methods do you accept?",
           answer:
-            "We accept all major credit and debit cards (Visa, MasterCard, American Express, Discover), PayPal, and some FSA/HSA cards. Payment is processed securely through our encrypted payment system.",
-        },
-        {
-          question: "Does insurance cover telemedicine consultations?",
-          answer:
-            "Many insurance plans now cover telemedicine consultations. We work with several major insurance providers. You can verify your coverage by entering your insurance information in your profile or contacting our billing department for assistance.",
+            "We accept all major credit and debit cards (Visa, MasterCard, American Express, Discover). Payment is processed securely through our encrypted payment system.",
         },
         {
           question: "How do I get a receipt for my consultation?",
           answer:
-            'After each paid consultation, an electronic receipt will be automatically sent to your registered email address. You can also download receipts and invoices from the "Billing History" section in your account.',
+            "After each paid consultation, an electronic receipt will be automatically sent to your registered email address.",
         },
       ],
     },
@@ -145,17 +125,12 @@ const HelpAndSupportPage: React.FC = () => {
         {
           question: "How is my personal information protected?",
           answer:
-            "We follow strict HIPAA guidelines and use advanced encryption for all data transmission and storage. Our platform includes multi-factor authentication, regular security audits, and we never share your information with third parties without your explicit consent.",
+            "We follow strict DISHA guidelines and use advanced encryption for all data transmission and storage. Our platform includes multi-factor authentication, regular security audits, and we never share your information with third parties without your explicit consent.",
         },
         {
           question: "Can family members access my medical records?",
           answer:
-            "Your medical records are private and accessible only to you and your healthcare providers. You can grant access to family members by adding them as authorized individuals in your account settings, which you can modify or revoke at any time.",
-        },
-        {
-          question: "What happens to my data if I close my account?",
-          answer:
-            "If you close your account, we retain your medical records for the period required by law (typically 7-10 years depending on your location). After this period, your data is securely deleted from our systems. You can request a copy of your medical records before closing your account.",
+            "Your medical records are private and accessible only to you and your healthcare providers.",
         },
       ],
     },
@@ -226,12 +201,10 @@ const HelpAndSupportPage: React.FC = () => {
               mb: 4,
             }}
           >
-            Find answers to common questions about using our telemedicine
-            platform
+            Find answers to common questions about using our platform
           </Typography>
 
-          {/* Modern Search Bar */}
-          <Paper
+          {/* <Paper
             elevation={2}
             sx={{
               p: 1,
@@ -273,7 +246,7 @@ const HelpAndSupportPage: React.FC = () => {
             >
               Search
             </Button>
-          </Paper>
+          </Paper> */}
         </Box>
 
         <Typography
@@ -429,7 +402,7 @@ const HelpAndSupportPage: React.FC = () => {
           </Paper>
         )}
 
-        {/* FAQ Sections - Only show when no section is selected and there is a search query */}
+        {/* FAQ Sections */}
         {!activeSection && searchQuery && (
           <>
             <Typography
@@ -573,17 +546,17 @@ const HelpAndSupportPage: React.FC = () => {
                   gap: 3,
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                {/* <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Chat fontSize="small" color="primary" sx={{ mr: 1 }} />
                   <Typography variant="body2">Live Chat</Typography>
-                </Box>
+                </Box> */}
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Email fontSize="small" color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="body2">support@Treatme.com</Typography>
+                  <Typography variant="body2">support@treatme.com</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Phone fontSize="small" color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="body2">1-800-TELE-MED</Typography>
+                  <Typography variant="body2">1-800-0000-000</Typography>
                 </Box>
               </Box>
             </Grid>

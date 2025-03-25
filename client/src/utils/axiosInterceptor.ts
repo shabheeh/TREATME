@@ -54,7 +54,6 @@ const createAxiosInstance = (role?: UserRole) => {
 
   instance.interceptors.request.use(
     async (config) => {
-      // const token = tokenManager.getAccessToken();
       const token = store.getState().auth.token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -63,17 +62,6 @@ const createAxiosInstance = (role?: UserRole) => {
     },
     (error) => Promise.reject(error)
   );
-
-  // instance.interceptors.request.use(
-  //   async (config) => {
-  //     const token = tokenManager.getAccessToken();
-  //     if (token) {
-  //       config.headers.Authorization = `Bearer ${token}`;
-  //     }
-  //     return config;
-  //   },
-  //   (error) => Promise.reject(error)
-  // );
 
   instance.interceptors.response.use(
     (response) => response,

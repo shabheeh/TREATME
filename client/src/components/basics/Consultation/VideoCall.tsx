@@ -155,9 +155,7 @@ const VideoCall = () => {
       );
       const timePassed = endTime.diff(now, "minutes");
 
-      console.log(timePassed);
-
-      if (timePassed < 27 && timePassed > 0) {
+      if (timePassed < 25 && timePassed > 0) {
         setReviewModalOpen(true);
       } else {
         navigate(-1);

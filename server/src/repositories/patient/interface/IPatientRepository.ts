@@ -14,6 +14,7 @@ interface IPatientRepository {
   ): Promise<IPatient | null>;
   getPatients(filter: IPatientsFilter): Promise<IPatientsFilterResult>;
   getPatientWithPassword(userId: string): Promise<IPatient>;
+  getPatientsAges(): Promise<{ age: number }[]>;
 }
 
 export default IPatientRepository;

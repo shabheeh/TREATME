@@ -332,7 +332,7 @@ const Doctors: React.FC = () => {
                 onPageChange={handlePageChange}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleRowsCount}
-                rowsPerPageOptions={[5, 10, 25, 50]}
+                rowsPerPageOptions={[6, 9, 15]}
               />
             </Box>
           )}

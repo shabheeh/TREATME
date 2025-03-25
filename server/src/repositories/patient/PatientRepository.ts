@@ -105,7 +105,7 @@ class PatientRepository implements IPatientRepository {
       ];
 
       const [patients, total] = await Promise.all([
-        this.model.find(query).skip(skip).limit(limit),
+        this.model.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
         this.model.countDocuments(query),
       ]);
 
@@ -133,6 +133,28 @@ class PatientRepository implements IPatientRepository {
       }
 
       return patient;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  getPatientsAges(): Promise<{ age: number }[]> {
+    try {
+      const currentYear = new Date().getFullYear();
+      const patientsAge = this.model.aggregate([
+        {
+          $addFields: {
+            age: { $subtract: [currentYear, { $year: "$dob" }] },
+          },
+        },
+        {
+          $project: { age: 1, _id: 0 },
+        },
+      ]);
+      return patientsAge;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
