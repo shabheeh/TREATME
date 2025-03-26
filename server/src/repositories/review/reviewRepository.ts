@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import IReviewRepository from "./interface/IReviewRepository";
 import IReview from "../../interfaces/IReview";
 import { AppError } from "../../utils/errors";
@@ -41,6 +41,27 @@ class ReviewRepository implements IReviewRepository {
         .lean();
 
       return reviews;
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getAverageRatingByDoctorId(doctorId: string): Promise<number> {
+    try {
+      const result = await this.model.aggregate([
+        { $match: { doctor: new Types.ObjectId(doctorId) } },
+        {
+          $group: {
+            _id: "$doctor",
+            averageRating: { $avg: "$rating" },
+          },
+        },
+      ]);
+
+      return result.length > 0 ? result[0].averageRating : 0;
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

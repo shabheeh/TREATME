@@ -19,7 +19,7 @@ import {
 import { INotification } from "../../../types/notification/notification.types";
 import notificationService from "../../../services/notification/notificationService";
 import { toast } from "sonner";
-import Loading from "../Loading";
+import Loading from "../ui/Loading";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import { setUnreadCount } from "../../../redux/features/notification/notificationSlice";

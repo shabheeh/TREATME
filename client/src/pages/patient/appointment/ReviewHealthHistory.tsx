@@ -1,6 +1,6 @@
 import { Box, Typography, Button, IconButton, Divider } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
-import ProgressBar from "../../../components/basics/PrgressBar";
+import ProgressBar from "../../../components/basics/ui/PrgressBar";
 import HealthHistory from "../../../components/patient/healthHistory/HealthHistory";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";

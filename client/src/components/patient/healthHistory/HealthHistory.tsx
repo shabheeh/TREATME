@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { IHealthHistory } from "../../../types/patient/health.types";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
 import { toast } from "sonner";
-import Loading from "../../basics/Loading";
+import Loading from "../../basics/ui/Loading";
 import Allergies from "./Allergies";
 import HealthConditions from "./HealthConditions";
 import Surgeries from "./Surgeries";

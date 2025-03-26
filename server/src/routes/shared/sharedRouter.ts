@@ -53,7 +53,7 @@ import ScheduleService from "../../services/doctor/scheduleService.ts";
 import DashboardService from "../../services/dashboard/DashboardService";
 import DependentRepository from "../../repositories/patient/DependentRepository";
 import DashboardController from "../../controllers/dashboard/DashboardController";
-import { DependentModel } from "src/models/Dependent";
+import { DependentModel } from "../../models/Dependent";
 
 const router = express.Router();
 
@@ -151,7 +151,8 @@ const dashboardService = new DashboardService(
   appointmentRepository,
   patientRepository,
   dependentRepository,
-  doctorRepository
+  doctorRepository,
+  reviewRepository
 );
 const dashboardController = new DashboardController(dashboardService);
 
@@ -363,7 +364,14 @@ router.get(
   "/dashboard",
   authenticate,
   authorize("admin"),
-  dashboardController.getDashboardData
+  dashboardController.getAdminDashboardData
+);
+
+router.get(
+  "/dashboard/doctor",
+  authenticate,
+  authorize("doctor"),
+  dashboardController.getDoctorDashboardData
 );
 
 export default router;

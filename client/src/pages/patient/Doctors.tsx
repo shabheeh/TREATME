@@ -30,7 +30,7 @@ import {
   getDoctorsQuery,
   getDoctorsResult,
 } from "../../types/doctor/doctor.types";
-import Loading from "../../components/basics/Loading";
+import Loading from "../../components/basics/ui/Loading";
 
 const Doctors: React.FC = () => {
   const [data, setData] = useState<getDoctorsResult | null>(null);

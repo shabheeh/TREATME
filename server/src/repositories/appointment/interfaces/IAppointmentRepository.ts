@@ -25,7 +25,10 @@ interface IAppointmentRepository {
     searchQuery: string
   ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }>;
   getMonthlyRevenue(): Promise<MonthlyRevenue>;
-  getWeeklyAppointments(): Promise<{ day: string; count: number }>;
+  getWeeklyAppointments(): Promise<{ day: string; count: number }[]>;
+  getTodaysAppointmentByDoctor(
+    doctorId: string
+  ): Promise<IAppointmentPopulated[]>;
 }
 
 export default IAppointmentRepository;

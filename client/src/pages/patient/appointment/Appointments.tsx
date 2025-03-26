@@ -10,7 +10,8 @@ import appointmentService from "../../../services/appointment/appointmentService
 import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
 import { RootState } from "../../../redux/app/store";
 import { useSelector } from "react-redux";
-import Loading from "../../../components/basics/Loading";
+import Loading from "../../../components/basics/ui/Loading";
+import dayjs from "dayjs";
 // import Completed from "../../../components/basics/appointments/Completed";
 
 const Appointments = () => {
@@ -43,9 +44,12 @@ const Appointments = () => {
     fetchAppointments();
   }, [currnetPatient]);
 
-  const upcoming = appointments.filter(
-    (appointment) => appointment.status === "confirmed"
-  );
+  const now = dayjs()
+
+  const upcoming = appointments.filter((appointment) => {
+    const appointmentTime = dayjs(appointment.date);
+    return appointment.status === "confirmed" && appointmentTime.isAfter(now);
+  });
   // const requested = appointments.filter(appointment => appointment.status === 'requested')
   const completed = appointments.filter(
     (appointment) => appointment.status === "completed"

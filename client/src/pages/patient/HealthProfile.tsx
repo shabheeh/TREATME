@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card } from "@mui/material";
-import { CustomTabs, TabPanel } from "../../components/basics/Tabs";
+import { CustomTabs, TabPanel } from "../../components/basics/ui/Tabs";
 import HealthHistory from "../../components/patient/healthHistory/HealthHistory";
 import Lifestyle from "../../components/patient/lifestyle/Lifestyle";
 import FamilyHistory from "../../components/patient/familyHistory/FamilyHistory";

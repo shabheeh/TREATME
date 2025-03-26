@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon, Close } from "@mui/icons-material";
-import ProgressBar from "../../../components/basics/PrgressBar";
+import ProgressBar from "../../../components/basics/ui/PrgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { useLocation, useNavigate } from "react-router-dom";

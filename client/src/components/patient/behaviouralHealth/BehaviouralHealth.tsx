@@ -19,7 +19,7 @@ import { RootState } from "../../../redux/app/store";
 import { IBehaviouralHealth } from "../../../types/patient/health.types";
 import { toast } from "sonner";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
-import Loading from "../../basics/Loading";
+import Loading from "../../basics/ui/Loading";
 
 const MENTAL_HEALTH_CONDITIONS = [
   "Depression",

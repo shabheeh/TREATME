@@ -489,7 +489,7 @@ class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  async getWeeklyAppointments(): Promise<{ day: string; count: number }> {
+  async getWeeklyAppointments(): Promise<{ day: string; count: number }[]> {
     try {
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
@@ -504,37 +504,62 @@ class AppointmentRepository implements IAppointmentRepository {
         {
           $group: {
             _id: {
-              year: { $year: "$date" },
-              month: { $month: "$date" },
-              day: { $dayOfMonth: "$date" },
               dayOfWeek: { $dayOfWeek: "$date" },
             },
             count: { $sum: 1 },
           },
         },
         {
-          $project: {
-            day: {
-              $dateToString: {
-                format: "%a",
-                date: {
-                  $dateFromParts: {
-                    year: "$_id.year",
-                    month: "$_id.month",
-                    day: "$_id.day",
-                  },
-                },
-              },
-            },
-            count: 1,
-            _id: 0,
-          },
-        },
-        {
-          $sort: { day: 1 },
+          $sort: { "_id.dayOfWeek": 1 },
         },
       ]);
-      return result as unknown as { day: string; count: number };
+
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+      return result.map(({ _id, count }) => ({
+        day: dayNames[_id.dayOfWeek - 1],
+        count,
+      }));
+    } catch (error) {
+      throw new AppError(
+        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
+
+  async getTodaysAppointmentByDoctor(
+    doctorId: string
+  ): Promise<IAppointmentPopulated[]> {
+    try {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      const appointments = await this.model
+        .find({
+          doctor: new Types.ObjectId(doctorId),
+          status: "confirmed",
+          date: {
+            $gte: startOfDay,
+            $lt: endOfDay,
+          },
+        })
+        .populate({
+          path: "specialization",
+          select: "name",
+        })
+        .populate({
+          path: "patient",
+          select: "firstName lastName profilePicture",
+        })
+        .populate({
+          path: "doctor",
+          select: "firstName lastName profilePicture",
+        })
+        .lean();
+      return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

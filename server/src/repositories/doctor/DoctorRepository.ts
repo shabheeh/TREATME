@@ -282,10 +282,12 @@ class DoctorRepository implements IDoctorRepository {
     }
   }
 
-  async getDoctorsCountBySpecialization(): Promise<{
-    specialization: string;
-    count: number;
-  }> {
+  async getDoctorsCountBySpecialization(): Promise<
+    {
+      specialization: string;
+      count: number;
+    }[]
+  > {
     try {
       const result = this.model.aggregate([
         {
@@ -298,7 +300,7 @@ class DoctorRepository implements IDoctorRepository {
           $lookup: {
             from: "specializations",
             localField: "_id",
-            foreignField: "specialization",
+            foreignField: "_id",
             as: "specializationDetails",
           },
         },
@@ -316,7 +318,7 @@ class DoctorRepository implements IDoctorRepository {
           $sort: { count: -1 },
         },
       ]);
-      return result as unknown as { specialization: string; count: number };
+      return result as unknown as { specialization: string; count: number }[];
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,

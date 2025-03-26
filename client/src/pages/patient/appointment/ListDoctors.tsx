@@ -14,7 +14,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { ArrowBack, Close } from "@mui/icons-material";
-import ProgressBar from "../../../components/basics/PrgressBar";
+import ProgressBar from "../../../components/basics/ui/PrgressBar";
 import { useEffect, useState } from "react";
 import doctorService from "../../../services/doctor/doctorService";
 import {
@@ -22,7 +22,7 @@ import {
   IDoctorWithSchedule,
 } from "../../../types/doctor/doctor.types";
 import { toast } from "sonner";
-import Loading from "../../../components/basics/Loading";
+import Loading from "../../../components/basics/ui/Loading";
 import { useNavigate } from "react-router-dom";
 import ConfirmActionModal from "../../../components/basics/ConfirmActionModal";
 import { useDispatch, useSelector } from "react-redux";

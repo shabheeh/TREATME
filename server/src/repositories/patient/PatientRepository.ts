@@ -147,7 +147,7 @@ class PatientRepository implements IPatientRepository {
       const patientsAge = this.model.aggregate([
         {
           $addFields: {
-            age: { $subtract: [currentYear, { $year: "$dob" }] },
+            age: { $subtract: [currentYear, { $year: "$dateOfBirth" }] },
           },
         },
         {

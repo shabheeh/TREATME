@@ -1,51 +1,57 @@
-import logger from "src/configs/logger";
+import logger from "../../configs/logger";
 import IAppointmentRepository from "src/repositories/appointment/interfaces/IAppointmentRepository";
 import IDoctorRepository from "src/repositories/doctor/interfaces/IDoctorRepository";
 import IDependentRepository from "src/repositories/patient/interface/IDependentRepository";
 import IPatientRepository from "src/repositories/patient/interface/IPatientRepository";
-import { AppError } from "src/utils/errors";
+import { AppError } from "../../utils/errors";
 import IDashboardService, {
-  DashboardData,
+  AdminDashboardData,
+  DoctorDashboardData,
 } from "./interface/IDashboardService";
+import IReviewRepository from "src/repositories/review/interface/IReviewRepository";
 
 class DashboardService implements IDashboardService {
   private appointmentRepo: IAppointmentRepository;
   private patientRepo: IPatientRepository;
   private dependentRepo: IDependentRepository;
   private doctorRepo: IDoctorRepository;
+  private reviewRepo: IReviewRepository;
 
   constructor(
     appointmentRepo: IAppointmentRepository,
     patientRepo: IPatientRepository,
     dependentRepo: IDependentRepository,
-    doctorRepo: IDoctorRepository
+    doctorRepo: IDoctorRepository,
+    reviewRepo: IReviewRepository
   ) {
     this.appointmentRepo = appointmentRepo;
     this.patientRepo = patientRepo;
     this.dependentRepo = dependentRepo;
     this.doctorRepo = doctorRepo;
+    this.reviewRepo = reviewRepo;
   }
 
-  async getDashboardStats(): Promise<DashboardData> {
+  async getAdminDashboardStats(): Promise<AdminDashboardData> {
     try {
-      const { monthlyData, totalRevenue } =
-        await this.appointmentRepo.getMonthlyRevenue();
-      const { patients, total: totalPatients } =
-        await this.patientRepo.getPatients({
-          limit: 5,
-          page: 1,
-          search: "",
-        });
-      const { doctors, total: totalDoctors } = await this.doctorRepo.getDoctors(
-        { limit: 5 }
-      );
-      const todaysAppointments =
-        await this.appointmentRepo.getTodaysAppointments();
-      const weeklyAppointments =
-        await this.appointmentRepo.getWeeklyAppointments();
-
-      const patientsAge = await this.patientRepo.getPatientsAges();
-      const dependentsAge = await this.dependentRepo.getDependentAges();
+      const [
+        { monthlyData: incompleteMonthlyData, totalRevenue },
+        { patients, total: totalPatients },
+        { doctors, total: totalDoctors },
+        todaysAppointments,
+        weeklyAppointments,
+        patientsAge,
+        dependentsAge,
+        specializationDoctorCount,
+      ] = await Promise.all([
+        this.appointmentRepo.getMonthlyRevenue(),
+        this.patientRepo.getPatients({ limit: 5, page: 1, search: "" }),
+        this.doctorRepo.getDoctors({ limit: 5 }),
+        this.appointmentRepo.getTodaysAppointments(),
+        this.appointmentRepo.getWeeklyAppointments(),
+        this.patientRepo.getPatientsAges(),
+        this.dependentRepo.getDependentAges(),
+        this.doctorRepo.getDoctorsCountBySpecialization(),
+      ]);
 
       const combinedAges = [...patientsAge, ...dependentsAge];
 
@@ -62,8 +68,8 @@ class DashboardService implements IDashboardService {
         count: combinedAges.filter(({ age }) => age >= min && age <= max)
           .length,
       }));
-      const specializationDoctorCount =
-        await this.doctorRepo.getDoctorsCountBySpecialization();
+
+      const monthlyData = this.fillMissingMonths(incompleteMonthlyData);
 
       return {
         monthlyData,
@@ -78,7 +84,7 @@ class DashboardService implements IDashboardService {
         specializationDoctorCount,
       };
     } catch (error) {
-      logger.error("Error creating dependent", error);
+      logger.error("Error fetching dashboard data for admin", error);
       if (error instanceof AppError) {
         throw error;
       }
@@ -89,18 +95,48 @@ class DashboardService implements IDashboardService {
     }
   }
 
-  // private fillMissingMonths(data: { month: string; revenue: number }[]) {
-  //   const months = Array.from({ length: 12 }, (_, i) => {
-  //     const date = new Date();
-  //     date.setMonth(date.getMonth() - (11 - i));
-  //     return date.toISOString().slice(0, 7);
-  //   });
+  private fillMissingMonths(data: { month: string; revenue: number }[]) {
+    const months = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - (11 - i));
+      return date.toLocaleString("en-US", { month: "short" });
+    });
 
-  //   return months.map((month) => ({
-  //     month,
-  //     revenue: data.find((d) => d.month === month)?.revenue || 0,
-  //   }));
-  // }
+    return months.map((month) => ({
+      month,
+      revenue: data.find((d) => d.month === month)?.revenue || 0,
+    }));
+  }
+
+  async getDoctorDashboardStats(
+    doctorId: string
+  ): Promise<DoctorDashboardData> {
+    try {
+      const [todaysAppointments, averageRating, { patients, totalPatients }] =
+        await Promise.all([
+          this.appointmentRepo.getTodaysAppointmentByDoctor(doctorId),
+          this.reviewRepo.getAverageRatingByDoctorId(doctorId),
+          this.appointmentRepo.getPatientsByDoctor(doctorId, 1, 5, ""),
+        ]);
+      const totalTodaysAppointment = todaysAppointments.length;
+      return {
+        todaysAppointments,
+        averageRating,
+        patients,
+        totalPatients,
+        totalTodaysAppointment,
+      };
+    } catch (error) {
+      logger.error("Error fetching dashboard data for doctor", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError(
+        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        500
+      );
+    }
+  }
 }
 
 export default DashboardService;

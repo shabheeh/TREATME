@@ -1,8 +1,8 @@
 import { IAppointmentPopulated } from "../appointment/appointment.types";
 import { IDoctor } from "../doctor/doctor.types";
-import { IPatient } from "../patient/patient.types";
+import { IPatient, IPatientForDoctor } from "../patient/patient.types";
 
-export type DashboardData = {
+export type AdminDashboardData = {
   monthlyData: {
     month: string;
     revenue: number;
@@ -16,7 +16,7 @@ export type DashboardData = {
   weeklyAppointments: {
     day: string;
     count: number;
-  };
+  }[];
   ageGroupCounts: {
     ageGroup: string;
     count: number;
@@ -24,5 +24,13 @@ export type DashboardData = {
   specializationDoctorCount: {
     specialization: string;
     count: number;
-  };
+  }[];
+};
+
+export type DoctorDashboardData = {
+  todaysAppointments: IAppointmentPopulated[];
+  averageRating: number;
+  totalTodaysAppointment: number;
+  patients: IPatientForDoctor[];
+  totalPatients: number;
 };

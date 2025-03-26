@@ -4,7 +4,7 @@ import SignIn from "../components/doctor/SignIn";
 import AntiProtectedRoute from "./AntiProtectedRoute";
 import ProtectedRoute from "./ProtectedRoute";
 import LayoutDoctor from "../Layouts/doctor/LayoutDoctor";
-import { Dashboard } from "../pages/doctor/Dashboard";
+import Dashboard from "../pages/doctor/Dashboard";
 import RegisterForm from "../components/doctor/RegisterForm";
 import Schedule from "../pages/doctor/Schedule";
 import Appointments from "../pages/doctor/Appointments";

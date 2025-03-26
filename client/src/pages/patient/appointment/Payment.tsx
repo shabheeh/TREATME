@@ -22,7 +22,7 @@ import {
   ArrowBack as ArrowBackIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import ProgressBar from "../../../components/basics/PrgressBar";
+import ProgressBar from "../../../components/basics/ui/PrgressBar";
 import { useNavigate } from "react-router-dom";
 // import appointmentService from "../../../services/appointment/appointmentService";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -43,6 +43,16 @@ import {
   Cell,
   ResponsiveContainer,
 } from "recharts";
+import dashboardService from "../../services/dashboard/DashboardService";
+import { IPatient } from "../../types/patient/patient.types";
+import { IDoctor } from "../../types/doctor/doctor.types";
+import { IAppointmentPopulated } from "../../types/appointment/appointment.types";
+import { toast } from "sonner";
+import Loading from "../../components/basics/ui/Loading";
+import { formatTime } from "../../utils/dateUtils";
+import { calculateAge } from "../../helpers/ageCalculator";
+import { StatCard } from "../../components/basics/ui/StatCard";
+import dayjs from "dayjs";
 
 const COLORS = [
   "#0088FE",
@@ -53,131 +63,6 @@ const COLORS = [
   "#14b8a6",
   "#6366f1",
   "#a855f7",
-];
-interface StatCardProps {
-  icon: React.ElementType;
-  title: string;
-  value: string;
-  description: string;
-  color: string;
-}
-const revenueData = [
-  { name: "Jan", revenue: 12500 },
-  { name: "Feb", revenue: 15000 },
-  { name: "Mar", revenue: 18000 },
-  { name: "Apr", revenue: 16500 },
-  { name: "May", revenue: 19200 },
-  { name: "Jun", revenue: 22000 },
-  { name: "Jul", revenue: 23500 },
-  { name: "Aug", revenue: 24800 },
-  { name: "Sep", revenue: 25300 },
-  { name: "Oct", revenue: 27000 },
-  { name: "Nov", revenue: 26500 },
-  { name: "Dec", revenue: 28000 },
-];
-
-const appointmentsData = [
-  { name: "Mon", appointments: 18 },
-  { name: "Tue", appointments: 22 },
-  { name: "Wed", appointments: 28 },
-  { name: "Thu", appointments: 25 },
-  { name: "Fri", appointments: 20 },
-  { name: "Sat", appointments: 12 },
-  { name: "Sun", appointments: 5 },
-];
-
-const patientDemographicsData = [
-  { name: "0-18", value: 250 },
-  { name: "19-35", value: 480 },
-  { name: "36-50", value: 520 },
-  { name: "51-65", value: 380 },
-  { name: "65+", value: 220 },
-];
-
-const specialtyDistributionData = [
-  { name: "Cardiology", value: 8 },
-  { name: "Pediatrics", value: 6 },
-  { name: "Neurology", value: 5 },
-  { name: "Orthopedics", value: 4 },
-  { name: "Dermatology", value: 3 },
-  { name: "Oncology", value: 3 },
-  { name: "Other", value: 3 },
-];
-
-const todayAppointments = [
-  {
-    id: 1,
-    patientName: "John Smith",
-    time: "09:00 AM",
-    doctor: "Dr. Sarah Johnson",
-    type: "Checkup",
-  },
-  {
-    id: 2,
-    patientName: "Emily Davis",
-    time: "10:15 AM",
-    doctor: "Dr. Michael Chen",
-    type: "Consultation",
-  },
-  {
-    id: 3,
-    patientName: "Robert Wilson",
-    time: "11:30 AM",
-    doctor: "Dr. Sarah Johnson",
-    type: "Follow-up",
-  },
-  {
-    id: 4,
-    patientName: "Maria Garcia",
-    time: "01:45 PM",
-    doctor: "Dr. James Williams",
-    type: "Procedure",
-  },
-  {
-    id: 5,
-    patientName: "William Brown",
-    time: "03:00 PM",
-    doctor: "Dr. Michael Chen",
-    type: "Consultation",
-  },
-];
-
-const activeDoctors = [
-  {
-    id: 1,
-    name: "Dr. Sarah Johnson",
-    specialty: "Cardiology",
-    patients: 48,
-    rating: 4.9,
-  },
-  {
-    id: 2,
-    name: "Dr. Michael Chen",
-    specialty: "Neurology",
-    patients: 36,
-    rating: 4.8,
-  },
-  {
-    id: 3,
-    name: "Dr. James Williams",
-    specialty: "Orthopedics",
-    patients: 42,
-    rating: 4.7,
-  },
-  {
-    id: 4,
-    name: "Dr. Emily Rodriguez",
-    specialty: "Pediatrics",
-    patients: 54,
-    rating: 4.9,
-  },
-  {
-    id: 5,
-    name: "Dr. David Kim",
-    specialty: "Dermatology",
-    patients: 30,
-    rating: 4.6,
-  },
 ];
 
 const TabsContainer = styled(Box)(({ theme }) => ({
@@ -204,42 +89,6 @@ const StyledTabs = styled(Tabs)(() => ({
     borderTopRightRadius: 3,
   },
 }));
-
-const StatCard: React.FC<StatCardProps> = ({
-  icon: Icon,
-  title,
-  value,
-  description,
-  color,
-}) => {
-  return (
-    <Card>
-      <CardContent>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={1}
-        >
-          <Typography variant="subtitle2" color="textSecondary">
-            {title}
-          </Typography>
-          <Icon style={{ color }} />
-        </Box>
-        <Typography
-          variant="h5"
-          component="div"
-          sx={{ fontWeight: 600, mb: 0.5 }}
-        >
-          {value}
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
-          {description}
-        </Typography>
-      </CardContent>
-    </Card>
-  );
-};
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -271,50 +120,150 @@ const Dashboard: React.FC = () => {
     setTabValue(newValue);
   };
 
-  const getPercentage = (value: number, data: Array<{ value: number }>) => {
-    const total = data.reduce((acc, item) => acc + item.value, 0);
+  const [totalRevenue, setTotalRevenue] = useState<number | null>(null);
+  const [monthlyData, setMonthlyData] = useState<
+    | {
+        month: string;
+        revenue: number;
+      }[]
+    | null
+  >(null);
+  const [patients, setPatients] = useState<IPatient[]>([]);
+  const [totalPatients, setTotalPatients] = useState<number | null>(null);
+  const [doctors, setDoctors] = useState<IDoctor[]>([]);
+  const [totalDoctors, setTotalDoctors] = useState<number | null>(null);
+  const [todaysAppointments, setTodaysAppointments] = useState<
+    IAppointmentPopulated[]
+  >([]);
+  const [specializationDoctorCount, setSpecializationDoctorCount] = useState<
+    | {
+        specialization: string;
+        count: number;
+      }[]
+    | null
+  >(null);
+  const [ageGroupCounts, setAgeGroupCounts] = useState<
+    | {
+        ageGroup: string;
+        count: number;
+      }[]
+    | null
+  >(null);
+  const [weeklyAppointments, setWeeklyAppointments] = useState<
+    { day: string; count: number }[] | null
+  >(null);
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const getPercentage = (value: number, data: Array<{ count: number }>) => {
+    const total = data.reduce((acc, item) => acc + item.count, 0);
     return ((value / total) * 100).toFixed(0);
   };
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const fetchDashboard = async () => {
+    try {
+      setLoading(true);
+      const {
+        monthlyData,
+        totalRevenue,
+        totalDoctors,
+        totalPatients,
+        doctors,
+        patients,
+        weeklyAppointments,
+        todaysAppointments,
+        ageGroupCounts,
+        specializationDoctorCount,
+      } = await dashboardService.getAdminDashboard();
+      setMonthlyData(monthlyData);
+      setTotalRevenue(totalRevenue);
+      setDoctors(doctors);
+      setPatients(patients);
+      setTotalDoctors(totalDoctors);
+      setTotalPatients(totalPatients);
+      setTodaysAppointments(todaysAppointments);
+      const filteredAgeGroups = ageGroupCounts.filter(
+        (group) => group.count > 0
+      );
+      setAgeGroupCounts(filteredAgeGroups);
+      setSpecializationDoctorCount(specializationDoctorCount);
+      setWeeklyAppointments(weeklyAppointments);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getNextHourAppointmentsCount = (
+    appointments: IAppointmentPopulated[]
+  ) => {
+    const now = dayjs();
+    const nextHour = now.add(1, "hour");
+
+    return appointments.filter((appointment) =>
+      dayjs(appointment.date).isBetween(now, nextHour, "minute", "[)")
+    ).length;
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div>
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={MoneyIcon}
-            title="Total Revenue"
-            value="$124,750"
-            description="+12% from previous month"
-            color={theme.palette.primary.main}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={UsersIcon}
-            title="Total Patients"
-            value="1,823"
-            description="+85 new patients this month"
-            color={theme.palette.info.main}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={CalendarIcon}
-            title="Today's Appointments"
-            value="28"
-            description="5 upcoming in next hour"
-            color={theme.palette.secondary.main}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={ActivityIcon}
-            title="Active Doctors"
-            value="32"
-            description="92% satisfaction rate"
-            color={theme.palette.success.main}
-          />
-        </Grid>
+        {totalRevenue && (
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={MoneyIcon}
+              title="Total Revenue"
+              value={`₹${totalRevenue}`}
+              description="Total revenue earned"
+              color={theme.palette.primary.main}
+            />
+          </Grid>
+        )}
+        {totalPatients && (
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={UsersIcon}
+              title="Total Patients"
+              value={`${totalPatients}`}
+              description="Total Registed Patients"
+              color={theme.palette.primary.main}
+            />
+          </Grid>
+        )}
+
+        {todaysAppointments && (
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={CalendarIcon}
+              title="Today's Appointments"
+              value={`${todaysAppointments.length}`}
+              description={`${todaysAppointments && getNextHourAppointmentsCount(todaysAppointments)} Upcoming in next hour`}
+              color={theme.palette.primary.main}
+            />
+          </Grid>
+        )}
+        {totalDoctors && (
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={ActivityIcon}
+              title="Active Doctors"
+              value={`${totalDoctors}`}
+              description="Total Doctor Available"
+              color={theme.palette.primary.main}
+            />
+          </Grid>
+        )}
       </Grid>
 
       <TabsContainer>
@@ -349,55 +298,62 @@ const Dashboard: React.FC = () => {
               />
               <CardContent>
                 <Box height={300}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={revenueData}>
-                      <defs>
-                        <linearGradient
-                          id="colorRevenue"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor={theme.palette.primary.main}
-                            stopOpacity={0.8}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor={theme.palette.primary.main}
-                            stopOpacity={0.1}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <Paper elevation={3} style={{ padding: "10px" }}>
-                                <Typography variant="body2">
-                                  {payload[0].payload.name}: $
-                                  {payload[0].value.toLocaleString()}
-                                </Typography>
-                              </Paper>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke={theme.palette.primary.main}
-                        fillOpacity={1}
-                        fill="url(#colorRevenue)"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  {monthlyData ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={monthlyData}>
+                        <defs>
+                          <linearGradient
+                            id="colorRevenue"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor={theme.palette.primary.main}
+                              stopOpacity={0.8}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor={theme.palette.primary.main}
+                              stopOpacity={0.1}
+                            />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <Paper
+                                  elevation={3}
+                                  style={{ padding: "10px" }}
+                                >
+                                  <Typography variant="body2">
+                                    {payload[0].payload.month}: ₹
+                                    {payload[0].payload.revenue.toLocaleString()}
+                                  </Typography>
+                                </Paper>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Area
+                          type="monotone"
+                          dataKey="revenue"
+                          stroke={theme.palette.primary.main}
+                          fillOpacity={1}
+                          fill="url(#colorRevenue)"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Typography>monthly Currently not availble</Typography>
+                  )}
                 </Box>
               </CardContent>
             </Card>
@@ -416,33 +372,42 @@ const Dashboard: React.FC = () => {
               />
               <CardContent>
                 <Box height={300}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={appointmentsData}>
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <Paper elevation={3} style={{ padding: "10px" }}>
-                                <Typography variant="body2">
-                                  {payload[0].payload.name}: {payload[0].value}{" "}
-                                  appointments
-                                </Typography>
-                              </Paper>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Bar
-                        dataKey="appointments"
-                        fill={theme.palette.primary.main}
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  {weeklyAppointments ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={weeklyAppointments}>
+                        <XAxis dataKey="day" />
+                        <YAxis />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <Paper
+                                  elevation={3}
+                                  style={{ padding: "10px" }}
+                                >
+                                  <Typography variant="body2">
+                                    {payload[0].payload.day}:{" "}
+                                    {payload[0].payload.count} appointments
+                                  </Typography>
+                                </Paper>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar
+                          dataKey="count"
+                          fill={theme.palette.primary.main}
+                          radius={[4, 4, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Typography>
+                      no Weekly appointments data available
+                    </Typography>
+                  )}
                 </Box>
               </CardContent>
             </Card>
@@ -463,50 +428,58 @@ const Dashboard: React.FC = () => {
               />
               <CardContent>
                 <Box height={300}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={patientDemographicsData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) =>
-                          `${name}: ${(percent * 100).toFixed(0)}%`
-                        }
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {patientDemographicsData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <Paper elevation={3} style={{ padding: "10px" }}>
-                                <Typography variant="body2">
-                                  {payload[0].name}: {payload[0].value} patients
-                                  (
-                                  {getPercentage(
-                                    Number(payload[0].value),
-                                    patientDemographicsData
-                                  )}
-                                  %)
-                                </Typography>
-                              </Paper>
-                            );
+                  {ageGroupCounts ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={ageGroupCounts}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ ageGroup, percent }) =>
+                            `${ageGroup}: ${(percent * 100).toFixed(0)}%`
                           }
-                          return null;
-                        }}
-                      />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="count"
+                          nameKey="ageGroup"
+                        >
+                          {ageGroupCounts.map((entry, index) => (
+                            <Cell
+                              key={`cell-${entry.ageGroup}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <Paper
+                                  elevation={3}
+                                  style={{ padding: "10px" }}
+                                >
+                                  <Typography variant="body2">
+                                    {payload[0].payload.ageGroup}:{" "}
+                                    {payload[0].payload.count} patients (
+                                    {getPercentage(
+                                      Number(payload[0].payload.count),
+                                      ageGroupCounts
+                                    )}
+                                    %)
+                                  </Typography>
+                                </Paper>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Typography>No Data available</Typography>
+                  )}
                 </Box>
               </CardContent>
             </Card>
@@ -517,7 +490,7 @@ const Dashboard: React.FC = () => {
               <CardHeader
                 title={
                   <Box display="flex" alignItems="center">
-                    <ActivityIcon color="success" sx={{ mr: 1 }} />
+                    <ActivityIcon sx={{ mr: 1, color: "teal" }} />
                     <Typography variant="h6">Doctor Specialties</Typography>
                   </Box>
                 }
@@ -525,50 +498,59 @@ const Dashboard: React.FC = () => {
               />
               <CardContent>
                 <Box height={300}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={specialtyDistributionData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) =>
-                          `${name}: ${(percent * 100).toFixed(0)}%`
-                        }
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {specialtyDistributionData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <Paper elevation={3} style={{ padding: "10px" }}>
-                                <Typography variant="body2">
-                                  {payload[0].name}: {payload[0].value} doctors
-                                  (
-                                  {getPercentage(
-                                    Number(payload[0].value),
-                                    specialtyDistributionData
-                                  )}
-                                  %)
-                                </Typography>
-                              </Paper>
-                            );
+                  {specializationDoctorCount ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={specializationDoctorCount}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ specialization, percent }) =>
+                            `${specialization}: ${(percent * 100).toFixed(0)}%`
                           }
-                          return null;
-                        }}
-                      />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="count"
+                          nameKey="specialization"
+                        >
+                          {specializationDoctorCount.map((entry, index) => (
+                            <Cell
+                              key={`cell-${entry.specialization}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <Paper
+                                  elevation={3}
+                                  style={{ padding: "10px" }}
+                                >
+                                  <Typography variant="body2">
+                                    {data.specialization}: {data.count} doctors
+                                    (
+                                    {getPercentage(
+                                      Number(data.count),
+                                      specializationDoctorCount
+                                    )}
+                                    %)
+                                  </Typography>
+                                </Paper>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Typography>No Data available</Typography>
+                  )}
                 </Box>
               </CardContent>
             </Card>
@@ -596,29 +578,43 @@ const Dashboard: React.FC = () => {
                     <TableCell>Time</TableCell>
                     <TableCell>Doctor</TableCell>
                     <TableCell>Type</TableCell>
-                    <TableCell>Actions</TableCell>
+                    {/* <TableCell>Actions</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {todayAppointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
-                      <TableCell>{appointment.patientName}</TableCell>
-                      <TableCell>{appointment.time}</TableCell>
-                      <TableCell>{appointment.doctor}</TableCell>
-                      <TableCell>{appointment.type}</TableCell>
-                      <TableCell>
-                        <Button
-                          color="primary"
-                          onClick={() =>
-                            navigate(`/appointments/${appointment.id}`)
-                          }
-                          size="small"
-                        >
-                          View Details
-                        </Button>
+                  {todaysAppointments && todaysAppointments.length > 0 ? (
+                    todaysAppointments.map((appointment) => (
+                      <TableRow key={appointment._id}>
+                        <TableCell>
+                          {appointment.patient.firstName}{" "}
+                          {appointment.patient.lastName}
+                        </TableCell>
+                        <TableCell>{formatTime(appointment.date)}</TableCell>
+                        <TableCell>
+                          {appointment.doctor.firstName}{" "}
+                          {appointment.doctor.lastName}
+                        </TableCell>
+                        <TableCell>{appointment.specialization.name}</TableCell>
+                        {/* <TableCell>
+                          <Button
+                            color="primary"
+                            onClick={() =>
+                              navigate(`/appointments/${appointment._id}`)
+                            }
+                            size="small"
+                          >
+                            View Details
+                          </Button>
+                        </TableCell> */}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        No data found
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -644,32 +640,55 @@ const Dashboard: React.FC = () => {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Specialty</TableCell>
-                    <TableCell>Patients</TableCell>
-                    <TableCell>Rating</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell>Phone</TableCell>
+                    <TableCell>Gender</TableCell>
+                    <TableCell>Experience</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {activeDoctors.map((doctor) => (
-                    <TableRow key={doctor.id}>
-                      <TableCell>{doctor.name}</TableCell>
-                      <TableCell>{doctor.specialty}</TableCell>
-                      <TableCell>{doctor.patients}</TableCell>
-                      <TableCell>{doctor.rating}/5.0</TableCell>
-                      <TableCell>
-                        <Button
-                          color="primary"
-                          onClick={() => navigate(`/doctors/${doctor.id}`)}
-                          size="small"
-                        >
-                          View Profile
-                        </Button>
+                  {doctors && doctors.length > 0 ? (
+                    doctors.map((doctor) => (
+                      <TableRow key={doctor._id}>
+                        <TableCell>
+                          {doctor.firstName} {doctor.lastName}
+                        </TableCell>
+                        <TableCell>{doctor.specialization.name}</TableCell>
+                        <TableCell>{doctor.phone}</TableCell>
+                        <TableCell>{doctor.gender}</TableCell>
+                        <TableCell>{doctor.experience} Years</TableCell>
+
+                        {/* <TableCell>
+                          <Button
+                            color="primary"
+                            onClick={() => navigate(`/doctors/${doctor.id}`)}
+                            size="small"
+                          >
+                            View Profile
+                          </Button>
+                        </TableCell> */}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        No data found
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
+            {totalDoctors && totalDoctors > 5 && (
+              <Box display="flex" justifyContent="center" pt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate("/admin/doctors")}
+                >
+                  View All Doctors
+                </Button>
+              </Box>
+            )}
           </CardContent>
         </Card>
       </TabPanel>
@@ -686,15 +705,62 @@ const Dashboard: React.FC = () => {
             subheader="Recently active patients"
           />
           <CardContent>
-            <Box display="flex" justifyContent="center" p={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate("/patients")}
-              >
-                View All Patients
-              </Button>
-            </Box>
+            <TableContainer>
+              <Table aria-label="active doctors">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>email</TableCell>
+                    <TableCell>phone</TableCell>
+                    <TableCell>Gender</TableCell>
+                    <TableCell>age</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {patients && patients.length > 0 ? (
+                    patients.map((patient) => (
+                      <TableRow key={patient._id}>
+                        <TableCell>
+                          {patient.firstName} {patient.lastName}
+                        </TableCell>
+                        <TableCell>{patient.email}</TableCell>
+                        <TableCell>{patient.phone}</TableCell>
+                        <TableCell>{patient.gender}</TableCell>
+                        <TableCell>
+                          {calculateAge(patient.dateOfBirth)}
+                        </TableCell>
+                        {/* <TableCell>
+                          <Button
+                            color="primary"
+                            onClick={() => navigate(`/doctors/${patient._id}`)}
+                            size="small"
+                          >
+                            View Profile
+                          </Button>
+                        </TableCell> */}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        No data found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {totalPatients && totalPatients > 5 && (
+              <Box display="flex" justifyContent="center" pt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate("/admin/patients")}
+                >
+                  View All Patients
+                </Button>
+              </Box>
+            )}
           </CardContent>
         </Card>
       </TabPanel>

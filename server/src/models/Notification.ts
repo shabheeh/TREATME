@@ -41,6 +41,11 @@ const notificationSchema = new Schema<INotification>(
       type: String,
       optional: true,
     },
+    expiresAt: {
+      type: Date,
+      default: Date.now,
+      expires: 60 * 60 * 24 * 30,
+    },
   },
   { timestamps: true }
 );

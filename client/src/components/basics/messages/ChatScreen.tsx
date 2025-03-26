@@ -32,7 +32,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import { useSocket } from "../../../hooks/useSocket";
 import chatService from "../../../services/chat/ChatService";
-import Loading from "../Loading";
+import Loading from "../ui/Loading";
 import { formatTime } from "../../../utils/dateUtils";
 import { toast } from "sonner";
 

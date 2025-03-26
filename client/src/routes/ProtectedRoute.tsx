@@ -5,7 +5,7 @@ import { RootState } from "../redux/app/store";
 import sharedService from "../services/shared/sharedService";
 import { signOut } from "../redux/features/auth/authSlice";
 import { clearUser } from "../redux/features/user/userSlice";
-import Loading from "../components/basics/Loading";
+import Loading from "../components/basics/ui/Loading";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

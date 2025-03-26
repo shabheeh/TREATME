@@ -22,7 +22,7 @@ import appointmentService from "../../../services/appointment/appointmentService
 import BookingConfirmedSkeleton from "../../../components/patient/BookingConfirmationSkelton";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { FaHouseMedical } from "react-icons/fa6";
-import Loading from "../../../components/basics/Loading";
+import Loading from "../../../components/basics/ui/Loading";
 import { useDispatch } from "react-redux";
 import { resetAppointment } from "../../../redux/features/appointment/appointmentSlice";
 

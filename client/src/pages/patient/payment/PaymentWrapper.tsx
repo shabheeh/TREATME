@@ -5,7 +5,7 @@ import { RootState } from "../../../redux/app/store";
 import { loadStripe } from "@stripe/stripe-js";
 import Payment from "../appointment/Payment";
 import { createPaymentIntent } from "../../../services/stripe/stripeService";
-import Loading from "../../../components/basics/Loading";
+import Loading from "../../../components/basics/ui/Loading";
 import { useNavigate } from "react-router-dom";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);

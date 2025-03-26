@@ -4,7 +4,7 @@ import React from "react";
 import AppointmentCardPatient from "../../patient/appointments/AppointmentCardPatient";
 import AppointmentCardDoctor from "../../doctor/appointments/AppointmetCardDoctor";
 
-import Loading from "../Loading";
+import Loading from "../ui/Loading";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 

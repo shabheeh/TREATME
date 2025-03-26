@@ -9,4 +9,5 @@ export interface INotification extends Document {
   isRead: boolean;
   priority: "low" | "medium" | "high";
   link?: string;
+  expiresAt?: Date;
 }

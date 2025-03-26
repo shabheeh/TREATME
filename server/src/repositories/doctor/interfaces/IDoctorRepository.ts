@@ -47,10 +47,12 @@ interface IDoctorRepository {
     query: getDoctorsWithSchedulesQuery
   ): Promise<getDoctorsWithSchedulesResult>;
   getDoctorWithPassword(doctorId: string): Promise<IDoctor>;
-  getDoctorsCountBySpecialization(): Promise<{
-    specialization: string;
-    count: number;
-  }>;
+  getDoctorsCountBySpecialization(): Promise<
+    {
+      specialization: string;
+      count: number;
+    }[]
+  >;
 }
 
 export default IDoctorRepository;

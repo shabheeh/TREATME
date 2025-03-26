@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
 import { toast } from "sonner";
-import Loading from "../../basics/Loading";
+import Loading from "../../basics/ui/Loading";
 
 interface LifestyleQuestion {
   id: string;

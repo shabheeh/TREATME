@@ -16,7 +16,7 @@ import { Close as CloseIcon } from "@mui/icons-material";
 import healthProfileService from "../../../services/healthProfile/healthProfileServices";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
-import Loading from "../../basics/Loading";
+import Loading from "../../basics/ui/Loading";
 import { IFamilyHistory } from "../../../types/patient/health.types";
 import { toast } from "sonner";
 
