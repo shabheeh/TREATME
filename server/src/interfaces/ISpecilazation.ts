@@ -9,6 +9,7 @@ export default interface ISpecialization extends Document {
   durationInMinutes: number;
   image: string;
   imagePublicId: string;
+  concerns: string[];
 }
 
 export interface ISpecializationService {

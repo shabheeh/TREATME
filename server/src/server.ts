@@ -10,7 +10,7 @@ import ChatRepository from "./repositories/chat/ChatRepository";
 import MessageRepository from "./repositories/chat/MessageRepository";
 import { MessageModel } from "./models/Message";
 import { ChatModel } from "./models/Chat";
-import AppointmentService from "./services/appointment/AppointmentService";
+import AppointmentService from "./services/appointment/appointmentService";
 import AppointmentRepository from "./repositories/appointment/AppointmentRepository";
 import { AppointmentModel } from "./models/Appointment";
 import ScheduleRepository from "./repositories/doctor/ScheduleRepository";

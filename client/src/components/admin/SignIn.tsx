@@ -43,7 +43,7 @@ const SignIn: React.FC = () => {
     try {
       setLoading(true);
       await authServiceAdmin.signIn(data.email, data.password);
-      navigate("/admin");
+      navigate("/admin/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

@@ -403,10 +403,60 @@ class AppointmentRepository implements IAppointmentRepository {
         { $limit: limit },
       ]);
 
-      const totalPatients = await this.model.countDocuments({
-        doctor: new Types.ObjectId(doctorId),
-        status: "confirmed",
-      });
+      const totalPatientsResult = await this.model.aggregate([
+        {
+          $match: {
+            doctor: new Types.ObjectId(doctorId),
+            status: "completed",
+          },
+        },
+        {
+          $lookup: {
+            from: "patients",
+            localField: "patient",
+            foreignField: "_id",
+            as: "patientDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$patientDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "dependents",
+            localField: "patient",
+            foreignField: "_id",
+            as: "dependentDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$dependentDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: { $ifNull: ["$patientDetails._id", "$dependentDetails._id"] },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+          },
+        },
+        {
+          $count: "totalPatients",
+        },
+      ]);
+
+      const totalPatients =
+        totalPatientsResult.length > 0
+          ? totalPatientsResult[0].totalPatients
+          : 0;
 
       return { patients, totalPatients };
     } catch (error) {

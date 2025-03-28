@@ -31,6 +31,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/app/store";
 import { IReviewPopulated } from "../../types/review/review.types";
 import { IDoctor } from "../../types/doctor/doctor.types";
+import Loading from "./ui/Loading";
 
 const DoctorProfile = () => {
   const { doctorId } = useParams();
@@ -49,6 +50,8 @@ const DoctorProfile = () => {
   const currentPatient = useSelector(
     (state: RootState) => state.user.currentUser
   );
+
+  const userRole = useSelector((state: RootState) => state.auth.role);
 
   const fetchDoctor = async () => {
     if (!doctorId) {
@@ -144,13 +147,23 @@ const DoctorProfile = () => {
           Failed to load doctor profile. The doctor may not exist or there was a
           connection issue.
         </Alert>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/doctors")}
-        >
-          Browse Doctors
-        </Button>
+        {userRole === "patient" ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/doctors")}
+          >
+            Browse Doctors
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/admin/doctors")}
+          >
+            Browse Doctors
+          </Button>
+        )}
       </Container>
     );
   }
@@ -254,69 +267,79 @@ const DoctorProfile = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Box sx={{ p: 2 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-              }}
-            >
-              <Typography variant="h6">Patient Reviews</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setReviewDialogOpen(true)}
+          {reveiwsLoading ? (
+            <Loading />
+          ) : (
+            <Box sx={{ p: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
               >
-                {existingReview ? "Update Your Review" : "Write a Review"}
-              </Button>
-            </Box>
+                <Typography variant="h6">Patient Reviews</Typography>
+                {userRole === "patient" && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setReviewDialogOpen(true)}
+                  >
+                    {existingReview ? "Update Your Review" : "Write a Review"}
+                  </Button>
+                )}
+              </Box>
 
-            <Divider sx={{ mb: 3 }} />
+              <Divider sx={{ mb: 3 }} />
 
-            {reviews.length === 0 ? (
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ textAlign: "center", py: 3 }}
-              >
-                No reviews yet. Be the first to review Dr. {doctor.lastName}!
-              </Typography>
-            ) : (
-              <Box sx={{ maxHeight: 500, overflow: "auto" }}>
-                {reviews.map((review, index) => (
-                  <Box key={review._id || index}>
-                    <Box sx={{ mb: 2, px: 1 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Typography variant="subtitle2">
-                          {review.patient
-                            ? `${review.patient.firstName} ${review.patient.lastName}`
-                            : "Anonymous Patient"}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(review.updatedAt).toLocaleDateString()}
+              {reviews.length === 0 ? (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textAlign: "center", py: 3 }}
+                >
+                  {userRole === "patient"
+                    ? `No reviews yet. Be the first to review Dr. ${doctor.lastName}`
+                    : `Now reviews yet`}
+                </Typography>
+              ) : (
+                <Box sx={{ maxHeight: 500, overflow: "auto" }}>
+                  {reviews.map((review, index) => (
+                    <Box key={review._id || index}>
+                      <Box sx={{ mb: 2, px: 1 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Typography variant="subtitle2">
+                            {review.patient
+                              ? `${review.patient.firstName} ${review.patient.lastName}`
+                              : "Anonymous Patient"}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(review.updatedAt).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                        <Rating
+                          value={review.rating}
+                          size="small"
+                          readOnly
+                          sx={{ my: 1 }}
+                        />
+                        <Typography variant="body2">
+                          {review.comment}
                         </Typography>
                       </Box>
-                      <Rating
-                        value={review.rating}
-                        size="small"
-                        readOnly
-                        sx={{ my: 1 }}
-                      />
-                      <Typography variant="body2">{review.comment}</Typography>
+                      {index < reviews.length - 1 && <Divider sx={{ my: 2 }} />}
                     </Box>
-                    {index < reviews.length - 1 && <Divider sx={{ my: 2 }} />}
-                  </Box>
-                ))}
-              </Box>
-            )}
-          </Box>
+                  ))}
+                </Box>
+              )}
+            </Box>
+          )}
         </Grid>
       </Grid>
 

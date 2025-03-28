@@ -295,65 +295,70 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
           alignItems: "center",
         }}
       >
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => setRescheduleModalOpen(true)}
-            sx={{
-              borderRadius: 6,
-              bgcolor: "#f8f8ff",
-              borderColor: "#e0e0e6",
-              color: "#5c6bc0",
-              textTransform: "none",
-              fontWeight: 500,
-              py: 0.5,
-              "&:hover": {
-                bgcolor: "#efefff",
-                borderColor: "#c5cae9",
-              },
-            }}
-          >
-            Reschedule
-          </Button>
-          <Button
-            onClick={() => setCancelModalOpen(true)}
-            variant="outlined"
-            size="small"
-            sx={{
-              borderRadius: 6,
-              bgcolor: "#fff5f5",
-              borderColor: "#ffcdd2",
-              color: "#e53935",
-              textTransform: "none",
-              fontWeight: 500,
-              py: 0.5,
-              "&:hover": {
-                bgcolor: "#ffebee",
-                borderColor: "#ef9a9a",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        </Box>
-
-        {status === "completed" && (
-          <Tooltip title="Start Appointment">
-            <IconButton
-              color="primary"
-              onClick={onViewDetails}
+        {status === "confirmed" && (
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setRescheduleModalOpen(true)}
               sx={{
-                bgcolor: "primary.light",
-                color: "white",
+                borderRadius: 6,
+                bgcolor: "#f8f8ff",
+                borderColor: "#e0e0e6",
+                color: "#5c6bc0",
+                textTransform: "none",
+                fontWeight: 500,
+                py: 0.5,
                 "&:hover": {
-                  bgcolor: "primary.main",
+                  bgcolor: "#efefff",
+                  borderColor: "#c5cae9",
                 },
               }}
             >
-              <ArrowIcon />
-            </IconButton>
-          </Tooltip>
+              Reschedule
+            </Button>
+            <Button
+              onClick={() => setCancelModalOpen(true)}
+              variant="outlined"
+              size="small"
+              sx={{
+                borderRadius: 6,
+                bgcolor: "#fff5f5",
+                borderColor: "#ffcdd2",
+                color: "#e53935",
+                textTransform: "none",
+                fontWeight: 500,
+                py: 0.5,
+                "&:hover": {
+                  bgcolor: "#ffebee",
+                  borderColor: "#ef9a9a",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        )}
+
+        {status === "completed" && (
+          <>
+            <Box sx={{ display: "flex", gap: 1 }}></Box>
+            <Tooltip title="View appointment details">
+              <IconButton
+                color="primary"
+                onClick={onViewDetails}
+                sx={{
+                  bgcolor: "primary.light",
+                  color: "white",
+                  "&:hover": {
+                    bgcolor: "primary.main",
+                  },
+                }}
+              >
+                <ArrowIcon />
+              </IconButton>
+            </Tooltip>
+          </>
         )}
       </Box>
 

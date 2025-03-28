@@ -8,8 +8,8 @@ import {
   Card,
   CardMedia,
 } from "@mui/material";
-import { PhotoCamera } from "@mui/icons-material";
-import { useForm } from "react-hook-form";
+import { PhotoCamera, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
+import { useFieldArray, useForm } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
 import specializationService from "../../services/specialization/specializationService";
@@ -25,46 +25,25 @@ interface FormInputs {
   fee: number | null;
   durationInMinutes: number | null;
   image: File | null;
+  concerns: { value: string }[];
 }
 
 const EditSpecialization = () => {
-  const { id } = useParams<{ id: string }>();
+  const { specializationId } = useParams<{ specializationId: string }>();
   const [specialization, setSpecialization] = useState<ISpecialization | null>(
     null
   );
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchSpecialization = async () => {
-      try {
-        const specialization =
-          await specializationService.getSpecializationById(id!);
-        setSpecialization(specialization);
-        setInitialImage(specialization.image);
-
-        reset({
-          name: specialization.name,
-          description: specialization.description,
-          note: specialization.note,
-          fee: specialization.fee,
-          durationInMinutes: specialization.durationInMinutes,
-          image: null,
-        });
-      } catch (error) {
-        log.error("Error fetching specialization", error);
-        toast.error("Failed to load specialization details");
-      }
-    };
-
-    if (id) {
-      fetchSpecialization();
-    }
-  }, [id]);
+  const navigate = useNavigate();
+  const cropperRef = useRef<HTMLImageElement>(null);
+  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [isCropped, setIsCropped] = useState(false);
+  const [initialImage, setInitialImage] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    // watch,
+    control,
     setValue,
     reset,
     formState: { errors },
@@ -79,12 +58,45 @@ const EditSpecialization = () => {
     },
   });
 
+  const { fields, append, remove } = useFieldArray<FormInputs>({
+    control,
+    name: "concerns",
+  });
+
+  useEffect(() => {
+    const fetchSpecialization = async () => {
+      if (!specializationId) return;
+      try {
+        const specialization =
+          await specializationService.getSpecializationById(specializationId);
+        setSpecialization(specialization);
+        setInitialImage(specialization.image);
+
+        const formattedConcerns = specialization.concerns.map((concern) => ({
+          value: concern,
+        }));
+
+        reset({
+          name: specialization.name,
+          description: specialization.description,
+          note: specialization.note,
+          fee: specialization.fee,
+          durationInMinutes: specialization.durationInMinutes,
+          image: null,
+          concerns: formattedConcerns,
+        });
+      } catch (error) {
+        log.error("Error fetching specialization", error);
+        toast.error("Failed to load specialization details");
+      }
+    };
+
+    if (specializationId) {
+      fetchSpecialization();
+    }
+  }, [specializationId]);
+
   // const image = watch("image");
-  const navigate = useNavigate();
-  const cropperRef = useRef<HTMLImageElement>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [isCropped, setIsCropped] = useState(false);
-  const [initialImage, setInitialImage] = useState<string | null>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -117,6 +129,8 @@ const EditSpecialization = () => {
     data.fee = Number(data.fee);
     data.durationInMinutes = Number(data.durationInMinutes);
 
+    const concerns = data.concerns.map((item) => item.value);
+
     if (data.image && data.image instanceof File) {
       const { size, type } = data.image;
       if (size > 5 * 1024 * 1024) {
@@ -139,6 +153,7 @@ const EditSpecialization = () => {
       formData.append("note", data.note);
       formData.append("fee", data.fee.toString());
       formData.append("durationInMinutes", data.durationInMinutes.toString());
+      formData.append("concerns", JSON.stringify(concerns));
 
       if (data.image instanceof File) {
         formData.append("image", data.image);
@@ -163,6 +178,22 @@ const EditSpecialization = () => {
 
   return (
     <Box sx={{ py: 5 }}>
+      <Button
+        onClick={() => navigate(-1)}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          color: "primary.main",
+          mb: 3,
+          fontSize: "16px",
+          fontWeight: "bold",
+          textDecoration: "none",
+          ":hover": { textDecoration: "underline" },
+        }}
+      >
+        <ArrowBackIcon fontSize="small" sx={{ mr: 1 }} />
+        Back
+      </Button>
       <Container
         sx={{
           bgcolor: "white",
@@ -320,16 +351,62 @@ const EditSpecialization = () => {
               helperText={errors.durationInMinutes?.message}
             />
           </Box>
-          <Button
-            loading={loading}
-            disabled={loading}
-            fullWidth
-            type="submit"
-            variant="contained"
-            sx={{ py: 2, my: 5, width: "90%", fontSize: "1rem" }}
+          <Box sx={{ width: "90%", my: 2 }}>
+            {fields.map((field, index) => (
+              <Box key={field.id}>
+                <TextField
+                  {...register(`concerns.${index}.value`, {
+                    required: "Concern is required",
+                  })}
+                  fullWidth
+                  label={`Concern ${index + 1}`}
+                  variant="outlined"
+                  error={!!errors.concerns?.[index]?.value}
+                  helperText={errors.concerns?.[index]?.value?.message}
+                />
+                <Button
+                  onClick={() => remove(index)}
+                  color="error"
+                  sx={{ mt: 1 }}
+                  disabled={fields.length === 1}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
+
+            <Button onClick={() => append({ value: "" })}>
+              Add Another Concern
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              gap: 2,
+            }}
           >
-            Update Specialization
-          </Button>
+            <Button
+              onClick={() => navigate(-1)}
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              type="submit"
+              variant="contained"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Add Specialization
+            </Button>
+          </Box>
         </Container>
       </Container>
     </Box>

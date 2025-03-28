@@ -9,7 +9,7 @@ import {
   CardMedia,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
 import specializationService from "../../services/specialization/specializationService";
@@ -25,6 +25,7 @@ interface FormInputs {
   fee: number | null;
   durationInMinutes: number | null;
   image: File | null;
+  concerns: { value: string }[];
 }
 
 const AddSpecialization = () => {
@@ -32,6 +33,7 @@ const AddSpecialization = () => {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: {
@@ -41,6 +43,7 @@ const AddSpecialization = () => {
       fee: null,
       durationInMinutes: null,
       image: null,
+      concerns: [{ value: "" }],
     },
   });
 
@@ -49,6 +52,11 @@ const AddSpecialization = () => {
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [isCropped, setIsCropped] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { fields, append, remove } = useFieldArray<FormInputs>({
+    control,
+    name: "concerns",
+  });
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -80,6 +88,7 @@ const AddSpecialization = () => {
   const onSubmit = async (data: FormInputs) => {
     data.fee = Number(data.fee);
     data.durationInMinutes = Number(data.durationInMinutes);
+    const concerns = data.concerns.map((item) => item.value);
 
     if (!data.image) {
       toast.error("Image is required");
@@ -106,6 +115,7 @@ const AddSpecialization = () => {
       formData.append("note", data.note);
       formData.append("fee", data.fee.toString());
       formData.append("durationInMinutes", data.durationInMinutes.toString());
+      formData.append("concerns", JSON.stringify(concerns));
 
       if (data.image instanceof File) {
         formData.append("image", data.image);
@@ -131,6 +141,7 @@ const AddSpecialization = () => {
     }
   };
 
+  console.log("Fields:", fields);
   return (
     <Box sx={{ py: 5 }}>
       <Container
@@ -285,6 +296,34 @@ const AddSpecialization = () => {
               helperText={errors.durationInMinutes?.message}
             />
           </Box>
+          <Box sx={{ width: "90%", my: 2 }}>
+            {fields.map((field, index) => (
+              <Box key={field.id}>
+                <TextField
+                  {...register(`concerns.${index}.value`, {
+                    required: "Concern is required",
+                  })}
+                  fullWidth
+                  label={`Concern ${index + 1}`}
+                  variant="outlined"
+                  error={!!errors.concerns?.[index]?.value}
+                  helperText={errors.concerns?.[index]?.value?.message}
+                />
+                <Button
+                  onClick={() => remove(index)}
+                  color="error"
+                  sx={{ mt: 1 }}
+                  disabled={fields.length === 1}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ))}
+
+            <Button onClick={() => append({ value: "" })}>
+              Add Another Concern
+            </Button>
+          </Box>
           <Box
             sx={{
               width: "60%",
@@ -292,6 +331,16 @@ const AddSpecialization = () => {
               gap: 2,
             }}
           >
+            <Button
+              onClick={() => navigate(-1)}
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Cancel
+            </Button>
             <Button
               loading={loading}
               disabled={loading}
@@ -301,16 +350,6 @@ const AddSpecialization = () => {
               sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
             >
               Add Specialization
-            </Button>
-            <Button
-              loading={loading}
-              disabled={loading}
-              fullWidth
-              type="submit"
-              variant="outlined"
-              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
-            >
-              Cancel
             </Button>
           </Box>
         </Container>

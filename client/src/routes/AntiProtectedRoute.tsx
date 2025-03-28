@@ -22,9 +22,13 @@ const AntiProtectedRoute: React.FC<AntiProtectedRouteProps> = ({
       location.pathname === "/doctor/sigin")
   ) {
     if (auth.role === "admin") {
-      return <Navigate to={location.state?.from ?? `/admin`} replace />;
+      return (
+        <Navigate to={location.state?.from ?? `/admin/dashboard`} replace />
+      );
     } else if (auth.role === "doctor") {
-      return <Navigate to={location.state?.from ?? `/doctor`} replace />;
+      return (
+        <Navigate to={location.state?.from ?? `/doctor/dashboard`} replace />
+      );
     } else if (auth.role === "patient") {
       return <Navigate to={location.state?.from ?? `/visitnow`} replace />;
     }

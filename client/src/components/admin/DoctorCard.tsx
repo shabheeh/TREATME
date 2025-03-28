@@ -15,6 +15,8 @@ import {
 } from "@mui/icons-material";
 import { IDoctor } from "../../types/doctor/doctor.types";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/app/store";
 
 interface DoctorCardProps {
   doctor: IDoctor;
@@ -23,6 +25,8 @@ interface DoctorCardProps {
 const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
   const navigate = useNavigate();
   const theme = useTheme();
+
+  const userRole = useSelector((state: RootState) => state.auth.role);
 
   return (
     <Card
@@ -84,16 +88,29 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor }) => {
             mt: 2,
           }}
         >
-          <Button
-            onClick={() => navigate(`/doctors/${doctor._id}`)}
-            variant="outlined"
-            size="small"
-            color="primary"
-            endIcon={<ArrowForwardIcon />}
-            sx={{ borderRadius: 2 }}
-          >
-            View Details
-          </Button>
+          {userRole === "patient" ? (
+            <Button
+              onClick={() => navigate(`/doctors/${doctor._id}`)}
+              variant="outlined"
+              size="small"
+              color="primary"
+              endIcon={<ArrowForwardIcon />}
+              sx={{ borderRadius: 2 }}
+            >
+              View Details
+            </Button>
+          ) : (
+            <Button
+              onClick={() => navigate(`/admin/doctors/${doctor._id}`)}
+              variant="outlined"
+              size="small"
+              color="primary"
+              endIcon={<ArrowForwardIcon />}
+              sx={{ borderRadius: 2 }}
+            >
+              View Details
+            </Button>
+          )}
         </Box>
       </CardContent>
     </Card>

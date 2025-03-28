@@ -32,7 +32,7 @@ import BehaviouralHealthController from "../../controllers/healthProfile/behavio
 import AppointmentRepository from "../../repositories/appointment/AppointmentRepository";
 import { AppointmentModel } from "../../models/Appointment";
 import AppointmentController from "../../controllers/appointment/appointmentController";
-import AppointmentService from "../../services/appointment/AppointmentService";
+import AppointmentService from "../../services/appointment/appointmentService";
 import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
 import { ScheduleModel } from "../../models/Schedule";
 import ReviewRepository from "../../repositories/review/reviewRepository";
@@ -54,6 +54,9 @@ import DashboardService from "../../services/dashboard/DashboardService";
 import DependentRepository from "../../repositories/patient/DependentRepository";
 import DashboardController from "../../controllers/dashboard/DashboardController";
 import { DependentModel } from "../../models/Dependent";
+import AIChatRepository from "../../repositories/aiChat/AIChatRepository";
+import AIChatService from "../../services/aiChat/AIChatService";
+import AIChatController from "../../controllers/aiChat/AIChatController";
 
 const router = express.Router();
 
@@ -155,6 +158,11 @@ const dashboardService = new DashboardService(
   reviewRepository
 );
 const dashboardController = new DashboardController(dashboardService);
+
+// ai chat bot
+const aiChatRepository = new AIChatRepository();
+const aiChatService = new AIChatService(aiChatRepository);
+const aiChatController = new AIChatController(aiChatService);
 
 router.post("/auth/refresh-token", tokenController.handleRefreshToken);
 
@@ -373,5 +381,7 @@ router.get(
   authorize("doctor"),
   dashboardController.getDoctorDashboardData
 );
+
+router.post("/ai", authenticate, aiChatController.handleAIChatInteraction);
 
 export default router;

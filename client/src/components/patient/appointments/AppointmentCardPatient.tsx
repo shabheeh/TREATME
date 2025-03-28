@@ -326,26 +326,7 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
 
         {status === "completed" && (
           <>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              {/* <Button
-                variant="text"
-                size="small"
-                onClick={() => setRescheduleModalOpen(true)}
-                sx={{
-                  textDecoration: "underline",
-                  color: "#5c6bc0",
-                  fontWeight: 500,
-                  py: 0.5,
-                  "&:hover": {
-                    bgcolor: "#efefff",
-                    borderColor: "#c5cae9",
-                    textDecoration: "underline",
-                  },
-                }}
-              >
-                Share your feedback on your recent appointment.
-              </Button> */}
-            </Box>
+            <Box sx={{ display: "flex", gap: 1 }}></Box>
             <Tooltip title="View appointment details">
               <IconButton
                 color="primary"

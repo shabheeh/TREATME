@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization/specializationService";
 import { toast } from "sonner";
-// import { useDispatch } from "react-redux";
-// import { signOut } from "../../redux/features/auth/authSlice";
-// import { clearUser } from "../../redux/features/user/userSlice";
 
 const VisitNow = () => {
   const [specializations, setSpecializations] = useState<
@@ -14,10 +11,7 @@ const VisitNow = () => {
   >(null);
   const [loading, setLoading] = useState(false);
 
-  // const dispatch = useDispatch()
 
-  // dispatch(signOut())
-  // dispatch(clearUser())
 
   useEffect(() => {
     const fetchSpecializations = async () => {
@@ -114,7 +108,7 @@ const VisitNow = () => {
                     note={specialization.note}
                     fee={specialization.fee}
                     image={specialization.image}
-                    link={`/${specialization.name.toLowerCase()}/reason`}
+                    link={`/reason`}
                     id={specialization._id}
                     duration={specialization.durationInMinutes}
                   />

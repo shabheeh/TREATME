@@ -10,18 +10,14 @@ import LayoutAccount from "../Layouts/patient/LayoutAccount";
 import MyAccount from "../pages/patient/MyAccount";
 import Family from "../pages/patient/Family";
 import HealthProfile from "../pages/patient/HealthProfile";
-import TherapyReason from "../pages/patient/appointment/TherapyReason";
 import LayoutAppointment from "../Layouts/patient/LayoutAppointment";
 import ReviewBehaviouralHealth from "../pages/patient/appointment/ReviewBehaviouralHealth";
 import ReviewHealthHistory from "../pages/patient/appointment/ReviewHealthHistory";
 import ListDoctors from "../pages/patient/appointment/ListDoctors";
-// import Payment from "../pages/patient/appointment/Payment";
 import BookingConfirmation from "../pages/patient/appointment/BookingConfirmation";
 import Appointments from "../pages/patient/appointment/Appointments";
 import DoctorView from "../components/basics/DoctorView";
 import Consultations from "../pages/patient/appointment/Consultations";
-// import { Elements } from "@stripe/react-stripe-js";
-// import { loadStripe } from "@stripe/stripe-js";
 import PaymentWrapper from "../pages/patient/payment/PaymentWrapper";
 import Doctors from "../pages/patient/Doctors";
 import Messages from "../components/basics/messages/Messages";
@@ -29,37 +25,7 @@ import Notification from "../components/basics/notification/Notification";
 import WalletPatient from "../components/basics/wallet/Wallet";
 import Security from "../components/basics/Security";
 import HelpAndSupportPage from "../pages/patient/HelpAndSupport";
-// import BookingWrapper from "../pages/patient/appointment/BookingWrapper";
-// import { Appearance } from "@stripe/stripe-js";
-// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY, {
-//   betas: ["payment_element_beta_1"],
-// });
-
-// const options = {
-//   mode: "payment",
-//   amount: amount * 100, // amount in smallest currency unit
-//   currency: "inr",
-//   appearance: {
-//     theme: "stripe",
-//     variables: {
-//       colorPrimary: "#008080",
-//     },
-//   },
-// };
-
-// return (
-//   <Elements stripe={stripePromise} options={options}>
-//     <PaymentForm appointmentData={appointmentData} />
-//   </Elements>
-// );
-
-// const appearance: Appearance = {
-//   theme: "stripe",
-//   variables: {
-//     colorPrimary: "#008080", // teal color to match your border
-//     fontFamily: '"Roboto", sans-serif',
-//   },
-// };
+import Concern from "../pages/patient/appointment/Concern";
 
 export const patientRoutes = [
   <Route path="/" element={<LandingPage />} />,
@@ -101,7 +67,7 @@ export const patientRoutes = [
       </ProtectedRoute>
     }
   >
-    <Route path="therapy/reason" element={<TherapyReason />} />
+    <Route path="reason" element={<Concern />} />
     <Route
       path="review-behavioural-health"
       element={<ReviewBehaviouralHealth />}
@@ -109,17 +75,6 @@ export const patientRoutes = [
     ,
     <Route path="review-health-history" element={<ReviewHealthHistory />} />,
     <Route path="providers" element={<ListDoctors />} />,
-    {/* <Route
-      path="review-appointment"
-      element={
-        <Elements
-          stripe={stripePromise}
-          options={{ appearance, mode: "payment", currency: "inr" }}
-        >
-          <Payment />
-        </Elements>
-      }
-    /> */}
     <Route path="review-appointment" element={<PaymentWrapper />} />
     <Route path="confirmation" element={<BookingConfirmation />} />,
   </Route>,

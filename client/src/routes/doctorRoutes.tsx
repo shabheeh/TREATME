@@ -8,11 +8,10 @@ import Dashboard from "../pages/doctor/Dashboard";
 import RegisterForm from "../components/doctor/RegisterForm";
 import Schedule from "../pages/doctor/Schedule";
 import Appointments from "../pages/doctor/Appointments";
-import PatientProfile from "../pages/doctor/PatientProfile";
+import PatientProfile from "../pages/doctor/PatientProfile2";
 import Messages from "../components/basics/messages/Messages";
 import Notifications from "../components/basics/notification/Notification";
 import PatientListPage from "../components/doctor/PatientsList";
-import PatientProfile2 from "../pages/doctor/PatientProfile2";
 import LayoutAccount from "../Layouts/doctor/LayoutAccount";
 import WalletPatient from "../components/basics/wallet/Wallet";
 import Security from "../components/basics/Security";
@@ -54,6 +53,5 @@ export const doctorRoutes = [
     <Route path="notifications" element={<Notifications />} />
     <Route path="patients" element={<PatientListPage />} />
     <Route path="patients/health" element={<PatientProfile />} />
-    <Route path="patients/health2" element={<PatientProfile2 />} />
   </Route>,
 ];

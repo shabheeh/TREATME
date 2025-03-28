@@ -9,7 +9,7 @@ import MessageRepository from "../../repositories/chat/MessageRepository";
 import ChatService from "../../services/chat/ChatService";
 import AppointmentRepository from "../../repositories/appointment/AppointmentRepository";
 import { AppointmentModel } from "../../models/Appointment";
-import AppointmentService from "../../services/appointment/AppointmentService";
+import AppointmentService from "../../services/appointment/appointmentService";
 import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
 import { ScheduleModel } from "../../models/Schedule";
 import ScheduleService from "../../services/doctor/scheduleService.ts";

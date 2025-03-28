@@ -14,4 +14,5 @@ export interface ISpecialization {
   fee: number;
   durationInMinutes: number;
   image: string;
+  concerns: string[];
 }
