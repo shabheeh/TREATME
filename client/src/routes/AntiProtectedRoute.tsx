@@ -14,6 +14,8 @@ const AntiProtectedRoute: React.FC<AntiProtectedRouteProps> = ({
   const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();
 
+  console.log(auth,"auth")
+
   if (
     auth.isAuthenticated &&
     (location.pathname === "/signin" ||
@@ -29,7 +31,7 @@ const AntiProtectedRoute: React.FC<AntiProtectedRouteProps> = ({
       return (
         <Navigate to={location.state?.from ?? `/doctor/dashboard`} replace />
       );
-    } else if (auth.role === "patient") {
+    } else {
       return <Navigate to={location.state?.from ?? `/visitnow`} replace />;
     }
   }

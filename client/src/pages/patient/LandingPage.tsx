@@ -322,6 +322,17 @@ const LandingPage = () => {
               <Typography color="grey.400">
                 Healthcare solutions for the digital age
               </Typography>
+              <Link to={"/doctor-recruitement"}>
+                <Typography
+                  my={1}
+                  color="grey.400"
+                  sx={{
+                    ":hover": { textDecoration: "underline" },
+                  }}
+                >
+                  Become a Provider
+                </Typography>
+              </Link>
             </Grid>
 
             {[

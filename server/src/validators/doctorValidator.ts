@@ -10,37 +10,20 @@ export const validateDoctor = celebrate({
       .required(),
     gender: Joi.string().valid("male", "female").required(),
     specialization: Joi.string().required(),
-    specialties: Joi.array().items(Joi.string()).min(1).required(),
-    languages: Joi.array().items(Joi.string()).min(1).required(),
+    specialties: Joi.alternatives()
+      .try(Joi.array().items(Joi.string()).min(1), Joi.string())
+      .required()
+      .custom((value) =>
+        typeof value === "string" ? JSON.parse(value) : value
+      ),
+    languages: Joi.alternatives()
+      .try(Joi.array().items(Joi.string()).min(1), Joi.string())
+      .custom((value) =>
+        typeof value === "string" ? JSON.parse(value) : value
+      ),
     registerNo: Joi.string().required(),
     experience: Joi.number().integer().min(0).required(),
     biography: Joi.string().required(),
     licensedState: Joi.string().required(),
-    availability: Joi.array()
-      .items(
-        Joi.object({
-          day: Joi.string()
-            .valid(
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday"
-            )
-            .required(),
-          slots: Joi.array()
-            .items(
-              Joi.object({
-                startTime: Joi.string().required(),
-                endTime: Joi.string().required(),
-                isBooked: Joi.boolean().required(),
-              })
-            )
-            .required(),
-        })
-      )
-      .optional(),
   }),
 });

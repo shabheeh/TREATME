@@ -101,7 +101,7 @@ const ApplicantsList = () => {
   }
 
   const handleRowClick = (applicant: IApplicant) => {
-    navigate(`/admin/recruitements/${applicant._id}`);
+    navigate(`/admin/applications/${applicant._id}`);
   };
 
   return (

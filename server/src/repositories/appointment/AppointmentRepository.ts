@@ -19,6 +19,17 @@ class AppointmentRepository implements IAppointmentRepository {
     appointmentData: IAppointment
   ): Promise<IAppointment> {
     try {
+      const appointments = await this.model.find({
+        patient: appointmentData.patient,
+        status: "confirmed",
+      });
+
+      console.log(appointments)
+
+      if (appointments && appointments.length > 1) {
+        throw new AppError("Cannot book more than 10 appointemnts");
+      }
+
       const appointment = await this.model.create(appointmentData);
 
       if (!appointment) {

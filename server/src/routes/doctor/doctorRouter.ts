@@ -11,7 +11,6 @@ import DoctorAuthService from "../../services/doctor/authService";
 import DoctorAuthController from "../../controllers/doctor/authController";
 import { signinValidation } from "../../validators/signInValidator";
 import { validateApplicant } from "../../validators/applicantValidator";
-import { convertFormData } from "../../middlewares/convertFormData";
 import { isUserActive } from "../../middlewares/checkUserStatus";
 import { PatientModel } from "../../models/Patient";
 import PatientAuthService from "../../services/patient/authService";
@@ -69,7 +68,6 @@ router.post(
     { name: "idProof", maxCount: 1 },
     { name: "resume", maxCount: 1 },
   ]),
-  convertFormData,
   validateApplicant,
   applicantController.createApplicant
 );

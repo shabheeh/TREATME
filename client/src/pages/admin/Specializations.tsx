@@ -1,5 +1,5 @@
 import { Button, Box, Typography, Grid, Skeleton } from "@mui/material";
-import SpecializationCard from "../../components/admin/SpecializationCard";
+import SpecializationCard from "../../components/basics/SpecializationCard";
 import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization/specializationService";
@@ -148,6 +148,7 @@ const Specializations = () => {
                   note={specialization.note}
                   fee={specialization.fee}
                   image={specialization.image}
+                  duration={specialization.durationInMinutes}
                 />
               </Grid>
             ))

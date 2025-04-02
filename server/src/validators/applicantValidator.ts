@@ -9,7 +9,11 @@ export const validateApplicant = celebrate({
       .pattern(/^\+?[1-9]\d{1,14}$/)
       .required(),
     specialization: Joi.string().required(),
-    languages: Joi.array().items(Joi.string()).min(1).required(),
+    languages: Joi.alternatives()
+      .try(Joi.array().items(Joi.string()).min(1), Joi.string())
+      .custom((value) =>
+        typeof value === "string" ? JSON.parse(value) : value
+      ),
     registerNo: Joi.string().required(),
     experience: Joi.number().integer().min(0).required(),
     workingTwoHrs: Joi.string().required(),

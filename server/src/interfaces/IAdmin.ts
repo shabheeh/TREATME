@@ -29,11 +29,17 @@ export interface IAdminDoctorService {
     imageFile: Express.Multer.File
   ): Promise<Partial<IDoctor>>;
   getDoctors(params: IDoctorsFilter): Promise<IDoctorsFilterResult>;
+  updateDoctor(
+    doctorId: string,
+    updateData: Partial<IDoctor>,
+    imageFile: Express.Multer.File | undefined
+  ): Promise<IDoctor>;
 }
 
 export interface IAdminDoctorController {
   createDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
   getDoctors(req: Request, res: Response, next: NextFunction): Promise<void>;
+  updateDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
 // Admin - Patient

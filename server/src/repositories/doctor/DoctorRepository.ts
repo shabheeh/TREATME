@@ -75,6 +75,7 @@ class DoctorRepository implements IDoctorRepository {
           { $set: updateData },
           {
             new: true,
+            runValidators: true,
             lean: true,
           }
         )

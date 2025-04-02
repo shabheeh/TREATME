@@ -3,8 +3,8 @@ import TokenManager from "./TokenMangager";
 import log from "loglevel";
 import { store } from "../redux/app/store";
 import { setToken } from "../redux/features/auth/authSlice";
-// import { signOut } from '../redux/features/auth/authSlice';
-// import { clearUser } from '../redux/features/user/userSlice';
+import { signOut } from "../redux/features/auth/authSlice";
+import { clearUser } from "../redux/features/user/userSlice";
 
 const tokenManager = new TokenManager();
 
@@ -41,12 +41,10 @@ const createAxiosInstance = (role?: UserRole) => {
       if (error instanceof AxiosError) {
         log.error(error.message);
       }
+      store.dispatch(clearUser());
+      store.dispatch(signOut());
       tokenManager.clearToken();
-      if (role === "patient") {
-        window.location.href = "/signin";
-      } else {
-        window.location.href = `/${role}/signin`;
-      }
+      // window.location.href = "/signin";
 
       return null;
     }
@@ -74,11 +72,8 @@ const createAxiosInstance = (role?: UserRole) => {
 
       const { status, data } = error.response;
 
-      // Handle 403 Forbidden (RBAC Redirect)
+      // handle 403
       if (status === 403) {
-        // store.dispatch(signOut());
-        // store.dispatch(clearUser());
-
         window.location.href =
           role === "patient" ? "/signin" : `/${role}/signin`;
 

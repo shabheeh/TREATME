@@ -1,5 +1,5 @@
 import { Box, Grid, Skeleton, Typography } from "@mui/material";
-import SpecializationCard from "../../components/patient/SpecializationCard";
+import SpecializationCard from "../../components/basics/SpecializationCard";
 import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization/specializationService";

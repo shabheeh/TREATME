@@ -13,7 +13,7 @@ import UserRepository from "../../repositories/patient/PatientRepository";
 import { PatientModel } from "../../models/Patient";
 import AdminPatientsService from "../../services/admin/adminPatientsService";
 import AdminPatientsController from "../../controllers/admin/adminPatientsController";
-// import { validateDoctor } from '../../validators/doctorValidator';
+import { validateDoctor } from "../../validators/doctorValidator";
 
 import { authenticate } from "../../middlewares/auth";
 
@@ -42,8 +42,16 @@ router.post(
   "/doctors",
   authenticate,
   upload.single("profilePicture"),
-  // validateDoctor,
+  validateDoctor,
   adminDoctorController.createDoctor
+);
+
+router.put(
+  "/doctors/:doctorId",
+  authenticate,
+  upload.single("profilePicture"),
+  validateDoctor,
+  adminDoctorController.updateDoctor
 );
 
 router.get("/patients", authenticate, adminPatientsController.getPatients);

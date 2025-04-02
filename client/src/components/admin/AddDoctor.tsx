@@ -16,10 +16,10 @@ import { useForm, Controller } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
-import doctorsService from "../../services/admin/doctorsService";
 import { useNavigate } from "react-router-dom";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization/specializationService";
+import doctorService from "../../services/doctor/doctorService";
 
 interface SignupFormInputs {
   firstName: string;
@@ -202,7 +202,7 @@ const AddDoctor = () => {
         return;
       }
 
-      await doctorsService.addDoctor(formData);
+      await doctorService.addDoctor(formData);
       toast.success("Doctor created successfully!");
 
       navigate("/admin/doctors");
@@ -467,7 +467,7 @@ const AddDoctor = () => {
               helperText={errors.specialization?.message}
             >
               {specializations.map((spec) => (
-                <MenuItem key={spec.name} value={spec.name}>
+                <MenuItem key={spec.name} value={spec._id}>
                   {spec.name}
                 </MenuItem>
               ))}

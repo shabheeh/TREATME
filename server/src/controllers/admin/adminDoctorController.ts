@@ -34,11 +34,11 @@ class AdminDoctorController implements IAdminDoctorController {
         gender: req.body.gender,
         biography: req.body.biography,
         specialization: req.body.specialization,
-        specialties: JSON.parse(req.body.specialties),
-        languages: JSON.parse(req.body.languages),
+        specialties: req.body.specialties,
+        languages: req.body.languages,
         licensedState: req.body.licensedState,
         registerNo: req.body.registerNo,
-        experience: JSON.parse(req.body.experience),
+        experience: req.body.experience,
       } as IDoctor;
 
       const imageFile = req.file;
@@ -77,6 +77,54 @@ class AdminDoctorController implements IAdminDoctorController {
       res.status(200).json({ result });
     } catch (error) {
       logger.error("controller:error crating new Doctor ", error);
+      next(error);
+    }
+  };
+
+  updateDoctor = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { doctorId } = req.params;
+
+      if (!doctorId) {
+        throw new BadRequestError("Doctor id required");
+      }
+
+      console.log(req.body);
+
+      const updateData = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        phone: req.body.phone,
+        gender: req.body.gender,
+        biography: req.body.biography,
+        specialization: req.body.specialization,
+        specialties: req.body.specialties,
+        languages: req.body.languages,
+        licensedState: req.body.licensedState,
+        registerNo: req.body.registerNo,
+        experience: req.body.experience,
+      } as Partial<IDoctor>;
+
+      const imageFile: Express.Multer.File | undefined = req.file;
+
+      await this.adminDoctorService.updateDoctor(
+        doctorId,
+        updateData,
+        imageFile
+      );
+      res.status(200).json({
+        success: true,
+        message: "Updated Doctor Successfully",
+      });
+    } catch (error) {
+      logger.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
       next(error);
     }
   };

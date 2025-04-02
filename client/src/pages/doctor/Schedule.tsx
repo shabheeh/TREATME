@@ -48,13 +48,11 @@ export default function ScheduleManagement() {
   useEffect(() => {
     if (!doctor) return;
     const fetchSchedule = async () => {
-      console.log("called")
       try {
         const scheduleResponse: ISchedule | null =
           await scheduleService.getSchedule(doctor._id);
-        
-          console.log(scheduleResponse, "resopnse")
-          if (scheduleResponse && scheduleResponse.availability) {
+
+        if (scheduleResponse && scheduleResponse.availability) {
           const scheduleWithDayjsDates = scheduleResponse.availability.map(
             (avail: IDaySchedule) => ({
               _id: avail._id,
@@ -67,7 +65,7 @@ export default function ScheduleManagement() {
             })
           );
           setSchedules(scheduleWithDayjsDates);
-          console.log(scheduleWithDayjsDates, "shcc")
+          console.log(scheduleWithDayjsDates, "shcc");
         } else {
           setSchedules([]);
         }
@@ -361,7 +359,7 @@ export default function ScheduleManagement() {
             Add Time Slot for {formatDate(selectedDate.toDate())}
             {doctor?.specialization?.name && (
               <Typography variant="body2" color="text.secondary">
-                {doctor.specialization.name} - Default Slot Duration:{" "}
+                {doctor.specialization.name} - Slot Duration:{" "}
                 {doctor.specialization.durationInMinutes || 30} mins
               </Typography>
             )}

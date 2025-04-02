@@ -141,49 +141,56 @@ const ApplicantDetails: React.FC = () => {
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Email sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Email:</strong> {applicant?.email}
+              <strong className="mr-2">Email:</strong> {applicant?.email}
             </Typography>
             <Typography
               variant="body1"
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Phone sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Phone:</strong> {applicant?.phone}
+              <strong className="mr-2">Phone:</strong>
+              {applicant?.phone}
             </Typography>
             <Typography
               variant="body1"
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Work sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Experience:</strong> {applicant?.experience} years
+              <strong className="mr-2">Experience: </strong>
+              {applicant?.experience} years
             </Typography>
             <Typography
               variant="body1"
               sx={{ display: "flex", alignItems: "center" }}
             >
               <LocationOn sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Licensed State:</strong> {applicant?.licensedState}
+              <strong className="mr-2">Licensed State:</strong>{" "}
+              {applicant?.licensedState}
             </Typography>
             <Typography
               variant="body1"
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Language sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Languages:</strong> {applicant?.languages.join(", ")}
+              <strong className="mr-2">Languages:</strong>{" "}
+              {applicant?.languages.join(", ")}
             </Typography>
             <Typography
               variant="body1"
               sx={{ display: "flex", alignItems: "center" }}
             >
               <AssignmentInd sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Register No:</strong> {applicant?.registerNo}
+              <strong className="mr-2">Register No:</strong>{" "}
+              {applicant?.registerNo}
             </Typography>
             <Typography
               variant="body1"
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Work sx={{ mr: 1, color: "primary.main" }} />
-              <strong>Committed to work 2 - 4 hrs:</strong>{" "}
+              <strong className="mr-2">
+                Committed to work 2 - 4 hrs:
+              </strong>{" "}
               {applicant?.workingTwoHrs}
             </Typography>
           </Box>

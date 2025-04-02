@@ -50,6 +50,7 @@ class AppointmentService implements IAppointmentService {
     try {
       const { doctor, slotId, dayId } = appointmentData;
 
+
       // Update booking status
       if (doctor && slotId && dayId) {
         await this.scheduleService.updateBookingStatus(

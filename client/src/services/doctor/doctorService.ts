@@ -8,6 +8,21 @@ import {
 import { api } from "../../utils/axiosInterceptor";
 
 class DoctorService {
+  async addDoctor(doctor: FormData): Promise<void> {
+    try {
+      console.log(doctor);
+
+      await api.admin.post("/doctors", doctor);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`error creating Doctor: ${error.message}`, error);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error `, error);
+      throw new Error(`Something went error`);
+    }
+  }
   async getDoctor(id: string): Promise<IDoctor> {
     try {
       const response = await api.doctor.get(`/doctors/${id}`);
@@ -72,6 +87,20 @@ class DoctorService {
           `Error fetching doctors with schedule: ${error.message}`,
           error
         );
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
+
+  async editDoctor(doctorId: string, updateData: FormData): Promise<void> {
+    try {
+      await api.admin.put(`/doctors/${doctorId}`, updateData);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error updating doctor: ${error.message}`, error);
         throw new Error(error.message);
       }
 

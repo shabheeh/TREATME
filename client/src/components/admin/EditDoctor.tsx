@@ -16,12 +16,12 @@ import { useForm, Controller } from "react-hook-form";
 import log from "loglevel";
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";
-import doctorsService from "../../services/admin/doctorsService";
 import { useNavigate, useParams } from "react-router-dom";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization/specializationService";
 import { IDoctor } from "../../types/doctor/doctor.types";
 import doctorService from "../../services/doctor/doctorService";
+import Loading from "../basics/ui/Loading";
 
 interface SignupFormInputs {
   firstName: string;
@@ -89,7 +89,7 @@ const EditDoctor = () => {
   const { doctorId } = useParams<{ doctorId: string }>();
   const [doctor, setDoctor] = useState<IDoctor | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [initialImage, setInitialImage] = useState<string | null>(null);
   const [specializations, setSpecializations] = useState<
     ISpecialization[] | []
   >([]);
@@ -131,6 +131,10 @@ const EditDoctor = () => {
         setLoading(true);
         setDoctor(doctor);
 
+        setInitialImage(doctor.profilePicture);
+
+        console.log(doctor.licensedState)
+
         reset({
           firstName: doctor.firstName,
           lastName: doctor.lastName,
@@ -144,6 +148,7 @@ const EditDoctor = () => {
           licensedState: doctor.licensedState,
           registerNo: doctor.registerNo,
           specialties: doctor.specialties,
+          profilePicture: null,
         });
       } catch (error) {
         toast.error(
@@ -199,24 +204,24 @@ const EditDoctor = () => {
   };
 
   const onSubmit = async (data: SignupFormInputs) => {
+    if (!doctorId) return;
     data.experience = Number(data.experience);
 
-    if (!data.profilePicture) {
-      toast.error("Profile picture is required");
-      return;
+    if (data.profilePicture && data.profilePicture instanceof File) {
+      const { size, type } = data.profilePicture;
+      if (size > 5 * 1024 * 1024) {
+        toast.error("Profile picture must be smaller than 5 MB");
+        return;
+      }
+      if (
+        !["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)
+      ) {
+        toast.error("Only image files are allowed");
+        return;
+      }
     }
 
-    const { size, type } = data.profilePicture;
-    if (size > 5 * 1024 * 1024) {
-      toast.error("Profile picture must be smaller than 5 MB");
-      return;
-    }
-    if (
-      !["image/jpeg", "image/png", "image/webp", "image/jpg"].includes(type)
-    ) {
-      toast.error("Only image files are allowed");
-      return;
-    }
+    console.log(data)
 
     try {
       setLoading(true);
@@ -236,13 +241,10 @@ const EditDoctor = () => {
 
       if (data.profilePicture instanceof File) {
         formData.append("profilePicture", data.profilePicture);
-      } else {
-        console.log("Profile Picture is not a file");
-        return;
       }
 
-      await doctorsService.addDoctor(formData);
-      toast.success("Doctor created successfully!");
+      await doctorService.editDoctor(doctorId, formData);
+      toast.success("Doctor updated successfully!");
 
       navigate("/admin/doctors");
       setLoading(false);
@@ -254,8 +256,14 @@ const EditDoctor = () => {
         toast.error("An unknown error occurred");
       }
       log.error("Error signing up doctor", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <Box sx={{ py: 5 }}>
@@ -289,10 +297,13 @@ const EditDoctor = () => {
           >
             <Avatar
               src={
-                profilePicture ? URL.createObjectURL(profilePicture) : undefined
+                profilePicture
+                  ? URL.createObjectURL(profilePicture)
+                  : initialImage || undefined
               }
               sx={{ width: 100, height: 100, mb: 2 }}
             />
+
             <Button
               component="label"
               variant="outlined"
@@ -506,7 +517,7 @@ const EditDoctor = () => {
               helperText={errors.specialization?.message}
             >
               {specializations.map((spec) => (
-                <MenuItem key={spec.name} value={spec.name}>
+                <MenuItem key={spec.name} value={spec._id}>
                   {spec.name}
                 </MenuItem>
               ))}
@@ -567,17 +578,34 @@ const EditDoctor = () => {
               )}
             />
           </Box>
-
-          <Button
-            loading={loading}
-            disabled={loading}
-            fullWidth
-            type="submit"
-            variant="contained"
-            sx={{ py: 2, my: 5, width: "90%", fontSize: "1rem" }}
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              gap: 2,
+            }}
           >
-            Submit
-          </Button>
+            <Button
+              onClick={() => navigate(-1)}
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              variant="outlined"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={loading}
+              disabled={loading}
+              fullWidth
+              type="submit"
+              variant="contained"
+              sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
+            >
+              Submit
+            </Button>
+          </Box>
         </Container>
       </Container>
     </Box>

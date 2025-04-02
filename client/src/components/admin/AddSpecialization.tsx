@@ -141,7 +141,6 @@ const AddSpecialization = () => {
     }
   };
 
-  console.log("Fields:", fields);
   return (
     <Box sx={{ py: 5 }}>
       <Container

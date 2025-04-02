@@ -159,7 +159,10 @@ const EditSpecialization = () => {
         formData.append("image", data.image);
       }
 
-      await specializationService.updateSpecialization(id!, formData);
+      await specializationService.updateSpecialization(
+        specializationId!,
+        formData
+      );
 
       toast.success("Specialization updated successfully!");
       navigate("/admin/specializations");
@@ -404,7 +407,7 @@ const EditSpecialization = () => {
               variant="contained"
               sx={{ py: 2, my: 5, width: "70%", fontSize: "1rem" }}
             >
-              Add Specialization
+              Submit
             </Button>
           </Box>
         </Container>

@@ -45,9 +45,13 @@ const Appointments = () => {
   const now = dayjs();
 
   const upcoming = appointments.filter((appointment) => {
-    const appointmentTime = dayjs(appointment.date);
+    const appointmentTime = dayjs(appointment.date).add(
+      appointment.duration,
+      "minute"
+    );
     return appointment.status === "confirmed" && appointmentTime.isAfter(now);
   });
+
   // const requested = appointments.filter(appointment => appointment.status === 'requested')
   const completed = appointments.filter(
     (appointment) => appointment.status === "completed"

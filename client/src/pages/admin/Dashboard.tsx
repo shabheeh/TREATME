@@ -652,7 +652,7 @@ const Dashboard: React.FC = () => {
                         <TableCell>
                           {doctor.firstName} {doctor.lastName}
                         </TableCell>
-                        <TableCell>{doctor.specialization.name}</TableCell>
+                        <TableCell>{doctor.specialization?.name}</TableCell>
                         <TableCell>{doctor.phone}</TableCell>
                         <TableCell>{doctor.gender}</TableCell>
                         <TableCell>{doctor.experience} Years</TableCell>

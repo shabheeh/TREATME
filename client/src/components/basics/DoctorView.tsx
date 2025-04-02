@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
+import { Edit, Edit as EditIcon } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import doctorService from "../../services/doctor/doctorService";
@@ -211,6 +212,19 @@ const DoctorProfile = () => {
                   ({reviews.length} reviews)
                 </Typography>
               </Box>
+              {userRole === "admin" && (
+                <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                  <Button
+                    variant="contained"
+                    startIcon={<EditIcon />}
+                    onClick={() =>
+                      navigate(`/admin/doctors/${doctor._id}/edit`)
+                    }
+                  >
+                    Edit Details
+                  </Button>
+                </Box>
+              )}
             </Box>
 
             <Divider sx={{ my: 3 }} />
