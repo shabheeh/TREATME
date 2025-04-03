@@ -15,9 +15,9 @@ class StripeService implements IStripeService {
   private walletService: IWalletService;
 
   constructor(
-    @inject(TYPES.IAppointmentRepository)
+    @inject(TYPES.IAppointmentService)
     appointmentService: IAppointmentService,
-    @inject(TYPES.IWalletRepository) walletService: IWalletService
+    @inject(TYPES.IWalletService) walletService: IWalletService
   ) {
     this.appointmentService = appointmentService;
     this.walletService = walletService;
@@ -59,7 +59,7 @@ class StripeService implements IStripeService {
         throw new AppError("Something went wrong");
       }
 
-      const event = await constructWebhookEvent(
+      const event = constructWebhookEvent(
         payload,
         sig,
         process.env.STRIPE_WEBHOOK_SECRET

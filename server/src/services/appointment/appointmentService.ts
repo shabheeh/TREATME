@@ -73,8 +73,6 @@ class AppointmentService implements IAppointmentService {
           appointment._id as string
         );
 
-        console.log("outside if ")
-
       // Send booking confirmation email to patient
       if (
         populatedAppointment.status === "confirmed" &&
@@ -82,7 +80,6 @@ class AppointmentService implements IAppointmentService {
         populatedAppointment.patient &&
         populatedAppointment.date
       ) {
-        console.log("inside iffff")
         const {
           _id: doctorId,
           firstName: doctorFirstName,
