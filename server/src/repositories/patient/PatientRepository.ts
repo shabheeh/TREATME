@@ -5,6 +5,8 @@ import IPatient, {
 } from "../../interfaces/IPatient";
 import IPatientRepository from "./interface/IPatientRepository";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
 interface Query {
   $or?: Array<{
@@ -15,10 +17,11 @@ interface Query {
   }>;
 }
 
+@injectable()
 class PatientRepository implements IPatientRepository {
   private readonly model: Model<IPatient>;
 
-  constructor(model: Model<IPatient>) {
+  constructor(@inject(TYPES.PatientModel) model: Model<IPatient>) {
     this.model = model;
   }
 

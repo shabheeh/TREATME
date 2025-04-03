@@ -2,11 +2,14 @@ import { FilterQuery, Model, Types } from "mongoose";
 import INotificationRepository from "./interface/INotificationRepository";
 import { INotification } from "../../interfaces/INotification";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class NotificationRepository implements INotificationRepository {
   private model: Model<INotification>;
 
-  constructor(model: Model<INotification>) {
+  constructor(@inject(TYPES.NotificationModel) model: Model<INotification>) {
     this.model = model;
   }
 

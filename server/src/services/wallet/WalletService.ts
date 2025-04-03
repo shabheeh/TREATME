@@ -2,11 +2,16 @@ import IWalletRepository from "src/repositories/wallet/interface/IWalletReposito
 import { IWalletService } from "./interface/IWalletService";
 import { ITransaction, IWallet, TransactionData } from "src/interfaces/IWallet";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class WalletService implements IWalletService {
   private walletRepo: IWalletRepository;
 
-  constructor(walletRepository: IWalletRepository) {
+  constructor(
+    @inject(TYPES.IWalletRepository) walletRepository: IWalletRepository
+  ) {
     this.walletRepo = walletRepository;
   }
 

@@ -5,11 +5,16 @@ import {
   IScheduleService,
 } from "../../interfaces/ISchedule";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ScheduleController implements IScheduleController {
   private scheduleService: IScheduleService;
 
-  constructor(scheduleService: IScheduleService) {
+  constructor(
+    @inject(TYPES.IScheduleService) scheduleService: IScheduleService
+  ) {
     this.scheduleService = scheduleService;
   }
 

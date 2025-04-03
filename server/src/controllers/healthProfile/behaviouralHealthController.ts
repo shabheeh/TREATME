@@ -5,11 +5,17 @@ import {
   IBehaviouralHealthService,
 } from "../../interfaces/IBehaviouralHealth";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class BehaviouralHealthController implements IBehaviouralHealthController {
   private behavioralHealthService: IBehaviouralHealthService;
 
-  constructor(behaviouralHealthService: IBehaviouralHealthService) {
+  constructor(
+    @inject(TYPES.IBehaviouralHealthService)
+    behaviouralHealthService: IBehaviouralHealthService
+  ) {
     this.behavioralHealthService = behaviouralHealthService;
   }
 

@@ -9,11 +9,16 @@ import {
 } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { generateTokens, ITokenPayload } from "../../utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DoctorAuthService implements IDoctorAuthService {
   private doctorRepository: IDoctorRepository;
 
-  constructor(doctorRepository: IDoctorRepository) {
+  constructor(
+    @inject(TYPES.IDoctorRepository) doctorRepository: IDoctorRepository
+  ) {
     this.doctorRepository = doctorRepository;
   }
 

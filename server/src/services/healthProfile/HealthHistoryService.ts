@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import logger from "../../configs/logger";
 import {
   IHealthHistory,
@@ -5,11 +6,16 @@ import {
 } from "../../interfaces/IHealthHistory";
 import IHealthHistoryRepository from "../../repositories/healthProfile/interface/IHealthHistoryRepository";
 import { AppError } from "../../utils/errors";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class HealthHistoryService implements IHealthHistoryService {
   private healthHistoryRepo: IHealthHistoryRepository;
 
-  constructor(healthHistoryRepo: IHealthHistoryRepository) {
+  constructor(
+    @inject(TYPES.IHealthHistoryRepository)
+    healthHistoryRepo: IHealthHistoryRepository
+  ) {
     this.healthHistoryRepo = healthHistoryRepo;
   }
 

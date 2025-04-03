@@ -6,14 +6,18 @@ import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
 import { AppError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import Stripe from "stripe";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class StripeService implements IStripeService {
   private appointmentService: IAppointmentService;
   private walletService: IWalletService;
 
   constructor(
+    @inject(TYPES.IAppointmentRepository)
     appointmentService: IAppointmentService,
-    walletService: IWalletService
+    @inject(TYPES.IWalletRepository) walletService: IWalletService
   ) {
     this.appointmentService = appointmentService;
     this.walletService = walletService;

@@ -4,11 +4,16 @@ import IAdminRepository from "src/repositories/admin/interfaces/IAdminRepository
 import { generateTokens, ITokenPayload } from "../../utils/jwt";
 import { IAdminAuthService, SignInAdminResult } from "../../interfaces/IAdmin";
 import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AdminAuthService implements IAdminAuthService {
   private readonly adminRepository: IAdminRepository;
 
-  constructor(adminRepository: IAdminRepository) {
+  constructor(
+    @inject(TYPES.IAdminRepository) adminRepository: IAdminRepository
+  ) {
     this.adminRepository = adminRepository;
   }
 

@@ -9,11 +9,14 @@ import IDoctor, {
   IDoctorsFilterResult,
 } from "../../interfaces/IDoctor";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DoctorRepository implements IDoctorRepository {
   private readonly model: Model<IDoctor>;
 
-  constructor(model: Model<IDoctor>) {
+  constructor(@inject(TYPES.DoctorModel) model: Model<IDoctor>) {
     this.model = model;
   }
 

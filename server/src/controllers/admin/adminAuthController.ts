@@ -4,11 +4,16 @@ import {
   IAdminAuthController,
   IAdminAuthService,
 } from "../../interfaces/IAdmin";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AdminAuthController implements IAdminAuthController {
   private adminAuthService: IAdminAuthService;
 
-  constructor(adminAuthService: IAdminAuthService) {
+  constructor(
+    @inject(TYPES.IAdminAuthService) adminAuthService: IAdminAuthService
+  ) {
     this.adminAuthService = adminAuthService;
   }
 

@@ -2,12 +2,15 @@ import CacheService from "./CacheService";
 import logger from "../configs/logger";
 import { IOtpService } from "../interfaces/IShared";
 import { getEmailTransporter } from "../configs/nodemailer";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../types/inversifyjs.types";
 
+@injectable()
 class OtpService implements IOtpService {
   private emailTransporter;
   private cacheService: CacheService;
 
-  constructor(cacheService: CacheService) {
+  constructor(@inject(TYPES.ICacheService) cacheService: CacheService) {
     this.cacheService = cacheService;
     this.emailTransporter = getEmailTransporter();
   }

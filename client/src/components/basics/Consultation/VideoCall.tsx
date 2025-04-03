@@ -7,7 +7,6 @@ import {
   Paper,
   AppBar,
   Toolbar,
-  Badge,
   Fade,
   Tooltip,
 } from "@mui/material";
@@ -17,13 +16,9 @@ import {
   Videocam,
   VideocamOff,
   CallEnd,
-  Chat as ChatIcon,
-  ChatBubble,
 } from "@mui/icons-material";
-import { useLocation, useNavigate } from "react-router-dom";
-import IAppointment, {
-  IAppointmentPopulated,
-} from "../../../types/appointment/appointment.types";
+import { useNavigate } from "react-router-dom";
+import { IAppointmentPopulated } from "../../../types/appointment/appointment.types";
 import FeedbackModal from "./FeedbackModal";
 import reviewService from "../../../services/review/reviewService";
 import { toast } from "sonner";

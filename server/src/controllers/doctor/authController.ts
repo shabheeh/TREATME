@@ -6,11 +6,16 @@ import {
 } from "../../interfaces/IDoctor";
 import { BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "../../utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DoctorAuthController implements IDoctorAuthController {
   private doctorAuthService: IDoctorAuthService;
 
-  constructor(doctorAuthService: IDoctorAuthService) {
+  constructor(
+    @inject(TYPES.IDoctorAuthService) doctorAuthService: IDoctorAuthService
+  ) {
     this.doctorAuthService = doctorAuthService;
   }
 

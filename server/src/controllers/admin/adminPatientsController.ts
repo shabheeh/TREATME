@@ -4,11 +4,17 @@ import {
   IAdminPatientsService,
 } from "../../interfaces/IAdmin";
 import logger from "../../configs/logger";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AdminPatientsController implements IAdminPatientsController {
   private adminPatientsService: IAdminPatientsService;
 
-  constructor(adminPatientsService: IAdminPatientsService) {
+  constructor(
+    @inject(TYPES.IAdminPatientsService)
+    adminPatientsService: IAdminPatientsService
+  ) {
     this.adminPatientsService = adminPatientsService;
   }
 

@@ -6,11 +6,16 @@ import {
 import IPatientRepository from "../../repositories/patient/interface/IPatientRepository";
 import logger from "../../configs/logger";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AdminPatientsService implements IAdminPatientsService {
   private patientRepository: IPatientRepository;
 
-  constructor(patientRepository: IPatientRepository) {
+  constructor(
+    @inject(TYPES.IPatientRepository) patientRepository: IPatientRepository
+  ) {
     this.patientRepository = patientRepository;
   }
 

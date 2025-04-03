@@ -1,57 +1,42 @@
 import express from "express";
 import multer from "multer";
-import ApplicantController from "../../controllers/applicant/applicantController";
-import { ApplicantModel } from "../../models/Applicant";
-import ApplicantRepository from "../../repositories/doctor/ApplicantRepository";
-import ApplicantService from "../../services/applicant/applicantService";
 import { authenticate, authorize } from "../../middlewares/auth";
-import DoctorRepository from "../../repositories/doctor/DoctorRepository";
-import { DoctorModel } from "../../models/Doctor";
-import DoctorAuthService from "../../services/doctor/authService";
-import DoctorAuthController from "../../controllers/doctor/authController";
 import { signinValidation } from "../../validators/signInValidator";
 import { validateApplicant } from "../../validators/applicantValidator";
 import { isUserActive } from "../../middlewares/checkUserStatus";
-import { PatientModel } from "../../models/Patient";
-import PatientAuthService from "../../services/patient/authService";
-import PatientRepository from "../../repositories/patient/PatientRepository";
-import CacheService from "../../services/CacheService";
-import OtpService from "../../services/OtpService";
-import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
-import { ScheduleModel } from "../../models/Schedule";
-import ScheduleService from "../../services/doctor/scheduleService.ts";
-import ScheduleController from "../../controllers/doctor/scheduleController";
-import DoctorService from "../../services/doctor/doctorService";
-import DoctorController from "../../controllers/doctor/doctorController";
+import { container } from "../../configs/container";
+import { IApplicantController } from "src/interfaces/IApplicant";
+import { TYPES } from "../../types/inversifyjs.types";
+import { IPatientAuthService } from "src/interfaces/IPatient";
+import { IScheduleController } from "src/interfaces/ISchedule";
+import {
+  IDoctorAuthController,
+  IDoctorAuthService,
+  IDoctorController,
+} from "src/interfaces/IDoctor";
 
-// applicant di
-const applicantRepository = new ApplicantRepository(ApplicantModel);
-const applicantService = new ApplicantService(applicantRepository);
-const applicantController = new ApplicantController(applicantService);
-
-// doctor auth di
-const doctorRepository = new DoctorRepository(DoctorModel);
-const doctorAuthService = new DoctorAuthService(doctorRepository);
-const doctorAuthController = new DoctorAuthController(doctorAuthService);
-
-// patient di for middleware
-const patientRepository = new PatientRepository(PatientModel);
-const cacheService = new CacheService();
-const otpService = new OtpService(cacheService);
-const patientAuthService = new PatientAuthService(
-  patientRepository,
-  otpService,
-  cacheService
+const applicantController = container.get<IApplicantController>(
+  TYPES.IApplicantController
 );
 
-// schedule di
-const scheduleRepository = new ScheduleRepository(ScheduleModel);
-const scheduleService = new ScheduleService(scheduleRepository);
-const scheduleController = new ScheduleController(scheduleService);
+const doctorAuthController = container.get<IDoctorAuthController>(
+  TYPES.IDoctorAuthController
+);
 
-// doctor di common
-const doctorService = new DoctorService(doctorRepository);
-const doctorController = new DoctorController(doctorService);
+const patientAuthService = container.get<IPatientAuthService>(
+  TYPES.IPatientAuthService
+);
+
+const doctorAuthService = container.get<IDoctorAuthService>(
+  TYPES.IDoctorAuthService
+);
+
+const scheduleController = container.get<IScheduleController>(
+  TYPES.IScheduleController
+);
+const doctorController = container.get<IDoctorController>(
+  TYPES.IDoctorController
+);
 
 const router = express.Router();
 

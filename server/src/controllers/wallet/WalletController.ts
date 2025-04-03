@@ -6,11 +6,14 @@ import logger from "../../configs/logger";
 import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
 import { TransactionData } from "src/interfaces/IWallet";
 import { error } from "console";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class WalletController implements IWalletController {
   private walletService: IWalletService;
 
-  constructor(walletService: IWalletService) {
+  constructor(@inject(TYPES.IWalletService) walletService: IWalletService) {
     this.walletService = walletService;
   }
 

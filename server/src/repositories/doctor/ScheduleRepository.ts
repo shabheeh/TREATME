@@ -2,11 +2,14 @@ import { Model, Types } from "mongoose";
 import IScheduleRepository from "./interfaces/IScheduleRepository";
 import { ISchedule } from "../../interfaces/ISchedule";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ScheduleRepository implements IScheduleRepository {
   private readonly model: Model<ISchedule>;
 
-  constructor(model: Model<ISchedule>) {
+  constructor(@inject(TYPES.ScheduleModel) model: Model<ISchedule>) {
     this.model = model;
   }
 

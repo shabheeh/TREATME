@@ -17,21 +17,24 @@ import {
   BadRequestError,
   ConflictError,
 } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
 const mailSubject = {
   verifyEmail: "Verify Your Email Address",
   resetPassword: "Reset Your Password",
 };
 
+@injectable()
 class PatientAuthService implements IPatientAuthService {
   private patientRepository: IPatientRepository;
   private otpService: OtpService;
   private cacheService: CacheService;
 
   constructor(
-    patientRepository: IPatientRepository,
-    otpService: OtpService,
-    cacheService: CacheService
+    @inject(TYPES.IPatientRepository) patientRepository: IPatientRepository,
+    @inject(TYPES.IOtpService) otpService: OtpService,
+    @inject(TYPES.ICacheService) cacheService: CacheService
   ) {
     this.patientRepository = patientRepository;
     this.otpService = otpService;

@@ -2,11 +2,14 @@ import { Model } from "mongoose";
 import IHealthHistoryRepository from "./interface/IHealthHistoryRepository";
 import { IHealthHistory } from "../../interfaces/IHealthHistory";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class HealthHistoryRepository implements IHealthHistoryRepository {
   private readonly model: Model<IHealthHistory>;
 
-  constructor(model: Model<IHealthHistory>) {
+  constructor(@inject(TYPES.HealthHistoryModel) model: Model<IHealthHistory>) {
     this.model = model;
   }
 

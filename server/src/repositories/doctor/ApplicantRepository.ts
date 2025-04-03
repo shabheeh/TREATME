@@ -6,6 +6,8 @@ import {
   IApplicantsFilter,
   IApplicantsFilterResult,
 } from "src/interfaces/IApplicant";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
 interface Query {
   $or?: Array<{
@@ -16,10 +18,11 @@ interface Query {
   }>;
 }
 
+@injectable()
 class ApplicantRepository implements IApplicantRepository {
   private readonly model: Model<IApplicant>;
 
-  constructor(model: Model<IApplicant>) {
+  constructor(@inject(TYPES.ApplicantModel) model: Model<IApplicant>) {
     this.model = model;
   }
 

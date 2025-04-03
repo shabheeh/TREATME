@@ -68,11 +68,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   const handleAppNotifications = (notification: INotification) => {
     showNotification(notification);
-
+    console.log("hllllllllllllllllll")
     dispatch(incrementUnreadCount());
   };
 
   const handleNewMessageNotifications = (message: IMessage) => {
+    
     if (currentUser?._id === message.sender._id) {
       return;
     }

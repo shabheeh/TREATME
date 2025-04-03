@@ -2,11 +2,14 @@ import { Model, Types } from "mongoose";
 import IReviewRepository from "./interface/IReviewRepository";
 import IReview from "../../interfaces/IReview";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ReviewRepository implements IReviewRepository {
   private readonly model: Model<IReview>;
 
-  constructor(model: Model<IReview>) {
+  constructor(@inject(TYPES.ReviewModel) model: Model<IReview>) {
     this.model = model;
   }
 

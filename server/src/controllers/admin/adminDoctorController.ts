@@ -7,11 +7,17 @@ import { Request, Response, NextFunction } from "express";
 import { generatePassword } from "../../helpers/passwordGenerator";
 import IDoctor from "../../interfaces/IDoctor";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AdminDoctorController implements IAdminDoctorController {
   private adminDoctorService: IAdminDoctorService;
 
-  constructor(adminDoctorService: IAdminDoctorService) {
+  constructor(
+    @inject(TYPES.IAdminDoctorService)
+    adminDoctorService: IAdminDoctorService
+  ) {
     this.adminDoctorService = adminDoctorService;
   }
 

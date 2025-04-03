@@ -7,11 +7,14 @@ import IAppointmentRepository, {
   MonthlyRevenue,
 } from "./interfaces/IAppointmentRepository";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AppointmentRepository implements IAppointmentRepository {
   private readonly model: Model<IAppointment>;
 
-  constructor(model: Model<IAppointment>) {
+  constructor(@inject(TYPES.AppointmentModel) model: Model<IAppointment>) {
     this.model = model;
   }
 
@@ -19,17 +22,6 @@ class AppointmentRepository implements IAppointmentRepository {
     appointmentData: IAppointment
   ): Promise<IAppointment> {
     try {
-      const appointments = await this.model.find({
-        patient: appointmentData.patient,
-        status: "confirmed",
-      });
-
-      console.log(appointments)
-
-      if (appointments && appointments.length > 1) {
-        throw new AppError("Cannot book more than 10 appointemnts");
-      }
-
       const appointment = await this.model.create(appointmentData);
 
       if (!appointment) {

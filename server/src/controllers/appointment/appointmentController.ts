@@ -6,11 +6,16 @@ import {
 } from "../../interfaces/IAppointment";
 import { BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AppointmentController implements IAppointmentController {
   private appointmentService: IAppointmentService;
 
-  constructor(appointmentService: IAppointmentService) {
+  constructor(
+    @inject(TYPES.IAppointmentService) appointmentService: IAppointmentService
+  ) {
     this.appointmentService = appointmentService;
   }
 

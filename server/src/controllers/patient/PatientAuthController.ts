@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import OtpService from "../../services/OtpService";
 import logger from "../../configs/logger";
 import {
   IPatientAuthService,
@@ -7,14 +6,18 @@ import {
 } from "../../interfaces/IPatient";
 import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class PatientAuthController implements IPatientAuthController {
   private patientAuthService: IPatientAuthService;
-  private otpService: OtpService;
 
-  constructor(patientAuthService: IPatientAuthService, otpService: OtpService) {
+  constructor(
+    @inject(TYPES.IPatientAcccountService)
+    patientAuthService: IPatientAuthService
+  ) {
     this.patientAuthService = patientAuthService;
-    this.otpService = otpService;
   }
 
   sendOtp = async (
@@ -27,11 +30,8 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.sendOtp(email, password);
 
-      const otp = await this.otpService.getOTP(email, "signup");
-
       res.status(200).json({
         message: `A verification OTP has been sent to ${email}`,
-        otp,
       });
     } catch (error) {
       next(error);

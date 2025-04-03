@@ -4,11 +4,17 @@ import { Request, Response, NextFunction } from "express";
 import { ITokenPayload } from "../../utils/jwt";
 import { AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class NotificationController implements INotificationController {
   private notificationService: INotificationService;
 
-  constructor(notificationService: INotificationService) {
+  constructor(
+    @inject(TYPES.INotificationService)
+    notificationService: INotificationService
+  ) {
     this.notificationService = notificationService;
   }
 

@@ -1,7 +1,9 @@
 import { redisClient } from "../configs/redis";
 import logger from "../configs/logger";
 import { ICacheService } from "../interfaces/IShared";
+import { injectable } from "inversify";
 
+@injectable()
 export default class CacheService implements ICacheService {
   async store(key: string, value: string, ttl: number): Promise<void> {
     try {

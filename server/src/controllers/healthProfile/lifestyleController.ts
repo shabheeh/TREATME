@@ -5,11 +5,16 @@ import {
   ILifestyleService,
 } from "../../interfaces/ILifestyle";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class LifestyleController implements ILifestyleController {
   private lifestyleService: ILifestyleService;
 
-  constructor(lifestyleService: ILifestyleService) {
+  constructor(
+    @inject(TYPES.ILifestyleService) lifestyleService: ILifestyleService
+  ) {
     this.lifestyleService = lifestyleService;
   }
 

@@ -9,16 +9,19 @@ import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { IAppointmentService } from "src/interfaces/IAppointment";
 import { getDaysDifference } from "../../helpers/getDaysDifference";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ChatService implements IChatService {
   private chatRepository: IChatRepository;
   private messageRepository: IMessageRepository;
   private appointmentService: IAppointmentService;
 
   constructor(
-    chatRepository: IChatRepository,
-    messageRepository: IMessageRepository,
-    appointmentService: IAppointmentService
+    @inject(TYPES.IChatRepository) chatRepository: IChatRepository,
+    @inject(TYPES.IMessageRepository) messageRepository: IMessageRepository,
+    @inject(TYPES.IAppointmentService) appointmentService: IAppointmentService
   ) {
     this.chatRepository = chatRepository;
     this.messageRepository = messageRepository;

@@ -9,7 +9,10 @@ import IDashboardService, {
   DoctorDashboardData,
 } from "./interface/IDashboardService";
 import IReviewRepository from "src/repositories/review/interface/IReviewRepository";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DashboardService implements IDashboardService {
   private appointmentRepo: IAppointmentRepository;
   private patientRepo: IPatientRepository;
@@ -18,11 +21,12 @@ class DashboardService implements IDashboardService {
   private reviewRepo: IReviewRepository;
 
   constructor(
+    @inject(TYPES.IAppointmentRepository)
     appointmentRepo: IAppointmentRepository,
-    patientRepo: IPatientRepository,
-    dependentRepo: IDependentRepository,
-    doctorRepo: IDoctorRepository,
-    reviewRepo: IReviewRepository
+    @inject(TYPES.IPatientRepository) patientRepo: IPatientRepository,
+    @inject(TYPES.IDependentRepository) dependentRepo: IDependentRepository,
+    @inject(TYPES.IDoctorRepository) doctorRepo: IDoctorRepository,
+    @inject(TYPES.IReviewRepository) reviewRepo: IReviewRepository
   ) {
     this.appointmentRepo = appointmentRepo;
     this.patientRepo = patientRepo;

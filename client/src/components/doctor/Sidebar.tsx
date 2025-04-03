@@ -37,7 +37,6 @@ const menuItems = [
     path: "/doctor/patients",
   },
   { text: "Schedules", icon: <Medication />, path: "/doctor/schedules" },
-  { text: "Help & Support", icon: <ContactSupport />, path: "/help" },
 ];
 
 interface SidebarProps {

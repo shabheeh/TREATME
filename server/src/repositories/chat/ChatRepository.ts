@@ -2,11 +2,14 @@ import { Model, Types } from "mongoose";
 import IChatRepository from "./interfaces/IChatRepository";
 import { IChat } from "src/interfaces/IChat";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ChatRepository implements IChatRepository {
   private readonly model: Model<IChat>;
 
-  constructor(model: Model<IChat>) {
+  constructor(@inject(TYPES.ChatModel) model: Model<IChat>) {
     this.model = model;
   }
 

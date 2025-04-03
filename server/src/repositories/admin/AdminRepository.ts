@@ -2,10 +2,13 @@ import { Model } from "mongoose";
 import IAdmin from "../../interfaces/IAdmin";
 import IAdminRepository from "./interfaces/IAdminRepository";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
+@injectable()
 class AdminRepository implements IAdminRepository {
   private readonly model: Model<IAdmin>;
 
-  constructor(model: Model<IAdmin>) {
+  constructor(@inject(TYPES.AdminModel) model: Model<IAdmin>) {
     this.model = model;
   }
 

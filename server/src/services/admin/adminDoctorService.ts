@@ -13,11 +13,16 @@ import {
   updateCloudinaryFile,
   uploadToCloudinary,
 } from "../../utils/cloudinary";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AdminDoctorService implements IAdminDoctorService {
   private doctorRepository: IDoctorRepository;
 
-  constructor(doctorRepository: IDoctorRepository) {
+  constructor(
+    @inject(TYPES.IDoctorRepository) doctorRepository: IDoctorRepository
+  ) {
     this.doctorRepository = doctorRepository;
   }
 

@@ -9,11 +9,14 @@ import IDoctorRepository, {
   getDoctorsWithSchedulesResult,
 } from "src/repositories/doctor/interfaces/IDoctorRepository";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DoctorService implements IDoctorService {
   private doctorRepo: IDoctorRepository;
 
-  constructor(doctorRepo: IDoctorRepository) {
+  constructor(@inject(TYPES.IDoctorRepository) doctorRepo: IDoctorRepository) {
     this.doctorRepo = doctorRepo;
   }
 

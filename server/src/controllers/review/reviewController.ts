@@ -2,11 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import { IReviewController, IReviewService } from "../../interfaces/IReview";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ReviewController implements IReviewController {
   private reviewService: IReviewService;
 
-  constructor(reviewService: IReviewService) {
+  constructor(@inject(TYPES.IReviewService) reviewService: IReviewService) {
     this.reviewService = reviewService;
   }
 

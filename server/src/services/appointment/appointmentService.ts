@@ -20,7 +20,10 @@ import { IWalletService } from "../wallet/interface/IWalletService";
 import { TransactionData } from "src/interfaces/IWallet";
 import { IScheduleService } from "src/interfaces/ISchedule";
 import { eventBus } from "../../utils/eventBus";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AppointmentService implements IAppointmentService {
   private appointmentRepo: IAppointmentRepository;
   private scheduleService: IScheduleService;
@@ -28,10 +31,12 @@ class AppointmentService implements IAppointmentService {
   private walletService: IWalletService;
 
   constructor(
+    @inject(TYPES.IAppointmentRepository)
     appointmentRepo: IAppointmentRepository,
-    scheduleService: IScheduleService,
+    @inject(TYPES.IScheduleService) scheduleService: IScheduleService,
+    @inject(TYPES.INotificationService)
     notificationService: INotificationService,
-    walletService: IWalletService
+    @inject(TYPES.IWalletService) walletService: IWalletService
   ) {
     this.appointmentRepo = appointmentRepo;
     this.scheduleService = scheduleService;
@@ -49,7 +54,6 @@ class AppointmentService implements IAppointmentService {
   ): Promise<IAppointmentPopulated> {
     try {
       const { doctor, slotId, dayId } = appointmentData;
-
 
       // Update booking status
       if (doctor && slotId && dayId) {
@@ -69,6 +73,8 @@ class AppointmentService implements IAppointmentService {
           appointment._id as string
         );
 
+        console.log("outside if ")
+
       // Send booking confirmation email to patient
       if (
         populatedAppointment.status === "confirmed" &&
@@ -76,6 +82,7 @@ class AppointmentService implements IAppointmentService {
         populatedAppointment.patient &&
         populatedAppointment.date
       ) {
+        console.log("inside iffff")
         const {
           _id: doctorId,
           firstName: doctorFirstName,
@@ -132,6 +139,8 @@ class AppointmentService implements IAppointmentService {
           type: "appointments",
           priority: "high",
         };
+
+        console.log(notificationForDoctor, "hi");
 
         await Promise.all([
           this.notificationService.createNotification(notificationForPatient),

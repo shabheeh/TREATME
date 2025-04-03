@@ -3,11 +3,16 @@ import IDashboardController from "./interface/IDashboardController";
 import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import { ITokenPayload } from "src/utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DashboardController implements IDashboardController {
   private dashboardService: IDashboardService;
 
-  constructor(dashboardService: IDashboardService) {
+  constructor(
+    @inject(TYPES.IDashboardService) dashboardService: IDashboardService
+  ) {
     this.dashboardService = dashboardService;
   }
 

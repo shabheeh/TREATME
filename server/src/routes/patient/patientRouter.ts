@@ -1,74 +1,42 @@
 import express from "express";
 import multer from "multer";
-import { PatientModel } from "../../models/Patient";
-import PatientRepository from "../../repositories/patient/PatientRepository";
-import PatientAuthService from "../../services/patient/authService";
-import OtpService from "../../services/OtpService";
-import CacheService from "../../services/CacheService";
-import PatientAuthController from "../../controllers/patient/PatientAuthController";
 import { validateUser } from "../../validators/userValidator";
 import { signinValidation } from "../../validators/signInValidator";
 import { errors } from "celebrate";
 import { authenticate, authorize } from "../../middlewares/auth";
-import PatientAcccountService from "../../services/patient/accountService";
-import PatientAcccountController from "../../controllers/patient/patientAccountController";
 import { isUserActive } from "../../middlewares/checkUserStatus";
-import DependentRepository from "../../repositories/patient/DependentRepository";
-import { DependentModel } from "../../models/Dependent";
-import DependentService from "../../services/dependent/dependentService";
-import DependentController from "../../controllers/dependent/dependentController";
-import DoctorRepository from "../../repositories/doctor/DoctorRepository";
-import { DoctorModel } from "../../models/Doctor";
-import DoctorAuthService from "../../services/doctor/authService";
-import HealthHistoryRepository from "../../repositories/healthProfile/HealthHistoryRepository";
-import { HealthHistoryModel } from "../../models/HealthHistory";
-import BehaviouralHealthRepository from "../../repositories/healthProfile/BehaviouralHealthRepository";
-import { BehaviouralHealthModel } from "../../models/BehaviouralHealth";
-import LifestyleRepository from "../../repositories/healthProfile/LifestyleRepository";
-import { LifestyleModel } from "../../models/Lifestyle";
+import { container } from "../../configs/container";
+import {
+  IPatientAccountController,
+  IPatientAuthController,
+  IPatientAuthService,
+} from "src/interfaces/IPatient";
+import { TYPES } from "../../types/inversifyjs.types";
+import { IDependentController } from "src/interfaces/IDependent";
+import { IDoctorAuthService } from "src/interfaces/IDoctor";
 
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// patient auth di-(dipendency injection)
-const patientRepository = new PatientRepository(PatientModel);
-const cacheService = new CacheService();
-const otpService = new OtpService(cacheService);
-const patientAuthService = new PatientAuthService(
-  patientRepository,
-  otpService,
-  cacheService
+const patientAuthService = container.get<IPatientAuthService>(
+  TYPES.IPatientAuthService
 );
-const patientAuthController = new PatientAuthController(
-  patientAuthService,
-  otpService
+const patientAuthController = container.get<IPatientAuthController>(
+  TYPES.IPatientAuthController
 );
 
-// patient account di
-const healthHistoryRepository = new HealthHistoryRepository(HealthHistoryModel);
-const behaviouralHealthRepository = new BehaviouralHealthRepository(
-  BehaviouralHealthModel
-);
-const lifestyleRepository = new LifestyleRepository(LifestyleModel);
-const patientAccountService = new PatientAcccountService(
-  patientRepository,
-  healthHistoryRepository,
-  behaviouralHealthRepository,
-  lifestyleRepository
-);
-const patientAccountController = new PatientAcccountController(
-  patientAccountService
+const patientAccountController = container.get<IPatientAccountController>(
+  TYPES.IPatientAcccountController
 );
 
-// dependent di
-const dependentRepository = new DependentRepository(DependentModel);
-const dependentService = new DependentService(dependentRepository);
-const dependentController = new DependentController(dependentService);
+const dependentController = container.get<IDependentController>(
+  TYPES.IDependentController
+);
 
-// doctor di for middleware
-const doctorRepository = new DoctorRepository(DoctorModel);
-const doctorAuthService = new DoctorAuthService(doctorRepository);
+const doctorAuthService = container.get<IDoctorAuthService>(
+  TYPES.IDoctorAuthService
+);
 
 // ---------------------------------------------------------------
 

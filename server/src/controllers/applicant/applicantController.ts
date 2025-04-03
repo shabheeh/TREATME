@@ -5,11 +5,16 @@ import {
 import { Request, Response, NextFunction } from "express";
 import logger from "../../configs/logger";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ApplicantController implements IApplicantController {
   private applicantService: IApplicantService;
 
-  constructor(applicantService: IApplicantService) {
+  constructor(
+    @inject(TYPES.IApplicantService) applicantService: IApplicantService
+  ) {
     this.applicantService = applicantService;
   }
 

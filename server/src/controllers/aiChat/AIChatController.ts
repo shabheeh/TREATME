@@ -3,11 +3,14 @@ import IAIChatController from "./interface/IAIChatController";
 import { Request, Response, NextFunction } from "express";
 import { BadRequestError } from "../../utils/errors";
 import logger from "../../configs/logger";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class AIChatController implements IAIChatController {
   private aiChatService: IAIChatService;
 
-  constructor(aiChatService: IAIChatService) {
+  constructor(@inject(TYPES.IAIChatService) aiChatService: IAIChatService) {
     this.aiChatService = aiChatService;
   }
 

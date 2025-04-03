@@ -2,11 +2,16 @@ import { IBehaviouralHealth } from "../../interfaces/IBehaviouralHealth";
 import IBehaviouralHealthRepository from "./interface/IBehaviouralHealthRepository";
 import { Model } from "mongoose";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class BehaviouralHealthRepository implements IBehaviouralHealthRepository {
   private readonly model: Model<IBehaviouralHealth>;
 
-  constructor(model: Model<IBehaviouralHealth>) {
+  constructor(
+    @inject(TYPES.BehaviouralHealthModel) model: Model<IBehaviouralHealth>
+  ) {
     this.model = model;
   }
 

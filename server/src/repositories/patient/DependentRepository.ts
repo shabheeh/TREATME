@@ -2,11 +2,14 @@ import { Model } from "mongoose";
 import IDependentRepository from "./interface/IDependentRepository";
 import IDependent from "../../interfaces/IDependent";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DependentRepository implements IDependentRepository {
   private readonly model: Model<IDependent>;
 
-  constructor(model: Model<IDependent>) {
+  constructor(@inject(TYPES.DependentModel) model: Model<IDependent>) {
     this.model = model;
   }
 

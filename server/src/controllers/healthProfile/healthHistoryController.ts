@@ -5,11 +5,17 @@ import {
   IHealthHistoryService,
 } from "../../interfaces/IHealthHistory";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class HealthHistoryController implements IHealthHistoryController {
   private healthHistoryService: IHealthHistoryService;
 
-  constructor(healthHistoryService: IHealthHistoryService) {
+  constructor(
+    @inject(TYPES.IHealthHistoryService)
+    healthHistoryService: IHealthHistoryService
+  ) {
     this.healthHistoryService = healthHistoryService;
   }
 

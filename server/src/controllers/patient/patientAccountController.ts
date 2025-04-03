@@ -6,20 +6,17 @@ import IPatient, {
 } from "src/interfaces/IPatient";
 import { AppError, BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
-// import { ITokenPayload } from "../../utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       user?: ITokenPayload;
-//     }
-//   }
-// }
-
+@injectable()
 class PatientAcccountController implements IPatientAccountController {
   private patientAccountService: IPatientAccountService;
 
-  constructor(patientAccountService: IPatientAccountService) {
+  constructor(
+    @inject(TYPES.IPatientAcccountService)
+    patientAccountService: IPatientAccountService
+  ) {
     this.patientAccountService = patientAccountService;
   }
 

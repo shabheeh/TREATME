@@ -2,14 +2,17 @@ import { IWallet, ITransaction, TransactionData } from "src/interfaces/IWallet";
 import { Model, Types, ClientSession } from "mongoose";
 import { AppError, BadRequestError } from "../../utils/errors";
 import IWalletRepository from "./interface/IWalletRepository";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class WalletRepository implements IWalletRepository {
   private readonly walletModel: Model<IWallet>;
   private readonly transactionModel: Model<ITransaction>;
 
   constructor(
-    walletModel: Model<IWallet>,
-    transactionModel: Model<ITransaction>
+    @inject(TYPES.WalletModel) walletModel: Model<IWallet>,
+    @inject(TYPES.TransactionModel) transactionModel: Model<ITransaction>
   ) {
     this.walletModel = walletModel;
     this.transactionModel = transactionModel;

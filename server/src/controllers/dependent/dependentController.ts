@@ -5,11 +5,16 @@ import IDependent, {
   IDependentService,
 } from "../../interfaces/IDependent";
 import { AppError, BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DependentController implements IDependentController {
   private dependentService: IDependentService;
 
-  constructor(dependentService: IDependentService) {
+  constructor(
+    @inject(TYPES.IDependentService) dependentService: IDependentService
+  ) {
     this.dependentService = dependentService;
   }
 

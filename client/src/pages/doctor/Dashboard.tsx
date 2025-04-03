@@ -14,7 +14,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   useTheme,
   styled,
   Button,
@@ -31,21 +30,10 @@ import { IPatientForDoctor } from "../../types/patient/patient.types";
 import { IAppointmentPopulated } from "../../types/appointment/appointment.types";
 import { toast } from "sonner";
 import Loading from "../../components/basics/ui/Loading";
-import { formatTime } from "../../utils/dateUtils";
+import { formatMonthDay, formatTime } from "../../utils/dateUtils";
 import { calculateAge } from "../../helpers/ageCalculator";
 import { StatCard } from "../../components/basics/ui/StatCard";
 import { useNavigate } from "react-router-dom";
-
-const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884d8",
-  "#14b8a6",
-  "#6366f1",
-  "#a855f7",
-];
 
 const TabsContainer = styled(Box)(({ theme }) => ({
   borderBottom: "1px solid",
@@ -301,7 +289,7 @@ const Dashboard: React.FC = () => {
                           {calculateAge(patient.dateOfBirth)}
                         </TableCell>
                         <TableCell>{patient.gender}</TableCell>
-                        <TableCell>{patient.lastVisit}</TableCell>
+                        <TableCell>{`${formatMonthDay(patient.lastVisit)} ${formatTime(patient.lastVisit)}`}</TableCell>
                       </TableRow>
                     ))
                   ) : (

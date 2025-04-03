@@ -1,11 +1,14 @@
 import IReview from "src/interfaces/IReview";
 import { IReviewService } from "../../interfaces/IReview";
 import IReviewRepository from "src/repositories/review/interface/IReviewRepository";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ReviewService implements IReviewService {
   private reviewRepo: IReviewRepository;
 
-  constructor(reviewRepo: IReviewRepository) {
+  constructor(@inject(TYPES.IReviewRepository) reviewRepo: IReviewRepository) {
     this.reviewRepo = reviewRepo;
   }
 

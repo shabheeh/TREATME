@@ -10,11 +10,17 @@ import IApplicantRepository from "../../repositories/doctor/interfaces/IApplican
 import { uploadToCloudinary } from "../../utils/cloudinary";
 import { sendEmail } from "../../utils/mailer";
 import ISpecialization from "src/interfaces/ISpecilazation";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ApplicantService implements IApplicantService {
   private applicantRepository: IApplicantRepository;
 
-  constructor(applicantRepository: IApplicantRepository) {
+  constructor(
+    @inject(TYPES.IApplicantRepository)
+    applicantRepository: IApplicantRepository
+  ) {
     this.applicantRepository = applicantRepository;
   }
 

@@ -12,7 +12,10 @@ import IBehaviouralHealthRepository from "src/repositories/healthProfile/interfa
 import { IBehaviouralHealth } from "src/interfaces/IBehaviouralHealth";
 import { IHealthHistory } from "src/interfaces/IHealthHistory";
 import { ILifestyle } from "src/interfaces/ILifestyle";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class PatientAcccountService implements IPatientAccountService {
   private patientRepository: IPatientRepository;
   private healthHistoryRepo: IHealthHistoryRepository;
@@ -20,10 +23,12 @@ class PatientAcccountService implements IPatientAccountService {
   private lifestyleRepo: ILifestyleRepository;
 
   constructor(
-    patientRepository: IPatientRepository,
+    @inject(TYPES.IPatientRepository) patientRepository: IPatientRepository,
+    @inject(TYPES.IHealthHistoryRepository)
     healthHistoryRepo: IHealthHistoryRepository,
+    @inject(TYPES.IBehavouralHealthRepository)
     behaviouralHealthRepo: IBehaviouralHealthRepository,
-    lifestyleRepo: ILifestyleRepository
+    @inject(TYPES.ILifestyleRepository) lifestyleRepo: ILifestyleRepository
   ) {
     this.patientRepository = patientRepository;
     this.healthHistoryRepo = healthHistoryRepo;

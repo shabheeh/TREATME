@@ -4,11 +4,14 @@ import { Request, Response, NextFunction } from "express";
 import { AppError, BadRequestError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { ITokenPayload } from "../../utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class StripeController implements IStripeController {
   private stripeService: IStripeService;
 
-  constructor(stripeService: IStripeService) {
+  constructor(@inject(TYPES.IStripeService) stripeService: IStripeService) {
     this.stripeService = stripeService;
   }
 

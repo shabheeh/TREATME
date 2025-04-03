@@ -1,17 +1,20 @@
 import cron from "node-cron";
 import dayjs from "dayjs";
-import { AppointmentModel } from "../../models/Appointment";
-import { NotificationModel } from "../../models/Notification";
-import AppointmentRepository from "../../repositories/appointment/AppointmentRepository";
-import NotificationRepository from "../../repositories/notification/NotificationRepository";
-import NotificationService from "../../services/notification/NotificationService";
 import { INotification } from "../../interfaces/INotification";
 import { Types } from "mongoose";
 import logger from "../../configs/logger";
+import { container } from "../../configs/container";
+import { INotificationService } from "src/services/notification/interface/INotificationService";
+import { TYPES } from "../../types/inversifyjs.types";
+import IAppointmentRepository from "src/repositories/appointment/interfaces/IAppointmentRepository";
 
-const appointmentRepo = new AppointmentRepository(AppointmentModel);
-const notificationRepo = new NotificationRepository(NotificationModel);
-const notificationService = new NotificationService(notificationRepo);
+const notificationService = container.get<INotificationService>(
+  TYPES.INotificationService
+);
+
+const appointmentRepo = container.get<IAppointmentRepository>(
+  TYPES.IAppointmentRepository
+);
 
 export const startAppointmentNotifyJob = () => {
   cron.schedule("* * * * *", async () => {

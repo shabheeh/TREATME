@@ -1,7 +1,9 @@
 import axios from "axios";
 import { AppError } from "../../utils/errors";
 import { GoogleAIFullResponse } from "./interface/IAIChatRepository";
+import { injectable } from "inversify";
 
+@injectable()
 class AIChatRepository {
   private apiKey: string;
   private readonly API_BASE_URL: string;

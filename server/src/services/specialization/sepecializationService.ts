@@ -8,10 +8,17 @@ import {
   uploadToCloudinary,
   updateCloudinaryFile,
 } from "../../utils/cloudinary";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
+
+@injectable()
 class SpecializationService implements ISpecializationService {
   private specializationRepository: ISpecializationRepository;
 
-  constructor(specializationRepository: ISpecializationRepository) {
+  constructor(
+    @inject(TYPES.ISpecializationRepository)
+    specializationRepository: ISpecializationRepository
+  ) {
     this.specializationRepository = specializationRepository;
   }
 

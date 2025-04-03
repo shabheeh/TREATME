@@ -2,11 +2,14 @@ import { Model } from "mongoose";
 import ILifestyleRepository from "./interface/ILifestyleRepository";
 import { ILifestyle } from "../../interfaces/ILifestyle";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class LifestyleRepository implements ILifestyleRepository {
   private readonly model: Model<ILifestyle>;
 
-  constructor(model: Model<ILifestyle>) {
+  constructor(@inject(TYPES.LifestyleModel) model: Model<ILifestyle>) {
     this.model = model;
   }
 

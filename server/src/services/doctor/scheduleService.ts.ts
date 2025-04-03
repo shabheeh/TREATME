@@ -2,11 +2,16 @@ import IScheduleRepository from "src/repositories/doctor/interfaces/IScheduleRep
 import logger from "../../configs/logger";
 import { ISchedule, IScheduleService } from "../../interfaces/ISchedule";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ScheduleService implements IScheduleService {
   private scheduleRepo: IScheduleRepository;
 
-  constructor(scheduleRepo: IScheduleRepository) {
+  constructor(
+    @inject(TYPES.IScheduleRepository) scheduleRepo: IScheduleRepository
+  ) {
     this.scheduleRepo = scheduleRepo;
   }
 

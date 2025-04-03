@@ -8,6 +8,8 @@ import { IChatService } from "src/services/chat/interface/IChatService";
 import { ITokenPayload, verifyAccessToken } from "../utils/jwt";
 import { INotification } from "src/interfaces/INotification";
 import { eventBus } from "../utils/eventBus";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../types/inversifyjs.types";
 
 export interface ISocketService {
   initialize(server: HttpServer): void;
@@ -17,13 +19,13 @@ export interface ISocketService {
   emitUserOffline(userId: string): void;
 }
 
+@injectable()
 export class SocketService implements ISocketService {
-  // private static instance: SocketService;
   private io: SocketIOServer | null = null;
   private connectedUsers: Map<string, string> = new Map();
   private chatService: IChatService;
 
-  constructor(chatService: IChatService) {
+  constructor(@inject(TYPES.IChatService) chatService: IChatService) {
     this.chatService = chatService;
 
     eventBus.subscribe(
@@ -136,21 +138,6 @@ export class SocketService implements ISocketService {
       socket.on("disconnect", () => this.handleDisconnect(userId));
     });
   }
-
-  // private async joinUserChats(userId: string, socket: Socket): Promise<void> {
-  //   try {
-  //     const chats = await this.chatService.getUserChats(userId);
-  //     chats.forEach((chat) => {
-  //       socket.join(chat._id!.toString());
-  //       logger.info(`User ${userId} joined chat room: ${chat._id}`);
-  //     });
-  //     this.emitUserOnline(userId);
-  //   } catch (error) {
-  //     logger.error(
-  //       error instanceof Error ? error.message : "Error joining user chats"
-  //     );
-  //   }
-  // }
 
   private handleJoinChat(socket: Socket, chatId: string): void {
     socket.join(chatId);
@@ -287,6 +274,7 @@ export class SocketService implements ISocketService {
     userId: string;
     notification: INotification;
   }): void {
+    console.log("appointment notification  triggered");
     this.emitToUser(userId, "appointment-notification", notification);
   }
 

@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import logger from "../../configs/logger";
 import {
   IBehaviouralHealth,
@@ -5,11 +6,16 @@ import {
 } from "../../interfaces/IBehaviouralHealth";
 import IBehaviouralHealthRepository from "../../repositories/healthProfile/interface/IBehaviouralHealthRepository";
 import { AppError } from "../../utils/errors";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class BehaviouralHealthService implements IBehaviouralHealthService {
   private behaviouralHealthRepo: IBehaviouralHealthRepository;
 
-  constructor(behaviouralHealRepo: IBehaviouralHealthRepository) {
+  constructor(
+    @inject(TYPES.IBehavouralHealthRepository)
+    behaviouralHealRepo: IBehaviouralHealthRepository
+  ) {
     this.behaviouralHealthRepo = behaviouralHealRepo;
   }
 

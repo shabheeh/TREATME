@@ -2,11 +2,16 @@ import { Model } from "mongoose";
 import ISpecialization from "../../interfaces/ISpecilazation";
 import ISpecializationRepository from "./interfaces/ISpecializationRepository";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class SpecializationRepository implements ISpecializationRepository {
   private readonly model: Model<ISpecialization>;
 
-  constructor(model: Model<ISpecialization>) {
+  constructor(
+    @inject(TYPES.SpecializationModel) model: Model<ISpecialization>
+  ) {
     this.model = model;
   }
 

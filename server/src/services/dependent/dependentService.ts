@@ -6,11 +6,17 @@ import {
   updateCloudinaryFile,
 } from "../../utils/cloudinary";
 import { AppError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DependentService implements IDependentService {
   private dependentRepository: IDependentRepository;
 
-  constructor(dependentRepository: IDependentRepository) {
+  constructor(
+    @inject(TYPES.IDependentRepository)
+    dependentRepository: IDependentRepository
+  ) {
     this.dependentRepository = dependentRepository;
   }
 

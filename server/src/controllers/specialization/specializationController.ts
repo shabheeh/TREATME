@@ -5,11 +5,17 @@ import ISpecialization, {
 } from "../../interfaces/ISpecilazation";
 import { BadRequestError } from "../../utils/errors";
 import logger from "../../configs/logger";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class SpecializationController implements ISpecializationController {
   private specializationService: ISpecializationService;
 
-  constructor(specializationService: ISpecializationService) {
+  constructor(
+    @inject(TYPES.ISpecializationService)
+    specializationService: ISpecializationService
+  ) {
     this.specializationService = specializationService;
   }
 

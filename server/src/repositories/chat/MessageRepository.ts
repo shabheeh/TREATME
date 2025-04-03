@@ -2,11 +2,14 @@ import { AppError } from "../../utils/errors";
 import IMessageRepository from "./interfaces/IMessageRepository";
 import { IMessage } from "src/interfaces/IMessage";
 import { Model, Types } from "mongoose";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class MessageRepository implements IMessageRepository {
   private readonly model: Model<IMessage>;
 
-  constructor(model: Model<IMessage>) {
+  constructor(@inject(TYPES.MessageModel) model: Model<IMessage>) {
     this.model = model;
   }
 

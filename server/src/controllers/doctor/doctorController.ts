@@ -4,11 +4,14 @@ import { IDoctorController, IDoctorService } from "../../interfaces/IDoctor";
 import { getDoctorsWithSchedulesQuery } from "../../repositories/doctor/interfaces/IDoctorRepository";
 import { Types } from "mongoose";
 import { BadRequestError } from "../../utils/errors";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class DoctorController implements IDoctorController {
   private doctorService: IDoctorService;
 
-  constructor(doctorService: IDoctorService) {
+  constructor(@inject(TYPES.IDoctorService) doctorService: IDoctorService) {
     this.doctorService = doctorService;
   }
 

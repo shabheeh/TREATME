@@ -5,11 +5,17 @@ import { AppError } from "../../utils/errors";
 
 import logger from "../../configs/logger";
 import { eventBus } from "../../utils/eventBus";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class NotificationService implements INotificationService {
   private notificationRepo: INotificationRepository;
 
-  constructor(notificationRepo: INotificationRepository) {
+  constructor(
+    @inject(TYPES.INotificationRepository)
+    notificationRepo: INotificationRepository
+  ) {
     this.notificationRepo = notificationRepo;
   }
 

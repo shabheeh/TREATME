@@ -1,12 +1,17 @@
+import { inject, injectable } from "inversify";
 import logger from "../../configs/logger";
 import { ILifestyle, ILifestyleService } from "../../interfaces/ILifestyle";
 import ILifestyleRepository from "../../repositories/healthProfile/interface/ILifestyleRepository";
 import { AppError } from "../../utils/errors";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class LifestyleService implements ILifestyleService {
   private lifestyleRepo: ILifestyleRepository;
 
-  constructor(lifestyleRepo: ILifestyleRepository) {
+  constructor(
+    @inject(TYPES.ILifestyleRepository) lifestyleRepo: ILifestyleRepository
+  ) {
     this.lifestyleRepo = lifestyleRepo;
   }
 

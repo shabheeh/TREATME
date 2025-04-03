@@ -1,62 +1,25 @@
 import express from "express";
 import multer from "multer";
-import SpecializationRepository from "../../repositories/specialization/SpecializationRepository";
-import { SpecializationModel } from "../../models/Specialization";
-import SpecializationService from "../../services/specialization/sepecializationService";
-import SpecializationController from "../../controllers/specialization/specializationController";
 import { validateSpecialization } from "../../validators/specializationValidator";
 import { authenticate, authorize } from "../../middlewares/auth";
 import { isUserActive } from "../../middlewares/checkUserStatus";
-import PatientRepository from "../../repositories/patient/PatientRepository";
-import { PatientModel } from "../../models/Patient";
-import PatientAuthService from "../../services/patient/authService";
-import OtpService from "../../services/OtpService";
-import CacheService from "../../services/CacheService";
 import TokenController from "../../controllers/shared/tokenController";
 import { checkUserStatus } from "../../controllers/shared/userStatusController";
-import DoctorRepository from "../../repositories/doctor/DoctorRepository";
-import { DoctorModel } from "../../models/Doctor";
-import DoctorAuthService from "../../services/doctor/authService";
-import HealthHistoryRepository from "../../repositories/healthProfile/HealthHistoryRepository";
-import { HealthHistoryModel } from "../../models/HealthHistory";
-import HealthHistoryService from "../../services/healthProfile/HealthHistoryService";
-import HealthHistoryController from "../../controllers/healthProfile/healthHistoryController";
-import LifestyleRepository from "../../repositories/healthProfile/LifestyleRepository";
-import { LifestyleModel } from "../../models/Lifestyle";
-import LifestyleService from "../../services/healthProfile/LifestyleService";
-import LifestyleController from "../../controllers/healthProfile/lifestyleController";
-import BehaviouralHealthRepository from "../../repositories/healthProfile/BehaviouralHealthRepository";
-import { BehaviouralHealthModel } from "../../models/BehaviouralHealth";
-import BehaviouralHealthService from "../../services/healthProfile/BehaviouralHealthService";
-import BehaviouralHealthController from "../../controllers/healthProfile/behaviouralHealthController";
-import AppointmentRepository from "../../repositories/appointment/AppointmentRepository";
-import { AppointmentModel } from "../../models/Appointment";
-import AppointmentController from "../../controllers/appointment/appointmentController";
-import AppointmentService from "../../services/appointment/appointmentService";
-import ScheduleRepository from "../../repositories/doctor/ScheduleRepository";
-import { ScheduleModel } from "../../models/Schedule";
-import ReviewRepository from "../../repositories/review/reviewRepository";
-import { ReviewModel } from "../../models/Review";
-import ReviewService from "../../services/review/reviewService";
-import ReviewController from "../../controllers/review/reviewController";
-import NotificationRepository from "../../repositories/notification/NotificationRepository";
-import { NotificationModel } from "../../models/Notification";
-import NotificationService from "../../services/notification/NotificationService";
-import NotificationController from "../../controllers/notification/NotificationController";
-import WalletRepository from "../../repositories/wallet/WalletRepository";
-import { TransactionModel, WalletModel } from "../../models/Wallet";
-import WalletService from "../../services/wallet/WalletService";
-import WalletController from "../../controllers/wallet/WalletController";
-import StripeService from "../../services/stripe/StripeService";
-import StripeController from "../../controllers/stripe/StripeController";
-import ScheduleService from "../../services/doctor/scheduleService.ts";
-import DashboardService from "../../services/dashboard/DashboardService";
-import DependentRepository from "../../repositories/patient/DependentRepository";
-import DashboardController from "../../controllers/dashboard/DashboardController";
-import { DependentModel } from "../../models/Dependent";
-import AIChatRepository from "../../repositories/aiChat/AIChatRepository";
-import AIChatService from "../../services/aiChat/AIChatService";
-import AIChatController from "../../controllers/aiChat/AIChatController";
+import { container } from "../../configs/container";
+import { IReviewController } from "../../interfaces/IReview";
+import { TYPES } from "../../types/inversifyjs.types";
+import { ISpecializationController } from "src/interfaces/ISpecilazation";
+import { IPatientAuthService } from "src/interfaces/IPatient";
+import { IDoctorAuthService } from "src/interfaces/IDoctor";
+import { IHealthHistoryController } from "src/interfaces/IHealthHistory";
+import { ILifestyleController } from "src/interfaces/ILifestyle";
+import { IBehaviouralHealthController } from "src/interfaces/IBehaviouralHealth";
+import { INotificationController } from "src/controllers/notification/interface/INotificationController";
+import { IWalletController } from "src/controllers/wallet/interface/IWalletController";
+import { IAppointmentController } from "src/interfaces/IAppointment";
+import { IStripeController } from "src/controllers/stripe/interface/IStripeController";
+import IDashboardController from "src/controllers/dashboard/interface/IDashboardController";
+import IAIChatController from "src/controllers/aiChat/interface/IAIChatController";
 
 const router = express.Router();
 
@@ -64,105 +27,57 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const tokenController = new TokenController();
 
-// speicailization di-(dipendency injection)
-const specializationRepository = new SpecializationRepository(
-  SpecializationModel
-);
-const specializationService = new SpecializationService(
-  specializationRepository
-);
-const specializationController = new SpecializationController(
-  specializationService
+const specializationController = container.get<ISpecializationController>(
+  TYPES.ISpecializationController
 );
 
-// patient auth di
-const patientRepository = new PatientRepository(PatientModel);
-const cacheService = new CacheService();
-const otpService = new OtpService(cacheService);
-const patientAuthService = new PatientAuthService(
-  patientRepository,
-  otpService,
-  cacheService
+const patientAuthService = container.get<IPatientAuthService>(
+  TYPES.IPatientAuthService
 );
 
-// doctor auth di
-const doctorRepository = new DoctorRepository(DoctorModel);
-const doctorAuthService = new DoctorAuthService(doctorRepository);
-
-// health history di
-const healthHistoryRepository = new HealthHistoryRepository(HealthHistoryModel);
-const healthHistoryService = new HealthHistoryService(healthHistoryRepository);
-const healthHistoryController = new HealthHistoryController(
-  healthHistoryService
+const doctorAuthService = container.get<IDoctorAuthService>(
+  TYPES.IDoctorAuthService
 );
 
-// lifestyle di
-const lifestyleRepository = new LifestyleRepository(LifestyleModel);
-const lifestyleService = new LifestyleService(lifestyleRepository);
-const lifestyleController = new LifestyleController(lifestyleService);
-
-// behavioural health di
-const behaviouralHealthRepository = new BehaviouralHealthRepository(
-  BehaviouralHealthModel
-);
-const behavioralHealthService = new BehaviouralHealthService(
-  behaviouralHealthRepository
-);
-const behaviouralHealController = new BehaviouralHealthController(
-  behavioralHealthService
+const healthHistoryController = container.get<IHealthHistoryController>(
+  TYPES.IHealthHistoryController
 );
 
-const notificationRepository = new NotificationRepository(NotificationModel);
-const notificationService = new NotificationService(
-  notificationRepository
-  // socketService
+const lifestyleController = container.get<ILifestyleController>(
+  TYPES.ILifestyleController
 );
 
-const notificationController = new NotificationController(notificationService);
-
-// appointment di
-const scheduleRepository = new ScheduleRepository(ScheduleModel);
-const scheduleService = new ScheduleService(scheduleRepository);
-
-// wallet
-const walletRepository = new WalletRepository(WalletModel, TransactionModel);
-const walletService = new WalletService(walletRepository);
-const walletController = new WalletController(walletService);
-
-const appointmentRepository = new AppointmentRepository(AppointmentModel);
-const appointmentService = new AppointmentService(
-  appointmentRepository,
-  scheduleService,
-  notificationService,
-  walletService
+const behaviouralHealController = container.get<IBehaviouralHealthController>(
+  TYPES.IBehaviouralHealthController
 );
-const appointmentController = new AppointmentController(appointmentService);
 
-// reviews di
-const reviewRepository = new ReviewRepository(ReviewModel);
-const reviewService = new ReviewService(reviewRepository);
-const reviewController = new ReviewController(reviewService);
-
-// stripe
-const stripeService = new StripeService(appointmentService, walletService);
-const stripeController = new StripeController(stripeService);
-
-const dependentRepository = new DependentRepository(DependentModel);
-
-// dashboard
-const dashboardService = new DashboardService(
-  appointmentRepository,
-  patientRepository,
-  dependentRepository,
-  doctorRepository,
-  reviewRepository
+const notificationController = container.get<INotificationController>(
+  TYPES.INotificationController
 );
-const dashboardController = new DashboardController(dashboardService);
 
-// ai chat bot
-const aiChatRepository = new AIChatRepository();
-const aiChatService = new AIChatService(aiChatRepository);
-const aiChatController = new AIChatController(aiChatService);
+const walletController = container.get<IWalletController>(
+  TYPES.IWalletController
+);
+
+const appointmentController = container.get<IAppointmentController>(
+  TYPES.IAppointmentController
+);
+
+const reviewController = container.get<IReviewController>(
+  TYPES.IReviewController
+);
+
+const stripeController = container.get<IStripeController>(
+  TYPES.IStripeController
+);
+
+const dashboardController = container.get<IDashboardController>(
+  TYPES.IDashboardController
+);
+
+const aiChatController = container.get<IAIChatController>(
+  TYPES.IAIChatController
+);
 
 router.post("/auth/refresh-token", tokenController.handleRefreshToken);
 

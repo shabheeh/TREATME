@@ -11,11 +11,14 @@ import logger from "../../configs/logger";
 import { IAttachment } from "src/interfaces/IMessage";
 import { uploadToCloudinary } from "../../utils/cloudinary";
 import { ITokenPayload } from "../../utils/jwt";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversifyjs.types";
 
+@injectable()
 class ChatController implements IChatController {
   private chatService: IChatService;
 
-  constructor(chatService: IChatService) {
+  constructor(@inject(TYPES.IChatService) chatService: IChatService) {
     this.chatService = chatService;
   }
 
