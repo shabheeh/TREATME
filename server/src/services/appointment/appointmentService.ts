@@ -6,7 +6,7 @@ import IAppointment, {
 import IAppointmentRepository, {
   IPatientForDoctor,
 } from "../../repositories/appointment/interfaces/IAppointmentRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
 import { extractDate, extractTime } from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
@@ -19,7 +19,6 @@ import { Types } from "mongoose";
 import { IWalletService } from "../wallet/interface/IWalletService";
 import { TransactionData } from "src/interfaces/IWallet";
 import { IScheduleService } from "src/interfaces/ISchedule";
-import { eventBus } from "../../utils/eventBus";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -42,11 +41,6 @@ class AppointmentService implements IAppointmentService {
     this.scheduleService = scheduleService;
     this.notificationService = notificationService;
     this.walletService = walletService;
-
-    eventBus.subscribe(
-      "consultation-completed",
-      this.updateAppointmentStatus.bind(this)
-    );
   }
 
   async createAppointment(
@@ -55,7 +49,6 @@ class AppointmentService implements IAppointmentService {
     try {
       const { doctor, slotId, dayId } = appointmentData;
 
-      // Update booking status
       if (doctor && slotId && dayId) {
         await this.scheduleService.updateBookingStatus(
           doctor.toString(),
@@ -64,7 +57,6 @@ class AppointmentService implements IAppointmentService {
         );
       }
 
-      // Create the appointment
       const appointment =
         await this.appointmentRepo.createAppointment(appointmentData);
 
@@ -73,7 +65,6 @@ class AppointmentService implements IAppointmentService {
           appointment._id as string
         );
 
-      // Send booking confirmation email to patient
       if (
         populatedAppointment.status === "confirmed" &&
         populatedAppointment.doctor &&
@@ -165,10 +156,7 @@ class AppointmentService implements IAppointmentService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -187,11 +175,9 @@ class AppointmentService implements IAppointmentService {
     try {
       const { doctor, slotId, dayId } = updateData;
 
-      // Fetch the existing appointment
       const existingAppointment =
         await this.appointmentRepo.getAppointmentById(appointmentId);
 
-      // Handle slot booking status updates
       if (doctor && slotId && dayId) {
         if (existingAppointment.dayId && existingAppointment.slotId) {
           await this.scheduleService.toggleBookingStatus(
@@ -207,14 +193,12 @@ class AppointmentService implements IAppointmentService {
         );
       }
 
-      // Update the appointment
       const updatedAppointment = await this.appointmentRepo.updateAppointment(
         appointmentId,
         updateData
       );
       const appointmentData = await this.getAppointmentById(appointmentId);
 
-      // Handle email notifications based on appointment status
       if (appointmentData.status === "confirmed") {
         if (appointmentData?.doctor && appointmentData.patient) {
           const {
@@ -231,7 +215,6 @@ class AppointmentService implements IAppointmentService {
           } = appointmentData.patient;
 
           if (appointmentData.date) {
-            // Send booking confirmation email
             const oldDate = extractDate(existingAppointment.date);
             const oldTime = extractTime(existingAppointment.date);
             const date = extractDate(appointmentData.date);
@@ -301,32 +284,25 @@ class AppointmentService implements IAppointmentService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
   async cancelAppointment(appointmentId: string): Promise<void> {
     try {
-      // get existing appointment
       const appointmentData =
         await this.appointmentRepo.getAppointmentById(appointmentId);
 
-      // toggle booking status for cancelled appointment
       await this.scheduleService.toggleBookingStatus(
         appointmentData.doctor._id as string,
         appointmentData.dayId,
         appointmentData.slotId
       );
 
-      // update the appointment status to "cancelled"
       await this.appointmentRepo.updateAppointment(appointmentId, {
         status: "cancelled",
       });
 
-      // Send cancellation email
       const {
         _id: doctorId,
         firstName: doctorFirstName,
@@ -390,7 +366,6 @@ class AppointmentService implements IAppointmentService {
         "Patient"
       );
 
-      // if the cancelling appointment within 2hr from appointment deduct 100 rs
       const now = new Date();
       const appointmentDate = new Date(appointmentData.date);
       const timeDifference = appointmentDate.getTime() - now.getTime();
@@ -428,10 +403,7 @@ class AppointmentService implements IAppointmentService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -456,10 +428,7 @@ class AppointmentService implements IAppointmentService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -473,10 +442,7 @@ class AppointmentService implements IAppointmentService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -514,13 +480,8 @@ class AppointmentService implements IAppointmentService {
     );
   }
 
-  private async updateAppointmentStatus({
-    appointmentId,
-  }: {
-    appointmentId: string;
-  }) {
+  async updateAppointmentStatus(appointmentId: string): Promise<void> {
     try {
-      logger.info("called update status");
       const appointment =
         await this.appointmentRepo.getAppointmentById(appointmentId);
 
@@ -549,10 +510,7 @@ class AppointmentService implements IAppointmentService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

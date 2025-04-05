@@ -8,6 +8,8 @@ import { TransactionData } from "src/interfaces/IWallet";
 import { error } from "console";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class WalletController implements IWalletController {
@@ -34,7 +36,7 @@ class WalletController implements IWalletController {
       }
       const { wallet, transactions } =
         await this.walletService.accessOrCreateWallet(userId, userType);
-      res.status(200).json({ wallet, transactions });
+      res.status(HttpStatusCode.OK).json({ wallet, transactions });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -59,7 +61,7 @@ class WalletController implements IWalletController {
       }
 
       if (!amount) {
-        throw new BadRequestError("Amount is required");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const transactionData: TransactionData = {
@@ -73,7 +75,7 @@ class WalletController implements IWalletController {
         userId,
         transactionData
       );
-      res.status(200).json({ transaction });
+      res.status(HttpStatusCode.OK).json({ transaction });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -99,7 +101,7 @@ class WalletController implements IWalletController {
         transactionData
       );
 
-      res.status(200).json({ transaction });
+      res.status(HttpStatusCode.OK).json({ transaction });
     } catch (error) {
       logger.error(
         error instanceof Error

@@ -8,7 +8,7 @@ import IDoctor, {
   IDoctorsFilter,
   IDoctorsFilterResult,
 } from "../../interfaces/IDoctor";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -25,10 +25,7 @@ class DoctorRepository implements IDoctorRepository {
       const newDoctor = await this.model.create(doctor);
       return newDoctor.toObject();
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -40,10 +37,7 @@ class DoctorRepository implements IDoctorRepository {
         .lean();
       return doctor;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -60,10 +54,8 @@ class DoctorRepository implements IDoctorRepository {
       }
       return doctor;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -90,10 +82,8 @@ class DoctorRepository implements IDoctorRepository {
 
       return updatedDoctor;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -168,10 +158,7 @@ class DoctorRepository implements IDoctorRepository {
         totalPages,
       };
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -263,10 +250,7 @@ class DoctorRepository implements IDoctorRepository {
         totalPages: Math.ceil(totalDoctorsCount / limit),
       };
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -279,10 +263,8 @@ class DoctorRepository implements IDoctorRepository {
       }
       return doctor;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -324,10 +306,7 @@ class DoctorRepository implements IDoctorRepository {
       ]);
       return result as unknown as { specialization: string; count: number }[];
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

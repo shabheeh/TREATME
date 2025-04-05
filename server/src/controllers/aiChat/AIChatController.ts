@@ -5,6 +5,8 @@ import { BadRequestError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class AIChatController implements IAIChatController {
@@ -23,11 +25,11 @@ class AIChatController implements IAIChatController {
       const { message } = req.body;
 
       if (!message) {
-        throw new BadRequestError("Message is required");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
       const aiResponse =
         await this.aiChatService.processChatInteraction(message);
-      res.status(200).json({ message: aiResponse });
+      res.status(HttpStatusCode.OK).json({ message: aiResponse });
     } catch (error) {
       logger.error(
         error instanceof Error

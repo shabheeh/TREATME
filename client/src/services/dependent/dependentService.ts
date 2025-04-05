@@ -7,10 +7,6 @@ class DependentService {
   async addDependent(dependentData: FormData): Promise<void> {
     try {
       await api.patient.post(`/dependents`, dependentData);
-
-      // const { dependent } = response.data;
-
-      // store.dispatch(addDependent(dependent))
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`failed to add dependent: ${error.message}`, error);

@@ -5,12 +5,18 @@ import { IChat } from "src/interfaces/IChat";
 import { IAttachment, IMessage } from "src/interfaces/IMessage";
 import { Types } from "mongoose";
 import { deleteCloudinaryFile } from "../../utils/cloudinary";
-import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
+import {
+  AppError,
+  AuthError,
+  AuthErrorCode,
+  handleTryCatchError,
+} from "../../utils/errors";
 import logger from "../../configs/logger";
 import { IAppointmentService } from "src/interfaces/IAppointment";
 import { getDaysDifference } from "../../helpers/getDaysDifference";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class ChatService implements IChatService {
@@ -51,7 +57,6 @@ class ChatService implements IChatService {
       skip
     );
 
-    // returning messages in ascending order old messages will be first
     return messages.reverse();
   }
 
@@ -67,7 +72,6 @@ class ChatService implements IChatService {
       return chat;
     }
 
-    // if no existing chat create new one
     const chatData = {
       participants: [
         {
@@ -101,13 +105,11 @@ class ChatService implements IChatService {
     creatorType: "Patient" | "Doctor" | "Admin"
   ): Promise<IChat> {
     try {
-      // Ensure the creator (admin) is included in the participants list
       const isAdminIncluded = participants.some(
         (participant) => participant.userId === createdById
       );
 
       if (!isAdminIncluded) {
-        // if not the admin to the participants list
         participants.push({ userId: createdById, userType: "Admin" });
       }
 
@@ -118,12 +120,7 @@ class ChatService implements IChatService {
         creatorType
       );
     } catch (error) {
-      throw new AppError(
-        `Failed to create group chat: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -168,11 +165,6 @@ class ChatService implements IChatService {
       }
     }
 
-    // if (senderType === "Patient") {
-    //   await this.validateMessagingRestriction(chatId, sender);
-    // }
-
-    // create message obj
     const messageData = {
       sender: new Types.ObjectId(sender),
       senderType,
@@ -183,7 +175,6 @@ class ChatService implements IChatService {
       isRead: false,
     };
 
-    // update last message in chat
     const newMessage = await this.messageRepository.create(messageData);
 
     await this.chatRepository.updateLastMessage(
@@ -207,24 +198,23 @@ class ChatService implements IChatService {
 
   async deleteChat(chatId: string, userId: string): Promise<boolean> {
     try {
-      // first get chat to verify the user is the creator
       const chat = await this.chatRepository.findById(chatId);
 
       if (!chat) {
-        throw new AppError("Chat not found", 404);
+        throw new AppError("Chat not found", HttpStatusCode.NOT_FOUND);
       }
 
       if (chat.createdBy?.toString() !== userId) {
         throw new AuthError(
           AuthErrorCode.UNAUTHORIZED,
           "Only the creator can delete tha chat",
-          403
+          HttpStatusCode.FORBIDDEN
         );
       }
 
       const success = await this.chatRepository.deleteChat(chatId);
       if (!success) {
-        throw new AppError("Failed to delete chat", 400);
+        throw new AppError("Failed to delete chat", HttpStatusCode.BAD_REQUEST);
       }
       return success;
     } catch (error) {
@@ -232,16 +222,12 @@ class ChatService implements IChatService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
   async deleteMessage(messageId: string, userId: string): Promise<boolean> {
     try {
-      // get the message first to verify ownership & find if any attachments
       const message = await this.messageRepository.findById(messageId);
 
       if (!message) {
@@ -252,11 +238,10 @@ class ChatService implements IChatService {
         throw new AuthError(
           AuthErrorCode.UNAUTHORIZED,
           "You can only delete your own messages",
-          403
+          HttpStatusCode.FORBIDDEN
         );
       }
 
-      // delete attachments from cloudinary if any
       if (message.attachments && message.attachments.length > 0) {
         for (const attachment of message.attachments) {
           const publicId = attachment.publicId;
@@ -267,11 +252,13 @@ class ChatService implements IChatService {
         }
       }
 
-      // delete message from database
       const success = await this.messageRepository.deleteMessage(messageId);
 
       if (!success) {
-        throw new AppError("Failed to delete message", 400);
+        throw new AppError(
+          "Failed to delete message",
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       return success;
@@ -280,10 +267,7 @@ class ChatService implements IChatService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -341,10 +325,7 @@ class ChatService implements IChatService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

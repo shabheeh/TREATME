@@ -3,7 +3,11 @@ import ISpecialization, {
 } from "../../interfaces/ISpecilazation";
 import ISpecializationRepository from "../../repositories/specialization/interfaces/ISpecializationRepository";
 import logger from "../../configs/logger";
-import { AppError, ConflictError } from "../../utils/errors";
+import {
+  AppError,
+  ConflictError,
+  handleTryCatchError,
+} from "../../utils/errors";
 import {
   uploadToCloudinary,
   updateCloudinaryFile,
@@ -52,10 +56,7 @@ class SpecializationService implements ISpecializationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -67,10 +68,7 @@ class SpecializationService implements ISpecializationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -89,10 +87,7 @@ class SpecializationService implements ISpecializationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -148,10 +143,7 @@ class SpecializationService implements ISpecializationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

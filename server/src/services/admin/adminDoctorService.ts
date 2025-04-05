@@ -6,7 +6,11 @@ import IDoctorRepository from "../../repositories/doctor/interfaces/IDoctorRepos
 import bcrypt from "bcryptjs";
 import logger from "../../configs/logger";
 import { IAdminDoctorService } from "src/interfaces/IAdmin";
-import { AppError, BadRequestError } from "../../utils/errors";
+import {
+  AppError,
+  BadRequestError,
+  handleTryCatchError,
+} from "../../utils/errors";
 import { sendEmail } from "../../utils/mailer";
 import { generateWelcomeDoctorHtml } from "../../helpers/welcomeDoctor";
 import {
@@ -70,10 +74,7 @@ class AdminDoctorService implements IAdminDoctorService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -82,13 +83,7 @@ class AdminDoctorService implements IAdminDoctorService {
       return await this.doctorRepository.getDoctors(filter);
     } catch (error) {
       logger.error("error creating a new doctor", error);
-      if (error instanceof AppError) {
-        throw error;
-      }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -133,10 +128,7 @@ class AdminDoctorService implements IAdminDoctorService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

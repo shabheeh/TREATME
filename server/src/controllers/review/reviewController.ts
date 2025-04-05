@@ -4,6 +4,8 @@ import { IReviewController, IReviewService } from "../../interfaces/IReview";
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class ReviewController implements IReviewController {
@@ -21,7 +23,7 @@ class ReviewController implements IReviewController {
     try {
       const { reviewData } = req.body;
       const review = await this.reviewService.addOrUpdateReview(reviewData);
-      res.status(200).json({ review });
+      res.status(HttpStatusCode.OK).json({ review });
     } catch (error) {
       logger.error("Controller: Failed to create or update review");
       next(error);
@@ -35,12 +37,12 @@ class ReviewController implements IReviewController {
     try {
       const { doctorId } = req.params;
       if (!doctorId) {
-        throw new BadRequestError("Bad Request: Missing information");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const reviews = await this.reviewService.getDoctorReviews(doctorId);
 
-      res.status(200).json({ reviews });
+      res.status(HttpStatusCode.OK).json({ reviews });
     } catch (error) {
       logger.error(
         error instanceof Error

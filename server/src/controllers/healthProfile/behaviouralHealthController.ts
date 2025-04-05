@@ -7,6 +7,8 @@ import {
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class BehaviouralHealthController implements IBehaviouralHealthController {
@@ -28,13 +30,13 @@ class BehaviouralHealthController implements IBehaviouralHealthController {
       const { patientId } = req.params;
 
       if (!patientId) {
-        throw new BadRequestError("Bad Request: Missing info");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const behavioralHealth =
         await this.behavioralHealthService.findBehaviouralHealth(patientId);
 
-      res.status(200).json({ behavioralHealth });
+      res.status(HttpStatusCode.OK).json({ behavioralHealth });
     } catch (error) {
       logger.error("failed to fetch behavioural health", error);
       next(error);
@@ -51,7 +53,7 @@ class BehaviouralHealthController implements IBehaviouralHealthController {
       const { updateData } = req.body;
 
       if (!patientId || !updateData) {
-        throw new BadRequestError("Bad Reqeuest: Missing info");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const behavioralHealth =
@@ -60,7 +62,7 @@ class BehaviouralHealthController implements IBehaviouralHealthController {
           updateData
         );
 
-      res.status(200).json({ behavioralHealth });
+      res.status(HttpStatusCode.OK).json({ behavioralHealth });
     } catch (error) {
       logger.error("failed to update behavioural health", error);
       next(error);

@@ -4,6 +4,8 @@ import { IDoctorAuthService } from "../../interfaces/IDoctor";
 import { IPatientAuthService } from "../../interfaces/IPatient";
 import { AuthError, AuthErrorCode } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 export const checkUserStatus = (
   patientService: IPatientAuthService,
@@ -34,16 +36,16 @@ export const checkUserStatus = (
       }
 
       if (!isActive) {
-        res.status(200).json({
+        res.status(HttpStatusCode.OK).json({
           success: false,
-          message: "User is Blocked",
+          message: ResponseMessage.ERROR.FORBIDDEN_ACCESS,
         });
         return;
       }
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         success: true,
-        message: "User is Active",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("Error in checkUserStatus :", error);

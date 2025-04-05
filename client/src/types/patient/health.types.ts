@@ -32,15 +32,6 @@ export interface IHealthCondition {
   reportedBy: string;
 }
 
-// export interface IBodyMeasureMents {
-//     height: {
-//         feet: number;
-//         inches: number;
-//     }
-//     weight: number;
-//     bmi: string
-// }
-
 export interface IHealthHistory {
   _id: string;
   patientId: string;
@@ -50,7 +41,6 @@ export interface IHealthHistory {
   healthConditions: IHealthCondition[];
   surgeries: ISurgery[];
   familyHistory: IFamilyHistory[];
-  // bodyMeasurements: IBodyMeasureMents
 }
 
 export interface ILifestyle {

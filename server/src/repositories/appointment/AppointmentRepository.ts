@@ -6,7 +6,7 @@ import IAppointmentRepository, {
   IPatientForDoctor,
   MonthlyRevenue,
 } from "./interfaces/IAppointmentRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -30,10 +30,8 @@ class AppointmentRepository implements IAppointmentRepository {
 
       return appointment;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -61,10 +59,8 @@ class AppointmentRepository implements IAppointmentRepository {
       }
       return appointment as unknown as IAppointmentPopulated;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -84,10 +80,8 @@ class AppointmentRepository implements IAppointmentRepository {
       }
       return appointment;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -112,10 +106,7 @@ class AppointmentRepository implements IAppointmentRepository {
 
       return appointments;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -140,10 +131,7 @@ class AppointmentRepository implements IAppointmentRepository {
 
       return appointments;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -167,10 +155,7 @@ class AppointmentRepository implements IAppointmentRepository {
         .lean();
       return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -204,10 +189,7 @@ class AppointmentRepository implements IAppointmentRepository {
         .lean();
       return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -231,14 +213,12 @@ class AppointmentRepository implements IAppointmentRepository {
         });
 
       if (!appointment) {
-        throw new AppError("");
+        throw new AppError("Appointment not found");
       }
       return appointment as unknown as IAppointmentPopulated;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -254,14 +234,10 @@ class AppointmentRepository implements IAppointmentRepository {
         .lean();
       return appointment;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
-  // function to get the patients treated by doctor
   async getPatientsByDoctor(
     doctorId: string,
     page: number,
@@ -309,7 +285,6 @@ class AppointmentRepository implements IAppointmentRepository {
           },
         },
 
-        // search query
         {
           $match: {
             $or: [
@@ -463,10 +438,7 @@ class AppointmentRepository implements IAppointmentRepository {
 
       return { patients, totalPatients };
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -535,10 +507,7 @@ class AppointmentRepository implements IAppointmentRepository {
 
       return formattedData;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -574,10 +543,7 @@ class AppointmentRepository implements IAppointmentRepository {
         count,
       }));
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -605,7 +571,7 @@ class AppointmentRepository implements IAppointmentRepository {
         })
         .populate({
           path: "patient",
-          select: "firstName lastName profilePicture",
+          select: "firstName lastName profilePicture dateOfBirth",
         })
         .populate({
           path: "doctor",
@@ -614,10 +580,116 @@ class AppointmentRepository implements IAppointmentRepository {
         .lean();
       return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
+    }
+  }
+
+  async getMonthlyRevenueByDoctor(doctorId: string): Promise<MonthlyRevenue> {
+    try {
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+
+      const result = await this.model.aggregate([
+        {
+          $match: {
+            doctor: new Types.ObjectId(doctorId),
+            status: "completed",
+            date: { $gte: twelveMonthsAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+            },
+            monthlyRevenue: { $sum: { $multiply: ["$fee", 0.9] } },
+          },
+        },
+        {
+          $project: {
+            month: {
+              $dateToString: {
+                format: "%b",
+                date: {
+                  $dateFromParts: {
+                    year: "$_id.year",
+                    month: "$_id.month",
+                    day: 1,
+                  },
+                },
+              },
+            },
+            monthlyRevenue: 1,
+            _id: 0,
+          },
+        },
+        {
+          $sort: { month: 1 },
+        },
+        {
+          $group: {
+            _id: null,
+            monthlyData: {
+              $push: { month: "$month", revenue: "$monthlyRevenue" },
+            },
+            totalRevenue: { $sum: "$monthlyRevenue" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            monthlyData: 1,
+            totalRevenue: 1,
+          },
+        },
+      ]);
+
+      const formattedData =
+        result.length > 0 ? result[0] : { monthlyData: [], totalRevenue: 0 };
+
+      return formattedData;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+    }
+  }
+
+  async getWeeklyAppointmentsByDoctor(
+    doctorId: string
+  ): Promise<{ day: string; count: number }[]> {
+    try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+
+      const result = await this.model.aggregate([
+        {
+          $match: {
+            doctor: new Types.ObjectId(doctorId),
+            status: "completed",
+            date: { $gte: sevenDaysAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              dayOfWeek: { $dayOfWeek: "$date" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { "_id.dayOfWeek": 1 },
+        },
+      ]);
+
+      const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+      return result.map(({ _id, count }) => ({
+        day: dayNames[_id.dayOfWeek - 1],
+        count,
+      }));
+    } catch (error) {
+      handleTryCatchError("Database", error);
     }
   }
 }

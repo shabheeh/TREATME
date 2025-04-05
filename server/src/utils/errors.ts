@@ -1,3 +1,6 @@
+import logger from "../configs/logger";
+import { HttpStatusCode } from "../constants/httpStatusCodes";
+
 export enum AuthErrorCode {
   INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
   INVALID_OTP = "INVALID_OTP",
@@ -59,4 +62,20 @@ export class AuthError extends AppError {
     super(message || defaultMessages[code], statusCode, "fail");
     this.code = code;
   }
+}
+
+export function handleTryCatchError(
+  context: string,
+  error: unknown,
+  logError: boolean = false
+): never {
+  const errorMessage = `${context} error: ${
+    error instanceof Error ? error.message : "Unknown error"
+  }`;
+
+  if (logError) {
+    logger.error(errorMessage, error);
+  }
+
+  throw new AppError(errorMessage, HttpStatusCode.INTERNAL_SERVER_ERROR);
 }

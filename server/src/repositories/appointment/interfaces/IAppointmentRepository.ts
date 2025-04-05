@@ -29,6 +29,10 @@ interface IAppointmentRepository {
   getTodaysAppointmentByDoctor(
     doctorId: string
   ): Promise<IAppointmentPopulated[]>;
+  getMonthlyRevenueByDoctor(doctorId: string): Promise<MonthlyRevenue>;
+  getWeeklyAppointmentsByDoctor(
+    doctorId: string
+  ): Promise<{ day: string; count: number }[]>;
 }
 
 export default IAppointmentRepository;

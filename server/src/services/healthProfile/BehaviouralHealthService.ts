@@ -5,7 +5,7 @@ import {
   IBehaviouralHealthService,
 } from "../../interfaces/IBehaviouralHealth";
 import IBehaviouralHealthRepository from "../../repositories/healthProfile/interface/IBehaviouralHealthRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { TYPES } from "../../types/inversifyjs.types";
 
 @injectable()
@@ -31,10 +31,7 @@ class BehaviouralHealthService implements IBehaviouralHealthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -59,10 +56,7 @@ class BehaviouralHealthService implements IBehaviouralHealthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

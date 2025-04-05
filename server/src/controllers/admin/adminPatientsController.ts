@@ -6,6 +6,8 @@ import {
 import logger from "../../configs/logger";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class AdminPatientsController implements IAdminPatientsController {
@@ -32,7 +34,7 @@ class AdminPatientsController implements IAdminPatientsController {
 
       const result = await this.adminPatientsService.getPatients(params);
 
-      res.status(200).json({ result });
+      res.status(HttpStatusCode.OK).json({ result });
     } catch (error) {
       logger.error("controller:error fetching patients data ", error);
       next(error);
@@ -53,8 +55,8 @@ class AdminPatientsController implements IAdminPatientsController {
         isActive
       );
 
-      res.status(200).json({
-        message: `Successfully ${isActive ? "Blocked" : "Unblocked"} Patient`,
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("controller: Error block or unblock patient:", error);

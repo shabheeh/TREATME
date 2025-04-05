@@ -1,7 +1,7 @@
 import { IBehaviouralHealth } from "../../interfaces/IBehaviouralHealth";
 import IBehaviouralHealthRepository from "./interface/IBehaviouralHealthRepository";
 import { Model } from "mongoose";
-import { AppError } from "../../utils/errors";
+import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -22,10 +22,7 @@ class BehaviouralHealthRepository implements IBehaviouralHealthRepository {
       const behaviouralHealth = await this.model.findOne({ patientId });
       return behaviouralHealth;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -41,10 +38,7 @@ class BehaviouralHealthRepository implements IBehaviouralHealthRepository {
       );
       return behaviouralHealth;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

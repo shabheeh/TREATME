@@ -8,7 +8,6 @@ import { ISocketService } from "./socket/socket";
 import { container } from "./configs/container";
 import { TYPES } from "./types/inversifyjs.types";
 
-// create http server
 const server = http.createServer(app);
 
 export const socketService = container.get<ISocketService>(
@@ -17,7 +16,6 @@ export const socketService = container.get<ISocketService>(
 
 socketService.initialize(server);
 
-// conntec mongodv
 connectDB();
 
 process.on("unhandledRejection", (reason, promise) => {
@@ -28,7 +26,6 @@ process.on("uncaughtException", (error) => {
   logger.error("Uncaught Exception thrown:", error);
 });
 
-// Start the server
 const PORT: string | undefined = process.env.PORT;
 
 if (!PORT) {

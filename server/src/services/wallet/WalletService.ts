@@ -1,7 +1,7 @@
 import IWalletRepository from "src/repositories/wallet/interface/IWalletRepository";
 import { IWalletService } from "./interface/IWalletService";
 import { ITransaction, IWallet, TransactionData } from "src/interfaces/IWallet";
-import { AppError } from "../../utils/errors";
+import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -20,7 +20,6 @@ class WalletService implements IWalletService {
     userType: "Patient" | "Doctor"
   ): Promise<{ wallet: IWallet; transactions: ITransaction[] }> {
     try {
-      // if the user already has a wallet return that
       const wallet = await this.walletRepo.findWalletByUserId(userId);
 
       if (wallet) {
@@ -30,24 +29,12 @@ class WalletService implements IWalletService {
         return { wallet, transactions };
       }
 
-      // if user has no wallet create one
       const newWallet = await this.walletRepo.createWallet(userId, userType);
       return { wallet: newWallet, transactions: [] };
     } catch (error) {
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
-
-  // async updateWallet(
-  //   walletId: string,
-  //   walletData: Partial<WalletData>
-  // ): Promise<IWallet> {
-  //   const updatedWallet = await this.walletRepo.update(walletId, walletData);
-  //   return updatedWallet;
-  // }
 
   async addTransaction(
     userId: string,

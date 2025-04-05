@@ -28,6 +28,15 @@ export type AdminDashboardData = {
 };
 
 export type DoctorDashboardData = {
+  monthlyData: {
+    month: string;
+    revenue: number;
+  }[];
+  weeklyAppointments: {
+    day: string;
+    count: number;
+  }[];
+  totalRevenue: number;
   todaysAppointments: IAppointmentPopulated[];
   averageRating: number;
   totalTodaysAppointment: number;

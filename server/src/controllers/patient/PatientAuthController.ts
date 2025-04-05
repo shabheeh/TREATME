@@ -8,13 +8,15 @@ import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class PatientAuthController implements IPatientAuthController {
   private patientAuthService: IPatientAuthService;
 
   constructor(
-    @inject(TYPES.IPatientAcccountService)
+    @inject(TYPES.IPatientAuthService)
     patientAuthService: IPatientAuthService
   ) {
     this.patientAuthService = patientAuthService;
@@ -30,8 +32,8 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.sendOtp(email, password);
 
-      res.status(200).json({
-        message: `A verification OTP has been sent to ${email}`,
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       next(error);
@@ -48,8 +50,8 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.verifyOtp(email, otp);
 
-      res.status(200).json({
-        message: "OTP verified successfully",
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
         email,
       });
     } catch (error) {
@@ -68,8 +70,8 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.signup(userData);
 
-      res.status(201).json({
-        message: "User signed up successfully",
+      res.status(HttpStatusCode.CREATED).json({
+        message: ResponseMessage.SUCCESS.RESOURCE_CREATED,
       });
     } catch (error) {
       logger.error("error signup", error);
@@ -101,7 +103,7 @@ class PatientAuthController implements IPatientAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         accessToken,
         patient,
       });
@@ -122,7 +124,7 @@ class PatientAuthController implements IPatientAuthController {
       const patient =
         await this.patientAuthService.sendOtpForgotPassword(email);
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         patient,
       });
     } catch (error) {
@@ -141,8 +143,8 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.verifyOtpForgotPassword(email, otp);
 
-      res.status(200).json({
-        messge: "OTP verified successfully",
+      res.status(HttpStatusCode.OK).json({
+        messge: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("error veriying otp forgotpassword", error);
@@ -160,8 +162,8 @@ class PatientAuthController implements IPatientAuthController {
 
       await this.patientAuthService.resetPassword(id, password);
 
-      res.status(200).json({
-        message: "Password reset successfully",
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("error reset password", error);
@@ -189,7 +191,7 @@ class PatientAuthController implements IPatientAuthController {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(200).json({
+        res.status(HttpStatusCode.OK).json({
           patient,
           accessToken,
           partialUser,
@@ -199,7 +201,7 @@ class PatientAuthController implements IPatientAuthController {
 
       const { newPatient, partialUser } = result;
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         patient: newPatient,
         partialUser,
       });
@@ -229,7 +231,7 @@ class PatientAuthController implements IPatientAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         patient,
         accessToken,
       });
@@ -248,13 +250,13 @@ class PatientAuthController implements IPatientAuthController {
       const { email } = req.body;
 
       if (!email) {
-        throw new BadRequestError("No email not provided");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       await this.patientAuthService.resendOtp(email);
 
-      res.status(200).json({
-        message: "otp resent successfully",
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("controller: Error resending otp:", error);
@@ -271,13 +273,13 @@ class PatientAuthController implements IPatientAuthController {
       const { email } = req.body;
 
       if (!email) {
-        throw new BadRequestError("No email not provided");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       await this.patientAuthService.resendOtpForgotPassword(email);
 
-      res.status(200).json({
-        message: "otp resent successfully",
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("controller: Error resending otp:", error);
@@ -297,8 +299,8 @@ class PatientAuthController implements IPatientAuthController {
         sameSite: "lax",
       });
 
-      res.status(200).json({
-        message: "user signed out successfully",
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("controller: Error resending otp:", error);
@@ -319,7 +321,7 @@ class PatientAuthController implements IPatientAuthController {
       }
 
       if (!currentPassword || !newPassword) {
-        throw new BadRequestError("Missing request info");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       await this.patientAuthService.changePassword(
@@ -327,9 +329,10 @@ class PatientAuthController implements IPatientAuthController {
         currentPassword,
         newPassword
       );
-      res
-        .status(200)
-        .json({ success: true, message: "Password changed successfully" });
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
+      });
     } catch (error) {
       logger.error(
         error instanceof Error

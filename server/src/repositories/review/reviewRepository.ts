@@ -1,7 +1,7 @@
 import { Model, Types } from "mongoose";
 import IReviewRepository from "./interface/IReviewRepository";
 import IReview from "../../interfaces/IReview";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -29,10 +29,8 @@ class ReviewRepository implements IReviewRepository {
 
       return review;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -45,10 +43,7 @@ class ReviewRepository implements IReviewRepository {
 
       return reviews;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -66,10 +61,7 @@ class ReviewRepository implements IReviewRepository {
 
       return result.length > 0 ? result[0].averageRating : 0;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

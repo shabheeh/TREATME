@@ -1,4 +1,3 @@
-// import {  } from "mongoose";
 import { ISchedule } from "../../../interfaces/ISchedule";
 
 interface IScheduleRepository {

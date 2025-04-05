@@ -9,7 +9,6 @@ if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
   throw new Error("JWT secrets are not defined in env");
 }
 
-// Types
 export interface ITokenPayload {
   id: string;
   email: string;

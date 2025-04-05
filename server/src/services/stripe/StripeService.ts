@@ -3,11 +3,12 @@ import { IWalletService } from "../wallet/interface/IWalletService";
 import IAppointment, { IAppointmentService } from "src/interfaces/IAppointment";
 import { ITransaction, TransactionData } from "src/interfaces/IWallet";
 import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import Stripe from "stripe";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class StripeService implements IStripeService {
@@ -46,10 +47,7 @@ class StripeService implements IStripeService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -98,11 +96,6 @@ class StripeService implements IStripeService {
               event.data.object
             );
           }
-          //   } else if (
-          //     event.data.object.metadata.paymentType === "wallet_topup"
-          //   ) {
-          //     console.log("");
-          //   }
 
           break;
 
@@ -114,10 +107,7 @@ class StripeService implements IStripeService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -125,7 +115,10 @@ class StripeService implements IStripeService {
     paymentIntent: Stripe.PaymentIntent
   ) {
     if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
+      throw new AppError(
+        "Payment intent metadata is missing",
+        HttpStatusCode.BAD_REQUEST
+      );
     }
 
     const appointment = {
@@ -142,7 +135,10 @@ class StripeService implements IStripeService {
     paymentIntent: Stripe.PaymentIntent
   ) {
     if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
+      throw new AppError(
+        "Payment intent metadata is missing",
+        HttpStatusCode.BAD_REQUEST
+      );
     }
 
     const appointment = {
@@ -159,7 +155,10 @@ class StripeService implements IStripeService {
     paymentIntent: Stripe.PaymentIntent
   ) {
     if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
+      throw new AppError(
+        "Payment intent metadata is missing",
+        HttpStatusCode.BAD_REQUEST
+      );
     }
 
     const appointment = {
@@ -191,13 +190,19 @@ class StripeService implements IStripeService {
     paymentIntent: Stripe.PaymentIntent
   ) {
     if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
+      throw new AppError(
+        "Payment intent metadata is missing",
+        HttpStatusCode.BAD_REQUEST
+      );
     }
 
     const userId = paymentIntent.metadata.userId;
 
     if (!userId) {
-      throw new AppError("userId not found in paymentIntent.metadata", 404);
+      throw new AppError(
+        "userId not found in paymentIntent.metadata",
+        HttpStatusCode.NOT_FOUND
+      );
     }
 
     console.log(paymentIntent.metadata.amount, "payment aoutsaf");
@@ -217,13 +222,19 @@ class StripeService implements IStripeService {
     paymentIntent: Stripe.PaymentIntent
   ) {
     if (!paymentIntent.metadata) {
-      throw new AppError("Payment intent metadata is missing", 400);
+      throw new AppError(
+        "Payment intent metadata is missing",
+        HttpStatusCode.BAD_REQUEST
+      );
     }
 
     const userId = paymentIntent.metadata.userId;
 
     if (!userId) {
-      throw new AppError("userId not found in paymentIntent.metadata", 404);
+      throw new AppError(
+        "userId not found in paymentIntent.metadata",
+        HttpStatusCode.NOT_FOUND
+      );
     }
 
     const transaction: TransactionData = {

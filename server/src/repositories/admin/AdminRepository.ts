@@ -4,6 +4,7 @@ import IAdminRepository from "./interfaces/IAdminRepository";
 import { AppError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 @injectable()
 class AdminRepository implements IAdminRepository {
   private readonly model: Model<IAdmin>;
@@ -19,7 +20,7 @@ class AdminRepository implements IAdminRepository {
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
+        HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -31,7 +32,7 @@ class AdminRepository implements IAdminRepository {
     } catch (error) {
       throw new AppError(
         `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
+        HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     }
   }

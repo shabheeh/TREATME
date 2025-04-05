@@ -5,11 +5,6 @@ import "@fontsource/montserrat/400.css";
 import "@fontsource/montserrat/500.css";
 import "@fontsource/montserrat/700.css";
 
-// import "@fontsource/poppins/300.css";
-// import "@fontsource/poppins/400.css";
-// import "@fontsource/poppins/500.css";
-// import "@fontsource/poppins/700.css";
-
 export const theme = createTheme({
   typography: {
     fontFamily: [
@@ -94,7 +89,6 @@ export const theme = createTheme({
     },
   },
   palette: {
-    // mode: "dark",
     primary: {
       main: "#009C9D",
     },

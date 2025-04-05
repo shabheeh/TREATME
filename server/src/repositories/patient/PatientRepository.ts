@@ -4,9 +4,10 @@ import IPatient, {
   IPatientsFilterResult,
 } from "../../interfaces/IPatient";
 import IPatientRepository from "./interface/IPatientRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 interface Query {
   $or?: Array<{
@@ -30,10 +31,7 @@ class PatientRepository implements IPatientRepository {
       const newPatient = await this.model.create(patient);
       return newPatient.toObject();
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -42,10 +40,8 @@ class PatientRepository implements IPatientRepository {
       const patient = await this.model.findOne({ email }).lean();
       return patient;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -54,10 +50,7 @@ class PatientRepository implements IPatientRepository {
       const patient = await this.model.findById(id).select("-password").lean();
       return patient;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -79,17 +72,14 @@ class PatientRepository implements IPatientRepository {
         .select("-password");
 
       if (!updatedPatient) {
-        throw new AppError("Patient not found", 404);
+        throw new AppError("Patient not found", HttpStatusCode.NOT_FOUND);
       }
 
       return updatedPatient;
     } catch (error) {
       if (error instanceof AppError) throw error;
 
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -120,10 +110,7 @@ class PatientRepository implements IPatientRepository {
         totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -137,10 +124,8 @@ class PatientRepository implements IPatientRepository {
 
       return patient;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -159,10 +144,7 @@ class PatientRepository implements IPatientRepository {
       ]);
       return patientsAge;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

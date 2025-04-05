@@ -1,7 +1,7 @@
 import { Model } from "mongoose";
 import IHealthHistoryRepository from "./interface/IHealthHistoryRepository";
 import { IHealthHistory } from "../../interfaces/IHealthHistory";
-import { AppError } from "../../utils/errors";
+import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -19,10 +19,7 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
 
       return healthHistroy;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -39,10 +36,7 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
 
       return updatedHealthHistory;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

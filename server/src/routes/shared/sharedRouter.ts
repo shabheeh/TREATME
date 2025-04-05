@@ -203,6 +203,14 @@ router.put(
   appointmentController.updateAppointment
 );
 
+router.patch(
+  "/appointments/:appointmentId",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  authorize("patient", "doctor"),
+  appointmentController.updateAppointmentStatus
+);
+
 router.get(
   "/appointments/:userId",
   authenticate,

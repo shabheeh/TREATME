@@ -1,7 +1,7 @@
 import IScheduleRepository from "src/repositories/doctor/interfaces/IScheduleRepository";
 import logger from "../../configs/logger";
 import { ISchedule, IScheduleService } from "../../interfaces/ISchedule";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -24,10 +24,7 @@ class ScheduleService implements IScheduleService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -56,10 +53,7 @@ class ScheduleService implements IScheduleService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 

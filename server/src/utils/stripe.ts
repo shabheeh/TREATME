@@ -3,6 +3,7 @@ import logger from "../configs/logger";
 import { AppError } from "./errors";
 import IAppointment from "src/interfaces/IAppointment";
 import { ITransaction } from "src/interfaces/IWallet";
+import { HttpStatusCode } from "../constants/httpStatusCodes";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-01-27.acacia",
@@ -68,8 +69,11 @@ export const constructWebhookEvent = (
     return stripe.webhooks.constructEvent(payload, sig, webhookSecret);
   } catch (err) {
     if (err instanceof stripe.errors.StripeSignatureVerificationError) {
-      throw new AppError("Webhook signature verification failed", 400);
+      throw new AppError(
+        "Webhook signature verification failed",
+        HttpStatusCode.BAD_REQUEST
+      );
     }
-    throw new AppError("Invalid webhook payload", 400);
+    throw new AppError("Invalid webhook payload", HttpStatusCode.BAD_REQUEST);
   }
 };

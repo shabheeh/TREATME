@@ -7,6 +7,8 @@ import {
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class HealthHistoryController implements IHealthHistoryController {
@@ -28,13 +30,13 @@ class HealthHistoryController implements IHealthHistoryController {
       const { patientId } = req.params;
 
       if (!patientId) {
-        throw new BadRequestError("Bad Request");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const healthHistory =
         await this.healthHistoryService.getHealthHistory(patientId);
 
-      res.status(200).json({ healthHistory });
+      res.status(HttpStatusCode.OK).json({ healthHistory });
     } catch (error) {
       logger.error("Failed to fetch health history", error);
       next(error);
@@ -51,7 +53,7 @@ class HealthHistoryController implements IHealthHistoryController {
       const updateData = req.body;
 
       if (!patientId || !updateData) {
-        throw new BadRequestError("Bad request");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const healthHistory = await this.healthHistoryService.updateHealthHistory(
@@ -59,7 +61,7 @@ class HealthHistoryController implements IHealthHistoryController {
         updateData
       );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         healthHistory,
       });
     } catch (error) {

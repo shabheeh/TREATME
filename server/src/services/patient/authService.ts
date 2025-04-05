@@ -16,9 +16,11 @@ import {
   AuthErrorCode,
   BadRequestError,
   ConflictError,
+  handleTryCatchError,
 } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 const mailSubject = {
   verifyEmail: "Verify Your Email Address",
@@ -72,10 +74,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -111,10 +110,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -152,10 +148,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -164,11 +157,19 @@ class PatientAuthService implements IPatientAuthService {
       const patient = await this.patientRepository.findPatientByEmail(email);
 
       if (patient && !patient.isActive) {
-        throw new AuthError(AuthErrorCode.USER_BLOCKED, undefined, 403);
+        throw new AuthError(
+          AuthErrorCode.USER_BLOCKED,
+          undefined,
+          HttpStatusCode.FORBIDDEN
+        );
       }
 
       if (!patient) {
-        throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400);
+        throw new AuthError(
+          AuthErrorCode.INVALID_CREDENTIALS,
+          undefined,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       if (!patient.password) {
@@ -182,7 +183,11 @@ class PatientAuthService implements IPatientAuthService {
       const isPasswordMatch = await bcrypt.compare(password, patient.password);
 
       if (!isPasswordMatch) {
-        throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400);
+        throw new AuthError(
+          AuthErrorCode.INVALID_CREDENTIALS,
+          undefined,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       const payload: ITokenPayload = {
@@ -199,10 +204,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -224,10 +226,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -259,10 +258,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -280,10 +276,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -303,10 +296,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -370,10 +360,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -397,7 +384,6 @@ class PatientAuthService implements IPatientAuthService {
         googleData = JSON.parse(jsonGoogleData) as GoogleData;
       }
 
-      // use google data if it exists for email and profile picture
       const updatedPatientData = {
         ...patientData,
         email: googleData?.email || patientData.email,
@@ -430,10 +416,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -457,10 +440,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -484,10 +464,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -505,10 +482,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -542,10 +516,7 @@ class PatientAuthService implements IPatientAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

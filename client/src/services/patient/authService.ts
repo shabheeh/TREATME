@@ -1,5 +1,4 @@
 import { api } from "../../utils/axiosInterceptor";
-// import {  } from "../../types/auth/auth.types";
 import { IPatient } from "../../types/patient/patient.types";
 import log from "loglevel";
 import { store } from "../../redux/app/store";

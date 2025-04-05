@@ -17,7 +17,6 @@ import {
   Search as SearchIcon,
   CalendarToday as CalendarIcon,
   ArrowForward as ArrowForwardIcon,
-  Phone as PhoneIcon,
   Email as EmailIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -25,13 +24,13 @@ import { IPatientForDoctor } from "../../types/patient/patient.types";
 import appointmentService from "../../services/appointment/appointmentService";
 import { toast } from "sonner";
 import { calculateAge } from "../../helpers/ageCalculator";
+import Loading from "../basics/ui/Loading";
 
 const PatientCardListPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(6);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [totalPatients, setTotalPatients] = useState<number>(0);
   const [patients, setPatients] = useState<IPatientForDoctor[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -59,7 +58,6 @@ const PatientCardListPage: React.FC = () => {
         debouncedSearch
       );
       setPatients(result.patients);
-      setTotalPatients(result.totalPatients);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
@@ -68,12 +66,6 @@ const PatientCardListPage: React.FC = () => {
       setLoading(false);
     }
   };
-
-  // const filteredPatients = patients.filter(
-  //   (patient) =>
-  //     patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     patient.lastName.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
 
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
@@ -94,7 +86,7 @@ const PatientCardListPage: React.FC = () => {
   }, [searchTerm]);
 
   const viewHealthProfile = (patient: IPatientForDoctor) => {
-    navigate("/doctor/patients/health2", { state: { patient } });
+    navigate("/doctor/patients/health", { state: { patient } });
   };
 
   const formatDate = (dateString: string) => {
@@ -168,119 +160,107 @@ const PatientCardListPage: React.FC = () => {
             ),
           }}
         />
-        {/* <Button
-          startIcon={<FilterListIcon />}
-          color="secondary"
-          variant="outlined"
-          sx={{ borderRadius: 2 }}
-        >
-          Filter
-        </Button> */}
       </Box>
 
       <Divider sx={{ mb: 3 }} />
 
-      <Grid container spacing={3}>
-        {patients.map((patient) => (
-          <Grid item xs={12} sm={6} md={4} key={patient._id}>
-            <Card
-              sx={{
-                borderRadius: 2,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                },
-              }}
-            >
-              <Box
+      {loading ? (
+        <Loading />
+      ) : (
+        <Grid container spacing={3}>
+          {patients.map((patient) => (
+            <Grid item xs={12} sm={6} md={4} key={patient._id}>
+              <Card
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  p: 2,
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
+                  borderRadius: 2,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                  },
                 }}
               >
-                <Avatar
-                  src={patient.profilePicture}
-                  sx={{
-                    width: 56,
-                    height: 56,
-                    mr: 2,
-                  }}
-                />
-                <Box>
-                  <Typography variant="h6" component="h2">
-                    {patient.firstName} {patient.lastName}
-                  </Typography>
-                  <Typography variant="body2">
-                    {calculateAge(patient.dateOfBirth)} years • {patient.gender}
-                  </Typography>
-                </Box>
-              </Box>
-              <CardContent>
-                <Box sx={{ mb: 1.5 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <CalendarIcon
-                      sx={{ fontSize: 18, color: "primary.main", mr: 1 }}
-                    />
-                    <Typography variant="body2">
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        fontWeight="600"
-                        color="text.secondary"
-                      >
-                        Last Visit:
-                      </Typography>{" "}
-                      {formatDate(patient.lastVisit)}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <EmailIcon
-                      sx={{ fontSize: 18, color: "primary.main", mr: 1 }}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      {patient.email}
-                    </Typography>
-                  </Box>
-
-                  {/* <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <PhoneIcon
-                      sx={{ fontSize: 18, color: "primary.main", mr: 1 }}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      {patient.phone}
-                    </Typography>
-                  </Box> */}
-                </Box>
-
                 <Box
                   sx={{
                     display: "flex",
-                    justifyContent: "flex-end",
-                    mt: 2,
+                    alignItems: "center",
+                    p: 2,
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText,
                   }}
                 >
-                  <Button
-                    onClick={() => viewHealthProfile(patient)}
-                    variant="outlined"
-                    size="small"
-                    color="primary"
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{ borderRadius: 2 }}
-                  >
-                    View Details
-                  </Button>
+                  <Avatar
+                    src={patient.profilePicture}
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      mr: 2,
+                    }}
+                  />
+                  <Box>
+                    <Typography variant="h6" component="h2">
+                      {patient.firstName} {patient.lastName}
+                    </Typography>
+                    <Typography variant="body2">
+                      {calculateAge(patient.dateOfBirth)} years •{" "}
+                      {patient.gender}
+                    </Typography>
+                  </Box>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                <CardContent>
+                  <Box sx={{ mb: 1.5 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                      <CalendarIcon
+                        sx={{ fontSize: 18, color: "primary.main", mr: 1 }}
+                      />
+                      <Typography variant="body2">
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          fontWeight="600"
+                          color="text.secondary"
+                        >
+                          Last Visit:
+                        </Typography>{" "}
+                        {formatDate(patient.lastVisit)}
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                      <EmailIcon
+                        sx={{ fontSize: 18, color: "primary.main", mr: 1 }}
+                      />
+                      <Typography variant="body2" color="text.secondary">
+                        {patient.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      mt: 2,
+                    }}
+                  >
+                    <Button
+                      onClick={() => viewHealthProfile(patient)}
+                      variant="outlined"
+                      size="small"
+                      color="primary"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      View Details
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
       {patients.length === 0 && (
         <Box sx={{ textAlign: "center", py: 4 }}>
@@ -290,7 +270,6 @@ const PatientCardListPage: React.FC = () => {
         </Box>
       )}
 
-      {/* Material UI TablePagination component */}
       <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
         <TablePagination
           component="div"

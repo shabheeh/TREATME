@@ -8,6 +8,7 @@ import { BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class AppointmentController implements IAppointmentController {
@@ -30,7 +31,7 @@ class AppointmentController implements IAppointmentController {
       const appointment =
         await this.appointmentService.createAppointment(appointmentData);
 
-      res.status(201).json({ appointment });
+      res.status(HttpStatusCode.CREATED).json({ appointment });
     } catch (error) {
       logger.error("Failed to create appointment", error);
       next(error);
@@ -52,7 +53,7 @@ class AppointmentController implements IAppointmentController {
       const appointment =
         await this.appointmentService.getAppointmentById(appointmentId);
 
-      res.status(200).json({ appointment });
+      res.status(HttpStatusCode.OK).json({ appointment });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "failed to get appointment"
@@ -78,7 +79,7 @@ class AppointmentController implements IAppointmentController {
         const appointment =
           await this.appointmentService.cancelAppointment(appointmentId);
 
-        res.status(200).json({ appointment });
+        res.status(HttpStatusCode.OK).json({ appointment });
       }
 
       const appointment = await this.appointmentService.updateAppointment(
@@ -86,7 +87,7 @@ class AppointmentController implements IAppointmentController {
         updateData
       );
 
-      res.status(200).json({ appointment });
+      res.status(HttpStatusCode.OK).json({ appointment });
     } catch (error) {
       logger.error("Failed to update appointment");
       next(error);
@@ -109,7 +110,7 @@ class AppointmentController implements IAppointmentController {
       const appointment =
         await this.appointmentService.cancelAppointment(appointmentId);
 
-      res.status(200).json({ appointment });
+      res.status(HttpStatusCode.OK).json({ appointment });
     } catch (error) {
       logger.error("Failed to update appointment");
       next(error);
@@ -132,7 +133,7 @@ class AppointmentController implements IAppointmentController {
       const appointments =
         await this.appointmentService.getAppointmentsByUserId(userId, role);
 
-      res.status(200).json({ appointments });
+      res.status(HttpStatusCode.OK).json({ appointments });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -150,7 +151,7 @@ class AppointmentController implements IAppointmentController {
   ): Promise<void> => {
     try {
       const appointments = await this.appointmentService.getAppointments();
-      res.status(200).json({ appointments });
+      res.status(HttpStatusCode.OK).json({ appointments });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -176,7 +177,7 @@ class AppointmentController implements IAppointmentController {
       const appointment =
         await this.appointmentService.getAppointmentByPaymentId(paymentId);
 
-      res.status(200).json({ appointment });
+      res.status(HttpStatusCode.OK).json({ appointment });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "failed to get appointment"
@@ -205,10 +206,36 @@ class AppointmentController implements IAppointmentController {
           searchQuery
         );
 
-      res.status(200).json({ patients, totalPatients });
+      res.status(HttpStatusCode.OK).json({ patients, totalPatients });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "failed to fetch patients"
+      );
+      next(error);
+    }
+  };
+  updateAppointmentStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { appointmentId } = req.params;
+
+      if (!appointmentId) {
+        throw new BadRequestError("Missing appointment id in the request");
+      }
+
+      await this.appointmentService.updateAppointmentStatus(appointmentId);
+
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: "Appointment status updated successfully" });
+    } catch (error) {
+      logger.error(
+        error instanceof Error
+          ? error.message
+          : "Error updating appointment status"
       );
       next(error);
     }

@@ -5,7 +5,7 @@ import {
 } from "src/interfaces/IPatient";
 import IPatientRepository from "../../repositories/patient/interface/IPatientRepository";
 import logger from "../../configs/logger";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -33,10 +33,7 @@ class AdminPatientsService implements IAdminPatientsService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -51,10 +48,7 @@ class AdminPatientsService implements IAdminPatientsService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

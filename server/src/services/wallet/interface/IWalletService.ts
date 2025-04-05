@@ -5,10 +5,6 @@ export interface IWalletService {
     userId: string,
     userType: "Patient" | "Doctor"
   ): Promise<{ wallet: IWallet; transactions: ITransaction[] }>;
-  // updateWallet(
-  //   walletId: string,
-  //   walletData: Partial<WalletData>
-  // ): Promise<IWallet>;
   addTransaction(
     userId: string,
     transactionData: TransactionData

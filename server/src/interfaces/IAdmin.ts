@@ -13,7 +13,6 @@ export interface SignInAdminResult {
   refreshToken: string;
 }
 
-// Admin - Auth
 export interface IAdminAuthService {
   signInAdmin(email: string, password: string): Promise<SignInAdminResult>;
 }
@@ -22,7 +21,6 @@ export interface IAdminAuthController {
   signInAdmin(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
-// Admin - Doctor
 export interface IAdminDoctorService {
   createDoctor(
     doctor: IDoctor,
@@ -42,7 +40,6 @@ export interface IAdminDoctorController {
   updateDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 
-// Admin - Patient
 export interface IAdminPatientsService {
   getPatients(params: IPatientsFilter): Promise<IPatientsFilterResult>;
   togglePatientActivityStatus(id: string, isAcitve: boolean): Promise<void>;

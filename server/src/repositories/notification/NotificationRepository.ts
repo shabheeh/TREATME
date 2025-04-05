@@ -1,7 +1,7 @@
 import { FilterQuery, Model, Types } from "mongoose";
 import INotificationRepository from "./interface/INotificationRepository";
 import { INotification } from "../../interfaces/INotification";
-import { AppError } from "../../utils/errors";
+import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -20,10 +20,7 @@ class NotificationRepository implements INotificationRepository {
       const notification = await this.model.create(notificationData);
       return notification;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -32,10 +29,7 @@ class NotificationRepository implements INotificationRepository {
       const notification = await this.model.findById(notificationId);
       return notification;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -46,10 +40,7 @@ class NotificationRepository implements INotificationRepository {
         .exec();
       return isUpdated !== null;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -61,10 +52,7 @@ class NotificationRepository implements INotificationRepository {
 
       return result.modifiedCount > 0;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -75,10 +63,7 @@ class NotificationRepository implements INotificationRepository {
         .countDocuments();
       return unreadCount;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -105,10 +90,7 @@ class NotificationRepository implements INotificationRepository {
 
       return notifications;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

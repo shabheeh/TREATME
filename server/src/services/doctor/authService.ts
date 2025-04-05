@@ -6,11 +6,13 @@ import {
   AuthError,
   AuthErrorCode,
   BadRequestError,
+  handleTryCatchError,
 } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { generateTokens, ITokenPayload } from "../../utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class DoctorAuthService implements IDoctorAuthService {
@@ -27,17 +29,29 @@ class DoctorAuthService implements IDoctorAuthService {
       const doctor = await this.doctorRepository.findDoctorByEmail(email);
 
       if (doctor && !doctor.isActive) {
-        throw new AuthError(AuthErrorCode.USER_BLOCKED, undefined, 403);
+        throw new AuthError(
+          AuthErrorCode.USER_BLOCKED,
+          undefined,
+          HttpStatusCode.FORBIDDEN
+        );
       }
 
       if (!doctor) {
-        throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400);
+        throw new AuthError(
+          AuthErrorCode.INVALID_CREDENTIALS,
+          undefined,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       const isPasswordMatch = await bcrypt.compare(password, doctor.password);
 
       if (!isPasswordMatch) {
-        throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS, undefined, 400);
+        throw new AuthError(
+          AuthErrorCode.INVALID_CREDENTIALS,
+          undefined,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       const payload: ITokenPayload = {
@@ -54,10 +68,7 @@ class DoctorAuthService implements IDoctorAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -75,10 +86,7 @@ class DoctorAuthService implements IDoctorAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -114,10 +122,7 @@ class DoctorAuthService implements IDoctorAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

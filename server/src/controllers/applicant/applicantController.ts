@@ -7,6 +7,8 @@ import logger from "../../configs/logger";
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class ApplicantController implements IApplicantController {
@@ -32,14 +34,14 @@ class ApplicantController implements IApplicantController {
           "idProof"
         ]
       ) {
-        throw new BadRequestError("ID Proof is required");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       if (
         !req.files ||
         !(req.files as { [fieldname: string]: Express.Multer.File[] })["resume"]
       ) {
-        throw new BadRequestError("Resume required");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const uploadedFiles = req.files as {
@@ -55,8 +57,8 @@ class ApplicantController implements IApplicantController {
         resumeFile
       );
 
-      res.status(201).json({
-        message: "Applicant created successfully",
+      res.status(HttpStatusCode.CREATED).json({
+        message: ResponseMessage.SUCCESS.RESOURCE_CREATED,
       });
     } catch (error) {
       logger.error("controller:error fetching patients data ", error);
@@ -78,7 +80,7 @@ class ApplicantController implements IApplicantController {
 
       const result = await this.applicantService.getApplicants(params);
 
-      res.status(200).json({ result });
+      res.status(HttpStatusCode.OK).json({ result });
     } catch (error) {
       logger.error("error listing applicants", error);
       next(error);
@@ -94,14 +96,14 @@ class ApplicantController implements IApplicantController {
       const { applicantId } = req.params;
 
       if (!applicantId) {
-        throw new BadRequestError("Bad Request");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const applicant = await this.applicantService.getApplicant(applicantId);
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         applicant,
-        message: "Applicant fetched Successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("error fetching applicant details", error);
@@ -118,12 +120,12 @@ class ApplicantController implements IApplicantController {
       const { applicantId } = req.params;
 
       if (!applicantId) {
-        throw new BadRequestError("Bad Request");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       await this.applicantService.deleteApplicant(applicantId);
 
-      res.status(200);
+      res.status(HttpStatusCode.OK);
     } catch (error) {
       logger.error("error deleteing applicant", error);
       next(error);

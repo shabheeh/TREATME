@@ -44,7 +44,6 @@ const createAxiosInstance = (role?: UserRole) => {
       store.dispatch(clearUser());
       store.dispatch(signOut());
       tokenManager.clearToken();
-      // window.location.href = "/signin";
 
       return null;
     }
@@ -72,7 +71,6 @@ const createAxiosInstance = (role?: UserRole) => {
 
       const { status, data } = error.response;
 
-      // handle 403
       if (status === 403) {
         window.location.href =
           role === "patient" ? "/signin" : `/${role}/signin`;
@@ -80,11 +78,9 @@ const createAxiosInstance = (role?: UserRole) => {
         return Promise.reject(new Error("Forbidden: Permission denied"));
       }
 
-      // Handle 401 Unauthorized
       if (status === 401) {
         const errorCode = data?.error || data?.message;
 
-        // If login failed (Invalid Credentials), do NOT retry
         if (
           errorCode !== "Token has expired" &&
           errorCode !== "Invalid or expired token"

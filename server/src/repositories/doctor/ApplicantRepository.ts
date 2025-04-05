@@ -1,13 +1,14 @@
 import { Model } from "mongoose";
 import IApplicantRepository from "./interfaces/IApplicantRepository";
 import { IApplicant } from "src/interfaces/IApplicant";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import {
   IApplicantsFilter,
   IApplicantsFilterResult,
 } from "src/interfaces/IApplicant";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 interface Query {
   $or?: Array<{
@@ -30,10 +31,7 @@ class ApplicantRepository implements IApplicantRepository {
     try {
       await this.model.create(applicant);
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -44,10 +42,7 @@ class ApplicantRepository implements IApplicantRepository {
         .populate("specialization");
       return applicant;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -84,10 +79,7 @@ class ApplicantRepository implements IApplicantRepository {
         totalPages: Math.ceil(total / limit),
       };
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -98,10 +90,7 @@ class ApplicantRepository implements IApplicantRepository {
         .populate("specialization");
       return applicant;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -112,13 +101,11 @@ class ApplicantRepository implements IApplicantRepository {
         .exec();
 
       if (!deletedApplicant) {
-        throw new AppError("Applicant not found", 404);
+        throw new AppError("Applicant not found", HttpStatusCode.NOT_FOUND);
       }
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 }

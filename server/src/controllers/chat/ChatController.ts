@@ -13,6 +13,8 @@ import { uploadToCloudinary } from "../../utils/cloudinary";
 import { ITokenPayload } from "../../utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class ChatController implements IChatController {
@@ -22,7 +24,6 @@ class ChatController implements IChatController {
     this.chatService = chatService;
   }
 
-  // create or get new one-on-one chat
   accessChat = async (
     req: Request,
     res: Response,
@@ -38,7 +39,7 @@ class ChatController implements IChatController {
       }
 
       if (!userId2 || !userType2) {
-        throw new BadRequestError("Missing required fields");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       let creatorType: "Admin" | "Patient" | "Doctor";
@@ -58,7 +59,7 @@ class ChatController implements IChatController {
         userType2
       );
 
-      res.status(200).json({ chat });
+      res.status(HttpStatusCode.OK).json({ chat });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error accessing chat"
@@ -80,7 +81,7 @@ class ChatController implements IChatController {
       }
       const chats = await this.chatService.getUserChats(userId);
 
-      res.status(200).json({ chats });
+      res.status(HttpStatusCode.OK).json({ chats });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error fetching user chats"
@@ -119,7 +120,7 @@ class ChatController implements IChatController {
         !Array.isArray(participants) ||
         participants.length < 1
       ) {
-        throw new BadRequestError("Please Provide all required fields");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
       const groupchat = await this.chatService.createGroupChat(
         name,
@@ -127,7 +128,7 @@ class ChatController implements IChatController {
         userId,
         creatorType
       );
-      res.status(200).json({ groupchat });
+      res.status(HttpStatusCode.OK).json({ groupchat });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Failed to create group chat"
@@ -150,13 +151,13 @@ class ChatController implements IChatController {
       }
 
       if (!chatId || !name) {
-        throw new BadRequestError("Missing fileds");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const chat = await this.chatService.getChatById(chatId);
 
       if (!chat) {
-        throw new AppError("Chat not found");
+        throw new AppError(ResponseMessage.ERROR.RESOURCE_NOT_FOUND);
       }
 
       if (
@@ -166,12 +167,12 @@ class ChatController implements IChatController {
         throw new AuthError(
           AuthErrorCode.UNAUTHORIZED,
           "Only group admin can edit details",
-          403
+          HttpStatusCode.FORBIDDEN
         );
       }
 
       const updatedChat = await this.chatService.renameGroup(chatId, name);
-      res.status(200).json({ updatedChat });
+      res.status(HttpStatusCode.OK).json({ updatedChat });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error renaming group"
@@ -189,14 +190,14 @@ class ChatController implements IChatController {
       const { chatId, userId, userType } = req.body;
 
       if (!chatId || !userId || !userType) {
-        throw new BadRequestError("Missing required fields");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
       const updatedChat = await this.chatService.addUserToGroup(
         chatId,
         userId,
         userType
       );
-      res.status(200).json({ updatedChat });
+      res.status(HttpStatusCode.OK).json({ updatedChat });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -216,14 +217,14 @@ class ChatController implements IChatController {
       const { chatId, userId } = req.body;
 
       if (!chatId || !userId) {
-        throw new BadRequestError("MIssing required fields");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const updatedChat = await this.chatService.removeUserFromGroup(
         chatId,
         userId
       );
-      res.status(200).json({ updatedChat });
+      res.status(HttpStatusCode.OK).json({ updatedChat });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -249,7 +250,7 @@ class ChatController implements IChatController {
         throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
       }
       if (!chatId) {
-        throw new BadRequestError("Missing chat id");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const messages = await this.chatService.getChatMessages(
@@ -259,7 +260,7 @@ class ChatController implements IChatController {
       );
       await this.chatService.markChatAsRead(chatId, userId);
 
-      res.status(200).json({ messages });
+      res.status(HttpStatusCode.OK).json({ messages });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error fetching all messages"
@@ -283,7 +284,7 @@ class ChatController implements IChatController {
       }
 
       if (!chat || !content) {
-        throw new BadRequestError("Missing required fields");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       let senderType: "Admin" | "Patient" | "Doctor";
@@ -302,7 +303,7 @@ class ChatController implements IChatController {
           userId
         );
         if (!result.success) {
-          throw new AppError(result.message, 400);
+          throw new AppError(result.message, HttpStatusCode.BAD_REQUEST);
         }
       }
 
@@ -314,7 +315,7 @@ class ChatController implements IChatController {
         []
       );
 
-      res.status(200).json({ message });
+      res.status(HttpStatusCode.OK).json({ message });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error sending message"
@@ -334,7 +335,7 @@ class ChatController implements IChatController {
         !Array.isArray(req.files) ||
         (req.files as Express.Multer.File[]).length === 0
       ) {
-        throw new BadRequestError("No files uploaded");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const userId = (req.user as ITokenPayload).id;
@@ -346,7 +347,7 @@ class ChatController implements IChatController {
       }
 
       if (!chat) {
-        throw new BadRequestError("Missing required fields");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       let senderType: "Admin" | "Patient" | "Doctor";
@@ -365,7 +366,7 @@ class ChatController implements IChatController {
           userId
         );
         if (!result.success) {
-          throw new AppError(result.message, 400);
+          throw new AppError(result.message, HttpStatusCode.BAD_REQUEST);
         }
       }
 
@@ -384,7 +385,7 @@ class ChatController implements IChatController {
         attachments
       );
 
-      res.status(200).json({ message });
+      res.status(HttpStatusCode.OK).json({ message });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -409,13 +410,13 @@ class ChatController implements IChatController {
       }
 
       if (!chatId) {
-        throw new BadRequestError("Missing chat id");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
       const count = await this.chatService.getUnreadMessageCount(
         chatId,
         userId
       );
-      res.status(200).json({ count });
+      res.status(HttpStatusCode.OK).json({ count });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -444,7 +445,7 @@ class ChatController implements IChatController {
       }
 
       await this.chatService.markChatAsRead(chatId, userId);
-      res.status(200);
+      res.status(HttpStatusCode.OK);
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -474,7 +475,9 @@ class ChatController implements IChatController {
 
       await this.chatService.deleteChat(chatId, userId);
 
-      res.status(200).json({ message: "Chat deleted successfully" });
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: "Chat deleted successfully" });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error deleting chat"
@@ -502,7 +505,9 @@ class ChatController implements IChatController {
 
       await this.chatService.deleteMessage(messageId, userId);
 
-      res.status(200).json({ message: "Message deleted successfully" });
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: "Message deleted successfully" });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Error deleting message"

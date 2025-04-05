@@ -1,9 +1,10 @@
 import { Model } from "mongoose";
 import ISpecialization from "../../interfaces/ISpecilazation";
 import ISpecializationRepository from "./interfaces/ISpecializationRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class SpecializationRepository implements ISpecializationRepository {
@@ -21,10 +22,7 @@ class SpecializationRepository implements ISpecializationRepository {
     try {
       await this.model.create(specialization);
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -36,10 +34,7 @@ class SpecializationRepository implements ISpecializationRepository {
 
       return specialization;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -48,10 +43,7 @@ class SpecializationRepository implements ISpecializationRepository {
       const specializations = await this.model.find();
       return specializations;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -63,10 +55,7 @@ class SpecializationRepository implements ISpecializationRepository {
 
       return specialization;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -86,17 +75,17 @@ class SpecializationRepository implements ISpecializationRepository {
       );
 
       if (!updatedData) {
-        throw new AppError("Specialization not found", 404);
+        throw new AppError(
+          "Specialization not found",
+          HttpStatusCode.NOT_FOUND
+        );
       }
 
       return updatedData;
     } catch (error) {
       if (error instanceof AppError) throw error;
 
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

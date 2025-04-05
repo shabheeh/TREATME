@@ -48,8 +48,6 @@ export interface IChat {
 }
 
 export type SendMessageType = {
-  // sender: string;
-  // senderType: "Admin" | "Patient" | "Doctor";
   chat: string;
   content: string;
   attachments: File[];

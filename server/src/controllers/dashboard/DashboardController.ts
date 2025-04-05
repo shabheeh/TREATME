@@ -5,6 +5,7 @@ import logger from "../../configs/logger";
 import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class DashboardController implements IDashboardController {
@@ -25,7 +26,7 @@ class DashboardController implements IDashboardController {
       const dashboardData =
         await this.dashboardService.getAdminDashboardStats();
 
-      res.status(200).json(dashboardData);
+      res.status(HttpStatusCode.OK).json(dashboardData);
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -46,7 +47,7 @@ class DashboardController implements IDashboardController {
 
       const dashboardData =
         await this.dashboardService.getDoctorDashboardStats(doctorId);
-      res.status(200).json(dashboardData);
+      res.status(HttpStatusCode.OK).json(dashboardData);
     } catch (error) {
       logger.error(
         error instanceof Error

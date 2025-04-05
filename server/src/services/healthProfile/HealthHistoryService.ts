@@ -5,7 +5,7 @@ import {
   IHealthHistoryService,
 } from "../../interfaces/IHealthHistory";
 import IHealthHistoryRepository from "../../repositories/healthProfile/interface/IHealthHistoryRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { TYPES } from "../../types/inversifyjs.types";
 
 @injectable()
@@ -30,10 +30,7 @@ class HealthHistoryService implements IHealthHistoryService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -57,10 +54,7 @@ class HealthHistoryService implements IHealthHistoryService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

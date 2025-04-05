@@ -6,6 +6,8 @@ import {
 } from "../../interfaces/IAdmin";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class AdminAuthController implements IAdminAuthController {
@@ -36,10 +38,10 @@ class AdminAuthController implements IAdminAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         admin,
         accessToken,
-        message: "admin signed in successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("controller:error sign in admin ", error);

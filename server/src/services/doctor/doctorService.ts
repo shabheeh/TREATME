@@ -8,7 +8,7 @@ import IDoctorRepository, {
   getDoctorsWithSchedulesQuery,
   getDoctorsWithSchedulesResult,
 } from "src/repositories/doctor/interfaces/IDoctorRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -36,10 +36,7 @@ class DoctorService implements IDoctorService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 

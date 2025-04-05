@@ -1,7 +1,7 @@
 import { Model, Types } from "mongoose";
 import IScheduleRepository from "./interfaces/IScheduleRepository";
 import { ISchedule } from "../../interfaces/ISchedule";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -41,10 +41,7 @@ class ScheduleRepository implements IScheduleRepository {
 
       return schedule[0] || null;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -65,10 +62,8 @@ class ScheduleRepository implements IScheduleRepository {
 
       return updatedSchedule;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -126,10 +121,8 @@ class ScheduleRepository implements IScheduleRepository {
         throw new AppError("Unknown error");
       }
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -189,10 +182,8 @@ class ScheduleRepository implements IScheduleRepository {
         throw new AppError("Unknown error");
       }
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 }

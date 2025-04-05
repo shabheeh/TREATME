@@ -6,6 +6,8 @@ import { Types } from "mongoose";
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class DoctorController implements IDoctorController {
@@ -23,12 +25,12 @@ class DoctorController implements IDoctorController {
     try {
       const { doctorId } = req.params;
       if (!doctorId) {
-        throw new BadRequestError("Bad Request: Missing info");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const doctor = await this.doctorService.getDoctor(doctorId);
 
-      res.status(200).json({ doctor });
+      res.status(HttpStatusCode.OK).json({ doctor });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Controller: getDoctor"
@@ -53,7 +55,7 @@ class DoctorController implements IDoctorController {
 
       const result = await this.doctorService.getDoctorsWithSchedules(query);
 
-      res.status(200).json({ result });
+      res.status(HttpStatusCode.OK).json({ result });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Failed to fetch Doctors"
@@ -77,7 +79,7 @@ class DoctorController implements IDoctorController {
       };
 
       const result = await this.doctorService.getDoctors(query);
-      res.status(200).json({ result });
+      res.status(HttpStatusCode.OK).json({ result });
     } catch (error) {
       logger.error(
         error instanceof Error

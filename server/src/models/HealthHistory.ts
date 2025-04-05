@@ -1,6 +1,5 @@
 import { Schema, model, Types } from "mongoose";
 import {
-  // IBodyMeasureMents,
   IHealthCondition,
   IHealthHistory,
   IFamilyHistory,
@@ -39,15 +38,6 @@ const FamilyHistorySchema = new Schema<IFamilyHistory>({
   reportedBy: { type: String, required: true },
 });
 
-// const BodyMeasurementsSchema = new Schema<IBodyMeasureMents>({
-//   height: {
-//     feet: { type: Number, required: true },
-//     inches: { type: Number, required: true },
-//   },
-//   weight: { type: Number, required: true },
-//   bmi: { type: String, required: true },
-// });
-
 const HealthHistorySchema = new Schema<IHealthHistory>(
   {
     patientId: {
@@ -65,7 +55,6 @@ const HealthHistorySchema = new Schema<IHealthHistory>(
     healthConditions: { type: [healthConditionSchema], required: true },
     surgeries: { type: [SurgerySchema], required: true },
     familyHistory: { type: [FamilyHistorySchema], required: true },
-    // bodyMeasurements: { type: BodyMeasurementsSchema, required: true },
   },
   {
     timestamps: true,

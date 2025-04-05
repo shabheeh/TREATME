@@ -2,6 +2,7 @@ import axios from "axios";
 import { AppError } from "../../utils/errors";
 import { GoogleAIFullResponse } from "./interface/IAIChatRepository";
 import { injectable } from "inversify";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class AIChatRepository {
@@ -59,13 +60,16 @@ class AIChatRepository {
         } else if (error.request) {
           throw new AppError("No response received from AI Service", 503);
         } else {
-          throw new AppError(`Request Setup Error: ${error.message}`, 500);
+          throw new AppError(
+            `Request Setup Error: ${error.message}`,
+            HttpStatusCode.INTERNAL_SERVER_ERROR
+          );
         }
       }
 
       throw new AppError(
         `Unexpected error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
+        HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     }
   }

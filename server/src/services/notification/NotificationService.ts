@@ -1,7 +1,7 @@
 import INotificationRepository from "src/repositories/notification/interface/INotificationRepository";
 import { INotificationService } from "./interface/INotificationService";
 import { INotification } from "../../interfaces/INotification";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 
 import logger from "../../configs/logger";
 import { eventBus } from "../../utils/eventBus";
@@ -36,10 +36,7 @@ class NotificationService implements INotificationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -62,10 +59,7 @@ class NotificationService implements INotificationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -81,10 +75,7 @@ class NotificationService implements INotificationService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 

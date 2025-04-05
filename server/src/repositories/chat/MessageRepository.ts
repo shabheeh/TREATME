@@ -1,4 +1,4 @@
-import { AppError } from "../../utils/errors";
+import { handleTryCatchError } from "../../utils/errors";
 import IMessageRepository from "./interfaces/IMessageRepository";
 import { IMessage } from "src/interfaces/IMessage";
 import { Model, Types } from "mongoose";
@@ -18,10 +18,7 @@ class MessageRepository implements IMessageRepository {
       const message = await this.model.create(messageData);
       return message;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -34,10 +31,7 @@ class MessageRepository implements IMessageRepository {
 
       return message;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -57,10 +51,7 @@ class MessageRepository implements IMessageRepository {
 
       return messages;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -76,10 +67,7 @@ class MessageRepository implements IMessageRepository {
       );
       return result.modifiedCount > 0;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -92,10 +80,7 @@ class MessageRepository implements IMessageRepository {
       });
       return count;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 

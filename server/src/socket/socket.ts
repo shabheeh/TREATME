@@ -80,14 +80,9 @@ export class SocketService implements ISocketService {
     this.io.on("connection", (socket: Socket) => {
       const userId = socket.data.user.id;
 
-      // store the user's connection
       this.connectedUsers.set(userId, socket.id);
       logger.info(`user connected: ${userId} with socket id: ${socket.id}`);
 
-      // join user to their chat rooms
-      // this.joinUserChats(userId, socket);
-
-      // handle client events
       socket.on("join-chat", (chatId: string) =>
         this.handleJoinChat(socket, chatId)
       );
@@ -106,7 +101,7 @@ export class SocketService implements ISocketService {
       socket.on("read-messages", (chatId: string) =>
         this.handleReadMessages(socket, chatId)
       );
-      // for message sent with attachments
+
       socket.on("message-sent", (data: { chat: string; messageId: string }) =>
         this.handleMessageSent(socket, data)
       );
@@ -129,12 +124,10 @@ export class SocketService implements ISocketService {
       });
 
       socket.on("leave-room", (roomId) => {
-        eventBus.publish("consultation-completed", { appointmentId: roomId });
         socket.leave(roomId);
         socket.to(roomId).emit("user-disconnected", socket.id);
       });
 
-      // Handle disconnection
       socket.on("disconnect", () => this.handleDisconnect(userId));
     });
   }
@@ -189,7 +182,6 @@ export class SocketService implements ISocketService {
           []
         );
 
-        // emit the message to all users in the chat
         this.io?.to(chat.toString()).emit("new-message", message);
       }
     } catch (error) {
@@ -207,7 +199,6 @@ export class SocketService implements ISocketService {
     try {
       const message = await this.chatService.getMessageById(data.messageId);
       if (message) {
-        // emit the message to all users in the chat
         this.io?.to(data.chat.toString()).emit("new-message", message);
       }
     } catch (error) {
@@ -225,7 +216,6 @@ export class SocketService implements ISocketService {
     const { chatId, isTyping } = data;
     const userId = socket.data.user.id;
 
-    // emit typing event to all users
     socket.to(chatId).emit("typing", { chatId, userId, isTyping });
   }
 
@@ -233,7 +223,6 @@ export class SocketService implements ISocketService {
     const { chatId } = data;
     const userId = socket.data.user.id;
 
-    // emit typing stopped event to all users
     socket.to(chatId).emit("stop-typing", { chatId, userId });
   }
 
@@ -247,7 +236,6 @@ export class SocketService implements ISocketService {
       const success = await this.chatService.markChatAsRead(chatId, userId);
 
       if (success) {
-        // broadcast to read message
         this.io?.to(chatId).emit("messages-read", { chatId, userId });
       }
     } catch (error) {
@@ -260,13 +248,11 @@ export class SocketService implements ISocketService {
   }
 
   private handleDisconnect(userId: string): void {
-    // remove the user from connectedUsers Map()
     this.connectedUsers.delete(userId);
     this.emitUserOffline(userId);
     logger.info(`User: ${userId} disconnected`);
   }
 
-  // notification events
   private handleAppointmentNotification({
     userId,
     notification,
@@ -278,7 +264,6 @@ export class SocketService implements ISocketService {
     this.emitToUser(userId, "appointment-notification", notification);
   }
 
-  // Emit event to a specific user
   public emitToUser<T>(userId: string, eventName: string, data: T): void {
     const socketId = this.connectedUsers.get(userId);
     if (socketId && this.io) {
@@ -288,7 +273,6 @@ export class SocketService implements ISocketService {
     }
   }
 
-  // public methods for sending events from outside the socket service
   public emitNewMessage(chatId: string, message: IMessage): void {
     this.io?.to(chatId).emit("new-message", message);
   }
@@ -311,7 +295,6 @@ export class SocketService implements ISocketService {
     });
   }
 
-  // Helper methods
   private getUserChatRooms(userId: string): string[] {
     if (!this.io) return [];
 

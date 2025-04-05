@@ -11,7 +11,6 @@ const chatController = container.get<IChatController>(TYPES.IChatController);
 
 router.use(authenticate);
 
-// chat routes
 router.post("/", chatController.accessChat);
 router.get("/", chatController.getChats);
 router.post("/group", chatController.createGroupChat);
@@ -21,7 +20,6 @@ router.put("/group/remove", chatController.removeFromGroup);
 
 router.delete("/:chatId", chatController.deleteChat);
 
-// message routes
 router.get("/:chatId/messages", chatController.getMessages);
 router.post("/messages", chatController.sendMessage);
 router.post(

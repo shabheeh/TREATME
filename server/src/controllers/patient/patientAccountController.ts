@@ -4,10 +4,12 @@ import IPatient, {
   IPatientAccountController,
   IPatientAccountService,
 } from "src/interfaces/IPatient";
-import { AppError, BadRequestError } from "../../utils/errors";
+import { AuthError, AuthErrorCode, BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class PatientAcccountController implements IPatientAccountController {
@@ -27,7 +29,7 @@ class PatientAcccountController implements IPatientAccountController {
   ): Promise<void> => {
     try {
       if (!req.user) {
-        throw new AppError("User not authenticated");
+        throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
       }
 
       const { id } = req.user as ITokenPayload;
@@ -48,9 +50,9 @@ class PatientAcccountController implements IPatientAccountController {
         imageFile
       );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         patient: updatedData,
-        message: "Profile updated Successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("error updating profile", error);
@@ -66,10 +68,10 @@ class PatientAcccountController implements IPatientAccountController {
     try {
       const { id } = req.params;
       if (!id) {
-        throw new BadRequestError("Bad Request: Missing info");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
       const result = await this.patientAccountService.getHealthProfile(id);
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         healthHistory: result.healtHistory,
         behaviouralHealth: result.behaviouralHealth,
         lifestyle: result.lifestyle,

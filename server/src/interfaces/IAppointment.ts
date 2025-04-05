@@ -69,6 +69,7 @@ export interface IAppointmentService {
     limit: number,
     searchQuery: string
   ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }>;
+  updateAppointmentStatus(appointmentId: string): Promise<void>;
 }
 
 export interface IAppointmentController {
@@ -108,6 +109,11 @@ export interface IAppointmentController {
     next: NextFunction
   ): Promise<void>;
   getPatientsForDoctor(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  updateAppointmentStatus(
     req: Request,
     res: Response,
     next: NextFunction

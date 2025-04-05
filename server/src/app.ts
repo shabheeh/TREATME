@@ -25,7 +25,6 @@ startAppointmentNotifyJob();
 
 app.use("/api/webhooks", express.raw({ type: "application/json" }));
 
-//Middlewares
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
 app.use(helmet());
@@ -34,7 +33,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(sessionConfig);
 app.use(cookieParser());
 
-//routes
 app.use("/api/patient", patientRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);

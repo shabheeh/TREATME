@@ -1,4 +1,8 @@
-import { AppError, ConflictError } from "../../utils/errors";
+import {
+  AppError,
+  ConflictError,
+  handleTryCatchError,
+} from "../../utils/errors";
 import logger from "../../configs/logger";
 import {
   IApplicant,
@@ -51,10 +55,7 @@ class ApplicantService implements IApplicantService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -74,10 +75,7 @@ class ApplicantService implements IApplicantService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -95,10 +93,7 @@ class ApplicantService implements IApplicantService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -133,10 +128,7 @@ class ApplicantService implements IApplicantService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

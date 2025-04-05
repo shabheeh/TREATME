@@ -3,15 +3,7 @@ import logger from "../configs/logger";
 import { IDoctorAuthService } from "../interfaces/IDoctor";
 import { IPatientAuthService } from "../interfaces/IPatient";
 import { ITokenPayload } from "src/utils/jwt";
-// import { ITokenPayload } from "../utils/jwt";
-
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       user?: IITokenPayload;
-//     }
-//   }
-// }
+import { HttpStatusCode } from "../constants/httpStatusCodes";
 
 export const isUserActive = (
   patientService: IPatientAuthService,
@@ -24,7 +16,9 @@ export const isUserActive = (
   ): Promise<void> => {
     try {
       if (!req.user || !(req.user as ITokenPayload).id) {
-        res.status(401).json({ message: "Unauthenticated" });
+        res
+          .status(HttpStatusCode.UNAUTHORIZED)
+          .json({ message: "Unauthenticated" });
         return;
       }
 
@@ -46,7 +40,9 @@ export const isUserActive = (
 
       if (!isActive) {
         logger.error("User account is blocked");
-        res.status(403).json({ message: "Your account is blocked." });
+        res
+          .status(HttpStatusCode.FORBIDDEN)
+          .json({ message: "Your account is blocked." });
         return;
       }
 

@@ -1,9 +1,10 @@
 import { Model } from "mongoose";
 import IDependentRepository from "./interface/IDependentRepository";
 import IDependent from "../../interfaces/IDependent";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class DependentRepository implements IDependentRepository {
@@ -18,10 +19,7 @@ class DependentRepository implements IDependentRepository {
       const newDependent = await this.model.create(dependent);
       return newDependent.toObject();
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -30,10 +28,7 @@ class DependentRepository implements IDependentRepository {
       const dependent = await this.model.findById(id).lean();
       return dependent;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -43,10 +38,7 @@ class DependentRepository implements IDependentRepository {
 
       return dependents || [];
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -55,13 +47,11 @@ class DependentRepository implements IDependentRepository {
       const deletedDependent = await this.model.findByIdAndDelete(id);
 
       if (!deletedDependent) {
-        throw new AppError("Dependent not found", 404);
+        throw new AppError("Dependent not found", HttpStatusCode.NOT_FOUND);
       }
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -81,17 +71,14 @@ class DependentRepository implements IDependentRepository {
       );
 
       if (!updatedData) {
-        throw new AppError("Dependent not found", 404);
+        throw new AppError("Dependent not found", HttpStatusCode.NOT_FOUND);
       }
 
       return updatedData;
     } catch (error) {
       if (error instanceof AppError) throw error;
 
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -110,10 +97,7 @@ class DependentRepository implements IDependentRepository {
       ]);
       return dependentsAge;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import logger from "../../configs/logger";
 import { ILifestyle, ILifestyleService } from "../../interfaces/ILifestyle";
 import ILifestyleRepository from "../../repositories/healthProfile/interface/ILifestyleRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import { TYPES } from "../../types/inversifyjs.types";
 
 @injectable()
@@ -25,10 +25,7 @@ class LifestyleService implements ILifestyleService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -52,10 +49,7 @@ class LifestyleService implements ILifestyleService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

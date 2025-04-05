@@ -1,9 +1,14 @@
 import { IWallet, ITransaction, TransactionData } from "src/interfaces/IWallet";
 import { Model, Types, ClientSession } from "mongoose";
-import { AppError, BadRequestError } from "../../utils/errors";
+import {
+  AppError,
+  BadRequestError,
+  handleTryCatchError,
+} from "../../utils/errors";
 import IWalletRepository from "./interface/IWalletRepository";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class WalletRepository implements IWalletRepository {
@@ -30,10 +35,7 @@ class WalletRepository implements IWalletRepository {
       });
       return wallet;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -43,10 +45,7 @@ class WalletRepository implements IWalletRepository {
         user: new Types.ObjectId(userId),
       });
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -61,7 +60,8 @@ class WalletRepository implements IWalletRepository {
       const wallet = await this.walletModel
         .findOne({ user: userId })
         .session(session);
-      if (!wallet) throw new AppError("Wallet not found", 404);
+      if (!wallet)
+        throw new AppError("Wallet not found", HttpStatusCode.NOT_FOUND);
 
       const transaction = await this.transactionModel.create(
         [{ ...transactionData, walletId: wallet._id }],
@@ -90,10 +90,8 @@ class WalletRepository implements IWalletRepository {
       return transaction[0];
     } catch (error) {
       await session.abortTransaction();
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     } finally {
       session.endSession();
     }
@@ -111,12 +109,13 @@ class WalletRepository implements IWalletRepository {
         .findById(transactionId)
         .session(session);
       if (!existingTransaction)
-        throw new AppError("Transaction not found", 404);
+        throw new AppError("Transaction not found", HttpStatusCode.NOT_FOUND);
 
       const wallet = await this.walletModel
         .findById(existingTransaction.walletId)
         .session(session);
-      if (!wallet) throw new AppError("Wallet not found", 404);
+      if (!wallet)
+        throw new AppError("Wallet not found", HttpStatusCode.NOT_FOUND);
 
       if (existingTransaction.status === "success") {
         const reverseBalance =
@@ -138,7 +137,10 @@ class WalletRepository implements IWalletRepository {
       );
 
       if (!updatedTransaction)
-        throw new AppError("Failed to update transaction", 500);
+        throw new AppError(
+          "Failed to update transaction",
+          HttpStatusCode.INTERNAL_SERVER_ERROR
+        );
 
       if (updatedTransaction.status === "success") {
         if (
@@ -164,10 +166,8 @@ class WalletRepository implements IWalletRepository {
       return updatedTransaction;
     } catch (error) {
       await session.abortTransaction();
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     } finally {
       session.endSession();
     }
@@ -177,10 +177,7 @@ class WalletRepository implements IWalletRepository {
     try {
       return await this.transactionModel.find({ walletId }).sort({ date: -1 });
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -188,10 +185,7 @@ class WalletRepository implements IWalletRepository {
     try {
       return await this.transactionModel.find();
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -204,7 +198,7 @@ class WalletRepository implements IWalletRepository {
       });
 
       if (!wallet) {
-        throw new AppError("Wallet not found", 404);
+        throw new AppError("Wallet not found", HttpStatusCode.NOT_FOUND);
       }
 
       const transactions = await this.transactionModel
@@ -213,10 +207,8 @@ class WalletRepository implements IWalletRepository {
 
       return { wallet, transactions };
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      if (error instanceof AppError) throw error;
+      handleTryCatchError("Database", error);
     }
   }
 }

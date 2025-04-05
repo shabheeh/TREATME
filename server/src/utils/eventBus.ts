@@ -14,7 +14,6 @@ class EventBus {
     [K in EventName]?: Array<(data: EventMap[K]) => void>;
   } = {};
 
-  // subscribe to an event
   subscribe<K extends EventName>(
     event: K,
     callback: (data: EventMap[K]) => void
@@ -25,7 +24,6 @@ class EventBus {
     this.listeners[event]?.push(callback);
   }
 
-  // publish an event
   publish<K extends EventName>(event: K, data: EventMap[K]): void {
     const callbacks = this.listeners[event];
     if (callbacks) {

@@ -17,12 +17,15 @@ import {
   useTheme,
   styled,
   Button,
+  Paper,
 } from "@mui/material";
 import {
   CalendarMonth as CalendarIcon,
   Group as UsersIcon,
   Healing as ActivityIcon,
   AccessTime as ClockIcon,
+  Money as MoneyIcon,
+  TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import dashboardService from "../../services/dashboard/DashboardService";
@@ -34,6 +37,17 @@ import { formatMonthDay, formatTime } from "../../utils/dateUtils";
 import { calculateAge } from "../../helpers/ageCalculator";
 import { StatCard } from "../../components/basics/ui/StatCard";
 import { useNavigate } from "react-router-dom";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const TabsContainer = styled(Box)(({ theme }) => ({
   borderBottom: "1px solid",
@@ -91,6 +105,19 @@ const Dashboard: React.FC = () => {
   const [totalTodaysAppointments, setTotalTodaysAppointments] =
     useState<number>(0);
 
+  const [totalRevenue, setTotalRevenue] = useState<number | null>(null);
+  const [monthlyData, setMonthlyData] = useState<
+    | {
+        month: string;
+        revenue: number;
+      }[]
+    | null
+  >(null);
+
+  const [weeklyAppointments, setWeeklyAppointments] = useState<
+    { day: string; count: number }[] | null
+  >(null);
+
   const [patients, setPatients] = useState<IPatientForDoctor[]>([]);
   const [totalPatients, setTotalPatients] = useState<number>(0);
   const [averageRating, setAverageRating] = useState<number | null>(null);
@@ -104,12 +131,18 @@ const Dashboard: React.FC = () => {
   const fetchDashboard = async () => {
     try {
       const {
+        monthlyData,
+        totalRevenue,
         averageRating,
         patients,
         todaysAppointments,
+        weeklyAppointments,
         totalPatients,
         totalTodaysAppointment,
       } = await dashboardService.getDoctorDashboard();
+      setMonthlyData(monthlyData);
+      setTotalRevenue(totalRevenue);
+      setWeeklyAppointments(weeklyAppointments);
       setTodaysAppointments(todaysAppointments);
       setTotalPatients(totalPatients);
       setPatients(patients);
@@ -146,6 +179,17 @@ const Dashboard: React.FC = () => {
   return (
     <Box>
       <Grid container spacing={3} sx={{ mb: 4 }}>
+        {totalRevenue && (
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={MoneyIcon}
+              title="Total Revenue"
+              value={`₹${totalRevenue}`}
+              description="Total revenue earned"
+              color={theme.palette.primary.main}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             icon={CalendarIcon}
@@ -175,6 +219,128 @@ const Dashboard: React.FC = () => {
             />
           </Grid>
         )}
+      </Grid>
+
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader
+              title={
+                <Box display="flex" alignItems="center">
+                  <TrendingUpIcon color="primary" sx={{ mr: 1 }} />
+                  <Typography variant="h6">Monthly Revenue</Typography>
+                </Box>
+              }
+              subheader="Total revenue generated over the past 12 months"
+            />
+            <CardContent>
+              <Box height={300}>
+                {monthlyData ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={monthlyData}>
+                      <defs>
+                        <linearGradient
+                          id="colorRevenue"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="5%"
+                            stopColor={theme.palette.primary.main}
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor={theme.palette.primary.main}
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <Paper elevation={3} style={{ padding: "10px" }}>
+                                <Typography variant="body2">
+                                  {payload[0].payload.month}: ₹
+                                  {payload[0].payload.revenue.toLocaleString()}
+                                </Typography>
+                              </Paper>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke={theme.palette.primary.main}
+                        fillOpacity={1}
+                        fill="url(#colorRevenue)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Typography>monthly Currently not availble</Typography>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader
+              title={
+                <Box display="flex" alignItems="center">
+                  <CalendarIcon sx={{ mr: 1, color: "teal" }} />
+                  <Typography variant="h6">Weekly Appointments</Typography>
+                </Box>
+              }
+              subheader="Number of appointments scheduled per day"
+            />
+            <CardContent>
+              <Box height={300}>
+                {weeklyAppointments ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={weeklyAppointments}>
+                      <XAxis dataKey="day" />
+                      <YAxis />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <Paper elevation={3} style={{ padding: "10px" }}>
+                                <Typography variant="body2">
+                                  {payload[0].payload.day}:{" "}
+                                  {payload[0].payload.count} appointments
+                                </Typography>
+                              </Paper>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar
+                        dataKey="count"
+                        fill={theme.palette.primary.main}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Typography>no Weekly appointments data available</Typography>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
       <TabsContainer>
@@ -302,12 +468,12 @@ const Dashboard: React.FC = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            {totalPatients && totalPatients > 5 && (
+            {totalPatients && totalPatients > 0 && (
               <Box display="flex" justifyContent="center" pt={2}>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => navigate("/admin/patients")}
+                  onClick={() => navigate("/doctor/patients")}
                 >
                   View All Patients
                 </Button>

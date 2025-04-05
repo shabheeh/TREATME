@@ -6,7 +6,6 @@ interface SocketContextType {
   connected: boolean;
 }
 
-// for socket available globally
 export const SocketContext = React.createContext<SocketContextType | null>(
   null
 );

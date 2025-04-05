@@ -1,7 +1,7 @@
 import { Model, Types } from "mongoose";
 import IChatRepository from "./interfaces/IChatRepository";
 import { IChat } from "src/interfaces/IChat";
-import { AppError } from "../../utils/errors";
+import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -18,10 +18,7 @@ class ChatRepository implements IChatRepository {
       const chat = await this.model.create(chatData);
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -41,10 +38,7 @@ class ChatRepository implements IChatRepository {
 
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -73,10 +67,7 @@ class ChatRepository implements IChatRepository {
 
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -105,10 +96,7 @@ class ChatRepository implements IChatRepository {
 
       return chats;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -125,10 +113,7 @@ class ChatRepository implements IChatRepository {
 
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -154,10 +139,7 @@ class ChatRepository implements IChatRepository {
 
       return await groupChat.save();
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -192,10 +174,7 @@ class ChatRepository implements IChatRepository {
 
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -226,10 +205,7 @@ class ChatRepository implements IChatRepository {
 
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -249,10 +225,7 @@ class ChatRepository implements IChatRepository {
 
       return chat;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 
@@ -261,10 +234,7 @@ class ChatRepository implements IChatRepository {
       const result = await this.model.findByIdAndDelete(chatId).exec();
       return !!result;
     } catch (error) {
-      throw new AppError(
-        `Database error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

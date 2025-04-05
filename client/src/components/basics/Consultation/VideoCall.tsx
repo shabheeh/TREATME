@@ -132,7 +132,8 @@ const VideoCall = () => {
     if (remoteVideo.current) remoteVideo.current.srcObject = null;
   };
 
-  const endCall = () => {
+  const endCall = async () => {
+    if (!appointment) return;
     stopMediaStreams();
     closePeerConnection();
 
@@ -142,14 +143,15 @@ const VideoCall = () => {
 
     setIsConnected(false);
 
-    if (appointment && userRole && userRole === "patient") {
-      const now = dayjs();
-      const endTime = dayjs(appointment.date).add(
-        appointment.duration,
-        "minute"
-      );
-      const timePassed = endTime.diff(now, "minutes");
+    const now = dayjs();
+    const endTime = dayjs(appointment.date).add(appointment.duration, "minute");
+    const timePassed = endTime.diff(now, "minutes");
 
+    if (timePassed < 15 && timePassed > -5) {
+      await appointmentService.updateAppointmentStatus(appointment?._id);
+    }
+
+    if (appointment && userRole && userRole === "patient") {
       if (timePassed < 25 && timePassed > 0) {
         setReviewModalOpen(true);
       } else {

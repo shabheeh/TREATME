@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken, ITokenPayload } from "../utils/jwt";
 import logger from "../configs/logger";
-
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       user?: ITokenPayload;
-//     }
-//   }
-// }
+import { HttpStatusCode } from "../constants/httpStatusCodes";
 
 export const authenticate = async (
   req: Request,
@@ -19,7 +12,9 @@ export const authenticate = async (
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).json({ message: "No token provided" });
+    res
+      .status(HttpStatusCode.UNAUTHORIZED)
+      .json({ message: "No token provided" });
     return;
   }
 
@@ -31,7 +26,9 @@ export const authenticate = async (
     next();
   } catch (error) {
     logger.error("Authentication Error", error);
-    res.status(401).json({ message: "Invalid or expired token" });
+    res
+      .status(HttpStatusCode.UNAUTHORIZED)
+      .json({ message: "Invalid or expired token" });
   }
 };
 
@@ -43,14 +40,14 @@ export const authorize = (...roles: string[]) => {
   ): Promise<void> => {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HttpStatusCode.UNAUTHORIZED).json({
           message: "Authentication required",
         });
         return;
       }
 
       if (!roles.includes((req.user as ITokenPayload)?.role)) {
-        res.status(403).json({
+        res.status(HttpStatusCode.FORBIDDEN).json({
           message: `Access Denied`,
         });
         return;
@@ -59,7 +56,7 @@ export const authorize = (...roles: string[]) => {
       next();
     } catch (error: unknown) {
       if (error instanceof Error)
-        res.status(500).json({
+        res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
           message: "Internal Server Error",
         });
     }

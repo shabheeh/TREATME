@@ -1,6 +1,6 @@
 import IPatientRepository from "src/repositories/patient/interface/IPatientRepository";
 import IPatient, { IPatientAccountService } from "../../interfaces/IPatient";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import {
   updateCloudinaryFile,
@@ -81,10 +81,7 @@ class PatientAcccountService implements IPatientAccountService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -110,10 +107,7 @@ class PatientAcccountService implements IPatientAccountService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

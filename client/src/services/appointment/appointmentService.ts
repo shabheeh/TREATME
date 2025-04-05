@@ -137,6 +137,20 @@ class AppointmentService {
       throw new Error(`Something went error`);
     }
   }
+
+  async updateAppointmentStatus(appointmentId: string): Promise<void> {
+    try {
+      await api.patch(`/appointments/${appointmentId}`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error fetching patients for doctor: ${error.message}`);
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error`, error);
+      throw new Error(`Something went error`);
+    }
+  }
 }
 
 const appointmentService = new AppointmentService();

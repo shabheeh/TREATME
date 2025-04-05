@@ -3,7 +3,7 @@ import IAppointmentRepository from "src/repositories/appointment/interfaces/IApp
 import IDoctorRepository from "src/repositories/doctor/interfaces/IDoctorRepository";
 import IDependentRepository from "src/repositories/patient/interface/IDependentRepository";
 import IPatientRepository from "src/repositories/patient/interface/IPatientRepository";
-import { AppError } from "../../utils/errors";
+import { AppError, handleTryCatchError } from "../../utils/errors";
 import IDashboardService, {
   AdminDashboardData,
   DoctorDashboardData,
@@ -92,10 +92,7 @@ class DashboardService implements IDashboardService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 
@@ -116,15 +113,26 @@ class DashboardService implements IDashboardService {
     doctorId: string
   ): Promise<DoctorDashboardData> {
     try {
-      const [todaysAppointments, averageRating, { patients, totalPatients }] =
-        await Promise.all([
-          this.appointmentRepo.getTodaysAppointmentByDoctor(doctorId),
-          this.reviewRepo.getAverageRatingByDoctorId(doctorId),
-          this.appointmentRepo.getPatientsByDoctor(doctorId, 1, 5, ""),
-        ]);
-      const totalTodaysAppointment = todaysAppointments.length;
-      return {
+      const [
+        { monthlyData: incompleteMonthlyData, totalRevenue },
         todaysAppointments,
+        weeklyAppointments,
+        averageRating,
+        { patients, totalPatients },
+      ] = await Promise.all([
+        this.appointmentRepo.getMonthlyRevenueByDoctor(doctorId),
+        this.appointmentRepo.getTodaysAppointmentByDoctor(doctorId),
+        this.appointmentRepo.getWeeklyAppointmentsByDoctor(doctorId),
+        this.reviewRepo.getAverageRatingByDoctorId(doctorId),
+        this.appointmentRepo.getPatientsByDoctor(doctorId, 1, 5, ""),
+      ]);
+      const totalTodaysAppointment = todaysAppointments.length;
+      const monthlyData = this.fillMissingMonths(incompleteMonthlyData);
+      return {
+        monthlyData,
+        totalRevenue,
+        todaysAppointments,
+        weeklyAppointments,
         averageRating,
         patients,
         totalPatients,
@@ -135,10 +143,7 @@ class DashboardService implements IDashboardService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Service", error);
     }
   }
 }

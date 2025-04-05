@@ -8,6 +8,8 @@ import { BadRequestError } from "../../utils/errors";
 import { ITokenPayload } from "../../utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class DoctorAuthController implements IDoctorAuthController {
@@ -38,10 +40,10 @@ class DoctorAuthController implements IDoctorAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         doctor,
         accessToken,
-        message: "Doctor signed in successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("error sign in doctor");
@@ -61,8 +63,8 @@ class DoctorAuthController implements IDoctorAuthController {
         sameSite: "lax",
       });
 
-      res.status(200).json({
-        message: "user signed out successfully",
+      res.status(HttpStatusCode.OK).json({
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("controller: Error resending otp:", error);
@@ -79,7 +81,7 @@ class DoctorAuthController implements IDoctorAuthController {
       const doctorId = (req.user as ITokenPayload).id;
       const { currentPassword, newPassword } = req.body;
       if (!currentPassword || !newPassword) {
-        throw new BadRequestError("Missing current and new password");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       await this.doctorAuthService.changePassword(
@@ -88,9 +90,10 @@ class DoctorAuthController implements IDoctorAuthController {
         newPassword
       );
 
-      res
-        .status(200)
-        .json({ success: true, message: "password changed successfully" });
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
+      });
     } catch (error) {
       logger.error(
         error instanceof Error

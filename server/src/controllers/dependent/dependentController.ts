@@ -7,6 +7,8 @@ import IDependent, {
 import { AppError, BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class DependentController implements IDependentController {
@@ -25,7 +27,7 @@ class DependentController implements IDependentController {
   ): Promise<void> => {
     try {
       if (!req.user) {
-        throw new AppError("User not authenticated");
+        throw new AppError(ResponseMessage.ERROR.UNAUTHORIZED_ACCESS);
       }
 
       const imageFile: Express.Multer.File | undefined = req.file;
@@ -44,9 +46,9 @@ class DependentController implements IDependentController {
         imageFile
       );
 
-      res.status(201).json({
+      res.status(HttpStatusCode.CREATED).json({
         dependent,
-        message: "Added Dependent successfully",
+        message: ResponseMessage.SUCCESS.RESOURCE_CREATED,
       });
     } catch (error) {
       logger.error("error creating dependent", error);
@@ -65,7 +67,7 @@ class DependentController implements IDependentController {
       const dependents =
         await this.dependentService.getDependents(primaryUserId);
 
-      res.status(200).json({ dependents });
+      res.status(HttpStatusCode.OK).json({ dependents });
     } catch (error) {
       logger.error("error fetching dependents");
       next(error);
@@ -82,7 +84,7 @@ class DependentController implements IDependentController {
 
       await this.dependentService.deleteDependent(id);
 
-      res.status(200);
+      res.status(HttpStatusCode.OK);
     } catch (error) {
       logger.error("error deleteing dependent");
       next(error);
@@ -98,7 +100,7 @@ class DependentController implements IDependentController {
       const id = req.params.id;
 
       if (!id) {
-        throw new BadRequestError("Something went wrong");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const imageFile: Express.Multer.File | undefined = req.file;
@@ -117,9 +119,9 @@ class DependentController implements IDependentController {
         imageFile
       );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         dependent,
-        message: "Profile updated successfully",
+        message: ResponseMessage.SUCCESS.RESOURCE_UPDATED,
       });
     } catch (error) {
       logger.error("error updating profile", error);

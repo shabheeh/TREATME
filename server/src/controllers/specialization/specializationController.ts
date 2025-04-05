@@ -7,6 +7,8 @@ import { BadRequestError } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class SpecializationController implements ISpecializationController {
@@ -26,7 +28,7 @@ class SpecializationController implements ISpecializationController {
   ): Promise<void> => {
     try {
       if (!req.file) {
-        throw new BadRequestError("Image is not provided");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const specialization = {
@@ -45,8 +47,8 @@ class SpecializationController implements ISpecializationController {
         imageFile
       );
 
-      res.status(201).json({
-        message: "Specialization created successfully",
+      res.status(HttpStatusCode.CREATED).json({
+        message: ResponseMessage.SUCCESS.RESOURCE_CREATED,
       });
     } catch (error) {
       logger.error("Error creating Specialization", error);
@@ -63,9 +65,9 @@ class SpecializationController implements ISpecializationController {
       const specializations =
         await this.specializationService.getSpecializations();
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         specializations,
-        message: "Specializations fetched successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("Error Fetching Specializations", error);
@@ -82,7 +84,7 @@ class SpecializationController implements ISpecializationController {
       const { specializationId } = req.params;
 
       if (!specializationId) {
-        throw new BadRequestError("Something went wrong");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const specialization =
@@ -90,9 +92,9 @@ class SpecializationController implements ISpecializationController {
           specializationId
         );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         specialization,
-        message: "Fetched Specialization Successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("Error Fetching Specialization", error);
@@ -109,7 +111,7 @@ class SpecializationController implements ISpecializationController {
       const { specializationId } = req.params;
 
       if (!specializationId) {
-        throw new BadRequestError("Something went wrong");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const updateData = {
@@ -129,9 +131,9 @@ class SpecializationController implements ISpecializationController {
         imageFile
       );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         updatedData,
-        message: "Specialization updated successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("Error upadating Specializations", error);

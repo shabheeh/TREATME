@@ -7,6 +7,8 @@ import {
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class ScheduleController implements IScheduleController {
@@ -26,11 +28,11 @@ class ScheduleController implements IScheduleController {
     try {
       const { doctorId } = req.params;
       if (!doctorId) {
-        throw new BadRequestError("Bad Request: Missing info");
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
 
       const schedule = await this.scheduleService.getSchedule(doctorId);
-      res.status(200).json({ schedule });
+      res.status(HttpStatusCode.OK).json({ schedule });
     } catch (error) {
       logger.error("Failed to fetch schedule");
       next(error);
@@ -47,7 +49,7 @@ class ScheduleController implements IScheduleController {
       const { updateData } = req.body;
 
       if (!doctorId || !updateData) {
-        throw new BadRequestError("Bad Request: Missing info");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const schedule = await this.scheduleService.updateSchedule(
@@ -55,7 +57,7 @@ class ScheduleController implements IScheduleController {
         updateData
       );
 
-      res.status(200).json({ schedule });
+      res.status(HttpStatusCode.OK).json({ schedule });
     } catch (error) {
       logger.error("Failed to update doctor", error);
       next(error);

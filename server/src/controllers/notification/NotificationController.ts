@@ -6,6 +6,8 @@ import { AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class NotificationController implements INotificationController {
@@ -38,7 +40,7 @@ class NotificationController implements INotificationController {
         type,
         limit
       );
-      res.status(200).json({ notifications });
+      res.status(HttpStatusCode.OK).json({ notifications });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Failed to get notifications"
@@ -58,7 +60,9 @@ class NotificationController implements INotificationController {
         throw new AuthError(AuthErrorCode.UNAUTHENTICATED);
       }
       await this.notificationService.markAllAsRead(userId);
-      res.status(200).json({ message: "notification maked read successfully" });
+      res
+        .status(HttpStatusCode.OK)
+        .json({ message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL });
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -80,7 +84,7 @@ class NotificationController implements INotificationController {
         throw new AuthError(AuthErrorCode.UNAUTHORIZED);
       }
       const unreadCount = await this.notificationService.getUnreadCount(userId);
-      res.status(200).json({ unreadCount });
+      res.status(HttpStatusCode.OK).json({ unreadCount });
     } catch (error) {
       logger.error(
         error instanceof Error

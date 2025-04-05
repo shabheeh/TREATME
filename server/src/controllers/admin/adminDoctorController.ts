@@ -9,6 +9,8 @@ import IDoctor from "../../interfaces/IDoctor";
 import { BadRequestError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class AdminDoctorController implements IAdminDoctorController {
@@ -54,9 +56,9 @@ class AdminDoctorController implements IAdminDoctorController {
         imageFile
       );
 
-      res.status(201).json({
+      res.status(HttpStatusCode.CREATED).json({
         doctor: newDoctor,
-        message: "new Doctor created Successfully",
+        message: ResponseMessage.SUCCESS.RESOURCE_CREATED,
       });
     } catch (error) {
       logger.error("controller:error crating new Doctor ", error);
@@ -80,7 +82,7 @@ class AdminDoctorController implements IAdminDoctorController {
 
       const result = await this.adminDoctorService.getDoctors(query);
 
-      res.status(200).json({ result });
+      res.status(HttpStatusCode.OK).json({ result });
     } catch (error) {
       logger.error("controller:error crating new Doctor ", error);
       next(error);
@@ -123,9 +125,9 @@ class AdminDoctorController implements IAdminDoctorController {
         updateData,
         imageFile
       );
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         success: true,
-        message: "Updated Doctor Successfully",
+        message: ResponseMessage.SUCCESS.RESOURCE_UPDATED,
       });
     } catch (error) {
       logger.error(

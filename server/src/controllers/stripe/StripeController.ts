@@ -6,6 +6,8 @@ import logger from "../../configs/logger";
 import { ITokenPayload } from "../../utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class StripeController implements IStripeController {
@@ -26,7 +28,7 @@ class StripeController implements IStripeController {
       const userId = (req.user as ITokenPayload).id;
 
       if (!paymentData) {
-        throw new BadRequestError("Bad Request: Missing appointment data");
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
       const clientSecret = await this.stripeService.handleStripePayment(
@@ -35,7 +37,7 @@ class StripeController implements IStripeController {
         paymentData,
         paymentType
       );
-      res.status(200).json(clientSecret);
+      res.status(HttpStatusCode.OK).json(clientSecret);
     } catch (error) {
       logger.error(
         error instanceof Error
@@ -54,11 +56,14 @@ class StripeController implements IStripeController {
     const sig = req.headers["stripe-signature"];
     try {
       if (!sig || Array.isArray(sig)) {
-        throw new AppError("Invalid Stripe signature", 400);
+        throw new AppError(
+          "Invalid Stripe signature",
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       await this.stripeService.handleWebhook(req.body, sig);
-      res.status(200).json({ success: true });
+      res.status(HttpStatusCode.OK).json({ success: true });
     } catch (error) {
       logger.error(
         error instanceof Error ? error.message : "Controller Error: webhook"

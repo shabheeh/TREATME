@@ -3,7 +3,12 @@ import logger from "../../configs/logger";
 import IAdminRepository from "src/repositories/admin/interfaces/IAdminRepository";
 import { generateTokens, ITokenPayload } from "../../utils/jwt";
 import { IAdminAuthService, SignInAdminResult } from "../../interfaces/IAdmin";
-import { AppError, AuthError, AuthErrorCode } from "../../utils/errors";
+import {
+  AppError,
+  AuthError,
+  AuthErrorCode,
+  handleTryCatchError,
+} from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 
@@ -48,10 +53,7 @@ class AdminAuthService implements IAdminAuthService {
       if (error instanceof AppError) {
         throw error;
       }
-      throw new AppError(
-        `Service error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        500
-      );
+      handleTryCatchError("Database", error);
     }
   }
 }

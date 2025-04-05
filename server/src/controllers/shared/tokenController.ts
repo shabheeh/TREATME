@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { refreshAccessToken } from "../../utils/jwt";
 import { AuthError, AuthErrorCode } from "../../utils/errors";
 import logger from "../../configs/logger";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 class AuthController {
   handleRefreshToken = async (
@@ -18,9 +20,9 @@ class AuthController {
 
       const newAccessToken = refreshAccessToken(refreshToken);
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         accessToken: newAccessToken,
-        message: "Access token refreshed successfully",
+        message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,
       });
     } catch (error) {
       logger.error("error refreshing tokens", error);
