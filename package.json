@@ -17,8 +17,6 @@
   },
   "homepage": "https://github.com/shabheeh/TREATME#readme",
   "dependencies": {
-    "inversify": "^7.4.0",
-    "reflect-metadata": "^0.2.2",
     "winston": "^3.17.0"
   }
 }

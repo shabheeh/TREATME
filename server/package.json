@@ -29,6 +29,7 @@
     "express-session": "^1.18.1",
     "google-auth-library": "^9.15.0",
     "helmet": "^8.0.0",
+    "inversify": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "morgan": "^1.10.0",
@@ -36,6 +37,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16",
     "redis": "^4.7.0",
+    "reflect-metadata": "^0.2.2",
     "socket.io": "^4.8.1",
     "stripe": "^17.6.0",
     "winston": "^3.17.0"

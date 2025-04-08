@@ -1,0 +1,41 @@
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: mern-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=5000
+      - NODE_ENV=production
+    depends_on:
+      - redis
+    volumes:
+      - /app/node_modules  
+    networks:
+      - treatme-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - treatme-network
+
+volumes:
+  redis_data:
+
+networks:
+  treatme-network:
+    driver: bridge
