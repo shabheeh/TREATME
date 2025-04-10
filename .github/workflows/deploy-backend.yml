@@ -4,20 +4,10 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  backend:
-    name: Build and Dockerize Backend
+  build-and-deploy:
     runs-on: ubuntu-latest
-
-    env:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      NODE_ENV: production
-      PORT: 5000
 
     steps:
       - name: Checkout code
@@ -28,14 +18,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies and build
         run: |
           cd server
           npm ci
-
-      - name: Build TypeScript
-        run: |
-          cd server
           npm run build
 
       - name: Log in to Docker Hub
@@ -44,10 +30,19 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
+      - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/mern-backend ./server
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/treatme-server ./server
+          docker push ${{ secrets.DOCKER_USERNAME }}/treatme-server
 
-      - name: Push Docker image
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/mern-backend
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/treatme-server
+            cd /home/ubuntu   # or the directory where your docker-compose.yml lives
+            docker compose down
+            docker compose up -d

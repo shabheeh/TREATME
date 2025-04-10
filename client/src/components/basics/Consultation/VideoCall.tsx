@@ -285,7 +285,7 @@ const VideoCall = () => {
             offerToReceiveVideo: true,
           });
 
-          if (peer.signalingState !== "closed") {
+          if (peer.signalingState === "stable") {
             await peer.setLocalDescription(offer);
             if (socket && roomId) {
               socket.emit("offer", { roomId, offer: peer.localDescription });

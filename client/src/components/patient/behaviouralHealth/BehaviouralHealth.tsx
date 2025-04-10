@@ -73,7 +73,7 @@ const BehavioralHealth = () => {
     useState<IBehaviouralHealth | null>(null);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState<IBehaviouralHealth>({});
+  const [editedData, setEditedData] = useState<IBehaviouralHealth | null>(null);
 
   useEffect(() => {
     fetchMentalHealth();
@@ -131,15 +131,24 @@ const BehavioralHealth = () => {
   };
 
   const handleArrayToggle = (array: keyof IBehaviouralHealth, item: string) => {
-    const currentItems = (editedData[array] as string[]) || [];
-    const updatedItems = currentItems.includes(item)
-      ? currentItems.filter((i) => i !== item)
-      : [...currentItems, item];
+    setEditedData((prev) => {
+      const currentItems = prev ? (prev[array] as string[]) || [] : [];
+      const updatedItems = currentItems.includes(item)
+        ? currentItems.filter((i) => i !== item)
+        : [...currentItems, item];
 
-    setEditedData((prev) => ({
-      ...prev,
-      [array]: updatedItems,
-    }));
+      return {
+        ...prev,
+        [array]: updatedItems,
+      } as IBehaviouralHealth;
+    });
+  };
+
+  const getNumericValue = (value: unknown): number => {
+    if (typeof value === "number") {
+      return value;
+    }
+    return 0;
   };
 
   const today = new Date().toISOString().split("T")[0];
@@ -210,8 +219,12 @@ const BehavioralHealth = () => {
               <Slider
                 value={
                   editedData && isEditing
-                    ? editedData[level]
-                    : behaviouralHealth?.[level]
+                    ? getNumericValue(
+                        editedData[level as keyof IBehaviouralHealth]
+                      )
+                    : getNumericValue(
+                        behaviouralHealth?.[level as keyof IBehaviouralHealth]
+                      )
                 }
                 min={0}
                 max={5}
@@ -219,7 +232,17 @@ const BehavioralHealth = () => {
                 marks
                 valueLabelDisplay="auto"
                 onChange={(_, value) =>
-                  setEditedData((prev) => ({ ...prev, [level]: value }))
+                  setEditedData((prev) => {
+                    const updatedData = {
+                      ...(prev || {
+                        anxietyLevel: 0,
+                        depressionLevel: 0,
+                        stressLevel: 0,
+                      }),
+                      [level]: value as number,
+                    };
+                    return updatedData as IBehaviouralHealth;
+                  })
                 }
                 disabled={!isEditing}
               />
@@ -268,10 +291,19 @@ const BehavioralHealth = () => {
                   : behaviouralHealth?.therapyStatus
               }
               onChange={(e) =>
-                setEditedData((prev) => ({
-                  ...prev,
-                  therapyStatus: e.target.value,
-                }))
+                setEditedData((prev) => {
+                  // Ensure prev is initialized as an object with default values if null
+                  const updatedData = {
+                    ...(prev || {
+                      anxietyLevel: 0,
+                      depressionLevel: 0,
+                      stressLevel: 0,
+                      therapyStatus: "",
+                    }),
+                    therapyStatus: e.target.value,
+                  };
+                  return updatedData as IBehaviouralHealth;
+                })
               }
               disabled={!isEditing}
             >
@@ -293,10 +325,18 @@ const BehavioralHealth = () => {
                   : behaviouralHealth?.lastEpisodeDate
               }
               onChange={(e) =>
-                setEditedData((prev) => ({
-                  ...prev,
-                  lastEpisodeDate: e.target.value,
-                }))
+                setEditedData((prev) => {
+                  const updatedData = {
+                    ...(prev || {
+                      anxietyLevel: 0,
+                      depressionLevel: 0,
+                      stressLevel: 0,
+                      therapyStatus: "",
+                    }),
+                    therapyStatus: e.target.value,
+                  };
+                  return updatedData as IBehaviouralHealth;
+                })
               }
               disabled={!isEditing}
               inputProps={{ max: today }}

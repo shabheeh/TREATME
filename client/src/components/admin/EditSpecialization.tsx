@@ -14,9 +14,10 @@ import log from "loglevel";
 import { toast } from "sonner";
 import specializationService from "../../services/specialization/specializationService";
 import { useNavigate, useParams } from "react-router-dom";
-import { Cropper } from "react-cropper";
+import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { ISpecialization } from "../../types/specialization/specialization.types";
+import type { ReactCropperElement } from "react-cropper";
 
 interface FormInputs {
   name: string;
@@ -35,7 +36,7 @@ const EditSpecialization = () => {
   );
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const cropperRef = useRef<HTMLImageElement>(null);
+  const cropperRef = useRef<ReactCropperElement>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [isCropped, setIsCropped] = useState(false);
   const [initialImage, setInitialImage] = useState<string | null>(null);

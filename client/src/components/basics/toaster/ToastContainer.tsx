@@ -17,7 +17,7 @@ export const NotificationItem = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   display: "flex",
   flexDirection: "column",
-  boxShadow: theme.shadows[3],
+  boxShadow: "none",
   borderRadius: theme.shape.borderRadius,
   position: "relative",
   overflow: "hidden",

@@ -106,7 +106,6 @@ const VisitNow = () => {
                     note={specialization.note}
                     fee={specialization.fee}
                     image={specialization.image}
-                    link={`/reason`}
                     id={specialization._id}
                     duration={specialization.durationInMinutes}
                   />
