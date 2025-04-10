@@ -30,7 +30,6 @@ const Messages: React.FC<ChatPageProps> = ({
   const [isChatsLoading, setChatsLoading] = useState<boolean>(false);
   const [isMessagesLoading, setMessagesLoading] = useState<boolean>(false);
   const [chatListOpen, setChatListOpen] = useState(true);
-  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -97,15 +96,15 @@ const Messages: React.FC<ChatPageProps> = ({
 
     socket.on("new-message", handleNewMessage);
 
-    socket.on("join-chat", (userId: string) => {
-      setOnlineUsers((prev) =>
-        [...prev, userId].filter((id, idx, self) => self.indexOf(id) === idx)
-      );
-    });
+    // socket.on("join-chat", (userId: string) => {
+    //   setOnlineUsers((prev) =>
+    //     [...prev, userId].filter((id, idx, self) => self.indexOf(id) === idx)
+    //   );
+    // });
 
-    socket.on("leave-chat", (userId: string) => {
-      setOnlineUsers((prev) => prev.filter((id) => id !== userId));
-    });
+    // socket.on("leave-chat", (userId: string) => {
+    //   setOnlineUsers((prev) => prev.filter((id) => id !== userId));
+    // });
 
     socket.on("error", (error: { message: string }) => {
       console.error("Socket error:", error.message);
@@ -120,7 +119,7 @@ const Messages: React.FC<ChatPageProps> = ({
       socket.off("chat-updated");
       socket.off("error");
     };
-  }, [socket, setOnlineUsers, setMessages]);
+  }, [socket, setMessages]);
 
   useEffect(() => {
     if (activeChat && socket) {

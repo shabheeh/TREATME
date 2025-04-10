@@ -1,44 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
-  Avatar,
   Box,
+  Container,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Avatar,
+  Chip,
   Divider,
-  Grid,
-  IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText,
-  Typography,
-  Chip,
+  ListItemIcon,
+  Grid,
+  Card,
+  CardContent,
+  useTheme,
+  Button,
 } from "@mui/material";
 import {
-  Edit as EditIcon,
   Medication as MedicationIcon,
-  Warning as WarningIcon,
+  WarningAmber as AllergiesIcon,
+  People as FamilyIcon,
+  LocalHospital as MedicalIcon,
+  SelfImprovement as LifestyleIcon,
+  MoodBad as MentalHealthIcon,
+  ArrowBack as ArrowBackIcon,
   Event as EventIcon,
-  Psychology as PsychologyIcon,
-  Healing as HealingIcon,
   FitnessCenter as FitnessCenterIcon,
+  Healing as HealingIcon,
+  Psychology as PsychologyIcon,
   People as PeopleIcon,
-  FamilyRestroom as FamilyIcon,
 } from "@mui/icons-material";
-
-import { calculateAge } from "../../helpers/ageCalculator";
-
-import accountService from "../../services/patient/accountService";
-import { useLocation } from "react-router-dom";
 import { IDependent, IPatient } from "../../types/patient/patient.types";
 import {
   IBehaviouralHealth,
   IHealthHistory,
   ILifestyle,
 } from "../../types/patient/health.types";
+import accountService from "../../services/patient/accountService";
+import { calculateAge } from "../../helpers/ageCalculator";
 import { formatMonthDay } from "../../utils/dateUtils";
 
-const PatientProfile: React.FC = () => {
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`profile-tabpanel-${index}`}
+      aria-labelledby={`profile-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `profile-tab-${index}`,
+    "aria-controls": `profile-tabpanel-${index}`,
+  };
+}
+
+const PatientProfile = () => {
   const location = useLocation();
   const patient = location.state.patient as IPatient | IDependent;
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const [tabValue, setTabValue] = useState(0);
   const [healthHistory, setHealtHistory] = useState<IHealthHistory | null>(
     null
   );
@@ -60,6 +100,10 @@ const PatientProfile: React.FC = () => {
 
     fetchHealtProfile();
   }, [patient]);
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   const lifestyleQuestions = [
     {
@@ -126,578 +170,844 @@ const PatientProfile: React.FC = () => {
     },
   ];
 
+  const renderAnswer = (answer: boolean | null) => {
+    if (answer === null)
+      return <Chip size="small" label="No data" color="default" />;
+    return answer ? (
+      <Chip size="small" label="Yes" color="success" />
+    ) : (
+      <Chip size="small" label="No" color="error" />
+    );
+  };
+
   return (
-    <Box sx={{ maxWidth: "90%", margin: "0 auto", p: 2 }}>
-      <Box
-        sx={{
-          mb: 3,
-          p: 2,
-          display: "flex",
-          alignItems: "center",
-          border: "1px solid #e0e0e0",
-          borderRadius: 2,
-          overflow: "hidden",
-        }}
-      >
-        <Avatar
-          src={patient.profilePicture}
-          sx={{ width: 80, height: 80, mr: 2 }}
-        />
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h4" component="h1">
-            {patient.firstName} {patient.lastName}
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, mt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              {calculateAge(patient.dateOfBirth)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {/* {patient.phone ? patient.phone : 'null'} */}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {patient.email}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <Container maxWidth="xl" sx={{ mb: 2, flexGrow: 1 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          sx={{ mb: 3 }}
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </Button>
+        <Paper
+          elevation={3}
+          sx={{ mb: 4, overflow: "hidden", borderRadius: 2 }}
+        >
           <Box
             sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
+              p: 3,
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "center", sm: "flex-start" },
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
             }}
           >
+            <Avatar
+              src={patient.profilePicture}
+              sx={{
+                width: 100,
+                height: 100,
+                border: "3px solid white",
+                mb: { xs: 2, sm: 0 },
+                mr: { sm: 3 },
+              }}
+            />
             <Box
               sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
+                flexDirection: "column",
+                alignItems: { xs: "center", sm: "flex-start" },
+                flex: 1,
               }}
             >
-              <Typography variant="h6">Current Medications</Typography>
-              <IconButton size="small">
-                <EditIcon />
-              </IconButton>
-            </Box>
-            <List>
-              {healthHistory?.medications.map((medication, idx) => (
-                <>
-                  <ListItem key={idx}>
-                    <ListItemIcon>
-                      <MedicationIcon color="success" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={medication.name}
-                      secondary={medication.frequency}
-                    />
-                  </ListItem>
-                  {idx !== healthHistory.medications.length - 1 && <Divider />}
-                </>
-              ))}
-              {healthHistory?.medications.length === 0 && (
-                <ListItem>
-                  <Typography variant="body2" color="text.secondary">
-                    No Medications recorded
-                  </Typography>
-                </ListItem>
-              )}
-            </List>
-          </Box>
-        </Grid>
-
-        {/* Recent Visits */}
-        {/* <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">Recent Visits</Typography>
-            </Box>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <EventIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary={appointment.specialization.name}
-                  secondary={appointment.doctor.firsName}
-                />
-                <Typography variant="caption" color="text.secondary">
-                  {appointment.date}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: { xs: "column", sm: "row" },
+                }}
+              >
+                <Typography
+                  variant="h4"
+                  component="h1"
+                  gutterBottom
+                  sx={{ mr: 2 }}
+                >
+                  {patient.firstName} {patient.lastName}
                 </Typography>
-              </ListItem>
-            </List>
-          </Box>
-        </Grid> */}
-
-        {/* Allergies */}
-        <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">Allergic to</Typography>
-              <IconButton size="small">
-                <EditIcon />
-              </IconButton>
-            </Box>
-            <List>
-              {healthHistory?.allergies.map((allergy, idx) => (
-                <>
-                  <ListItem
-                    key={idx}
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", width: "100%", mb: 0.5 }}>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <WarningIcon color="error" />
-                      </ListItemIcon>
-                      <Typography variant="subtitle1" fontWeight="medium">
-                        {allergy.allergicTo}
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <Typography variant="body2" color="text.secondary">
-                        Reaction: {allergy.reaction}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color:
-                            allergy.severity === "Severe"
-                              ? "error.main"
-                              : allergy.severity === "Moderate"
-                                ? "warning.main"
-                                : "info.main",
-                        }}
-                      >
-                        Severity: {allergy.severity}
-                      </Typography>
-                    </Box>
-                  </ListItem>
-                  {idx !== healthHistory.allergies.length - 1 && <Divider />}
-                </>
-              ))}
-              {healthHistory?.allergies.length === 0 && (
-                <ListItem>
-                  <Typography variant="body2" color="text.secondary">
-                    No allergies recorded
-                  </Typography>
-                </ListItem>
-              )}
-            </List>
-          </Box>
-        </Grid>
-
-        {/* Family History */}
-        <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">Family History</Typography>
-            </Box>
-            <List>
-              {healthHistory?.familyHistory.map((history, idx) => (
-                <>
-                  <ListItem key={idx}>
-                    <ListItemIcon>
-                      <FamilyIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={history.condition} />
-                    <Typography variant="body2" color="text.secondary">
-                      {history.relationship}
-                    </Typography>
-                  </ListItem>
-                  {idx !== healthHistory.familyHistory.length - 1 && (
-                    <Divider />
-                  )}
-                </>
-              ))}
-              {healthHistory?.familyHistory.length === 0 && (
-                <ListItem>
-                  <Typography variant="body2" color="text.secondary">
-                    No Family History
-                  </Typography>
-                </ListItem>
-              )}
-            </List>
-          </Box>
-        </Grid>
-
-        {/* Medical Conditions */}
-        <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">Medical conditions</Typography>
-            </Box>
-            <List>
-              {healthHistory?.healthConditions.map((condition, idx) => (
-                <>
-                  <ListItem key={idx}>
-                    <ListItemIcon>
-                      <FamilyIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={condition.condition} />
-                    {/* <Typography variant="body2" color="text.secondary">
-                  {condition.reportedBy}
-                </Typography> */}
-                  </ListItem>
-                  {idx !== healthHistory.healthConditions.length - 1 && (
-                    <Divider />
-                  )}
-                </>
-              ))}
-              {healthHistory?.familyHistory.length === 0 && (
-                <ListItem>
-                  <Typography variant="body2" color="text.secondary">
-                    No medical conditions recorded
-                  </Typography>
-                </ListItem>
-              )}
-            </List>
-            {/* <Box sx={{ p: 3, minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Typography variant="body1" color="text.secondary">
-                No medical conditions recorded
-              </Typography>
-            </Box> */}
-          </Box>
-        </Grid>
-
-        {/* Lifestyle */}
-        <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">Lifestyle</Typography>
-            </Box>
-            <List>
-              {lifestyleQuestions.map((question, idx) => (
-                <>
-                  <ListItem key={idx}>
-                    <ListItemText primary={question.question} />
-                    <Typography variant="body1" color="gray">
-                      {question.answer !== null
-                        ? question.answer
-                          ? "Yes"
-                          : "No"
-                        : "nill"}
-                    </Typography>
-                  </ListItem>
-                  {idx !== lifestyleQuestions.length - 1 && <Divider />}
-                </>
-              ))}
-            </List>
-          </Box>
-        </Grid>
-
-        {/* Behavioural Health */}
-        <Grid item xs={12} md={6}>
-          <Box
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 2,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                p: 2,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6">Behavioral Health</Typography>
-            </Box>
-            {behaviouralHealth ? (
-              <List>
-                <ListItem>
-                  <ListItemIcon>
-                    <PsychologyIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Mental Health Conditions"
-                    secondary={
-                      behaviouralHealth.conditions.length > 0
-                        ? behaviouralHealth.conditions.join(", ")
-                        : "None recorded"
-                    }
-                  />
-                </ListItem>
-                <Divider />
-
-                <ListItem>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Anxiety
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            mt: 1,
-                          }}
-                        >
-                          {[1, 2, 3, 4, 5].map((level) => (
-                            <Box
-                              key={level}
-                              sx={{
-                                width: 12,
-                                height: 12,
-                                borderRadius: "50%",
-                                mx: 0.5,
-                                bgcolor:
-                                  level <= behaviouralHealth.anxietyLevel
-                                    ? "warning.main"
-                                    : "grey.300",
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Depression
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            mt: 1,
-                          }}
-                        >
-                          {[1, 2, 3, 4, 5].map((level) => (
-                            <Box
-                              key={level}
-                              sx={{
-                                width: 12,
-                                height: 12,
-                                borderRadius: "50%",
-                                mx: 0.5,
-                                bgcolor:
-                                  level <= behaviouralHealth.depressionLevel
-                                    ? "error.main"
-                                    : "grey.300",
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Box sx={{ textAlign: "center" }}>
-                        <Typography variant="body2" color="text.secondary">
-                          Stress
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            mt: 1,
-                          }}
-                        >
-                          {[1, 2, 3, 4, 5].map((level) => (
-                            <Box
-                              key={level}
-                              sx={{
-                                width: 12,
-                                height: 12,
-                                borderRadius: "50%",
-                                mx: 0.5,
-                                bgcolor:
-                                  level <= behaviouralHealth.stressLevel
-                                    ? "info.main"
-                                    : "grey.300",
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </ListItem>
-                <Divider />
-
-                <ListItem>
-                  <ListItemIcon>
-                    <EventIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Last Episode Date"
-                    secondary={
-                      behaviouralHealth.lastEpisodeDate &&
-                      formatMonthDay(behaviouralHealth.lastEpisodeDate)
-                    }
-                  />
-                </ListItem>
-                <Divider />
-
-                <ListItem>
-                  <ListItemIcon>
-                    <HealingIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Therapy Status"
-                    secondary={behaviouralHealth.therapyStatus}
-                  />
-                </ListItem>
-                <Divider />
-
-                <ListItem>
-                  <ListItemIcon>
-                    <FitnessCenterIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Coping Mechanisms"
-                    secondary={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 0.5,
-                          mt: 0.5,
-                        }}
-                      >
-                        {behaviouralHealth.copingMechanisms.map(
-                          (mechanism, idx) => (
-                            <Chip
-                              key={idx}
-                              label={mechanism}
-                              size="small"
-                              variant="outlined"
-                              color="primary"
-                            />
-                          )
-                        )}
-                      </Box>
-                    }
-                  />
-                </ListItem>
-                <Divider />
-
-                <ListItem>
-                  <ListItemIcon>
-                    <PeopleIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Support System"
-                    secondary={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: 0.5,
-                          mt: 0.5,
-                        }}
-                      >
-                        {behaviouralHealth.supportSystem.map((support, idx) => (
-                          <Chip
-                            key={idx}
-                            label={support}
-                            size="small"
-                            variant="outlined"
-                            color="success"
-                          />
-                        ))}
-                      </Box>
-                    }
-                  />
-                </ListItem>
-              </List>
-            ) : (
-              <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
-                <Typography variant="body2" color="text.secondary">
-                  No behavioral health information recorded
-                </Typography>
+                {/* <IconButton
+                  color="inherit"
+                  size="small"
+                  sx={{
+                    bgcolor: "rgba(255,255,255,0.1)",
+                    mb: { xs: 1, sm: 0 },
+                  }}
+                >
+                  <EditIcon />
+                </IconButton> */}
               </Box>
-            )}
+
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                {calculateAge(patient.dateOfBirth)} years • {patient.gender}
+              </Typography>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 1,
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
+                <Chip
+                  label={`DOB: ${new Date(patient.dateOfBirth).toLocaleDateString()}`}
+                  size="small"
+                  sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
+                />
+                {/* <Chip
+                  label={`Insurance: ${patient.phone ? patient.phone : 'null'}`}
+                  size="small"
+                  sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
+                /> */}
+                <Chip
+                  label={`email: ${patient.email}`}
+                  size="small"
+                  sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "white" }}
+                />
+              </Box>
+            </Box>
           </Box>
-        </Grid>
-      </Grid>
+
+          <Box>
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              aria-label="patient profile tabs"
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                bgcolor: "background.paper",
+                borderBottom: 1,
+                borderColor: "divider",
+                "& .MuiTab-root": {
+                  minHeight: "64px",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                },
+              }}
+            >
+              <Tab
+                icon={<MedicationIcon />}
+                label="Medications"
+                {...a11yProps(0)}
+              />
+              <Tab
+                icon={<AllergiesIcon />}
+                label="Allergies"
+                {...a11yProps(1)}
+              />
+              <Tab
+                icon={<FamilyIcon />}
+                label="Family History"
+                {...a11yProps(2)}
+              />
+              <Tab
+                icon={<MedicalIcon />}
+                label="Medical Conditions"
+                {...a11yProps(3)}
+              />
+              <Tab
+                icon={<LifestyleIcon />}
+                label="Lifestyle"
+                {...a11yProps(4)}
+              />
+              <Tab
+                icon={<MentalHealthIcon />}
+                label="Behavioral Health"
+                {...a11yProps(5)}
+              />
+            </Tabs>
+
+            {/* Tab Content Panels */}
+            <Box sx={{ px: 3 }}>
+              <TabPanel value={tabValue} index={0}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Current Medications
+                </Typography>
+                <Grid container spacing={3}>
+                  {healthHistory?.medications.map((medication, index) => (
+                    <Grid item xs={12} md={4} key={index}>
+                      <Card variant="outlined" sx={{ height: "100%" }}>
+                        <CardContent>
+                          <Typography
+                            variant="h6"
+                            color="primary.main"
+                            gutterBottom
+                          >
+                            {medication.name}
+                          </Typography>
+                          <Divider sx={{ mb: 2 }} />
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            gutterBottom
+                          >
+                            {/* <strong>Dosage:</strong> {medication.dosage} */}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            gutterBottom
+                          >
+                            <strong>Frequency:</strong> {medication.frequency}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {/* <strong>Purpose:</strong> {medication.purpose} */}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={1}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Allergies
+                </Typography>
+                <Grid container spacing={3}>
+                  {healthHistory?.allergies.map((allergy, index) => (
+                    <Grid item xs={12} md={4} key={index}>
+                      <Card variant="outlined" sx={{ height: "100%" }}>
+                        <CardContent>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              mb: 1,
+                            }}
+                          >
+                            <Typography variant="h6" color="primary.main">
+                              {allergy.allergicTo}
+                            </Typography>
+                            <Chip
+                              label={allergy.severity}
+                              size="small"
+                              color={
+                                allergy.severity === "Severe"
+                                  ? "error"
+                                  : allergy.severity === "Moderate"
+                                    ? "warning"
+                                    : "success"
+                              }
+                            />
+                          </Box>
+                          <Divider sx={{ mb: 2 }} />
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Reaction:</strong> {allergy.reaction}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={2}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Family History
+                </Typography>
+                <List>
+                  {healthHistory?.familyHistory.map((item, index) => (
+                    <React.Fragment key={index}>
+                      <ListItem>
+                        <ListItemIcon>
+                          <FamilyIcon color="primary" />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.condition}
+                          secondary={`Relation: ${item.relationship}`}
+                        />
+                      </ListItem>
+                      {index < healthHistory?.familyHistory.length - 1 && (
+                        <Divider variant="inset" component="li" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </List>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={3}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Medical Conditions
+                </Typography>
+                <Grid container spacing={3}>
+                  {healthHistory?.healthConditions.map((condition, index) => (
+                    <Grid item xs={12} md={12} key={index}>
+                      <Chip
+                        key={index}
+                        label={condition.condition}
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                      />
+                      {/* <Card variant="outlined" sx={{ height: "100%" }}>
+                        <CardContent>
+                          <Typography
+                            variant="h6"
+                            color="primary.main"
+                            gutterBottom
+                          >
+                            {condition.condition}
+                          </Typography> */}
+                      {/* <Divider sx={{ mb: 2 }} /> */}
+                      {/* <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            gutterBottom
+                          >
+                            <strong>Diagnosis Date:</strong>{" "}
+                            {new Date(
+                              condition.diagnosisDate
+                            ).toLocaleDateString()}
+                          </Typography> */}
+                      {/* <Typography variant="body2" color="text.secondary">
+                            <strong>Status:</strong> {condition.status}
+                          </Typography> */}
+                      {/* </CardContent>
+                      </Card> */}
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={4}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Lifestyle Assessment
+                </Typography>
+
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          color="primary.main"
+                          sx={{ mb: 2 }}
+                        >
+                          Health Questionnaire
+                        </Typography>
+                        <Grid container spacing={2}>
+                          {lifestyleQuestions.map((item, index) => (
+                            <Grid item xs={12} md={6} key={index}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  mb: 1,
+                                }}
+                              >
+                                <Typography variant="body2">
+                                  {item.question}
+                                </Typography>
+                                {renderAnswer(item.answer as boolean | null)}
+                              </Box>
+                              {index < lifestyleQuestions.length - 1 && (
+                                <Divider sx={{ my: 1 }} />
+                              )}
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+
+                  {/* <Grid item xs={12} md={6}>
+                    <Card variant="outlined" sx={{ height: "100%" }}>
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          color="primary.main"
+                          gutterBottom
+                        >
+                          Diet & Exercise
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          paragraph
+                        >
+                          <strong>Diet:</strong> {patient.lifestyle.diet}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Exercise:</strong>{" "}
+                          {patient.lifestyle.exercise}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid> */}
+
+                  {/* <Grid item xs={12} md={6}>
+                    <Card variant="outlined" sx={{ height: "100%" }}>
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          color="primary.main"
+                          gutterBottom
+                        >
+                          Habits & Risk Factors
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          paragraph
+                        >
+                          <strong>Smoking:</strong> {patient.lifestyle.smoking}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          paragraph
+                        >
+                          <strong>Alcohol:</strong> {patient.lifestyle.alcohol}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          <strong>Sleep:</strong> {patient.lifestyle.sleep}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid> */}
+                </Grid>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={5}>
+                <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+                  Behavioral Health Assessment
+                </Typography>
+
+                {behaviouralHealth ? (
+                  <List>
+                    <ListItem>
+                      <ListItemIcon>
+                        <PsychologyIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Mental Health Conditions"
+                        secondary={
+                          behaviouralHealth?.conditions?.length > 0
+                            ? behaviouralHealth.conditions.join(", ")
+                            : "None recorded"
+                        }
+                      />
+                    </ListItem>
+                    <Divider />
+
+                    <ListItem>
+                      <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                          <Box sx={{ textAlign: "center" }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Anxiety
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth.anxietyLevel
+                                        ? "warning.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Box sx={{ textAlign: "center" }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Depression
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth.depressionLevel
+                                        ? "error.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Box sx={{ textAlign: "center" }}>
+                            <Typography variant="body2" color="text.secondary">
+                              Stress
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth.stressLevel
+                                        ? "info.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </ListItem>
+                    <Divider />
+
+                    <ListItem>
+                      <ListItemIcon>
+                        <EventIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Last Episode Date"
+                        secondary={
+                          behaviouralHealth.lastEpisodeDate &&
+                          formatMonthDay(behaviouralHealth.lastEpisodeDate)
+                        }
+                      />
+                    </ListItem>
+                    <Divider />
+
+                    <ListItem>
+                      <ListItemIcon>
+                        <HealingIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Therapy Status"
+                        secondary={behaviouralHealth.therapyStatus}
+                      />
+                    </ListItem>
+                    <Divider />
+
+                    <ListItem>
+                      <ListItemIcon>
+                        <FitnessCenterIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Coping Mechanisms"
+                        secondary={
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 0.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            {behaviouralHealth.copingMechanisms.map(
+                              (mechanism, idx) => (
+                                <Chip
+                                  key={idx}
+                                  label={mechanism}
+                                  size="small"
+                                  variant="outlined"
+                                  color="primary"
+                                />
+                              )
+                            )}
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                    <Divider />
+
+                    <ListItem>
+                      <ListItemIcon>
+                        <PeopleIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Support System"
+                        secondary={
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 0.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            {behaviouralHealth.supportSystem.map(
+                              (support, idx) => (
+                                <Chip
+                                  key={idx}
+                                  label={support}
+                                  size="small"
+                                  variant="outlined"
+                                  color="success"
+                                />
+                              )
+                            )}
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  </List>
+                ) : (
+                  <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No behavioral health information recorded
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Card variant="outlined" sx={{ height: "100%" }}>
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          color="primary.main"
+                          gutterBottom
+                        >
+                          Mental Health Status
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+
+                        <Stack spacing={2}>
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Conditions:</strong>
+                            </Typography>
+                            <Typography variant="body1">
+                              {behaviouralHealth?.conditions}
+                            </Typography>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Anxiety Level:</strong>
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth?.anxietyLevel
+                                        ? "warning.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Depression Level:</strong>
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth?.depressionLevel
+                                        ? "error.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Stress Level:</strong>
+                            </Typography>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                mt: 1,
+                              }}
+                            >
+                              {[1, 2, 3, 4, 5].map((level) => (
+                                <Box
+                                  key={level}
+                                  sx={{
+                                    width: 12,
+                                    height: 12,
+                                    borderRadius: "50%",
+                                    mx: 0.5,
+                                    bgcolor:
+                                      level <= behaviouralHealth?.stressLevel
+                                        ? "info.main"
+                                        : "grey.300",
+                                  }}
+                                />
+                              ))}
+                            </Box>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Last Episode Date:</strong>
+                            </Typography>
+                            <Typography variant="body1">
+                              {behaviouralHealth?.lastEpisodeDate
+                                ? new Date(
+                                    behaviouralHealth?.lastEpisodeDate
+                                  ).toLocaleDateString()
+                                : "No recent episodes"}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Card variant="outlined" sx={{ height: "100%" }}>
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          color="primary.main"
+                          gutterBottom
+                        >
+                          Treatment & Support
+                        </Typography>
+                        <Divider sx={{ mb: 2 }} />
+
+                        <Stack spacing={3}>
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Therapy Status:</strong>
+                            </Typography>
+                            <Typography variant="body1">
+                              {behaviouralHealth?.therapyStatus}
+                            </Typography>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Coping Mechanisms:</strong>
+                            </Typography>
+                            <Typography variant="body1">
+                              {behaviouralHealth?.copingMechanisms}
+                            </Typography>
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              gutterBottom
+                            >
+                              <strong>Support System:</strong>
+                            </Typography>
+                            <Typography variant="body1">
+                              {behaviouralHealth?.supportSystem}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid> */}
+              </TabPanel>
+            </Box>
+          </Box>
+        </Paper>
+        {/* </motion.div> */}
+      </Container>
     </Box>
   );
 };

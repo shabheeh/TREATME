@@ -1,4 +1,12 @@
-import { Box, Container, Typography, TextField, Button, InputAdornment, IconButton } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import React, { useState } from "react";
@@ -105,7 +113,6 @@ const SignIn: React.FC = () => {
               })}
               label="Password"
               type={showPassword ? "text" : "password"}
-
               variant="outlined"
               error={!!errors.password}
               helperText={errors.password?.message}

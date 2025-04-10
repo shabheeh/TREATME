@@ -10,12 +10,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import {
-  Message,
-  Medication,
-  EventNote,
-  ContactSupport,
-} from "@mui/icons-material";
+import { Message, Medication, EventNote } from "@mui/icons-material";
 
 import { FaHouseMedical } from "react-icons/fa6";
 

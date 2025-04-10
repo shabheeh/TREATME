@@ -8,7 +8,7 @@ import Dashboard from "../pages/doctor/Dashboard";
 import RegisterForm from "../components/doctor/RegisterForm";
 import Schedule from "../pages/doctor/Schedule";
 import Appointments from "../pages/doctor/Appointments";
-import PatientProfile from "../pages/doctor/PatientProfile2";
+import PatientProfile from "../pages/doctor/PatientProfile";
 import Messages from "../components/basics/messages/Messages";
 import Notifications from "../components/basics/notification/Notification";
 import PatientListPage from "../components/doctor/PatientsList";

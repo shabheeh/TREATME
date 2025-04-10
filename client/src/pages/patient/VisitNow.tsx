@@ -11,8 +11,6 @@ const VisitNow = () => {
   >(null);
   const [loading, setLoading] = useState(false);
 
-
-
   useEffect(() => {
     const fetchSpecializations = async () => {
       try {

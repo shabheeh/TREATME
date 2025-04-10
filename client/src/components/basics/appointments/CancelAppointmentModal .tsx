@@ -139,7 +139,6 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
           scheduled appointment may be subject to a cancellation fee of 100rs.
         </Alert>
 
-
         <Stack direction="row" spacing={2} justifyContent="flex-end">
           <Button onClick={() => onClose()} color="inherit">
             Keep Appointment

@@ -133,7 +133,7 @@ const EditDoctor = () => {
 
         setInitialImage(doctor.profilePicture);
 
-        console.log(doctor.licensedState)
+        console.log(doctor.licensedState);
 
         reset({
           firstName: doctor.firstName,
@@ -221,7 +221,7 @@ const EditDoctor = () => {
       }
     }
 
-    console.log(data)
+    console.log(data);
 
     try {
       setLoading(true);

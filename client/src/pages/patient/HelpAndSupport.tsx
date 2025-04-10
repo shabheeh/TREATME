@@ -22,7 +22,6 @@ import {
   Help,
   Email,
   Phone,
-  Chat,
   ArrowForward,
   LiveHelp,
 } from "@mui/icons-material";

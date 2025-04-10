@@ -20,7 +20,6 @@ const drawerWidth = 250;
 const menuItems = [
   { text: "Wallet", icon: <WalletIcon />, path: "/doctor/account/wallet" },
   { text: "Security", icon: <VpnKeyIcon />, path: "/doctor/account/security" },
-
 ];
 
 interface SidebarProps {

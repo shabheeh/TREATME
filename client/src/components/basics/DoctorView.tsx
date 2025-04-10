@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PersonIcon from "@mui/icons-material/Person";
-import { Edit, Edit as EditIcon } from "@mui/icons-material";
+import { Edit as EditIcon } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import doctorService from "../../services/doctor/doctorService";

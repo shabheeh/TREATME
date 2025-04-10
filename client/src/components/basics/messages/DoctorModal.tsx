@@ -12,27 +12,21 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Chip,
   Avatar,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Typography,
-  InputAdornment,
   Divider,
   Box,
   CircularProgress,
+  SelectChangeEvent,
 } from "@mui/material";
-import {
-  Star as StarIcon,
-  FilterList as FilterListIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
+import {} from "@mui/icons-material";
 import {
   getDoctorsQuery,
   getDoctorsResult,
-  IDoctor,
 } from "../../../types/doctor/doctor.types";
 import doctorService from "../../../services/doctor/doctorService";
 import specializationService from "../../../services/specialization/specializationService";
@@ -51,7 +45,6 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
 }) => {
   const [data, setData] = useState<getDoctorsResult | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [genderFilter, setGenderFilter] = useState<string>("");
@@ -100,9 +93,7 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
 
         const response = await doctorService.getDoctors(query);
         setData(response);
-        setError(null);
       } catch (err) {
-        setError("Failed to fetch doctors data");
         console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
@@ -133,16 +124,11 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
       });
     }
   };
-  const handleClearFilters = () => {
-    setGenderFilter("");
-    setSpecializationFilter({ id: "", name: "" });
-    setSearchQuery("");
-  };
 
   if (!isOpen) return null;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         <Typography variant="h6" component="div">
           Select a Doctor for Chat
@@ -161,13 +147,6 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                 onChange={handleSearchChange}
                 variant="outlined"
                 placeholder="Search Doctors,"
-                // InputProps={{
-                //   startAdornment: (
-                //     <InputAdornment position="start">
-                //       <SearchIcon />
-                //     </InputAdornment>
-                //   ),
-                // }}
               />
             </Grid>
 
@@ -260,15 +239,16 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                 <React.Fragment key={doctor._id}>
                   <ListItem
                     alignItems="center"
-                    button
+                    component="button"
                     onClick={() => onSelectDoctor(doctor._id, "Doctor")}
                     sx={{
-                      height: 80, // Reduced height
+                      height: 80,
                       borderRadius: 1,
                       "&:hover": {
                         backgroundColor: "rgba(0, 0, 0, 0.04)",
                       },
                       py: 1,
+                      cursor: "pointer",
                     }}
                   >
                     <ListItemAvatar>
@@ -325,7 +305,7 @@ const DoctorSearchModal: React.FC<DoctorSearchModalProps> = ({
                         alignSelf: "center",
                         height: 30,
                         fontSize: "0.8rem",
-                      }} // Reduced size
+                      }}
                     >
                       Chat Now
                     </Button>

@@ -14,7 +14,7 @@ const AntiProtectedRoute: React.FC<AntiProtectedRouteProps> = ({
   const auth = useSelector((state: RootState) => state.auth);
   const location = useLocation();
 
-  console.log(auth,"auth")
+  console.log(auth, "auth");
 
   if (
     auth.isAuthenticated &&
