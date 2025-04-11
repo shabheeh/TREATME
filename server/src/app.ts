@@ -24,7 +24,11 @@ const corsOptions = {
 
 startAppointmentNotifyJob();
 
-app.use("/api/webhooks", webhookRouter);
+app.use(
+  "/api/webhooks",
+  express.raw({ type: "application/json" }),
+  webhookRouter
+);
 
 app.use(cors(corsOptions));
 app.use(morgan("dev"));

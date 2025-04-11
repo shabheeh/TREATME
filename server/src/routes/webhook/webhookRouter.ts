@@ -8,10 +8,6 @@ const stripeController = container.get<IStripeController>(
   TYPES.IStripeController
 );
 
-router.post(
-  "/",
-  express.raw({ type: "application/json" }),
-  stripeController.handleWebhook
-);
+router.post("/", stripeController.handleWebhook);
 
 export default router;
