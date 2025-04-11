@@ -10,6 +10,7 @@ import doctorRouter from "./routes/doctor/doctorRouter";
 import sharedRouter from "./routes/shared/sharedRouter";
 import { errorHandler } from "./middlewares/errorHandler";
 import chatRouter from "./routes/chat/chatRouter";
+import webhookRouter from "./routes/webhook/webhookRouter";
 import { startAppointmentNotifyJob } from "./utils/cronJobs/appointmentNotifier";
 
 const app = express();
@@ -23,7 +24,7 @@ const corsOptions = {
 
 startAppointmentNotifyJob();
 
-app.use("/api/webhooks", express.raw({ type: "application/json" }));
+app.use("/api/webhooks", webhookRouter);
 
 app.use(cors(corsOptions));
 app.use(morgan("dev"));

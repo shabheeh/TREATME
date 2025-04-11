@@ -51,8 +51,6 @@ const Appointments = () => {
     );
     return appointment.status === "confirmed" && appointmentTime.isAfter(now);
   });
-
-  // const requested = appointments.filter(appointment => appointment.status === 'requested')
   const completed = appointments.filter(
     (appointment) => appointment.status === "completed"
   );
@@ -68,10 +66,6 @@ const Appointments = () => {
         <Upcoming appointments={upcoming} onReschedule={fetchAppointments} />
       ),
     },
-    // {
-    //     title: 'Requested',
-    //     component: <div>tab 2</div>,
-    // },
     {
       title: "Completed",
       component: (
@@ -81,7 +75,7 @@ const Appointments = () => {
   ];
 
   return (
-    <Card sx={{ boxShadow: 0 }}>
+    <Card sx={{ px: 0, boxShadow: 0 }}>
       <CustomTabs
         value={value}
         onChange={handleChange}

@@ -31,7 +31,7 @@ const LayoutDoctor = () => {
         sx={{
           flexGrow: 1,
           p: 3,
-          marginLeft: { xs: 0, lg: "0" },
+          marginLeft: { xs: 0, lg: "0px" },
           marginTop: "64px",
           backgroundColor: "#ffffff",
           height: "calc(100vh - 64px)",

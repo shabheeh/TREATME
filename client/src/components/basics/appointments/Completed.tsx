@@ -36,7 +36,7 @@ const Completed: React.FC<CompletedProps> = ({
             textAlign: "center",
           }}
         >
-          <Typography>No upcoming appointments</Typography>
+          <Typography>No completed appointments</Typography>
         </Box>
       ) : doctor ? (
         appointments.map((appointment) => (

@@ -225,7 +225,11 @@ router.post(
   stripeController.createPaymentIntent
 );
 
-router.post("/webhooks", stripeController.handleWebhook);
+router.post(
+  "/webhooks",
+  express.raw({ type: "application/json" }),
+  stripeController.handleWebhook
+);
 
 router.get(
   "/appointment/payment/:paymentId",
