@@ -46,6 +46,7 @@ const BookingConfirmation = () => {
     }
     const fetchAppointment = async () => {
       try {
+        setLoading(true);
         if (paymentIntentId) {
           const appointment =
             await appointmentService.getAppointmentByPaymentId(paymentIntentId);
