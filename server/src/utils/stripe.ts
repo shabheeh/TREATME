@@ -66,6 +66,8 @@ export const constructWebhookEvent = (
   webhookSecret: string
 ) => {
   console.log("webhook secret", webhookSecret);
+  console.log("payload", payload);
+  console.log("sig", sig);
   try {
     return stripe.webhooks.constructEvent(payload, sig, webhookSecret);
   } catch (err) {

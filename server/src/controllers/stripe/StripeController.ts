@@ -62,6 +62,10 @@ class StripeController implements IStripeController {
         );
       }
 
+      console.log("Webhook received ✅");
+      console.log(req.headers);
+      console.log(req.body);
+
       await this.stripeService.handleWebhook(req.body, sig);
       res.status(HttpStatusCode.OK).json({ success: true });
     } catch (error) {
