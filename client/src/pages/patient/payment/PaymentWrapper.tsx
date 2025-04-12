@@ -15,6 +15,8 @@ const PaymentWrapper: React.FC = () => {
   const appointmentData = useSelector(
     (state: RootState) => state.appointment.appointmentData
   );
+
+  const timeZone = useSelector((state: RootState) => state.user.timeZone);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +32,8 @@ const PaymentWrapper: React.FC = () => {
         const response = await createPaymentIntent(
           appointmentData,
           "appointment_fee",
-          amount
+          amount,
+          timeZone
         );
         setClientSecret(response.clientSecret);
       } catch (error) {

@@ -13,7 +13,6 @@ const BookingWrapper: React.FC = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const handlePopState = () => {
-      console.log("Popstate triggered at:", new Date().toISOString());
       dispatch(resetAppointment());
       navigate("/visitnow");
     };

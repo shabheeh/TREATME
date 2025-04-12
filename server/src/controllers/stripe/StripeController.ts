@@ -23,11 +23,13 @@ class StripeController implements IStripeController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { paymentData, paymentType, amount } = req.body;
+      const { paymentData, paymentType, amount, timeZone } = req.body;
 
       const userId = (req.user as ITokenPayload).id;
 
-      if (!paymentData) {
+      console.log(timeZone, "contro");
+
+      if (!paymentData || !paymentType || !amount || !timeZone) {
         throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }
 
@@ -35,7 +37,8 @@ class StripeController implements IStripeController {
         userId,
         amount,
         paymentData,
-        paymentType
+        paymentType,
+        timeZone
       );
       res.status(HttpStatusCode.OK).json(clientSecret);
     } catch (error) {

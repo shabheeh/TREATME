@@ -11,6 +11,7 @@ const initialUserState = {
   doctor: null as IDoctor | null,
   admin: null as IAdmin | null,
   currentUser: null as IPatient | IDependent | null,
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 };
 
 const userSlice = createSlice({

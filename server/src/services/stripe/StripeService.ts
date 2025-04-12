@@ -28,7 +28,8 @@ class StripeService implements IStripeService {
     userId: string,
     amount: number,
     paymentMetadata: IAppointment | ITransaction,
-    paymentType: "appointment_fee" | "wallet_topup"
+    paymentType: "appointment_fee" | "wallet_topup",
+    timeZone: string
   ): Promise<{ clientSecret: string }> {
     try {
       const paymentIntent = await createPaymentIntent(
@@ -36,7 +37,8 @@ class StripeService implements IStripeService {
         amount,
         "inr",
         paymentMetadata,
-        paymentType
+        paymentType,
+        timeZone
       );
       if (!paymentIntent || !paymentIntent.client_secret) {
         throw new AppError("Failed to create stripe payment gateway");
@@ -128,7 +130,12 @@ class StripeService implements IStripeService {
       paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
 
-    await this.appointmentService.createAppointment(appointment);
+    console.log(paymentIntent.metadata.timeZone, "timeZone");
+
+    await this.appointmentService.createAppointment(
+      appointment,
+      paymentIntent.metadata.timeZone
+    );
   }
 
   private async handlePaymentIntentFailedAppointment(
@@ -148,7 +155,10 @@ class StripeService implements IStripeService {
       paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
 
-    await this.appointmentService.createAppointment(appointment);
+    await this.appointmentService.createAppointment(
+      appointment,
+      paymentIntent.metadata.timeZone
+    );
   }
 
   private async handlePaymentIntentCanceledAppointment(
@@ -168,7 +178,10 @@ class StripeService implements IStripeService {
       paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
 
-    await this.appointmentService.createAppointment(appointment);
+    await this.appointmentService.createAppointment(
+      appointment,
+      paymentIntent.metadata.timeZone
+    );
   }
 
   private createAppointmentObject(metadata: Stripe.Metadata) {

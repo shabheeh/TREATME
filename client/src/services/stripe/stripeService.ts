@@ -6,13 +6,15 @@ import { PaymentIntent } from "@stripe/stripe-js";
 export const createPaymentIntent = async (
   paymentData: Partial<IAppointment | ITransaction>,
   paymentType: string,
-  amount: number
+  amount: number,
+  timeZone: string
 ) => {
   try {
     const response = await api.post("/create-payment-intent", {
       paymentData,
       paymentType,
       amount,
+      timeZone,
     });
     return response.data;
   } catch (error: unknown) {

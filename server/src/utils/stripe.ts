@@ -15,9 +15,10 @@ const generateMetadata = (
   userId: string,
   data: IAppointment | ITransaction,
   paymentType: "appointment_fee" | "wallet_topup",
-  amount: number
+  amount: number,
+  timeZone: string
 ): Record<string, string | number> => {
-  const metadata: PaymentMetadata = { paymentType, userId, amount };
+  const metadata: PaymentMetadata = { paymentType, userId, amount, timeZone };
 
   Object.entries(data).forEach(([key, value]) => {
     metadata[key] =
@@ -32,7 +33,8 @@ export const createPaymentIntent = async (
   amount: number,
   currency = "inr",
   paymentData: IAppointment | ITransaction,
-  paymentType: "appointment_fee" | "wallet_topup"
+  paymentType: "appointment_fee" | "wallet_topup",
+  timeZone: string
 ) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -41,7 +43,13 @@ export const createPaymentIntent = async (
       automatic_payment_methods: {
         enabled: true,
       },
-      metadata: generateMetadata(userId, paymentData, paymentType, amount),
+      metadata: generateMetadata(
+        userId,
+        paymentData,
+        paymentType,
+        amount,
+        timeZone
+      ),
     });
     return paymentIntent;
   } catch (error) {
@@ -65,9 +73,6 @@ export const constructWebhookEvent = (
   sig: string,
   webhookSecret: string
 ) => {
-  console.log("webhook secret", webhookSecret);
-  console.log("payload", payload);
-  console.log("sig", sig);
   try {
     return stripe.webhooks.constructEvent(payload, sig, webhookSecret);
   } catch (err) {

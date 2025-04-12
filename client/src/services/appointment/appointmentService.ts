@@ -6,11 +6,13 @@ import { api } from "../../utils/axiosInterceptor";
 
 class AppointmentService {
   async createAppointment(
-    appointmentData: IAppointment
+    appointmentData: IAppointment,
+    timeZone: string
   ): Promise<IAppointment> {
     try {
       const response = await api.post("/appointments", {
         appointmentData,
+        timeZone,
       });
       const { appointment } = response.data;
       return appointment;

@@ -117,6 +117,7 @@ export default function ScheduleManagement() {
       .set("minute", newTimeSlot.startTime.minute())
       .toISOString();
 
+    console.log(startTime, "startTime");
     const endTime = dayjs(startTime).add(slotDuration, "minute").toISOString();
 
     if (dayjs(selectedDate).isSame(today, "day")) {

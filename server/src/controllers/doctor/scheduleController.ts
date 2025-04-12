@@ -48,6 +48,8 @@ class ScheduleController implements IScheduleController {
       const { doctorId } = req.params;
       const { updateData } = req.body;
 
+      console.log(updateData, "schecules");
+
       if (!doctorId || !updateData) {
         throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }

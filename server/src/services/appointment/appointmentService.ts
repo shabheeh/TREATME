@@ -8,7 +8,11 @@ import IAppointmentRepository, {
 } from "../../repositories/appointment/interfaces/IAppointmentRepository";
 import { AppError, handleTryCatchError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
-import { extractDate, extractTime } from "../../utils/dateUtils";
+import {
+  extractDate,
+  extractTime,
+  getLocalizedDateTime,
+} from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
 import { generateBookingCancellationHtml } from "../../helpers/bookingCancellationHtml";
 import { generateBookingConfirmationHtmlForDoctor } from "../../helpers/bookingConfirmationHtmlForDoctor";
@@ -44,7 +48,8 @@ class AppointmentService implements IAppointmentService {
   }
 
   async createAppointment(
-    appointmentData: IAppointment
+    appointmentData: IAppointment,
+    timeZone: string
   ): Promise<IAppointmentPopulated> {
     try {
       const { doctor, slotId, dayId } = appointmentData;
@@ -84,8 +89,10 @@ class AppointmentService implements IAppointmentService {
           email: patientEmail,
         } = populatedAppointment.patient;
 
-        const date = extractDate(populatedAppointment.date);
-        const time = extractTime(populatedAppointment.date);
+        const { date, time } = getLocalizedDateTime(
+          populatedAppointment.date,
+          timeZone
+        );
 
         const patientHtml = generateBookingConfirmationHtml(
           `${doctorFirstName} ${doctorLastName}`,
@@ -127,8 +134,6 @@ class AppointmentService implements IAppointmentService {
           type: "appointments",
           priority: "high",
         };
-
-        console.log(notificationForDoctor, "hi");
 
         await Promise.all([
           this.notificationService.createNotification(notificationForPatient),

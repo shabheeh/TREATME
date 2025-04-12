@@ -9,6 +9,7 @@ import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { ResponseMessage } from "src/constants/responseMessages";
 
 @injectable()
 class AppointmentController implements IAppointmentController {
@@ -26,10 +27,16 @@ class AppointmentController implements IAppointmentController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { appointmentData } = req.body;
+      const { appointmentData, timeZone } = req.body;
 
-      const appointment =
-        await this.appointmentService.createAppointment(appointmentData);
+      if (!appointmentData || !timeZone) {
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
+      }
+
+      const appointment = await this.appointmentService.createAppointment(
+        appointmentData,
+        timeZone
+      );
 
       res.status(HttpStatusCode.CREATED).json({ appointment });
     } catch (error) {

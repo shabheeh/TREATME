@@ -57,6 +57,8 @@ const Payment: React.FC = () => {
     "stripe"
   );
 
+  const timeZone = useSelector((state: RootState) => state.user.timeZone);
+
   const stripe = useStripe();
   const elements = useElements();
 
@@ -144,7 +146,8 @@ const Payment: React.FC = () => {
       } as IAppointment;
 
       const appointment = await appointmentService.createAppointment(
-        updatedAppointmentData
+        updatedAppointmentData,
+        timeZone
       );
       toast.success("Appointment scheduled successfully");
 

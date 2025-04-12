@@ -41,7 +41,8 @@ export interface IAppointmentPopulated extends Document {
 
 export interface IAppointmentService {
   createAppointment(
-    appointmentData: IAppointment
+    appointmentData: IAppointment,
+    timeZone: string
   ): Promise<IAppointmentPopulated>;
   getAppointmentById(
     appointmentId: string
