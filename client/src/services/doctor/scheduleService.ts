@@ -1,4 +1,4 @@
-import { ISchedule } from "../../types/doctor/doctor.types";
+import { ISchedule, IScheduleInput } from "../../types/doctor/doctor.types";
 import { api } from "../../utils/axiosInterceptor";
 
 class ScheduleService {
@@ -20,7 +20,7 @@ class ScheduleService {
 
   async updateSchedule(
     id: string,
-    updateData: Partial<ISchedule>
+    updateData: Partial<IScheduleInput>
   ): Promise<ISchedule> {
     try {
       const response = await api.doctor.patch(`/schedules/${id}`, {

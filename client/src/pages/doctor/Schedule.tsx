@@ -21,20 +21,27 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/app/store";
 import isBetween from "dayjs/plugin/isBetween";
+import utc from "dayjs/plugin/utc";
 
 import {
   ISchedule,
   IDaySchedule,
   ISlot,
+  ISlotInput,
+  IDayScheduleInput,
 } from "../../types/doctor/doctor.types";
 import scheduleService from "../../services/doctor/scheduleService";
 
 dayjs.extend(isBetween);
+dayjs.extend(utc);
 
 export default function ScheduleManagement() {
   const today = dayjs();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(today);
   const [schedules, setSchedules] = useState<IDaySchedule[]>([]);
+  const [schedulesInputs, setSchedulesInputs] = useState<IDayScheduleInput[]>(
+    []
+  );
   const [isAddSlotDialogOpen, setIsAddSlotDialogOpen] = useState(false);
   const [newTimeSlot, setNewTimeSlot] = useState<{
     startTime: Dayjs | null;
@@ -64,6 +71,18 @@ export default function ScheduleManagement() {
               })),
             })
           );
+          const scheduleWithStringTimes = scheduleResponse.availability.map(
+            (avail: IDaySchedule) => ({
+              _id: avail._id,
+              date: new Date(avail.date),
+              slots: avail.slots.map((slot: ISlot) => ({
+                ...slot,
+                startTime: new Date(slot.startTime).toISOString(),
+                endTime: new Date(slot.endTime).toISOString(),
+              })),
+            })
+          );
+          setSchedulesInputs(scheduleWithStringTimes);
           setSchedules(scheduleWithDayjsDates);
         } else {
           setSchedules([]);
@@ -134,19 +153,23 @@ export default function ScheduleManagement() {
       return;
     }
 
-    const newSlot: ISlot = {
+    const newSlot: ISlotInput = {
       startTime,
       endTime,
       isBooked: false,
     };
 
-    const updatedSchedules = schedules.map((avail) => {
+    const updatedSchedules = schedulesInputs.map((avail) => {
       if (dayjs(avail.date).isSame(selectedDate, "day")) {
         return {
           ...avail,
-          slots: [...avail.slots, newSlot].sort((a, b) =>
-            dayjs(a.startTime).diff(dayjs(b.startTime))
-          ),
+          slots: [...avail.slots, newSlot]
+            .map((slot) => ({
+              ...slot,
+              startTime: new Date(slot.startTime).toISOString(),
+              endTime: new Date(slot.endTime).toISOString(),
+            }))
+            .sort((a, b) => dayjs(a.startTime).diff(dayjs(b.startTime))),
         };
       }
       return avail;
@@ -220,8 +243,22 @@ export default function ScheduleManagement() {
         toast.error("Doctor information is not available");
         return;
       }
+
+      const updatedSchedulesInput: IDayScheduleInput[] = updatedSchedules.map(
+        (avail) => ({
+          date: avail.date,
+          slots: avail.slots.map((slot) => ({
+            startTime: dayjs(slot.startTime).utc().local().format("HH:mm"),
+            endTime: dayjs(slot.endTime).utc().local().format("HH:mm"),
+            isBooked: slot.isBooked,
+          })),
+        })
+      );
+
+      // Save to state if needed
+      setSchedulesInputs(updatedSchedulesInput);
       await scheduleService.updateSchedule(doctor._id, {
-        availability: updatedSchedules,
+        availability: updatedSchedulesInput,
       });
       setSchedules(updatedSchedules);
       toast.success("Time slot removed successfully");

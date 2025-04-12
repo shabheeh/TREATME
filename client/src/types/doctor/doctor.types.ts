@@ -7,14 +7,31 @@ export interface ISlot {
   isBooked: boolean;
 }
 
+export interface ISlotInput {
+  _id?: string;
+  startTime: string;
+  endTime: string;
+  isBooked: boolean;
+}
+
 export interface IDaySchedule {
   _id?: string;
   date: Date;
   slots: ISlot[];
 }
 
+export interface IDayScheduleInput {
+  _id?: string;
+  date: Date;
+  slots: ISlotInput[];
+}
+
 export interface ISchedule {
   availability: IDaySchedule[];
+}
+
+export interface IScheduleInput {
+  availability: IDayScheduleInput[];
 }
 
 export interface IDoctor {
