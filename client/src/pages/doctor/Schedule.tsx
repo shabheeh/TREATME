@@ -65,7 +65,6 @@ export default function ScheduleManagement() {
             })
           );
           setSchedules(scheduleWithDayjsDates);
-          console.log(scheduleWithDayjsDates, "shcc");
         } else {
           setSchedules([]);
         }
@@ -97,8 +96,9 @@ export default function ScheduleManagement() {
     const startTime = dayjs(selectedDate)
       .set("hour", newTimeSlot.startTime.hour())
       .set("minute", newTimeSlot.startTime.minute())
-      .toDate();
-    const endTime = dayjs(startTime).add(slotDuration, "minute").toDate();
+      .toISOString();
+
+    const endTime = dayjs(startTime).add(slotDuration, "minute").toISOString();
 
     if (dayjs(selectedDate).isSame(today, "day")) {
       const currentTime = dayjs();
