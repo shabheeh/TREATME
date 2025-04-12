@@ -78,9 +78,7 @@ class SpecializationService {
 
   async updateSpecialization(id: string, updateData: FormData): Promise<void> {
     try {
-      const response = await api.put(`/specializations/${id}`, updateData);
-
-      console.log(response.status);
+      await api.put(`/specializations/${id}`, updateData);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error updating Specialization: ${error.message}`, error);

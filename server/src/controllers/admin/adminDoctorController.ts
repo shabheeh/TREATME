@@ -101,8 +101,6 @@ class AdminDoctorController implements IAdminDoctorController {
         throw new BadRequestError("Doctor id required");
       }
 
-      console.log(req.body);
-
       const updateData = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,

@@ -18,8 +18,6 @@ export interface ResponseData {
 class DoctorsService {
   async addDoctor(doctor: FormData): Promise<void> {
     try {
-      console.log(doctor);
-
       await api.admin.post("/doctors", doctor);
     } catch (error: unknown) {
       if (error instanceof Error) {
