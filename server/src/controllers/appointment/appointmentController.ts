@@ -9,7 +9,7 @@ import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
-import { ResponseMessage } from "src/constants/responseMessages";
+import { ResponseMessage } from "../../constants/responseMessages";
 
 @injectable()
 class AppointmentController implements IAppointmentController {

@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { createPaymentIntent } from "../../../services/stripe/stripeService";
 import PaymentForm from "./PaymentForm";
 import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/app/store";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -32,6 +34,7 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [showPayment, setShowPayment] = useState<boolean>(false);
+  const timeZone = useSelector((state: RootState) => state.user.timeZone);
 
   const {
     register,
@@ -61,7 +64,8 @@ const AddFundsModal: React.FC<AddFundsModalProps> = ({
       const response = await createPaymentIntent(
         { description: "Added fund to the wallet" },
         "wallet_topup",
-        parseFloat(amount)
+        parseFloat(amount),
+        timeZone
       );
 
       setClientSecret(response.clientSecret);
