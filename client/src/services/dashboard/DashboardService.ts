@@ -20,9 +20,9 @@ class DashboardService {
     }
   }
 
-  async getDoctorDashboard(): Promise<DoctorDashboardData> {
+  async getDoctorDashboard(filter: string): Promise<DoctorDashboardData> {
     try {
-      const response = await api.get("/dashboard/doctor");
+      const response = await api.get(`/dashboard/doctor?filter=${filter}`);
       return response.data;
     } catch (error: unknown) {
       if (error instanceof Error) {

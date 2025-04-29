@@ -15,18 +15,17 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        py: 5,
+        py: { xs: 2, md: 5 },
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={2}>
+      <Stack direction="row" alignItems="center" spacing={{ xs: 1, sm: 2 }}>
         <Stack alignItems="center">
           <PersonAddAltIcon fontSize="medium" color="primary" />
           <Typography
             sx={{
               mt: 1,
-              mb: 1,
               textAlign: "center",
-              fontSize: "0.7rem",
+              fontSize: { xs: "0.6rem", sm: "0.7rem" },
               color: "gray",
             }}
           >
@@ -36,7 +35,7 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
 
         <Box
           sx={{
-            width: "100px",
+            width: { xs: "30px", sm: "50px", md: "100px" },
             height: "2px",
             bgcolor: "gray",
             position: "relative",
@@ -64,19 +63,17 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
           <Typography
             sx={{
               mt: 1,
-              mb: 1,
               textAlign: "center",
-              fontSize: "0.7rem",
+              fontSize: { xs: "0.6rem", sm: "0.7rem" },
               color: "gray",
             }}
           >
             Verify Email
           </Typography>
         </Stack>
-
         <Box
           sx={{
-            width: "100px",
+            width: { xs: "30px", sm: "50px", md: "100px" },
             height: "2px",
             bgcolor: "gray",
             position: "relative",
@@ -104,9 +101,8 @@ const SignupPath: React.FC<SignupPathProps> = ({ step }) => {
           <Typography
             sx={{
               mt: 1,
-              mb: 1,
               textAlign: "center",
-              fontSize: "0.7rem",
+              fontSize: { xs: "0.6rem", sm: "0.7rem" },
               color: "gray",
             }}
           >

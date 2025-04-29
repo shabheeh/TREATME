@@ -76,22 +76,25 @@ class AppointmentController implements IAppointmentController {
   ): Promise<void> => {
     try {
       const { appointmentId } = req.params;
-      const { updateData } = req.body;
+      const { updateData, timeZone } = req.body;
 
-      if (!appointmentId || !updateData) {
+      if (!appointmentId || !updateData || !timeZone) {
         throw new BadRequestError("Bad Request: Missing info");
       }
 
       if (updateData.status === "cancelled") {
-        const appointment =
-          await this.appointmentService.cancelAppointment(appointmentId);
+        const appointment = await this.appointmentService.cancelAppointment(
+          appointmentId,
+          timeZone
+        );
 
         res.status(HttpStatusCode.OK).json({ appointment });
       }
 
       const appointment = await this.appointmentService.updateAppointment(
         appointmentId,
-        updateData
+        updateData,
+        timeZone
       );
 
       res.status(HttpStatusCode.OK).json({ appointment });
@@ -108,14 +111,16 @@ class AppointmentController implements IAppointmentController {
   ): Promise<void> => {
     try {
       const { appointmentId } = req.params;
-      const { updateData } = req.body;
+      const { updateData, timeZone } = req.body;
 
-      if (!appointmentId || !updateData) {
+      if (!appointmentId || !updateData || !timeZone) {
         throw new BadRequestError("Bad Request: Missing info");
       }
 
-      const appointment =
-        await this.appointmentService.cancelAppointment(appointmentId);
+      const appointment = await this.appointmentService.cancelAppointment(
+        appointmentId,
+        timeZone
+      );
 
       res.status(HttpStatusCode.OK).json({ appointment });
     } catch (error) {

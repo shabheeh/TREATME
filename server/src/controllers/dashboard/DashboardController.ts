@@ -6,6 +6,7 @@ import { ITokenPayload } from "src/utils/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import { BadRequestError } from "../../utils/errors";
 
 @injectable()
 class DashboardController implements IDashboardController {
@@ -18,13 +19,22 @@ class DashboardController implements IDashboardController {
   }
 
   getAdminDashboardData = async (
-    _req: Request,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
+      const filter = req.query.filter?.toString() as
+        | "monthly"
+        | "yearly"
+        | "weekly";
+
+      if (!filter) {
+        throw new BadRequestError("filter is required");
+      }
+
       const dashboardData =
-        await this.dashboardService.getAdminDashboardStats();
+        await this.dashboardService.getAdminDashboardStats(filter);
 
       res.status(HttpStatusCode.OK).json(dashboardData);
     } catch (error) {
@@ -44,9 +54,21 @@ class DashboardController implements IDashboardController {
   ): Promise<void> => {
     try {
       const doctorId = (req.user as ITokenPayload).id;
+      const filter = req.query.filter?.toString() as
+        | "monthly"
+        | "yearly"
+        | "weekly";
 
-      const dashboardData =
-        await this.dashboardService.getDoctorDashboardStats(doctorId);
+      if (!filter) {
+        throw new BadRequestError("filter is needed");
+      }
+
+      const dashboardData = await this.dashboardService.getDoctorDashboardStats(
+        doctorId,
+        filter
+      );
+
+      console.log(dashboardData);
       res.status(HttpStatusCode.OK).json(dashboardData);
     } catch (error) {
       logger.error(

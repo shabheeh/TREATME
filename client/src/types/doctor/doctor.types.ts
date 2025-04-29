@@ -22,7 +22,7 @@ export interface IDaySchedule {
 
 export interface IDayScheduleInput {
   _id?: string;
-  date: Date;
+  date: string;
   slots: ISlotInput[];
 }
 

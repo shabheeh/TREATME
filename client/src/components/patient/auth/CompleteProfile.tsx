@@ -187,7 +187,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
   };
 
   return (
-    <Box sx={{ py: 15 }}>
+    <Box sx={{ py: { xs: 10, md: 15 } }}>
       <Container
         sx={{
           bgcolor: "white",
@@ -195,7 +195,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          width: "45%",
+          width: { xs: "90%", md: "45%" },
+          mx: "auto",
         }}
       >
         <Typography
@@ -206,8 +207,8 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
           sx={{
             color: "teal",
             textDecoration: "underline",
-            marginTop: 5,
-            marginBottom: 1,
+            marginTop: { xs: 3, md: 5 },
+            marginBottom: { xs: 1, md: 1 },
           }}
         >
           Complete Your Profile
@@ -223,9 +224,9 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             justifyContent: "center",
           }}
         >
-          <Box sx={{ width: "90%", my: 2 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
+          <Box sx={{ width: "100%", my: { xs: 2, md: 2 } }}>
+            <Grid container spacing={{ xs: 1, md: 2 }}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   {...register("firstName", {
                     required: "First Name is required",
@@ -241,7 +242,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                   helperText={errors.firstName?.message}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   {...register("lastName", {
                     required: "Last Name is required",
@@ -260,7 +261,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             </Grid>
           </Box>
 
-          <Box sx={{ width: "90%", my: 2 }}>
+          <Box sx={{ width: "100%", my: { xs: 2, md: 2 } }}>
             <TextField
               {...register("phone", {
                 required: "Phone Number is required",
@@ -278,7 +279,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             />
           </Box>
 
-          <Box sx={{ width: "90%", my: 2 }}>
+          <Box sx={{ width: "100%", my: { xs: 2, md: 2 } }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               Gender
             </Typography>
@@ -309,12 +310,12 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             )}
           </Box>
 
-          <Box sx={{ width: "90%", my: 2 }}>
+          <Box sx={{ width: "100%", my: { xs: 2, md: 2 } }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               Date of Birth
             </Typography>
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
+            <Grid container spacing={{ xs: 1, md: 2 }}>
+              <Grid item xs={12} sm={4}>
                 <Controller
                   name="birthMonth"
                   control={control}
@@ -337,7 +338,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={4}>
                 <Controller
                   name="birthDay"
                   control={control}
@@ -376,7 +377,7 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                   )}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={4}>
                 <Controller
                   name="birthYear"
                   control={control}
@@ -419,7 +420,12 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             fullWidth
             type="submit"
             variant="contained"
-            sx={{ py: 2, my: 5, width: "90%", fontSize: "1rem" }}
+            sx={{
+              py: 2,
+              my: { xs: 3, md: 5 },
+              width: "100%",
+              fontSize: { xs: "0.9rem", md: "1rem" },
+            }}
           >
             Complete Profile
           </Button>

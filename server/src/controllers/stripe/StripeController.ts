@@ -27,8 +27,6 @@ class StripeController implements IStripeController {
 
       const userId = (req.user as ITokenPayload).id;
 
-      console.log(timeZone, "contro");
-
       if (!paymentData || !paymentType || !amount || !timeZone) {
         throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
       }

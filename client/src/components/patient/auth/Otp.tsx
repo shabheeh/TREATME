@@ -108,7 +108,14 @@ const Otp: React.FC<OtpPageProps> = ({
   };
 
   return (
-    <Box sx={{ py: 15 }}>
+    <Box
+      sx={{
+        py: { xs: 8, md: 15 },
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
       <Container
         maxWidth="sm"
         sx={{
@@ -117,6 +124,9 @@ const Otp: React.FC<OtpPageProps> = ({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
+          p: { xs: 2, sm: 4 },
+          borderRadius: 2,
+          boxShadow: { xs: 0, sm: 3 },
         }}
       >
         <Typography
@@ -127,21 +137,23 @@ const Otp: React.FC<OtpPageProps> = ({
           sx={{
             color: "teal",
             textDecoration: "underline",
-            marginTop: 5,
-            marginBottom: 2,
+            mt: { xs: 2, sm: 5 },
+            mb: 2,
+            fontSize: { xs: "1.25rem", sm: "1.5rem" },
           }}
         >
           {isVerifyEmail ? "Verify your Email" : "Forgot Password"}
         </Typography>
         <Typography
           variant="body2"
-          component="h2"
+          component="p"
           textAlign="center"
           gutterBottom
           color="secondary"
           sx={{
-            marginTop: 2,
-            marginBottom: 10,
+            mt: 2,
+            mb: { xs: 6, sm: 10 },
+            fontSize: { xs: "0.875rem", sm: "1rem" },
           }}
         >
           {isVerifyEmail ? <SignupPath step={2} /> : ""}
@@ -155,10 +167,19 @@ const Otp: React.FC<OtpPageProps> = ({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            width: "100%",
+            maxWidth: 400,
           }}
         >
           {errors.otp && (
-            <Typography color="error" sx={{ mt: -5, mb: 2 }}>
+            <Typography
+              color="error"
+              sx={{
+                mt: -5,
+                mb: 2,
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
+              }}
+            >
               {errors.otp.message}
             </Typography>
           )}
@@ -172,33 +193,47 @@ const Otp: React.FC<OtpPageProps> = ({
               maxLength: { value: 6, message: "OTP must be 6 digits" },
             }}
             render={({ field }) => (
-              <PinInput
-                length={6}
-                initialValue=""
-                onChange={(value) => field.onChange(value)}
-                type="numeric"
-                inputMode="number"
-                style={{
-                  marginTop: "5px",
-                  paddingBottom: "50px",
+              <Box
+                sx={{
                   display: "flex",
-                  gap: "15px",
+                  justifyContent: "center",
+                  gap: { xs: "8px", sm: "12px" },
+                  flexWrap: "nowrap",
+                  pb: { xs: "30px", sm: "40px" },
+                  width: "100%",
                 }}
-                inputStyle={{
-                  borderColor: errors.otp ? "red" : "gray",
-                  borderWidth: "2px",
-                  width: "50px",
-                  height: "50px",
-                  textAlign: "center",
-                }}
-                inputFocusStyle={{
-                  borderColor: "teal",
-                  borderWidth: "2px",
-                }}
-                onComplete={(value) => setValue("otp", value)}
-                autoSelect={true}
-                regexCriteria={/^[0-9]*$/}
-              />
+              >
+                <PinInput
+                  length={6}
+                  initialValue=""
+                  onChange={(value) => field.onChange(value)}
+                  type="numeric"
+                  inputMode="number"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    flexWrap: "nowrap",
+                    width: "100%",
+                  }}
+                  inputStyle={{
+                    borderColor: errors.otp ? "red" : "gray",
+                    borderWidth: "2px",
+                    width: "36px",
+                    height: "36px",
+                    textAlign: "center",
+                    fontSize: "0.875rem",
+                    borderRadius: "4px",
+                    margin: "0 2px",
+                  }}
+                  inputFocusStyle={{
+                    borderColor: "teal",
+                    borderWidth: "2px",
+                  }}
+                  onComplete={(value) => setValue("otp", value)}
+                  autoSelect={true}
+                  regexCriteria={/^[0-9]*$/}
+                />
+              </Box>
             )}
           />
 
@@ -207,17 +242,23 @@ const Otp: React.FC<OtpPageProps> = ({
             disabled={loading}
             type="submit"
             variant="contained"
-            sx={{ py: 1, width: "80%", fontSize: "1rem" }}
+            sx={{
+              py: 1,
+              width: { xs: "100%", sm: "80%" },
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+              mt: 2,
+            }}
           >
             Continue
           </Button>
           <Typography
             variant="body2"
             sx={{
-              mt: 1,
-              m: 5,
+              mt: 3,
+              mb: 5,
               textAlign: "center",
               color: "gray",
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
             }}
           >
             Didn't receive the OTP?{" "}

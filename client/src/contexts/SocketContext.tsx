@@ -58,7 +58,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     setSocket(socketInstance);
 
-    // Disconnect when component unmounts
     return () => {
       socketInstance.disconnect();
       socketInstance.off("appointment-notification");

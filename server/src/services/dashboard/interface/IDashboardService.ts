@@ -1,20 +1,25 @@
 import { IAppointmentPopulated } from "src/interfaces/IAppointment";
 import IDoctor from "src/interfaces/IDoctor";
 import IPatient from "src/interfaces/IPatient";
-import { IPatientForDoctor } from "src/repositories/appointment/interfaces/IAppointmentRepository";
+import {
+  IPatientForDoctor,
+  RevenuePeriod,
+} from "src/repositories/appointment/interfaces/IAppointmentRepository";
 
 interface IDashboardService {
-  getAdminDashboardStats(): Promise<AdminDashboardData>;
-  getDoctorDashboardStats(doctorId: string): Promise<DoctorDashboardData>;
+  getAdminDashboardStats(
+    filter: "monthly" | "weekly" | "yearly"
+  ): Promise<AdminDashboardData>;
+  getDoctorDashboardStats(
+    doctorId: string,
+    filter: "monthly" | "weekly" | "yearly"
+  ): Promise<DoctorDashboardData>;
 }
 
 export default IDashboardService;
 
 export type AdminDashboardData = {
-  monthlyData: {
-    month: string;
-    revenue: number;
-  }[];
+  revenueData: RevenuePeriod[];
   totalRevenue: number;
   patients: IPatient[];
   totalPatients: number;
@@ -33,13 +38,12 @@ export type AdminDashboardData = {
     specialization: string;
     count: number;
   }[];
+  totalAppointments: number;
+  filter: "monthly" | "yearly" | "weekly";
 };
 
 export type DoctorDashboardData = {
-  monthlyData: {
-    month: string;
-    revenue: number;
-  }[];
+  revenueData: RevenuePeriod[];
   weeklyAppointments: {
     day: string;
     count: number;
@@ -50,4 +54,6 @@ export type DoctorDashboardData = {
   totalTodaysAppointment: number;
   patients: IPatientForDoctor[];
   totalPatients: number;
+  totalAppointments: number;
+  filter: "monthly" | "yearly" | "weekly";
 };

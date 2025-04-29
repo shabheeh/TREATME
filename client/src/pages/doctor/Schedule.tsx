@@ -74,7 +74,7 @@ export default function ScheduleManagement() {
           const scheduleWithStringTimes = scheduleResponse.availability.map(
             (avail: IDaySchedule) => ({
               _id: avail._id,
-              date: new Date(avail.date),
+              date: new Date(avail.date).toISOString(),
               slots: avail.slots.map((slot: ISlot) => ({
                 ...slot,
                 startTime: new Date(slot.startTime).toISOString(),
@@ -178,7 +178,7 @@ export default function ScheduleManagement() {
 
     if (!existingAvailability) {
       updatedSchedules.push({
-        date: selectedDate.toDate(),
+        date: selectedDate.toISOString(),
         slots: [newSlot],
       });
     }
@@ -223,6 +223,7 @@ export default function ScheduleManagement() {
         toast.error("No availability found for the selected date");
         return;
       }
+
       const selectedSlot = existingAvailability.slots.find(
         (slot) => slot._id === slotId
       );
@@ -230,38 +231,51 @@ export default function ScheduleManagement() {
         toast.error("Cannot remove Booked slot");
         return;
       }
+
+      // Filter out the slot to be removed
       const updatedSlots = existingAvailability.slots.filter(
         (slot) => slot._id !== slotId
       );
+
+      // Update the availability for the selected date
       const updatedAvailability: IDaySchedule = {
         ...existingAvailability,
         slots: updatedSlots,
       };
+
+      // Update the schedules array
       const updatedSchedules = schedules.map((avail) =>
         dayjs(avail.date).isSame(date, "day") ? updatedAvailability : avail
       );
+
       if (!doctor) {
         toast.error("Doctor information is not available");
         return;
       }
 
+      // Prepare the payload for the backend
       const updatedSchedulesInput: IDayScheduleInput[] = updatedSchedules.map(
         (avail) => ({
-          date: avail.date,
+          date: new Date(avail.date).toISOString(), // Ensure `date` is a Date object
           slots: avail.slots.map((slot) => ({
-            startTime: dayjs(slot.startTime).utc().local().format("HH:mm"),
-            endTime: dayjs(slot.endTime).utc().local().format("HH:mm"),
+            startTime: dayjs(slot.startTime).utc().local().format(), // ISO string
+            endTime: dayjs(slot.endTime).utc().local().format(), // ISO string
             isBooked: slot.isBooked,
           })),
         })
       );
 
-      // Save to state if needed
+      // Update the local state
       setSchedulesInputs(updatedSchedulesInput);
+
+      // Send the updated schedule to the backend
       await scheduleService.updateSchedule(doctor._id, {
         availability: updatedSchedulesInput,
       });
+
+      // Update the schedules state
       setSchedules(updatedSchedules);
+
       toast.success("Time slot removed successfully");
     } catch (error) {
       toast.error(

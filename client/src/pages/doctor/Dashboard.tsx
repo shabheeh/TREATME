@@ -18,6 +18,8 @@ import {
   styled,
   Button,
   Paper,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import {
   CalendarMonth as CalendarIcon,
@@ -25,7 +27,7 @@ import {
   Healing as ActivityIcon,
   AccessTime as ClockIcon,
   Money as MoneyIcon,
-  TrendingUp as TrendingUpIcon,
+  // TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import dashboardService from "../../services/dashboard/DashboardService";
@@ -48,6 +50,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { RevenuePeriod } from "../../types/dashboard/dashboard.types";
 
 const TabsContainer = styled(Box)(({ theme }) => ({
   borderBottom: "1px solid",
@@ -106,13 +109,7 @@ const Dashboard: React.FC = () => {
     useState<number>(0);
 
   const [totalRevenue, setTotalRevenue] = useState<number | null>(null);
-  const [monthlyData, setMonthlyData] = useState<
-    | {
-        month: string;
-        revenue: number;
-      }[]
-    | null
-  >(null);
+  const [revenueData, setRevenueData] = useState<RevenuePeriod[] | null>(null);
 
   const [weeklyAppointments, setWeeklyAppointments] = useState<
     { day: string; count: number }[] | null
@@ -122,16 +119,17 @@ const Dashboard: React.FC = () => {
   const [totalPatients, setTotalPatients] = useState<number>(0);
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [filter, setFilter] = useState("monthly");
 
   const navigate = useNavigate();
   useEffect(() => {
     fetchDashboard();
-  }, []);
+  }, [filter]);
 
   const fetchDashboard = async () => {
     try {
       const {
-        monthlyData,
+        revenueData,
         totalRevenue,
         averageRating,
         patients,
@@ -139,8 +137,8 @@ const Dashboard: React.FC = () => {
         weeklyAppointments,
         totalPatients,
         totalTodaysAppointment,
-      } = await dashboardService.getDoctorDashboard();
-      setMonthlyData(monthlyData);
+      } = await dashboardService.getDoctorDashboard(filter);
+      setRevenueData(revenueData);
       setTotalRevenue(totalRevenue);
       setWeeklyAppointments(weeklyAppointments);
       setTodaysAppointments(todaysAppointments);
@@ -175,6 +173,12 @@ const Dashboard: React.FC = () => {
   if (loading) {
     return <Loading />;
   }
+
+  const filterMap: Record<string, string> = {
+    yearly: "year",
+    monthly: "month",
+    weekly: "week",
+  };
 
   return (
     <Box>
@@ -226,18 +230,63 @@ const Dashboard: React.FC = () => {
           <Card>
             <CardHeader
               title={
-                <Box display="flex" alignItems="center">
-                  <TrendingUpIcon color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="h6">Monthly Revenue</Typography>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  flexWrap="wrap"
+                  gap={2}
+                  sx={{ width: "100%" }}
+                >
+                  <Typography
+                    variant="h6"
+                    component="span"
+                    sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+                  >
+                    Revenue Overview
+                  </Typography>
+                  <Select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    size="small"
+                    sx={{
+                      minWidth: { xs: "100px", sm: "120px" },
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                      bgcolor: "background.paper",
+                      borderRadius: 1,
+                    }}
+                  >
+                    <MenuItem value="monthly">Monthly</MenuItem>
+                    <MenuItem value="yearly">Yearly</MenuItem>
+                    <MenuItem value="weekly">Weekly</MenuItem>
+                  </Select>
                 </Box>
               }
-              subheader="Total revenue generated over the past 12 months"
+              subheader={
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 1, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                >
+                  Total revenue generated over the past{" "}
+                  {revenueData?.length || 0} {filterMap[filter]}
+                  {revenueData?.length !== 1 ? "s" : ""}
+                </Typography>
+              }
+              sx={{
+                "& .MuiCardHeader-content": {
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  width: "100%",
+                },
+              }}
             />
             <CardContent>
               <Box height={300}>
-                {monthlyData ? (
+                {revenueData ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={monthlyData}>
+                    <AreaChart data={revenueData}>
                       <defs>
                         <linearGradient
                           id="colorRevenue"
@@ -258,17 +307,36 @@ const Dashboard: React.FC = () => {
                           />
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="month" />
+                      <XAxis
+                        dataKey={
+                          filter === "weekly"
+                            ? "week"
+                            : filter === "monthly"
+                              ? "month"
+                              : "year"
+                        }
+                        label={{
+                          value:
+                            filter.charAt(0).toUpperCase() + filter.slice(1),
+                          position: "insideBottom",
+                          offset: -10,
+                        }}
+                      />
                       <YAxis />
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <Tooltip
                         content={({ active, payload }) => {
                           if (active && payload && payload.length) {
+                            const periodLabel =
+                              filter === "weekly"
+                                ? "Week"
+                                : filter === "monthly"
+                                  ? "Month"
+                                  : "Year";
                             return (
                               <Paper elevation={3} style={{ padding: "10px" }}>
                                 <Typography variant="body2">
-                                  {payload[0].payload.month}: ₹
-                                  {payload[0].payload.revenue.toLocaleString()}
+                                  {`${periodLabel}: ₹${payload[0].payload.revenue.toLocaleString()}`}
                                 </Typography>
                               </Paper>
                             );
@@ -286,7 +354,7 @@ const Dashboard: React.FC = () => {
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <Typography>monthly Currently not availble</Typography>
+                  <Typography>{`${filter.charAt(0).toUpperCase() + filter.slice(1)} data currently not available`}</Typography>
                 )}
               </Box>
             </CardContent>

@@ -1,5 +1,7 @@
 import logger from "../../configs/logger";
-import IAppointmentRepository from "src/repositories/appointment/interfaces/IAppointmentRepository";
+import IAppointmentRepository, {
+  RevenuePeriod,
+} from "src/repositories/appointment/interfaces/IAppointmentRepository";
 import IDoctorRepository from "src/repositories/doctor/interfaces/IDoctorRepository";
 import IDependentRepository from "src/repositories/patient/interface/IDependentRepository";
 import IPatientRepository from "src/repositories/patient/interface/IPatientRepository";
@@ -35,10 +37,26 @@ class DashboardService implements IDashboardService {
     this.reviewRepo = reviewRepo;
   }
 
-  async getAdminDashboardStats(): Promise<AdminDashboardData> {
+  async getAdminDashboardStats(
+    filter: "monthly" | "weekly" | "yearly" = "monthly"
+  ): Promise<AdminDashboardData> {
     try {
+      let revenuePromise;
+      switch (filter) {
+        case "monthly":
+          revenuePromise = this.appointmentRepo.getMonthlyRevenue();
+          break;
+        case "weekly":
+          revenuePromise = this.appointmentRepo.getWeeklyRevenue();
+          break;
+        case "yearly":
+          revenuePromise = this.appointmentRepo.getYearlyRevenue();
+          break;
+        default:
+          revenuePromise = this.appointmentRepo.getMonthlyRevenue();
+      }
       const [
-        { monthlyData: incompleteMonthlyData, totalRevenue },
+        { timeData: incompleteRevenueData, totalRevenue, totalAppointments },
         { patients, total: totalPatients },
         { doctors, total: totalDoctors },
         todaysAppointments,
@@ -47,7 +65,7 @@ class DashboardService implements IDashboardService {
         dependentsAge,
         specializationDoctorCount,
       ] = await Promise.all([
-        this.appointmentRepo.getMonthlyRevenue(),
+        revenuePromise,
         this.patientRepo.getPatients({ limit: 5, page: 1, search: "" }),
         this.doctorRepo.getDoctors({ limit: 5 }),
         this.appointmentRepo.getTodaysAppointments(),
@@ -73,10 +91,23 @@ class DashboardService implements IDashboardService {
           .length,
       }));
 
-      const monthlyData = this.fillMissingMonths(incompleteMonthlyData);
+      let revenueData;
+      switch (filter) {
+        case "monthly":
+          revenueData = this.fillMissingMonths(incompleteRevenueData);
+          break;
+        case "weekly":
+          revenueData = this.fillMissingWeeks(incompleteRevenueData);
+          break;
+        case "yearly":
+          revenueData = this.fillMissingYears(incompleteRevenueData);
+          break;
+        default:
+          revenueData = this.fillMissingMonths(incompleteRevenueData);
+      }
 
       return {
-        monthlyData,
+        revenueData,
         totalRevenue,
         patients,
         totalPatients,
@@ -86,6 +117,8 @@ class DashboardService implements IDashboardService {
         weeklyAppointments,
         ageGroupCounts,
         specializationDoctorCount,
+        totalAppointments,
+        filter,
       };
     } catch (error) {
       logger.error("Error fetching dashboard data for admin", error);
@@ -96,40 +129,63 @@ class DashboardService implements IDashboardService {
     }
   }
 
-  private fillMissingMonths(data: { month: string; revenue: number }[]) {
-    const months = Array.from({ length: 12 }, (_, i) => {
-      const date = new Date();
-      date.setMonth(date.getMonth() - (11 - i));
-      return date.toLocaleString("en-US", { month: "short" });
-    });
-
-    return months.map((month) => ({
-      month,
-      revenue: data.find((d) => d.month === month)?.revenue || 0,
-    }));
-  }
-
   async getDoctorDashboardStats(
-    doctorId: string
+    doctorId: string,
+    filter: "monthly" | "weekly" | "yearly" = "monthly"
   ): Promise<DoctorDashboardData> {
     try {
+      let revenuePromise;
+      switch (filter) {
+        case "monthly":
+          revenuePromise =
+            this.appointmentRepo.getMonthlyRevenueByDoctor(doctorId);
+          break;
+        case "weekly":
+          revenuePromise =
+            this.appointmentRepo.getWeeklyRevenueByDoctor(doctorId);
+          break;
+        case "yearly":
+          revenuePromise =
+            this.appointmentRepo.getYearlyRevenueByDoctor(doctorId);
+          break;
+        default:
+          revenuePromise =
+            this.appointmentRepo.getMonthlyRevenueByDoctor(doctorId);
+      }
+
       const [
-        { monthlyData: incompleteMonthlyData, totalRevenue },
+        { timeData: incompleteRevenueData, totalRevenue, totalAppointments },
         todaysAppointments,
         weeklyAppointments,
         averageRating,
         { patients, totalPatients },
       ] = await Promise.all([
-        this.appointmentRepo.getMonthlyRevenueByDoctor(doctorId),
+        revenuePromise,
         this.appointmentRepo.getTodaysAppointmentByDoctor(doctorId),
         this.appointmentRepo.getWeeklyAppointmentsByDoctor(doctorId),
         this.reviewRepo.getAverageRatingByDoctorId(doctorId),
         this.appointmentRepo.getPatientsByDoctor(doctorId, 1, 5, ""),
       ]);
+
       const totalTodaysAppointment = todaysAppointments.length;
-      const monthlyData = this.fillMissingMonths(incompleteMonthlyData);
+
+      let revenueData;
+      switch (filter) {
+        case "monthly":
+          revenueData = this.fillMissingMonths(incompleteRevenueData);
+          break;
+        case "weekly":
+          revenueData = this.fillMissingWeeks(incompleteRevenueData);
+          break;
+        case "yearly":
+          revenueData = this.fillMissingYears(incompleteRevenueData);
+          break;
+        default:
+          revenueData = this.fillMissingMonths(incompleteRevenueData);
+      }
+
       return {
-        monthlyData,
+        revenueData,
         totalRevenue,
         todaysAppointments,
         weeklyAppointments,
@@ -137,6 +193,8 @@ class DashboardService implements IDashboardService {
         patients,
         totalPatients,
         totalTodaysAppointment,
+        totalAppointments,
+        filter,
       };
     } catch (error) {
       logger.error("Error fetching dashboard data for doctor", error);
@@ -145,6 +203,60 @@ class DashboardService implements IDashboardService {
       }
       handleTryCatchError("Service", error);
     }
+  }
+
+  private fillMissingMonths(data: RevenuePeriod[]): RevenuePeriod[] {
+    const months = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date();
+      date.setMonth(date.getMonth() - (11 - i));
+      return date.toLocaleString("en-US", { month: "short" });
+    });
+
+    return months.map((month) => ({
+      period: month,
+      revenue: data.find((d) => d.period.includes(month))?.revenue || 0,
+      appointmentCount:
+        data.find((d) => d.period.includes(month))?.appointmentCount || 0,
+    }));
+  }
+
+  private fillMissingWeeks(data: RevenuePeriod[]): RevenuePeriod[] {
+    const currentDate = new Date();
+    const weeks = Array.from({ length: 12 }, (_, i) => {
+      const weekDate = new Date();
+      weekDate.setDate(currentDate.getDate() - (11 - i) * 7);
+      const weekNumber = this.getWeekNumber(weekDate);
+      return `Week ${weekNumber}, ${weekDate.getFullYear()}`;
+    });
+
+    return weeks.map((week) => ({
+      period: week,
+      revenue: data.find((d) => d.period === week)?.revenue || 0,
+      appointmentCount:
+        data.find((d) => d.period === week)?.appointmentCount || 0,
+    }));
+  }
+
+  private fillMissingYears(data: RevenuePeriod[]): RevenuePeriod[] {
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 5 }, (_, i) =>
+      String(currentYear - (4 - i))
+    );
+
+    return years.map((year) => ({
+      period: year,
+      revenue: data.find((d) => d.period === year)?.revenue || 0,
+      appointmentCount:
+        data.find((d) => d.period === year)?.appointmentCount || 0,
+    }));
+  }
+
+  private getWeekNumber(date: Date): number {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    const yearStart = new Date(d.getFullYear(), 0, 1);
+    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
   }
 }
 

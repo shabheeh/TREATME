@@ -8,11 +8,7 @@ import IAppointmentRepository, {
 } from "../../repositories/appointment/interfaces/IAppointmentRepository";
 import { AppError, handleTryCatchError } from "../../utils/errors";
 import { generateBookingConfirmationHtml } from "../../helpers/bookingConfirmationHtml";
-import {
-  extractDate,
-  extractTime,
-  getLocalizedDateTime,
-} from "../../utils/dateUtils";
+import { getLocalizedDateTime } from "../../utils/dateUtils";
 import { sendEmail } from "../../utils/mailer";
 import { generateBookingCancellationHtml } from "../../helpers/bookingCancellationHtml";
 import { generateBookingConfirmationHtmlForDoctor } from "../../helpers/bookingConfirmationHtmlForDoctor";
@@ -175,7 +171,8 @@ class AppointmentService implements IAppointmentService {
 
   async updateAppointment(
     appointmentId: string,
-    updateData: Partial<IAppointment>
+    updateData: Partial<IAppointment>,
+    timeZone: string
   ): Promise<IAppointment> {
     try {
       const { doctor, slotId, dayId } = updateData;
@@ -220,10 +217,15 @@ class AppointmentService implements IAppointmentService {
           } = appointmentData.patient;
 
           if (appointmentData.date) {
-            const oldDate = extractDate(existingAppointment.date);
-            const oldTime = extractTime(existingAppointment.date);
-            const date = extractDate(appointmentData.date);
-            const time = extractTime(appointmentData.date);
+            const { date: oldDate, time: oldTime } = getLocalizedDateTime(
+              existingAppointment.date,
+              timeZone
+            );
+
+            const { date, time } = getLocalizedDateTime(
+              appointmentData.date,
+              timeZone
+            );
 
             const patientHtml = generateBookingConfirmationHtml(
               `${doctorFirstName} ${doctorLastName}`,
@@ -293,7 +295,10 @@ class AppointmentService implements IAppointmentService {
     }
   }
 
-  async cancelAppointment(appointmentId: string): Promise<void> {
+  async cancelAppointment(
+    appointmentId: string,
+    timeZone: string
+  ): Promise<void> {
     try {
       const appointmentData =
         await this.appointmentRepo.getAppointmentById(appointmentId);
@@ -321,8 +326,10 @@ class AppointmentService implements IAppointmentService {
         email: patientEmail,
       } = appointmentData.patient;
 
-      const date = extractDate(appointmentData.date);
-      const time = extractTime(appointmentData.date);
+      const { date, time } = getLocalizedDateTime(
+        appointmentData.date,
+        timeZone
+      );
 
       const patientHtml = generateBookingCancellationHtml(
         `${doctorFirstName} ${doctorLastName}`,

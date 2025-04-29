@@ -23,7 +23,8 @@ import Loading from "../ui/Loading";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import { setUnreadCount } from "../../../redux/features/notification/notificationSlice";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
+import { useSocket } from "../../../hooks/useSocket";
 
 const Notifications = () => {
   const [activeFilter, setActiveFilter] = useState<string | "">("");
@@ -65,6 +66,16 @@ const Notifications = () => {
       );
     }
   };
+
+  // const { socket } = useSocket();
+
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   socket.on("apppointment-notificatoin", ({ data }) => {
+  //     console.log("data")
+  //     fetchNotifications();
+  //   });
+  // }, []);
 
   const onJoinNowClick = (link: string) => {
     navigate(link);

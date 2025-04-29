@@ -49,9 +49,10 @@ export interface IAppointmentService {
   ): Promise<Partial<IAppointmentPopulated>>;
   updateAppointment(
     appointmentId: string,
-    updateData: Partial<IAppointment>
+    updateData: Partial<IAppointment>,
+    timeZone: string
   ): Promise<IAppointment>;
-  cancelAppointment(appointmentId: string): Promise<void>;
+  cancelAppointment(appointmentId: string, timeZone: string): Promise<void>;
   getAppointmentsByUserId(
     userId: string,
     role: string

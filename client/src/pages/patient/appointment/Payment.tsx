@@ -186,7 +186,6 @@ const Payment: React.FC = () => {
       } else {
         const paymentIntentId = result.paymentIntent.id;
 
-        // toast.success(`Payment confirmed successfully`);
         if (result.paymentIntent.status === "succeeded") {
           navigate("/confirmation", { state: { paymentIntentId } });
         } else {

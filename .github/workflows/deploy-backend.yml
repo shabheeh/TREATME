@@ -43,6 +43,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/treatme-server
-            cd /home/ubuntu   # or the directory where your docker-compose.yml lives
+            cd /home/ubuntu   # directory where your docker-compose.yml lives
             docker compose down
             docker compose up -d

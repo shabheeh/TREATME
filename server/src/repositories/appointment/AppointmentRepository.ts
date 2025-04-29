@@ -4,7 +4,7 @@ import IAppointment, {
 } from "../../interfaces/IAppointment";
 import IAppointmentRepository, {
   IPatientForDoctor,
-  MonthlyRevenue,
+  RevenueData,
 } from "./interfaces/IAppointmentRepository";
 import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
@@ -442,12 +442,12 @@ class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  async getMonthlyRevenue(): Promise<MonthlyRevenue> {
+  async getMonthlyRevenue(): Promise<RevenueData> {
     try {
       const twelveMonthsAgo = new Date();
       twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
 
-      const result = await this.model.aggregate([
+      const result = await this.model.aggregate<RevenueData>([
         {
           $match: {
             status: "completed",
@@ -460,14 +460,16 @@ class AppointmentRepository implements IAppointmentRepository {
               year: { $year: "$date" },
               month: { $month: "$date" },
             },
-            monthlyRevenue: { $sum: { $multiply: ["$fee", 0.1] } },
+            revenue: { $sum: { $multiply: ["$fee", 0.9] } },
+            count: { $sum: 1 },
           },
         },
         {
           $project: {
-            month: {
+            _id: 0,
+            timeUnit: {
               $dateToString: {
-                format: "%b",
+                format: "%b %Y",
                 date: {
                   $dateFromParts: {
                     year: "$_id.year",
@@ -477,33 +479,211 @@ class AppointmentRepository implements IAppointmentRepository {
                 },
               },
             },
-            monthlyRevenue: 1,
-            _id: 0,
+            revenue: 1,
+            count: 1,
+            date: {
+              $dateFromParts: {
+                year: "$_id.year",
+                month: "$_id.month",
+                day: 1,
+              },
+            },
           },
         },
         {
-          $sort: { month: 1 },
+          $sort: { date: 1 },
         },
         {
           $group: {
             _id: null,
-            monthlyData: {
-              $push: { month: "$month", revenue: "$monthlyRevenue" },
+            timeData: {
+              $push: {
+                period: "$timeUnit",
+                revenue: "$revenue",
+                appointmentCount: "$count",
+              },
             },
-            totalRevenue: { $sum: "$monthlyRevenue" },
+            totalRevenue: { $sum: "$revenue" },
+            totalAppointments: { $sum: "$count" },
           },
         },
         {
           $project: {
             _id: 0,
-            monthlyData: 1,
+            timeData: 1,
             totalRevenue: 1,
+            totalAppointments: 1,
           },
         },
       ]);
 
-      const formattedData =
-        result.length > 0 ? result[0] : { monthlyData: [], totalRevenue: 0 };
+      const formattedData: RevenueData =
+        result.length > 0
+          ? result[0]
+          : {
+              timeData: [],
+              totalRevenue: 0,
+              totalAppointments: 0,
+            };
+
+      return formattedData;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+      throw error;
+    }
+  }
+
+  async getWeeklyRevenue(): Promise<RevenueData> {
+    try {
+      const twelveWeeksAgo = new Date();
+      twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84);
+
+      const result = await this.model.aggregate<RevenueData>([
+        {
+          $match: {
+            status: "completed",
+            date: { $gte: twelveWeeksAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              week: { $week: "$date" },
+            },
+            revenue: { $sum: { $multiply: ["$fee", 0.1] } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeUnit: {
+              $concat: [
+                "Week ",
+                { $toString: "$_id.week" },
+                ", ",
+                { $toString: "$_id.year" },
+              ],
+            },
+            revenue: 1,
+            count: 1,
+            date: {
+              $dateFromParts: {
+                isoWeekYear: "$_id.year",
+                isoWeek: "$_id.week",
+                isoDayOfWeek: 1,
+              },
+            },
+          },
+        },
+        {
+          $sort: { date: 1 },
+        },
+        {
+          $group: {
+            _id: null,
+            timeData: {
+              $push: {
+                period: "$timeUnit",
+                revenue: "$revenue",
+                appointmentCount: "$count",
+              },
+            },
+            totalRevenue: { $sum: "$revenue" },
+            totalAppointments: { $sum: "$count" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeData: 1,
+            totalRevenue: 1,
+            totalAppointments: 1,
+          },
+        },
+      ]);
+
+      const formattedData: RevenueData =
+        result.length > 0
+          ? result[0]
+          : {
+              timeData: [],
+              totalRevenue: 0,
+              totalAppointments: 0,
+            };
+
+      return formattedData;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+    }
+  }
+
+  async getYearlyRevenue(): Promise<RevenueData> {
+    try {
+      const fiveYearsAgo = new Date();
+      fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+
+      const result = await this.model.aggregate<RevenueData>([
+        {
+          $match: {
+            status: "completed",
+            date: { $gte: fiveYearsAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+            },
+            revenue: { $sum: { $multiply: ["$fee", 0.1] } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeUnit: { $toString: "$_id.year" },
+            revenue: 1,
+            count: 1,
+            year: "$_id.year",
+          },
+        },
+        {
+          $sort: { year: 1 },
+        },
+        {
+          $group: {
+            _id: null,
+            timeData: {
+              $push: {
+                period: "$timeUnit",
+                revenue: "$revenue",
+                appointmentCount: "$count",
+              },
+            },
+            totalRevenue: { $sum: "$revenue" },
+            totalAppointments: { $sum: "$count" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeData: 1,
+            totalRevenue: 1,
+            totalAppointments: 1,
+          },
+        },
+      ]);
+
+      const formattedData: RevenueData =
+        result.length > 0
+          ? result[0]
+          : {
+              timeData: [],
+              totalRevenue: 0,
+              totalAppointments: 0,
+            };
 
       return formattedData;
     } catch (error) {
@@ -551,11 +731,29 @@ class AppointmentRepository implements IAppointmentRepository {
     doctorId: string
   ): Promise<IAppointmentPopulated[]> {
     try {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
+      const now = new Date();
+      const startOfDay = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          0,
+          0,
+          0
+        )
+      );
+      const endOfDay = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          23,
+          59,
+          59,
+          999
+        )
+      );
 
-      const endOfDay = new Date();
-      endOfDay.setHours(23, 59, 59, 999);
       const appointments = await this.model
         .find({
           doctor: new Types.ObjectId(doctorId),
@@ -584,12 +782,12 @@ class AppointmentRepository implements IAppointmentRepository {
     }
   }
 
-  async getMonthlyRevenueByDoctor(doctorId: string): Promise<MonthlyRevenue> {
+  async getMonthlyRevenueByDoctor(doctorId: string): Promise<RevenueData> {
     try {
       const twelveMonthsAgo = new Date();
       twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
 
-      const result = await this.model.aggregate([
+      const result = await this.model.aggregate<RevenueData>([
         {
           $match: {
             doctor: new Types.ObjectId(doctorId),
@@ -603,14 +801,16 @@ class AppointmentRepository implements IAppointmentRepository {
               year: { $year: "$date" },
               month: { $month: "$date" },
             },
-            monthlyRevenue: { $sum: { $multiply: ["$fee", 0.9] } },
+            revenue: { $sum: { $multiply: ["$fee", 0.9] } },
+            count: { $sum: 1 },
           },
         },
         {
           $project: {
-            month: {
+            _id: 0,
+            timeUnit: {
               $dateToString: {
-                format: "%b",
+                format: "%b %Y",
                 date: {
                   $dateFromParts: {
                     year: "$_id.year",
@@ -620,33 +820,213 @@ class AppointmentRepository implements IAppointmentRepository {
                 },
               },
             },
-            monthlyRevenue: 1,
-            _id: 0,
+            revenue: 1,
+            count: 1,
+            date: {
+              $dateFromParts: {
+                year: "$_id.year",
+                month: "$_id.month",
+                day: 1,
+              },
+            },
           },
         },
         {
-          $sort: { month: 1 },
+          $sort: { date: 1 },
         },
         {
           $group: {
             _id: null,
-            monthlyData: {
-              $push: { month: "$month", revenue: "$monthlyRevenue" },
+            timeData: {
+              $push: {
+                period: "$timeUnit",
+                revenue: "$revenue",
+                appointmentCount: "$count",
+              },
             },
-            totalRevenue: { $sum: "$monthlyRevenue" },
+            totalRevenue: { $sum: "$revenue" },
+            totalAppointments: { $sum: "$count" },
           },
         },
         {
           $project: {
             _id: 0,
-            monthlyData: 1,
+            timeData: 1,
             totalRevenue: 1,
+            totalAppointments: 1,
           },
         },
       ]);
 
-      const formattedData =
-        result.length > 0 ? result[0] : { monthlyData: [], totalRevenue: 0 };
+      const formattedData: RevenueData =
+        result.length > 0
+          ? result[0]
+          : {
+              timeData: [],
+              totalRevenue: 0,
+              totalAppointments: 0,
+            };
+
+      return formattedData;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+      throw error;
+    }
+  }
+
+  async getWeeklyRevenueByDoctor(doctorId: string): Promise<RevenueData> {
+    try {
+      const twelveWeeksAgo = new Date();
+      twelveWeeksAgo.setDate(twelveWeeksAgo.getDate() - 84);
+
+      const result = await this.model.aggregate<RevenueData>([
+        {
+          $match: {
+            doctor: new Types.ObjectId(doctorId),
+            status: "completed",
+            date: { $gte: twelveWeeksAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              week: { $week: "$date" },
+            },
+            revenue: { $sum: { $multiply: ["$fee", 0.9] } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeUnit: {
+              $concat: [
+                "Week ",
+                { $toString: "$_id.week" },
+                ", ",
+                { $toString: "$_id.year" },
+              ],
+            },
+            revenue: 1,
+            count: 1,
+            date: {
+              $dateFromParts: {
+                isoWeekYear: "$_id.year",
+                isoWeek: "$_id.week",
+                isoDayOfWeek: 1,
+              },
+            },
+          },
+        },
+        {
+          $sort: { date: 1 },
+        },
+        {
+          $group: {
+            _id: null,
+            timeData: {
+              $push: {
+                period: "$timeUnit",
+                revenue: "$revenue",
+                appointmentCount: "$count",
+              },
+            },
+            totalRevenue: { $sum: "$revenue" },
+            totalAppointments: { $sum: "$count" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeData: 1,
+            totalRevenue: 1,
+            totalAppointments: 1,
+          },
+        },
+      ]);
+
+      const formattedData: RevenueData =
+        result.length > 0
+          ? result[0]
+          : {
+              timeData: [],
+              totalRevenue: 0,
+              totalAppointments: 0,
+            };
+
+      return formattedData;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+    }
+  }
+
+  async getYearlyRevenueByDoctor(doctorId: string): Promise<RevenueData> {
+    try {
+      const fiveYearsAgo = new Date();
+      fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
+
+      const result = await this.model.aggregate<RevenueData>([
+        {
+          $match: {
+            doctor: new Types.ObjectId(doctorId),
+            status: "completed",
+            date: { $gte: fiveYearsAgo },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+            },
+            revenue: { $sum: { $multiply: ["$fee", 0.9] } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeUnit: { $toString: "$_id.year" },
+            revenue: 1,
+            count: 1,
+            year: "$_id.year",
+          },
+        },
+        {
+          $sort: { year: 1 },
+        },
+        {
+          $group: {
+            _id: null,
+            timeData: {
+              $push: {
+                period: "$timeUnit",
+                revenue: "$revenue",
+                appointmentCount: "$count",
+              },
+            },
+            totalRevenue: { $sum: "$revenue" },
+            totalAppointments: { $sum: "$count" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            timeData: 1,
+            totalRevenue: 1,
+            totalAppointments: 1,
+          },
+        },
+      ]);
+
+      const formattedData: RevenueData =
+        result.length > 0
+          ? result[0]
+          : {
+              timeData: [],
+              totalRevenue: 0,
+              totalAppointments: 0,
+            };
 
       return formattedData;
     } catch (error) {

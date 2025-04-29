@@ -28,10 +28,7 @@ export type AdminDashboardData = {
 };
 
 export type DoctorDashboardData = {
-  monthlyData: {
-    month: string;
-    revenue: number;
-  }[];
+  revenueData: RevenuePeriod[];
   weeklyAppointments: {
     day: string;
     count: number;
@@ -42,4 +39,17 @@ export type DoctorDashboardData = {
   totalTodaysAppointment: number;
   patients: IPatientForDoctor[];
   totalPatients: number;
+  totalAppointments: number;
 };
+
+export interface RevenuePeriod {
+  period: string;
+  revenue: number;
+  appointmentCount: number;
+}
+
+export interface RevenueData {
+  timeData: RevenuePeriod[];
+  totalRevenue: number;
+  totalAppointments: number;
+}
