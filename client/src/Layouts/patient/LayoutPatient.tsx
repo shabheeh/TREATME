@@ -4,6 +4,7 @@ import Navbar from "../../components/patient/Navbar";
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 import ProfileModal from "../../components/patient/profile/ProfileModal";
+import AIChatBot from "../../components/basics/aiChat/AIChatBot";
 
 const LayoutPatient = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,6 +47,7 @@ const LayoutPatient = () => {
         open={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
       />
+      <AIChatBot />
     </Box>
   );
 };
