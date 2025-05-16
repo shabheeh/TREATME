@@ -173,11 +173,9 @@ class PatientAuthService implements IPatientAuthService {
       }
 
       if (!patient.password) {
-        return {
-          googleUser: true,
-          message:
-            "You previously signed in with Google please use Google for future sign in",
-        };
+        throw new BadRequestError(
+          "You signed in with Google, please use Google for future sign in"
+        );
       }
 
       const isPasswordMatch = await bcrypt.compare(password, patient.password);

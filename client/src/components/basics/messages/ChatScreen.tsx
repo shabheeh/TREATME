@@ -74,7 +74,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
 
   const unreadMessages = messages.filter((message) => message.isRead === false);
 
-  // scroll to bottom for new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);

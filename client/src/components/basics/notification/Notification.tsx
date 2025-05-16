@@ -23,8 +23,7 @@ import Loading from "../ui/Loading";
 import { formatMonthDay, formatTime } from "../../../utils/dateUtils";
 import { useDispatch } from "react-redux";
 import { setUnreadCount } from "../../../redux/features/notification/notificationSlice";
-import { data, useNavigate } from "react-router-dom";
-import { useSocket } from "../../../hooks/useSocket";
+import { useNavigate } from "react-router-dom";
 
 const Notifications = () => {
   const [activeFilter, setActiveFilter] = useState<string | "">("");

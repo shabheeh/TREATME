@@ -416,6 +416,7 @@ class ChatController implements IChatController {
         chatId,
         userId
       );
+      console.log(count, "count");
       res.status(HttpStatusCode.OK).json({ count });
     } catch (error) {
       logger.error(

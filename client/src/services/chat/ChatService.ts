@@ -82,7 +82,7 @@ class ChatService {
     }
   }
 
-  async getUnreadMessagesCount(chatId: string): Promise<{ count: number }> {
+  async getUnreadMessagesCount(chatId: string): Promise<number> {
     try {
       const response = await api.get(`/chats/${chatId}/messages/count`);
       const { count } = response.data;

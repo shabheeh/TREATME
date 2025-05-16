@@ -15,6 +15,7 @@ import {
   Menu,
   MenuItem,
   Skeleton,
+  Badge,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -24,6 +25,7 @@ import { IChat } from "../../../types/chat/chat.types";
 import DoctorSearchModal from "./DoctorModal";
 import { formatMessageTime } from "../../../utils/dateUtils";
 import useCurrentUser from "../../../hooks/useCurrentUser";
+import chatService from "../../../services/chat/ChatService";
 
 interface ChatListProps {
   isChatsLoading: boolean;
@@ -47,6 +49,8 @@ const ChatList: React.FC<ChatListProps> = ({
   const [filteredChats, setFilteredChats] = useState<IChat[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+
   const currentUser = useCurrentUser();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -55,6 +59,29 @@ const ChatList: React.FC<ChatListProps> = ({
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  useEffect(() => {
+    const fetchAllUnreadCounts = () => {
+      filteredChats.forEach((chat) => {
+        fetchUnreadCount(chat._id);
+      });
+    };
+
+    fetchAllUnreadCounts();
+  }, [filteredChats]);
+
+  const fetchUnreadCount = async (chatId: string) => {
+    try {
+      const count = await chatService.getUnreadMessagesCount(chatId);
+
+      setUnreadCounts((prevCounts) => ({
+        ...prevCounts,
+        [chatId]: count,
+      }));
+    } catch (error) {
+      console.error(`Failed to fetch unread count for chat ${chatId}`, error);
+    }
   };
 
   useEffect(() => {
@@ -244,7 +271,7 @@ const ChatList: React.FC<ChatListProps> = ({
                     />
 
                     {/* Unread Count */}
-                    {/* <Badge
+                    <Badge
                       badgeContent={
                         <Skeleton variant="circular" width={18} height={18} />
                       }
@@ -256,7 +283,7 @@ const ChatList: React.FC<ChatListProps> = ({
                           p: "0 4px",
                         },
                       }}
-                    /> */}
+                    />
                   </Box>
                 }
               />
@@ -291,8 +318,16 @@ const ChatList: React.FC<ChatListProps> = ({
             >
               <ListItemAvatar>
                 <Avatar
-                  alt={chat.participants[1].user.firstName}
-                  src={chat.participants[1].user.profilePicture}
+                  alt={
+                    chat.participants.find(
+                      (user) => user.user._id !== currentUser?._id
+                    )?.user.firstName
+                  }
+                  src={
+                    chat.participants.find(
+                      (user) => user.user._id !== currentUser?._id
+                    )?.user.profilePicture
+                  }
                 />
               </ListItemAvatar>
               <ListItemText
@@ -312,7 +347,11 @@ const ChatList: React.FC<ChatListProps> = ({
                         maxWidth: { xs: "120px", sm: "150px", md: "180px" },
                       }}
                     >
-                      {chat.participants[1].user.firstName}
+                      {
+                        chat.participants.find(
+                          (user) => user.user._id !== currentUser?._id
+                        )?.user.firstName
+                      }
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
                       {chat.lastMessage &&
@@ -345,9 +384,9 @@ const ChatList: React.FC<ChatListProps> = ({
                         "You:"}{" "}
                       {chat.lastMessage?.content}
                     </Typography>
-                    {/* {chat.participants.length > 0 && (
+                    {chat.participants.length > 0 && (
                       <Badge
-                        badgeContent={3}
+                        badgeContent={unreadCounts[chat._id] ?? 0}
                         sx={{
                           "& .MuiBadge-badge": {
                             bgcolor: "#00a884",
@@ -359,7 +398,7 @@ const ChatList: React.FC<ChatListProps> = ({
                           },
                         }}
                       />
-                    )} */}
+                    )}
                   </Box>
                 }
               />
