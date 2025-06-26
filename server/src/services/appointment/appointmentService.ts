@@ -58,8 +58,11 @@ class AppointmentService implements IAppointmentService {
         );
       }
 
-      const appointment =
-        await this.appointmentRepo.createAppointment(appointmentData);
+      const appointment = await this.appointmentRepo.create(appointmentData);
+
+      if (!appointment) {
+        throw new AppError("Something went wrong");
+      }
 
       const populatedAppointment =
         await this.appointmentRepo.getAppointmentById(

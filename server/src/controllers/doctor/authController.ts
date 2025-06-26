@@ -10,6 +10,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
 import { ResponseMessage } from "../../constants/responseMessages";
+import { setRefreshTokenCookie } from "../../utils/cookie";
 
 @injectable()
 class DoctorAuthController implements IDoctorAuthController {
@@ -33,12 +34,7 @@ class DoctorAuthController implements IDoctorAuthController {
 
       const { accessToken, refreshToken, doctor } = result;
 
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      setRefreshTokenCookie(res, refreshToken);
 
       res.status(HttpStatusCode.OK).json({
         doctor,

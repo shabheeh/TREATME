@@ -4,33 +4,15 @@ import { INotification } from "../../interfaces/INotification";
 import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class NotificationRepository implements INotificationRepository {
-  private model: Model<INotification>;
-
+class NotificationRepository
+  extends BaseRepository<INotification>
+  implements INotificationRepository
+{
   constructor(@inject(TYPES.NotificationModel) model: Model<INotification>) {
-    this.model = model;
-  }
-
-  async create(
-    notificationData: Partial<INotification>
-  ): Promise<INotification> {
-    try {
-      const notification = await this.model.create(notificationData);
-      return notification;
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
-  }
-
-  async findById(notificationId: string): Promise<INotification | null> {
-    try {
-      const notification = await this.model.findById(notificationId);
-      return notification;
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async markAsRead(notificationId: string): Promise<boolean> {

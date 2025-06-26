@@ -1,11 +1,11 @@
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 import IPatient from "../../../interfaces/IPatient";
 import {
   IPatientsFilter,
   IPatientsFilterResult,
 } from "../../../interfaces/IPatient";
 
-interface IPatientRepository {
-  createPatient(user: Partial<IPatient>): Promise<IPatient>;
+interface IPatientRepository extends IBaseRepository<IPatient> {
   findPatientByEmail(email: string): Promise<IPatient | null>;
   findPatientById(id: string): Promise<IPatient | null>;
   updatePatient(

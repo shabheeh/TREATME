@@ -133,8 +133,8 @@ const Concern = () => {
 
       <Divider sx={{ mt: 4 }} />
 
-      <Card elevation={0} sx={{ borderRadius: 3, p: 2 }}>
-        <CardContent sx={{ p: 3 }}>
+      <Card elevation={0} sx={{ borderRadius: 3, p: { xs: 0, sm: 2, md: 3 } }}>
+        <CardContent sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
           <Button
             onClick={handleBack}
             sx={{

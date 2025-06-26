@@ -134,7 +134,7 @@ class PatientAuthService implements IPatientAuthService {
 
       patient.password = hashedPassword;
 
-      const newUser = await this.patientRepository.createPatient(patient);
+      const newUser = await this.patientRepository.create(patient);
 
       await this.cacheService.delete(`signup:${patient.email}`);
 
@@ -389,8 +389,7 @@ class PatientAuthService implements IPatientAuthService {
           googleData?.profilePicture || patientData.profilePicture,
       } as IPatient;
 
-      const patient =
-        await this.patientRepository.createPatient(updatedPatientData);
+      const patient = await this.patientRepository.create(updatedPatientData);
 
       if (!patient) {
         throw new AppError("Failed to create New User");

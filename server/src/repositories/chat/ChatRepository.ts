@@ -4,22 +4,12 @@ import { IChat } from "src/interfaces/IChat";
 import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class ChatRepository implements IChatRepository {
-  private readonly model: Model<IChat>;
-
+class ChatRepository extends BaseRepository<IChat> implements IChatRepository {
   constructor(@inject(TYPES.ChatModel) model: Model<IChat>) {
-    this.model = model;
-  }
-
-  async create(chatData: Partial<IChat>): Promise<IChat> {
-    try {
-      const chat = await this.model.create(chatData);
-      return chat;
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async findById(chatId: string): Promise<IChat | null> {

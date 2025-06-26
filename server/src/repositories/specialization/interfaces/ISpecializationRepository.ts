@@ -1,7 +1,7 @@
 import ISpecialization from "src/interfaces/ISpecilazation";
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 
-interface ISpecializationRepository {
-  createSpecialization(specialization: ISpecialization): Promise<void>;
+interface ISpecializationRepository extends IBaseRepository<ISpecialization> {
   getSpecializationByName(name: string): Promise<ISpecialization | null>;
   getSpecializations(): Promise<ISpecialization[]>;
   getSpecializationById(

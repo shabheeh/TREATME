@@ -10,6 +10,10 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
 import { ResponseMessage } from "../../constants/responseMessages";
+import {
+  clearRefreshTokenCookie,
+  setRefreshTokenCookie,
+} from "../../utils/cookie";
 
 @injectable()
 class PatientAuthController implements IPatientAuthController {
@@ -96,12 +100,7 @@ class PatientAuthController implements IPatientAuthController {
 
       const { accessToken, refreshToken, patient } = result;
 
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      setRefreshTokenCookie(res, refreshToken);
 
       res.status(HttpStatusCode.OK).json({
         accessToken,
@@ -181,15 +180,10 @@ class PatientAuthController implements IPatientAuthController {
 
       const result = await this.patientAuthService.googleSignIn(credential);
 
-      if (!result.partialUser) {
+      if (!result.partialUser && result.refreshToken) {
         const { patient, accessToken, refreshToken, partialUser } = result;
 
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        setRefreshTokenCookie(res, refreshToken);
 
         res.status(HttpStatusCode.OK).json({
           patient,
@@ -224,12 +218,7 @@ class PatientAuthController implements IPatientAuthController {
 
       const { patient, accessToken, refreshToken } = result;
 
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      setRefreshTokenCookie(res, refreshToken);
 
       res.status(HttpStatusCode.OK).json({
         patient,
@@ -293,11 +282,7 @@ class PatientAuthController implements IPatientAuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      });
+      clearRefreshTokenCookie(res);
 
       res.status(HttpStatusCode.OK).json({
         message: ResponseMessage.SUCCESS.OPERATION_SUCCESSFUL,

@@ -35,6 +35,7 @@ class DependentController implements IDependentController {
       const dependentData = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        email: req.body.email,
         gender: req.body.gender,
         primaryUserId: req.body.primaryUserId,
         relationship: req.body.relationship,

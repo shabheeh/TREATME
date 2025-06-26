@@ -3,7 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-import sessionConfig from "./configs/sessionConfig";
+// import sessionConfig from "./configs/sessionConfig";
 import patientRouter from "./routes/patient/patientRouter";
 import adminRouter from "./routes/admin/adminRouter";
 import doctorRouter from "./routes/doctor/doctorRouter";
@@ -35,7 +35,7 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(sessionConfig);
+// app.use(sessionConfig);
 app.use(cookieParser());
 
 app.use("/api/patient", patientRouter);

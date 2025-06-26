@@ -49,7 +49,7 @@ class ApplicantService implements IApplicantService {
       applicantData.idProof = uplodIdProof.url;
       applicantData.resume = uploadResume.url;
 
-      await this.applicantRepository.createApplicant(applicantData);
+      await this.applicantRepository.create(applicantData);
     } catch (error) {
       logger.error("error creating applicant", error);
       if (error instanceof AppError) {

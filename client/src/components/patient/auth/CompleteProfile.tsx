@@ -317,6 +317,40 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
             <Grid container spacing={{ xs: 1, md: 2 }}>
               <Grid item xs={12} sm={4}>
                 <Controller
+                  name="birthYear"
+                  control={control}
+                  rules={{
+                    required: "Required",
+                    validate: {
+                      validAge: (value) => {
+                        if (!selectedMonth || !selectedDay) return true;
+                        return (
+                          validateAge(value, selectedMonth, selectedDay) ||
+                          "Must be at least 18 years old"
+                        );
+                      },
+                    },
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      fullWidth
+                      label="Year"
+                      error={!!errors.birthYear}
+                      helperText={errors.birthYear?.message}
+                    >
+                      {years.map((year) => (
+                        <MenuItem key={year} value={year}>
+                          {year}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Controller
                   name="birthMonth"
                   control={control}
                   rules={{ required: "Required" }}
@@ -371,40 +405,6 @@ const CompleteProfile: React.FC<CompleteProfileProps> = ({ isPartialUser }) => {
                       {availableDays.map((day) => (
                         <MenuItem key={day} value={day}>
                           {day}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Controller
-                  name="birthYear"
-                  control={control}
-                  rules={{
-                    required: "Required",
-                    validate: {
-                      validAge: (value) => {
-                        if (!selectedMonth || !selectedDay) return true;
-                        return (
-                          validateAge(value, selectedMonth, selectedDay) ||
-                          "Must be at least 18 years old"
-                        );
-                      },
-                    },
-                  }}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      select
-                      fullWidth
-                      label="Year"
-                      error={!!errors.birthYear}
-                      helperText={errors.birthYear?.message}
-                    >
-                      {years.map((year) => (
-                        <MenuItem key={year} value={year}>
-                          {year}
                         </MenuItem>
                       ))}
                     </TextField>

@@ -5,6 +5,7 @@ import IDoctor, {
 } from "src/interfaces/IDoctor";
 
 import { ISchedule } from "src/interfaces/ISchedule";
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 export interface getDoctorsWithSchedulesQuery {
   specialization: ObjectId;
   gender: string | null;
@@ -34,8 +35,7 @@ export type MatchStage = {
   }>;
 };
 
-interface IDoctorRepository {
-  createDoctor(doctor: Partial<IDoctor>): Promise<IDoctor>;
+interface IDoctorRepository extends IBaseRepository<IDoctor> {
   findDoctorByEmail(email: string): Promise<IDoctor | null>;
   findDoctorById(email: string): Promise<IDoctor>;
   updateDoctor(

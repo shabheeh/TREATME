@@ -11,22 +11,15 @@ import IDoctor, {
 import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class DoctorRepository implements IDoctorRepository {
-  private readonly model: Model<IDoctor>;
-
+class DoctorRepository
+  extends BaseRepository<IDoctor>
+  implements IDoctorRepository
+{
   constructor(@inject(TYPES.DoctorModel) model: Model<IDoctor>) {
-    this.model = model;
-  }
-
-  async createDoctor(doctor: Partial<IDoctor>): Promise<IDoctor> {
-    try {
-      const newDoctor = await this.model.create(doctor);
-      return newDoctor.toObject();
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async findDoctorByEmail(email: string): Promise<IDoctor | null> {

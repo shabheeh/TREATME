@@ -1,7 +1,7 @@
 import { IChat } from "src/interfaces/IChat";
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 
-interface IChatRepository {
-  create(chatData: Partial<IChat>): Promise<IChat>;
+interface IChatRepository extends IBaseRepository<IChat> {
   findById(chatId: string): Promise<IChat | null>;
   findOneOnOneChat(userId1: string, userId2: string): Promise<IChat | null>;
   getUserChats(userId: string): Promise<IChat[]>;

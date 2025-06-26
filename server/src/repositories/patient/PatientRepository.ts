@@ -8,6 +8,7 @@ import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import BaseRepository from "../base/BaseRepository";
 
 interface Query {
   $or?: Array<{
@@ -19,20 +20,12 @@ interface Query {
 }
 
 @injectable()
-class PatientRepository implements IPatientRepository {
-  private readonly model: Model<IPatient>;
-
+class PatientRepository
+  extends BaseRepository<IPatient>
+  implements IPatientRepository
+{
   constructor(@inject(TYPES.PatientModel) model: Model<IPatient>) {
-    this.model = model;
-  }
-
-  async createPatient(patient: Partial<IPatient>): Promise<IPatient> {
-    try {
-      const newPatient = await this.model.create(patient);
-      return newPatient.toObject();
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async findPatientByEmail(email: string): Promise<IPatient | null> {

@@ -12,6 +12,8 @@ import {
   Slider,
   Select,
   MenuItem,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { Edit as EditIcon, Save as SaveIcon } from "@mui/icons-material";
 import { useSelector } from "react-redux";
@@ -74,6 +76,9 @@ const BehavioralHealth = () => {
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<IBehaviouralHealth | null>(null);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     fetchMentalHealth();
@@ -156,7 +161,10 @@ const BehavioralHealth = () => {
   if (loading) return <Loading />;
 
   return (
-    <Paper elevation={0} sx={{ p: 3, bgcolor: "background.default" }}>
+    <Paper
+      elevation={0}
+      sx={{ p: { sx: 1, sm: 2, md: 3 }, bgcolor: "background.default" }}
+    >
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
         <Typography
           variant="h5"
@@ -169,7 +177,7 @@ const BehavioralHealth = () => {
           variant={isEditing ? "contained" : "outlined"}
           onClick={isEditing ? handleSave : () => setIsEditing(true)}
         >
-          {isEditing ? "Save Changes" : "Edit Information"}
+          {isMobile ? null : isEditing ? "Save Changes" : "Edit Information"}
         </Button>
       </Box>
 

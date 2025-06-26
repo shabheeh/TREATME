@@ -1,7 +1,7 @@
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 import IDependent from "../../../interfaces/IDependent";
 
-interface IDependentRepository {
-  createDependent(dependent: Partial<IDependent>): Promise<IDependent>;
+interface IDependentRepository extends IBaseRepository<IDependent> {
   findDependentById(id: string): Promise<IDependent | null>;
   updateDependent(
     id: string,

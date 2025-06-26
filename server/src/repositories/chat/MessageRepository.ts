@@ -4,22 +4,15 @@ import { IMessage } from "src/interfaces/IMessage";
 import { Model, Types } from "mongoose";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class MessageRepository implements IMessageRepository {
-  private readonly model: Model<IMessage>;
-
+class MessageRepository
+  extends BaseRepository<IMessage>
+  implements IMessageRepository
+{
   constructor(@inject(TYPES.MessageModel) model: Model<IMessage>) {
-    this.model = model;
-  }
-
-  async create(messageData: Partial<IMessage>): Promise<IMessage> {
-    try {
-      const message = await this.model.create(messageData);
-      return message;
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async findById(messageId: string): Promise<IMessage | null> {

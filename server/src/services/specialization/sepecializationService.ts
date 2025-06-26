@@ -50,7 +50,7 @@ class SpecializationService implements ISpecializationService {
       specialization.image = imageUrl;
       specialization.imagePublicId = imagePublicId;
 
-      await this.specializationRepository.createSpecialization(specialization);
+      await this.specializationRepository.create(specialization);
     } catch (error) {
       logger.error("Error creating specialization", error);
       if (error instanceof AppError) {

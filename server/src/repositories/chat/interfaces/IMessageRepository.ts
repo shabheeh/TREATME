@@ -1,7 +1,7 @@
 import { IMessage } from "src/interfaces/IMessage";
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 
-interface IMessageRepository {
-  create(messageData: Partial<IMessage>): Promise<IMessage>;
+interface IMessageRepository extends IBaseRepository<IMessage> {
   findById(messageId: string): Promise<IMessage | null>;
   findByChatId(
     chatId: string,

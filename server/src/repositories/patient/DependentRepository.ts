@@ -5,22 +5,15 @@ import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class DependentRepository implements IDependentRepository {
-  private readonly model: Model<IDependent>;
-
+class DependentRepository
+  extends BaseRepository<IDependent>
+  implements IDependentRepository
+{
   constructor(@inject(TYPES.DependentModel) model: Model<IDependent>) {
-    this.model = model;
-  }
-
-  async createDependent(dependent: Partial<IDependent>): Promise<IDependent> {
-    try {
-      const newDependent = await this.model.create(dependent);
-      return newDependent.toObject();
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async findDependentById(id: string): Promise<IDependent | null> {

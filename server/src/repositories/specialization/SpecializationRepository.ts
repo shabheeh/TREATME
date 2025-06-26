@@ -5,25 +5,17 @@ import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class SpecializationRepository implements ISpecializationRepository {
-  private readonly model: Model<ISpecialization>;
-
+class SpecializationRepository
+  extends BaseRepository<ISpecialization>
+  implements ISpecializationRepository
+{
   constructor(
     @inject(TYPES.SpecializationModel) model: Model<ISpecialization>
   ) {
-    this.model = model;
-  }
-
-  async createSpecialization(
-    specialization: Partial<ISpecialization>
-  ): Promise<void> {
-    try {
-      await this.model.create(specialization);
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async getSpecializationByName(name: string): Promise<ISpecialization | null> {

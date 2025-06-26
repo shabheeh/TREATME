@@ -9,30 +9,15 @@ import IAppointmentRepository, {
 import { AppError, handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import BaseRepository from "../base/BaseRepository";
 
 @injectable()
-class AppointmentRepository implements IAppointmentRepository {
-  private readonly model: Model<IAppointment>;
-
+class AppointmentRepository
+  extends BaseRepository<IAppointment>
+  implements IAppointmentRepository
+{
   constructor(@inject(TYPES.AppointmentModel) model: Model<IAppointment>) {
-    this.model = model;
-  }
-
-  async createAppointment(
-    appointmentData: IAppointment
-  ): Promise<IAppointment> {
-    try {
-      const appointment = await this.model.create(appointmentData);
-
-      if (!appointment) {
-        throw new AppError("Something went wrong");
-      }
-
-      return appointment;
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async getAppointmentById(

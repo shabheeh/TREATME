@@ -38,7 +38,6 @@ const AIChatBot: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -54,7 +53,6 @@ const AIChatBot: React.FC = () => {
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
 
-    // Create user message
     const userMessage: ChatMessage = {
       id: Date.now(),
       text: userInput,

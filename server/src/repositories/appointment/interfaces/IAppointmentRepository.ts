@@ -1,9 +1,9 @@
 import IAppointment, {
   IAppointmentPopulated,
 } from "src/interfaces/IAppointment";
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 
-interface IAppointmentRepository {
-  createAppointment(appointmentData: IAppointment): Promise<IAppointment>;
+interface IAppointmentRepository extends IBaseRepository<IAppointment> {
   getAppointmentById(id: string): Promise<IAppointmentPopulated>;
   updateAppointment(
     id: string,

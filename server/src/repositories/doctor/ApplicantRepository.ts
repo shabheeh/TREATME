@@ -9,6 +9,7 @@ import {
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
+import BaseRepository from "../base/BaseRepository";
 
 interface Query {
   $or?: Array<{
@@ -20,19 +21,12 @@ interface Query {
 }
 
 @injectable()
-class ApplicantRepository implements IApplicantRepository {
-  private readonly model: Model<IApplicant>;
-
+class ApplicantRepository
+  extends BaseRepository<IApplicant>
+  implements IApplicantRepository
+{
   constructor(@inject(TYPES.ApplicantModel) model: Model<IApplicant>) {
-    this.model = model;
-  }
-
-  async createApplicant(applicant: IApplicant): Promise<void> {
-    try {
-      await this.model.create(applicant);
-    } catch (error) {
-      handleTryCatchError("Database", error);
-    }
+    super(model);
   }
 
   async findApplicantByEmail(email: string): Promise<IApplicant | null> {

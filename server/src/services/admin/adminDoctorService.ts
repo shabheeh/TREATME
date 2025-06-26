@@ -51,7 +51,11 @@ class AdminDoctorService implements IAdminDoctorService {
 
       doctor.password = hashedPassword;
 
-      const newDoctor = await this.doctorRepository.createDoctor(doctor);
+      const newDoctor = await this.doctorRepository.create(doctor);
+
+      if (!newDoctor) {
+        throw new AppError("Something went wrong");
+      }
 
       const { password, ...withoutPassword } = newDoctor;
       void password;

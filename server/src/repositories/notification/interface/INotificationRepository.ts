@@ -1,8 +1,7 @@
 import { INotification } from "src/interfaces/INotification";
+import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";
 
-interface INotificationRepository {
-  create(notificationData: Partial<INotification>): Promise<INotification>;
-  findById(notificationId: string): Promise<INotification | null>;
+interface INotificationRepository extends IBaseRepository<INotification> {
   markAsRead(notificationId: string): Promise<boolean>;
   markAllAsRead(userId: string): Promise<boolean>;
   getUnreadCount(userId: string): Promise<number>;

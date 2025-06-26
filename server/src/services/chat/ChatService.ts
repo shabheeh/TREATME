@@ -89,6 +89,9 @@ class ChatService implements IChatService {
     };
 
     const newChat = await this.chatRepository.create(chatData);
+    if (!newChat) {
+      throw new AppError("Something went wrong");
+    }
     const populatedChat = await this.chatRepository.findById(
       newChat._id!.toString()
     );
@@ -176,6 +179,10 @@ class ChatService implements IChatService {
     };
 
     const newMessage = await this.messageRepository.create(messageData);
+
+    if (!newMessage) {
+      throw new AppError("Something went wrong");
+    }
 
     await this.chatRepository.updateLastMessage(
       chatId,

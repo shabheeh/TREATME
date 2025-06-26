@@ -68,7 +68,6 @@ class DashboardController implements IDashboardController {
         filter
       );
 
-      console.log(dashboardData);
       res.status(HttpStatusCode.OK).json(dashboardData);
     } catch (error) {
       logger.error(
