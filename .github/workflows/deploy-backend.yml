@@ -43,6 +43,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/treatme-server
+
+            # Clean up old containers, images, volumes, build cache
+            docker system prune -af --volumes
+
             cd /home/ubuntu   # directory where your docker-compose.yml lives
             docker compose down
             docker compose up -d
