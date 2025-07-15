@@ -5,9 +5,9 @@ import {
 import { api } from "../../utils/axiosInterceptor";
 
 class DashboardService {
-  async getAdminDashboard(): Promise<AdminDashboardData> {
+  async getAdminDashboard(filter: string): Promise<AdminDashboardData> {
     try {
-      const response = await api.get("/dashboard");
+      const response = await api.get(`/dashboard?filter=${filter}`);
       return response.data;
     } catch (error: unknown) {
       if (error instanceof Error) {

@@ -91,7 +91,12 @@ class PatientRepository
       ];
 
       const [patients, total] = await Promise.all([
-        this.model.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+        this.model
+          .find(query)
+          .select("-password -__v")
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
         this.model.countDocuments(query),
       ]);
 

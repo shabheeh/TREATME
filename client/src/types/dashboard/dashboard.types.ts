@@ -3,10 +3,7 @@ import { IDoctor } from "../doctor/doctor.types";
 import { IPatient, IPatientForDoctor } from "../patient/patient.types";
 
 export type AdminDashboardData = {
-  monthlyData: {
-    month: string;
-    revenue: number;
-  }[];
+  revenueData: RevenuePeriod[];
   totalRevenue: number;
   patients: IPatient[];
   totalPatients: number;
