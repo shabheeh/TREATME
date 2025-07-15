@@ -108,9 +108,7 @@ class DoctorRepository
       }
 
       const aggregationPipeline = [
-        {
-          $match: matchStage,
-        },
+        { $match: matchStage },
         {
           $lookup: {
             from: "specializations",
@@ -122,6 +120,11 @@ class DoctorRepository
         {
           $addFields: {
             specialization: { $arrayElemAt: ["$specialization", 0] },
+          },
+        },
+        {
+          $project: {
+            password: 0,
           },
         },
         {

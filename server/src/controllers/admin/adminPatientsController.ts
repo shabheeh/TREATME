@@ -48,10 +48,10 @@ class AdminPatientsController implements IAdminPatientsController {
   ): Promise<void> => {
     try {
       const { isActive } = req.body;
-      const { getAppointmentsByPatientId } = req.params;
+      const { patientId } = req.params;
 
       await this.adminPatientsService.togglePatientActivityStatus(
-        getAppointmentsByPatientId,
+        patientId,
         isActive
       );
 

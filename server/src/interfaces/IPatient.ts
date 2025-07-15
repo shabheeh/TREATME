@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { IHealthHistory } from "./IHealthHistory";
 import { IBehaviouralHealth } from "./IBehaviouralHealth";
 import { ILifestyle } from "./ILifestyle";
+
 export interface Address {
   city: string;
   landmark: string;
