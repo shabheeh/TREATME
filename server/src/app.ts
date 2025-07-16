@@ -11,6 +11,7 @@ import sharedRouter from "./routes/shared/sharedRouter";
 import { errorHandler } from "./middlewares/errorHandler";
 import chatRouter from "./routes/chat/chatRouter";
 import webhookRouter from "./routes/webhook/webhookRouter";
+import mediaRouter from "./routes/imageProxy/imageProxy";
 import { startAppointmentNotifyJob } from "./utils/cronJobs/appointmentNotifier";
 
 const app = express();
@@ -42,6 +43,7 @@ app.use("/api/patient", patientRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/chats", chatRouter);
+app.use("/api/media", mediaRouter);
 app.use("/api", sharedRouter);
 
 app.use(errorHandler);

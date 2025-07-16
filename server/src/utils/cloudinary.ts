@@ -16,6 +16,10 @@ export async function uploadToCloudinary(
     const uploadResponse = await cloudinary.uploader.upload(fileUri, {
       folder,
       resource_type: resourceType,
+      type: "authenticated",
+      invalidate: true,
+      use_filename: true,
+      unique_filename: false,
     });
 
     return {
@@ -35,7 +39,11 @@ export async function updateCloudinaryFile(
   folder: string
 ) {
   try {
-    await cloudinary.uploader.destroy(oldPublicId);
+    await cloudinary.uploader.destroy(oldPublicId, {
+      resource_type: "image",
+      type: "authenticated",
+      invalidate: true,
+    });
 
     const fileStr = newImage.buffer.toString("base64");
     const fileUri = `data:${newImage.mimetype};base64,${fileStr}`;
@@ -44,6 +52,8 @@ export async function updateCloudinaryFile(
     const uploadResponse = await cloudinary.uploader.upload(fileUri, {
       folder,
       resource_type: resourceType,
+      type: "authenticated",
+      invalidate: true,
     });
 
     return {
@@ -77,3 +87,41 @@ const getResourceType = (mimeType: string): "image" | "video" | "raw" => {
     return "raw";
   }
 };
+
+export async function getSecureImage(
+  publicId: string,
+  resourceType: "image" | "video" | "raw"
+) {
+  try {
+    const resource = await cloudinary.api.resource(publicId, {
+      resource_type: resourceType,
+      type: "authenticated",
+    });
+
+    const signedUrl = cloudinary.url(publicId, {
+      secure: true,
+      sign_url: true,
+      resource_type: resourceType,
+      type: "authenticated",
+      version: resource.version,
+    });
+
+    return {
+      url: signedUrl,
+      metadata: {
+        format: resource.format,
+        width: resource.width,
+        height: resource.height,
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Cloudinary API Error:", {
+        publicId,
+        error: error.message,
+      });
+    }
+
+    throw new Error(`Failed to fetch secure image: ${error}`);
+  }
+}

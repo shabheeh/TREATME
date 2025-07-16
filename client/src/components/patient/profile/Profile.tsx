@@ -1,7 +1,8 @@
-import { Avatar, Box, Button, Typography, Grid } from "@mui/material";
+import { Box, Button, Typography, Grid } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import React from "react";
+import SecureAvatar from "../../basics/SecureAvatar";
 
 type ProfileProps = {
   handleEditProfile: () => void;
@@ -27,14 +28,13 @@ const Profile: React.FC<ProfileProps> = ({
           mb: 4,
         }}
       >
-        <Avatar
-          src={currentPatient?.profilePicture || "/api/placeholder/48/48"}
-          alt={currentPatient?.firstName}
+        <SecureAvatar
+          publicId={currentPatient?.imagePublicId || ""}
           sx={{
             width: 100,
             height: 100,
             mb: 2,
-            border: "3px solid primary.main",
+            border: "3px solid primary.!main",
           }}
         />
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
