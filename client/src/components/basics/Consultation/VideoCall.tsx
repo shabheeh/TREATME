@@ -35,7 +35,6 @@ const VideoCall = () => {
   const remoteStream = useRef<MediaStream | null>(null);
   const pendingCandidates = useRef<RTCIceCandidate[]>([]);
 
-  // track connection attempts
   const isConnecting = useRef<boolean>(false);
 
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -147,9 +146,11 @@ const VideoCall = () => {
     const endTime = dayjs(appointment.date).add(appointment.duration, "minute");
     const timePassed = endTime.diff(now, "minutes");
 
-    if (timePassed < 15 && timePassed > -5) {
+    if (timePassed < 25 && timePassed > -5) {
       await appointmentService.updateAppointmentStatus(appointment?._id);
     }
+
+    console.log(timePassed, endTime);
 
     if (appointment && userRole && userRole === "patient") {
       if (timePassed < 25 && timePassed > 0) {

@@ -16,6 +16,7 @@ import {
   AccessTime as TimeIcon,
   VideoCameraFront as VideoIcon,
   MedicalServices as MedicalIcon,
+  HourglassTop as HourGlassTopIcon,
   ArrowForward as ArrowIcon,
   PersonOutline as PatientIcon,
 } from "@mui/icons-material";
@@ -42,6 +43,7 @@ interface AppointmentCardProps {
   fee: number;
   reason: string;
   status: string;
+  duration: number;
   onReschedule: () => void;
   onViewDetails?: () => void;
 }
@@ -54,6 +56,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
   specialization,
   reason,
   status,
+  duration,
   onReschedule,
   onViewDetails,
 }) => {
@@ -64,7 +67,6 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
   const doctorName = doctor.firstName + " " + doctor.lastName;
   const patientName = patient.firstName + " " + patient.lastName;
 
-  // calculate days difference until and after appointment
   const days = getDaysDifference(date);
   const isToday = days === 0;
   const isTomorrow = days === 1;
@@ -119,15 +121,14 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
     <Card
       variant="outlined"
       sx={{
-        maxWidth: { xs: "100%", sm: "95%", md: "90%", lg: "80%" },
+        maxWidth: "100%",
         borderRadius: 2,
         borderColor: isToday ? "#ff5252" : isTomorrow ? "#ff9800" : "#e0e0e0",
         borderWidth: isToday || isTomorrow ? 2 : 1,
         overflow: "visible",
         position: "relative",
         transition: "transform 0.2s, box-shadow 0.2s",
-        px: { xs: 0, sm: 3 },
-        my: { xs: 2, sm: 3 },
+        my: 3,
         "&:hover": {
           boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
           transform: "translateY(-3px)",
@@ -158,7 +159,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
           src={patient.profilePicture}
           alt={patient.firstName}
           sx={{
-            width: { xs: 48, sm: 56 }, // Responsive avatar size
+            width: { xs: 48, sm: 56 },
             height: { xs: 48, sm: 56 },
             border: "2px solid #f0f0f0",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
@@ -169,7 +170,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
             variant="h6"
             sx={{
               fontWeight: 600,
-              fontSize: { xs: "1rem", sm: "1.125rem" }, // Responsive font size
+              fontSize: { xs: "1rem", sm: "1.125rem" },
               mb: { xs: 0.5, sm: 0.75 },
             }}
           >
@@ -179,14 +180,14 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: { xs: 1, sm: 2 }, // Responsive gap
-              flexWrap: "wrap", // Allow wrapping for small screens
+              gap: { xs: 1, sm: 2 },
+              flexWrap: "wrap",
             }}
           >
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem" } }} // Responsive font size
+              sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem" } }}
             >
               Age: {calculateAge(patient.dateOfBirth)}
             </Typography>
@@ -199,7 +200,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                 display: "flex",
                 alignItems: "center",
                 gap: 0.5,
-                fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
                 "&:hover": {
                   textDecoration: "underline",
                 },
@@ -223,14 +224,14 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
         }}
       >
         <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CalendarIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
                 >
                   DATE
                 </Typography>
@@ -239,7 +240,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                   sx={{
                     fontWeight: 500,
                     mt: 0.5,
-                    fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
                   }}
                 >
                   {formatMonthDay(date)} {getDayName(date)}
@@ -248,14 +249,14 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <TimeIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
                 >
                   TIME
                 </Typography>
@@ -264,7 +265,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                   sx={{
                     fontWeight: 500,
                     mt: 0.5,
-                    fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
                   }}
                 >
                   {formatTime(date)}
@@ -273,14 +274,14 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <MedicalIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
                 >
                   TYPE
                 </Typography>
@@ -289,7 +290,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                   sx={{
                     fontWeight: 500,
                     mt: 0.5,
-                    fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
                   }}
                 >
                   {specialization}
@@ -298,14 +299,14 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
             </Box>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <VideoIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
                 >
                   MODE
                 </Typography>
@@ -314,10 +315,34 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                   sx={{
                     fontWeight: 500,
                     mt: 0.5,
-                    fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
                   }}
                 >
                   Video Call
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={6} md={2.4}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <HourGlassTopIcon color="primary" fontSize="small" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
+                >
+                  DURATION
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    mt: 0.5,
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  }}
+                >
+                  {duration} Minutes
                 </Typography>
               </Box>
             </Box>
@@ -329,7 +354,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
+              sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
             >
               REASON FOR VISIT
             </Typography>
@@ -337,7 +362,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
               variant="body2"
               sx={{
                 mt: 0.5,
-                fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
               }}
             >
               {reason}
@@ -355,7 +380,7 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap", // Allow wrapping for small screens
+          flexWrap: "wrap",
         }}
       >
         {status === "confirmed" && (
@@ -373,8 +398,8 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                 color: "#5c6bc0",
                 textTransform: "none",
                 fontWeight: 500,
-                py: { xs: 0.25, sm: 0.5 }, // Responsive padding
-                fontSize: { xs: "0.75rem", sm: "0.8rem" }, // Responsive font size
+                py: { xs: 0.25, sm: 0.5 },
+                fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 "&:hover": {
                   bgcolor: "#efefff",
                   borderColor: "#c5cae9",
@@ -394,8 +419,8 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
                 color: "#e53935",
                 textTransform: "none",
                 fontWeight: 500,
-                py: { xs: 0.25, sm: 0.5 }, // Responsive padding
-                fontSize: { xs: "0.75rem", sm: "0.8rem" }, // Responsive font size
+                py: { xs: 0.25, sm: 0.5 },
+                fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 "&:hover": {
                   bgcolor: "#ffebee",
                   borderColor: "#ef9a9a",

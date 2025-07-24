@@ -28,6 +28,7 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
 }) => {
   const patient = useSelector((state: RootState) => state.user.patient);
   const [loading, setLoading] = useState(false);
+  const timeZone = useSelector((state: RootState) => state.user.timeZone);
 
   const formattedDate = new Date(appointment.date).toLocaleDateString("en-US", {
     weekday: "long",
@@ -39,9 +40,13 @@ const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
   const handleCancel = async () => {
     try {
       setLoading(true);
-      await appointmentService.updateAppointment(appointment.id, {
-        status: "cancelled",
-      });
+      await appointmentService.updateAppointment(
+        appointment.id,
+        {
+          status: "cancelled",
+        },
+        timeZone
+      );
       toast.success("Appointment Cancelled");
     } catch (error) {
       toast.error(

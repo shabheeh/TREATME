@@ -14,6 +14,7 @@ import {
 import {
   CalendarMonth as CalendarIcon,
   AccessTime as TimeIcon,
+  HourglassTop as HourGlassTopIcon,
   VideoCameraFront as VideoIcon,
   MedicalServices as MedicalIcon,
   ArrowForward as ArrowIcon,
@@ -39,6 +40,7 @@ interface AppointmentCardProps {
   fee: number;
   reason: string;
   status: string;
+  duration: number;
   onReschedule: () => void;
   onViewDetails?: () => void;
 }
@@ -52,6 +54,7 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
   fee,
   reason,
   status,
+  duration,
   onReschedule,
   onViewDetails,
 }) => {
@@ -130,8 +133,8 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
       <Box
         sx={{
           position: "absolute",
-          top: 12,
-          right: 12,
+          top: { xs: 8, sm: 12 },
+          right: { xs: 8, sm: 12 },
           zIndex: 2,
         }}
       >
@@ -141,19 +144,20 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
       {/* Doctor info */}
       <Box
         sx={{
-          p: 2,
-          pb: 1,
+          p: { xs: 1.5, sm: 2 },
+          pb: { xs: 1, sm: 1.5 },
           display: "flex",
           alignItems: "center",
-          gap: 2,
+          gap: { xs: 1.5, sm: 2 },
+          flexWrap: "wrap",
         }}
       >
         <Avatar
           src={doctor.profilePicture}
           alt={doctor.firstName}
           sx={{
-            width: 56,
-            height: 56,
+            width: { xs: 48, sm: 56 },
+            height: { xs: 48, sm: 56 },
             border: "2px solid #f0f0f0",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
@@ -178,78 +182,137 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
         </Box>
       </Box>
 
-      <Divider sx={{ mx: 2, my: 1 }} />
+      <Divider sx={{ mx: { xs: 1.5, sm: 2 }, my: { xs: 0.5, sm: 1 } }} />
 
       {/* Appointment details */}
-      <Box sx={{ px: 2, pt: 1, pb: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6} sm={3}>
+      <Box
+        sx={{
+          px: { xs: 1.5, sm: 2 },
+          pt: { xs: 1, sm: 1.5 },
+          pb: { xs: 1.5, sm: 2 },
+        }}
+      >
+        <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <CalendarIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ display: "block" }}
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
                 >
                   DATE
                 </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    mt: 0.5,
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  }}
+                >
                   {formatMonthDay(date)} {getDayName(date)}
                 </Typography>
               </Box>
             </Box>
           </Grid>
 
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <TimeIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ display: "block" }}
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
                 >
                   TIME
                 </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    mt: 0.5,
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                  }}
+                >
                   {formatTime(date)}
                 </Typography>
               </Box>
             </Box>
           </Grid>
 
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <MedicalIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ display: "block" }}
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }} // Responsive font size
                 >
                   FEE
                 </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    mt: 0.5,
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" }, // Responsive font size
+                  }}
+                >
                   ₹{fee?.toFixed(2) || "0.00"}
                 </Typography>
               </Box>
             </Box>
           </Grid>
 
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={12} sm={6} md={2.4}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <VideoIcon color="primary" fontSize="small" />
               <Box>
                 <Typography
                   variant="caption"
                   color="text.secondary"
-                  sx={{ display: "block" }}
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
                 >
                   MODE
                 </Typography>
-                <Typography variant="body2" sx={{ fontWeight: 500, mt: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    mt: 0.5,
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  }}
+                >
                   Video Call
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={2.4}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <HourGlassTopIcon color="primary" fontSize="small" />
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
+                >
+                  DURATION
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 500,
+                    mt: 0.5,
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  }}
+                >
+                  {duration} Minutes
                 </Typography>
               </Box>
             </Box>
@@ -257,11 +320,21 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
         </Grid>
 
         {reason && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="caption" color="text.secondary">
+          <Box sx={{ mt: { xs: 1.5, sm: 2 } }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontSize: { xs: "0.75rem", sm: "0.8rem" } }}
+            >
               REASON FOR VISIT
             </Typography>
-            <Typography variant="body2" sx={{ mt: 0.5 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                mt: 0.5,
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
+              }}
+            >
               {reason}
             </Typography>
           </Box>
@@ -270,17 +343,20 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
 
       <Box
         sx={{
-          p: 2,
-          pt: 1,
+          p: { xs: 1.5, sm: 2 },
+          pt: { xs: 1, sm: 1.5 },
           bgcolor: "#f9f9f9",
           borderTop: "1px solid #eaeaea",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          flexWrap: "wrap",
         }}
       >
         {status === "confirmed" && (
-          <Box sx={{ display: "flex", gap: 1 }}>
+          <Box
+            sx={{ display: "flex", gap: { xs: 1, sm: 1.5 }, flexWrap: "wrap" }}
+          >
             <Button
               variant="outlined"
               size="small"
@@ -292,7 +368,8 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
                 color: "#5c6bc0",
                 textTransform: "none",
                 fontWeight: 500,
-                py: 0.5,
+                py: { xs: 0.25, sm: 0.5 },
+                fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 "&:hover": {
                   bgcolor: "#efefff",
                   borderColor: "#c5cae9",
@@ -312,7 +389,8 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
                 color: "#e53935",
                 textTransform: "none",
                 fontWeight: 500,
-                py: 0.5,
+                py: { xs: 0.25, sm: 0.5 },
+                fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 "&:hover": {
                   bgcolor: "#ffebee",
                   borderColor: "#ef9a9a",
@@ -326,7 +404,13 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
 
         {status === "completed" && (
           <>
-            <Box sx={{ display: "flex", gap: 1 }}></Box>
+            <Box
+              sx={{
+                display: "flex",
+                gap: { xs: 1, sm: 1.5 },
+                flexWrap: "wrap",
+              }}
+            ></Box>
             <Tooltip title="View appointment details">
               <IconButton
                 color="primary"

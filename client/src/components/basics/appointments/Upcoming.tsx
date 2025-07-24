@@ -45,8 +45,9 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
             reason={appointment.reason}
             id={appointment._id}
             fee={appointment.fee}
-            status={appointment.reason}
+            status={appointment.status}
             patient={appointment.patient}
+            duration={appointment.duration}
             onReschedule={onReschedule}
           />
         ))
@@ -62,6 +63,7 @@ const Upcoming: React.FC<UpcomingProps> = ({ appointments, onReschedule }) => {
             fee={appointment.fee}
             status={appointment.status}
             patient={appointment.patient}
+            duration={appointment.duration}
             onReschedule={onReschedule}
           />
         ))

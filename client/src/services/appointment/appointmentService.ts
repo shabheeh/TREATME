@@ -80,11 +80,13 @@ class AppointmentService {
 
   async updateAppointment(
     id: string,
-    updateData: Partial<IAppointment>
+    updateData: Partial<IAppointment>,
+    timeZone: string
   ): Promise<IAppointment> {
     try {
       const response = await api.put(`/appointments/${id}`, {
         updateData,
+        timeZone,
       });
       const { appointment } = response.data;
       return appointment;

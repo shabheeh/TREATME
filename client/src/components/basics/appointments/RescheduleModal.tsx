@@ -51,6 +51,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
   const [isSumitting, setSubmitting] = useState(false);
 
   const patient = useSelector((state: RootState) => state.user.patient);
+  const timeZone = useSelector((state: RootState) => state.user.timeZone);
 
   useEffect(() => {
     const getSchedule = async () => {
@@ -90,12 +91,16 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
         return;
       }
       setSubmitting(true);
-      await appointmentService.updateAppointment(appointmentId, {
-        doctor: doctorId,
-        dayId,
-        slotId,
-        date,
-      });
+      await appointmentService.updateAppointment(
+        appointmentId,
+        {
+          doctor: doctorId,
+          dayId,
+          slotId,
+          date,
+        },
+        timeZone
+      );
 
       onClose();
       onReschedule();
