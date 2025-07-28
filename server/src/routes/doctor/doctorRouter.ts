@@ -116,4 +116,22 @@ router.get(
 
 router.get("/doctors", authenticateAndCheckStatus, doctorController.getDoctors);
 
+router.post(
+  "/:doctorId/slots",
+  authenticateAndCheckStatus,
+  scheduleController.addTimeSlot
+);
+
+router.delete(
+  "/:doctorId/slots",
+  authenticateAndCheckStatus,
+  scheduleController.removeTimeSlot
+);
+
+router.post(
+  "/:doctorId/bulk-update",
+  authenticateAndCheckStatus,
+  scheduleController.bulkUpdateSlots
+);
+
 export default router;

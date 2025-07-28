@@ -93,7 +93,6 @@ const Notifications = () => {
     }
   };
 
-  // Get priority color
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":

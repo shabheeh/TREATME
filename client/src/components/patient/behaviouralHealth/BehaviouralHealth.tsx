@@ -300,7 +300,6 @@ const BehavioralHealth = () => {
               }
               onChange={(e) =>
                 setEditedData((prev) => {
-                  // Ensure prev is initialized as an object with default values if null
                   const updatedData = {
                     ...(prev || {
                       anxietyLevel: 0,

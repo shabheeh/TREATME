@@ -108,7 +108,6 @@ const DoctorProfile = () => {
     if (!doctor || !currentPatient || !reviewRating) return;
 
     try {
-      // Add new review
       await reviewService.addOrUpdateReview({
         doctor: doctor._id,
         patient: currentPatient._id,
@@ -402,7 +401,6 @@ const DoctorProfile = () => {
   );
 };
 
-// Skeleton loading component
 const DoctorProfileSkeleton = () => {
   return (
     <Container sx={{ py: 4 }}>

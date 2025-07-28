@@ -163,7 +163,6 @@ const VideoCall = () => {
     }
   };
 
-  // setup WebRTC
   const setupWebRTC = async () => {
     if (isConnecting.current) return;
     isConnecting.current = true;

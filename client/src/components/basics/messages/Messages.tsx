@@ -89,7 +89,6 @@ const Messages: React.FC<ChatPageProps> = ({
   useEffect(() => {
     if (!socket) return;
 
-    // new message
     const handleNewMessage = (message: IMessage) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     };

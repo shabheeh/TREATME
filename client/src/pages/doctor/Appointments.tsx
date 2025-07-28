@@ -51,9 +51,9 @@ const Appointments = () => {
     );
     return appointment.status === "confirmed" && appointmentTime.isAfter(now);
   });
-  const completed = appointments.filter(
-    (appointment) => appointment.status === "completed"
-  );
+  const completed = appointments
+    .filter((appointment) => appointment.status === "completed")
+    .sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf());
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

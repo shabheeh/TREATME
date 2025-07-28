@@ -99,7 +99,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
     );
   };
 
-  // Handle typing indicator
   useEffect(() => {
     if (socket && sender?.user._id) {
       socket.emit("typing", {
@@ -107,7 +106,7 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
         isTyping,
       });
 
-      const timeout = setTimeout(() => setIsTyping(false), 2000); // Stop typing after 2 seconds
+      const timeout = setTimeout(() => setIsTyping(false), 2000);
       return () => clearTimeout(timeout);
     }
   }, [isTyping, sender?.user._id, currentUser?._id, socket, activeChat?._id]);
@@ -115,7 +114,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
   useEffect(() => {
     if (socket && sender?.user._id) {
       socket.on("typing", ({ chatId, userId, isTyping }) => {
-        // update if event from other user
         if (chatId === activeChat?._id && userId !== currentUser?._id) {
           setSenderTyping(isTyping);
         }
@@ -152,7 +150,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
     };
   }, [socket, sender?.user]);
 
-  // Handle message sending
   const handleSend = async () => {
     if (!activeChat) return;
     if (!newMessage.trim() && attachments.length === 0) return;
@@ -182,7 +179,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
         }
       }
 
-      // Clear input and attachments
       setNewMessage("");
       setAttachments([]);
     } catch (error) {
@@ -193,7 +189,6 @@ const MessageScreen: React.FC<MessageScreenProps> = ({
     }
   };
 
-  // Handle key press for Enter key
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

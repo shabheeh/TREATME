@@ -34,7 +34,7 @@ class DependentService implements IDependentService {
         dependent.imagePublicId = cloudinaryResponse.publicId;
       }
 
-      console.log(dependent, "dependent")
+      console.log(dependent, "dependent");
 
       const newDependent = await this.dependentRepository.create(dependent);
       return newDependent;

@@ -50,6 +50,7 @@ const Completed: React.FC<CompletedProps> = ({
             fee={appointment.fee}
             status={appointment.status}
             patient={appointment.patient}
+            duration={appointment.duration}
             onReschedule={onReschedule}
           />
         ))
@@ -65,6 +66,7 @@ const Completed: React.FC<CompletedProps> = ({
             fee={appointment.fee}
             status={appointment.status}
             patient={appointment.patient}
+            duration={appointment.duration}
             onReschedule={onReschedule}
           />
         ))

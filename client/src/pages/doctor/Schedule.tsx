@@ -232,18 +232,15 @@ export default function ScheduleManagement() {
         return;
       }
 
-      // Filter out the slot to be removed
       const updatedSlots = existingAvailability.slots.filter(
         (slot) => slot._id !== slotId
       );
 
-      // Update the availability for the selected date
       const updatedAvailability: IDaySchedule = {
         ...existingAvailability,
         slots: updatedSlots,
       };
 
-      // Update the schedules array
       const updatedSchedules = schedules.map((avail) =>
         dayjs(avail.date).isSame(date, "day") ? updatedAvailability : avail
       );
@@ -253,27 +250,23 @@ export default function ScheduleManagement() {
         return;
       }
 
-      // Prepare the payload for the backend
       const updatedSchedulesInput: IDayScheduleInput[] = updatedSchedules.map(
         (avail) => ({
-          date: new Date(avail.date).toISOString(), // Ensure `date` is a Date object
+          date: new Date(avail.date).toISOString(),
           slots: avail.slots.map((slot) => ({
-            startTime: dayjs(slot.startTime).utc().local().format(), // ISO string
-            endTime: dayjs(slot.endTime).utc().local().format(), // ISO string
+            startTime: dayjs(slot.startTime).utc().local().format(),
+            endTime: dayjs(slot.endTime).utc().local().format(),
             isBooked: slot.isBooked,
           })),
         })
       );
 
-      // Update the local state
       setSchedulesInputs(updatedSchedulesInput);
 
-      // Send the updated schedule to the backend
       await scheduleService.updateSchedule(doctor._id, {
         availability: updatedSchedulesInput,
       });
 
-      // Update the schedules state
       setSchedules(updatedSchedules);
 
       toast.success("Time slot removed successfully");

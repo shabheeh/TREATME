@@ -3,7 +3,7 @@ import SidebarAccount from "../../components/doctor/SidebarAccount";
 import Navbar from "../../components/doctor/Navbar";
 import { Outlet } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
-import ProfileModal from "../../components/patient/profile/ProfileModal";
+import ProfileModal from "../../components/doctor/ProfileModal";
 
 const LayoutAccount = () => {
   const [mobileOpen, setMobileOpen] = useState(false);

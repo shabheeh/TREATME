@@ -96,8 +96,6 @@ const EditProfile: React.FC<EditProfileProps> = ({ handleSave }) => {
 
     try {
       setLoading(true);
-
-      // primary user
       const formData = new FormData();
       formData.append("firstName", data.firstName);
       formData.append("lastName", data.lastName);

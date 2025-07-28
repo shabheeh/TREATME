@@ -1,4 +1,3 @@
-// routes/mediaRoutes.ts
 import express from "express";
 import { getImageProxy } from "../../controllers/media-proxy/mediaController";
 

@@ -135,7 +135,6 @@ const HelpAndSupportPage: React.FC = () => {
     },
   ];
 
-  // Filter FAQs based on search query
   const filteredFAQs =
     searchQuery.trim() === ""
       ? faqSections
@@ -155,7 +154,6 @@ const HelpAndSupportPage: React.FC = () => {
   const handleSectionClick = (sectionTitle: string) => {
     setActiveSection(activeSection === sectionTitle ? null : sectionTitle);
 
-    // If a section is clicked, clear the search
     if (searchQuery) {
       setSearchQuery("");
     }

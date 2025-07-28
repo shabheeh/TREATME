@@ -1,4 +1,3 @@
-// controllers/mediaController.ts
 import { Request, Response } from "express";
 import { getSecureImage } from "../../utils/cloudinary";
 import axios from "axios";

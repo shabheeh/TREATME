@@ -6,7 +6,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import LayoutDoctor from "../Layouts/doctor/LayoutDoctor";
 import Dashboard from "../pages/doctor/Dashboard";
 import RegisterForm from "../components/doctor/RegisterForm";
-import Schedule from "../pages/doctor/Schedule";
+// import Schedule from "../pages/doctor/Schedule";
 import Appointments from "../pages/doctor/Appointments";
 import PatientProfile from "../pages/doctor/PatientProfile";
 import Messages from "../components/basics/messages/Messages";
@@ -15,6 +15,7 @@ import PatientListPage from "../components/doctor/PatientsList";
 import LayoutAccount from "../Layouts/doctor/LayoutAccount";
 import WalletPatient from "../components/basics/wallet/Wallet";
 import Security from "../components/basics/Security";
+import NewSchedule from "../pages/doctor/NewSchedule";
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
@@ -49,7 +50,7 @@ export const doctorRoutes = [
     <Route path="dashboard" element={<Dashboard />} />
     <Route path="appointments" element={<Appointments />} />
     <Route path="messages" element={<Messages />} />
-    <Route path="schedules" element={<Schedule />} />
+    <Route path="schedules" element={<NewSchedule />} />
     <Route path="notifications" element={<Notifications />} />
     <Route path="patients" element={<PatientListPage />} />
     <Route path="patients/health" element={<PatientProfile />} />
