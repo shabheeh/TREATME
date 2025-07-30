@@ -45,6 +45,7 @@ interface CreateConsultationModalProps {
   consultation: IConsultationPopulated;
   open: boolean;
   onClose: () => void;
+  onCancel: () => void;
   onSave: (consultationData: Partial<IConsultation>) => void;
 }
 
@@ -63,6 +64,7 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
   open,
   onClose,
   onSave,
+  onCancel,
   consultation,
 }) => {
   const [consultationData, setConsultationData] =
@@ -125,11 +127,11 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
         ),
       };
       onSave(cleanedData);
-      handleClose();
+      handleCancel();
     }
   };
 
-  const handleClose = (): void => {
+  const handleCancel = (): void => {
     setConsultationData({
       symptoms: [""],
       prescriptions: [
@@ -143,7 +145,7 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
       notes: "",
     });
     setErrors({});
-    onClose();
+    onCancel();
   };
 
   const addSymptom = (): void => {
@@ -244,7 +246,7 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       maxWidth="lg"
       fullWidth
       PaperProps={{
@@ -264,7 +266,7 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
         <Typography variant="h5" component="div">
           Create Consultation Record
         </Typography>
-        <IconButton onClick={handleClose} sx={{ color: "white" }}>
+        <IconButton onClick={onClose} sx={{ color: "white" }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
@@ -639,7 +641,7 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
 
       <DialogActions sx={{ p: 3, backgroundColor: "#f5f5f5" }}>
         <Button
-          onClick={handleClose}
+          onClick={handleCancel}
           startIcon={<CancelIcon />}
           variant="outlined"
         >

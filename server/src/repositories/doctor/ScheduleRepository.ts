@@ -24,13 +24,44 @@ class ScheduleRepository implements IScheduleRepository {
   async findSchedule(doctorId: string): Promise<ISchedule | null> {
     try {
       const now = new Date();
-      const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+      const startOfToday = new Date(now);
+      startOfToday.setHours(0, 0, 0, 0);
 
       const schedule = await this.model.aggregate([
         {
           $match: {
             doctorId: new Types.ObjectId(doctorId),
-            "availability.date": { $gte: startOfDay },
+          },
+        },
+        {
+          $project: {
+            doctorId: 1,
+            availability: {
+              $map: {
+                input: {
+                  $filter: {
+                    input: "$availability",
+                    as: "day",
+                    cond: {
+                      $gte: ["$$day.date", startOfToday],
+                    },
+                  },
+                },
+                as: "day",
+                in: {
+                  date: "$$day.date",
+                  slots: {
+                    $filter: {
+                      input: "$$day.slots",
+                      as: "slot",
+                      cond: {
+                        $gt: ["$$slot.endTime", now],
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
         {
@@ -39,8 +70,8 @@ class ScheduleRepository implements IScheduleRepository {
             availability: {
               $filter: {
                 input: "$availability",
-                as: "av",
-                cond: { $gte: ["$$av.date", now] },
+                as: "day",
+                cond: { $gt: [{ $size: "$$day.slots" }, 0] },
               },
             },
           },
@@ -178,7 +209,11 @@ class ScheduleRepository implements IScheduleRepository {
       scheduleDoc.markModified("availability");
       await scheduleDoc.save();
 
-      return scheduleDoc;
+      const schedule = await this.findSchedule(doctorId);
+      if (!schedule) {
+        throw new AppError("Schedule not found", 404);
+      }
+      return schedule;
     } catch (error) {
       if (error instanceof AppError) throw error;
       handleTryCatchError("Database", error);
@@ -193,13 +228,13 @@ class ScheduleRepository implements IScheduleRepository {
     try {
       const targetDate = dayjs.utc(date).startOf("day");
 
-      const existingSchedule = await this.model.findOne({ doctorId });
+      const scheduleDoc = await this.model.findOne({ doctorId });
 
-      if (!existingSchedule) {
+      if (!scheduleDoc) {
         throw new AppError("No schedule found for this doctor");
       }
 
-      const dayIndex = existingSchedule.availability.findIndex((day) =>
+      const dayIndex = scheduleDoc.availability.findIndex((day) =>
         dayjs.utc(day.date).isSame(targetDate, "day")
       );
 
@@ -207,9 +242,9 @@ class ScheduleRepository implements IScheduleRepository {
         throw new AppError("No availability found for the selected date");
       }
 
-      const targetDay = existingSchedule.availability[dayIndex];
+      const daySchedule = scheduleDoc.availability[dayIndex];
 
-      const slotIndex = targetDay.slots.findIndex(
+      const slotIndex = daySchedule.slots.findIndex(
         (slot) => slot._id?.toString() === slotId
       );
 
@@ -217,32 +252,26 @@ class ScheduleRepository implements IScheduleRepository {
         throw new AppError("Time slot not found");
       }
 
-      const targetSlot = targetDay.slots[slotIndex];
+      const slot = daySchedule.slots[slotIndex];
 
-      if (targetSlot.isBooked) {
+      if (slot.isBooked) {
         throw new AppError("Cannot remove a booked slot");
       }
 
-      let updatedAvailability = [...existingSchedule.availability];
+      daySchedule.slots.splice(slotIndex, 1);
 
-      const updatedSlots = targetDay.slots.filter(
-        (_, index) => index !== slotIndex
-      );
-
-      if (updatedSlots.length === 0) {
-        updatedAvailability = updatedAvailability.filter(
-          (_, index) => index !== dayIndex
-        );
-      } else {
-        updatedAvailability[dayIndex] = {
-          ...targetDay,
-          slots: updatedSlots,
-        };
+      if (daySchedule.slots.length === 0) {
+        scheduleDoc.availability.splice(dayIndex, 1);
       }
 
-      return await this.updateSchedule(doctorId, {
-        availability: updatedAvailability,
-      });
+      scheduleDoc.markModified("availability");
+      await scheduleDoc.save();
+
+      const schedule = await this.findSchedule(doctorId);
+      if (!schedule) {
+        throw new AppError("Something went wrong");
+      }
+      return schedule;
     } catch (error) {
       if (error instanceof AppError) throw error;
       handleTryCatchError("Database", error);

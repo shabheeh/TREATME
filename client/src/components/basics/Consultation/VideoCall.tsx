@@ -465,12 +465,14 @@ const VideoCall = () => {
     navigate(-1);
   };
 
-  const handleConsultaionModalClose = () => {
+  const handleConsultaionModalCancel = () => {
     setConsultationModalOpen(false);
     navigate(-1);
   };
 
-  const handleConsultationSubmit = async (consultationData: IConsultation) => {
+  const handleConsultationSubmit = async (
+    consultationData: Partial<IConsultation>
+  ) => {
     if (!consultation) return;
     try {
       await consultationService.updateConsultation(
@@ -726,8 +728,9 @@ const VideoCall = () => {
         <ConsultationModal
           consultation={consultation}
           open={isConultationModalOpen}
-          onClose={handleConsultaionModalClose}
+          onClose={() => setConsultationModalOpen(false)}
           onSave={handleConsultationSubmit}
+          onCancel={handleConsultaionModalCancel}
         />
       ) : null}
     </Box>

@@ -19,12 +19,12 @@ const appointmentRepo = container.get<IAppointmentRepository>(
 export const startAppointmentNotifyJob = () => {
   cron.schedule("* * * * *", async () => {
     try {
-      const now = dayjs();
-
       const upcomingAppointments = await appointmentRepo.getAppointments();
 
       for (const appointment of upcomingAppointments) {
-        const timeLeft = dayjs(appointment.date).diff(now, "minute");
+        const timeLeft = dayjs
+          .utc(appointment.date)
+          .diff(dayjs.utc(), "minute");
 
         if (timeLeft === 5) {
           const notificationForPatient: Partial<INotification> = {
