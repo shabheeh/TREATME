@@ -165,44 +165,30 @@ const NewSchedule = () => {
 
       const startTime = dayjs(combinedLocalTime).utc().toISOString();
 
-      await scheduleService.addTimeSlot(
+      const updatedSchedule: ISchedule = await scheduleService.addTimeSlot(
         doctor._id,
         selectedDate.format("YYYY-MM-DD"),
         startTime,
         doctor.specialization.durationInMinutes
       );
-      const newSlot: ISlot = {
-        startTime: newTimeSlot.startTime.toDate(),
-        endTime: newTimeSlot.startTime
-          .add(doctor.specialization.durationInMinutes, "minute")
-          .toDate(),
-        isBooked: false,
-      };
 
-      setSchedules((prevSchedules) => {
-        const dayIndex = prevSchedules.findIndex((day) =>
-          dayjs(day.date).isSame(selectedDate, "day")
+      if (updatedSchedule && updatedSchedule.availability) {
+        const scheduleWithDayjsDates = updatedSchedule.availability.map(
+          (avail: IDaySchedule) => ({
+            _id: avail._id,
+            date: new Date(avail.date),
+            slots: avail.slots.map((slot: ISlot) => ({
+              ...slot,
+              startTime: new Date(slot.startTime),
+              endTime: new Date(slot.endTime),
+            })),
+          })
         );
 
-        if (dayIndex === -1) {
-          return [
-            ...prevSchedules,
-            {
-              date: selectedDate.toDate(),
-              slots: [newSlot],
-            },
-          ];
-        }
-
-        const updatedDay = { ...prevSchedules[dayIndex] };
-        updatedDay.slots = [...updatedDay.slots, newSlot].sort((a, b) =>
-          dayjs(a.startTime).diff(dayjs(b.startTime))
-        );
-
-        const updatedSchedules = [...prevSchedules];
-        updatedSchedules[dayIndex] = updatedDay;
-        return updatedSchedules;
-      });
+        setSchedules(scheduleWithDayjsDates);
+      } else {
+        setSchedules([]);
+      }
 
       setSnackbar({
         open: true,

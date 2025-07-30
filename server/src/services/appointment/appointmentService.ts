@@ -1,5 +1,6 @@
 import logger from "../../configs/logger";
-import IAppointment, {
+import {
+  IAppointment,
   IAppointmentPopulated,
   IAppointmentService,
 } from "../../interfaces/IAppointment";
@@ -21,6 +22,7 @@ import { TransactionData } from "src/interfaces/IWallet";
 import { IScheduleService } from "src/interfaces/ISchedule";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { IConsultationService } from "../consultations/interface/IConsultationService";
 
 @injectable()
 class AppointmentService implements IAppointmentService {
@@ -28,6 +30,7 @@ class AppointmentService implements IAppointmentService {
   private scheduleService: IScheduleService;
   private notificationService: INotificationService;
   private walletService: IWalletService;
+  private consultationService: IConsultationService;
 
   constructor(
     @inject(TYPES.IAppointmentRepository)
@@ -35,12 +38,15 @@ class AppointmentService implements IAppointmentService {
     @inject(TYPES.IScheduleService) scheduleService: IScheduleService,
     @inject(TYPES.INotificationService)
     notificationService: INotificationService,
-    @inject(TYPES.IWalletService) walletService: IWalletService
+    @inject(TYPES.IWalletService) walletService: IWalletService,
+    @inject(TYPES.IConsultationService)
+    consultationService: IConsultationService
   ) {
     this.appointmentRepo = appointmentRepo;
     this.scheduleService = scheduleService;
     this.notificationService = notificationService;
     this.walletService = walletService;
+    this.consultationService = consultationService;
   }
 
   async createAppointment(
@@ -63,6 +69,15 @@ class AppointmentService implements IAppointmentService {
       if (!appointment) {
         throw new AppError("Something went wrong");
       }
+
+      const consultationData = {
+        appointment: appointment._id as unknown as Types.ObjectId,
+        patient: appointment.patient,
+        patientType: appointment.patientType,
+        doctor: appointment.doctor,
+      };
+
+      await this.consultationService.createConsultation(consultationData);
 
       const populatedAppointment =
         await this.appointmentRepo.getAppointmentById(

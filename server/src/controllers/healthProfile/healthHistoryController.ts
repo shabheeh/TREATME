@@ -69,6 +69,32 @@ class HealthHistoryController implements IHealthHistoryController {
       next(error);
     }
   };
+
+  addMedication = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { patientId } = req.params;
+      const { medication } = req.body;
+
+      if (!patientId || !medication) {
+        throw new BadRequestError(ResponseMessage.WARNING.INCOMPLETE_DATA);
+      }
+      await this.healthHistoryService.addOrUpdateMedication(
+        patientId,
+        medication
+      );
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        message: ResponseMessage.SUCCESS.RESOURCE_UPDATED,
+      });
+    } catch (error) {
+      logger.error("Failed to add medicaton", error);
+      next(error);
+    }
+  };
 }
 
 export default HealthHistoryController;

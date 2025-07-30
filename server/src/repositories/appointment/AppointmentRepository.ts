@@ -1,5 +1,6 @@
 import { Model, Types } from "mongoose";
-import IAppointment, {
+import {
+  IAppointment,
   IAppointmentPopulated,
 } from "../../interfaces/IAppointment";
 import IAppointmentRepository, {

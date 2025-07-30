@@ -20,6 +20,7 @@ import { IAppointmentController } from "src/interfaces/IAppointment";
 import { IStripeController } from "src/controllers/stripe/interface/IStripeController";
 import IDashboardController from "src/controllers/dashboard/interface/IDashboardController";
 import IAIChatController from "src/controllers/aiChat/interface/IAIChatController";
+import { IConsultationController } from "src/controllers/consultation/interface/IConsultationController";
 
 const router = express.Router();
 
@@ -79,6 +80,10 @@ const aiChatController = container.get<IAIChatController>(
   TYPES.IAIChatController
 );
 
+const consultationController = container.get<IConsultationController>(
+  TYPES.IConsultationController
+);
+
 router.post("/auth/refresh-token", tokenController.handleRefreshToken);
 
 router.get(
@@ -132,6 +137,14 @@ router.patch(
   isUserActive(patientAuthService, doctorAuthService),
   authorize("patient"),
   healthHistoryController.updateHealthHistory
+);
+
+router.patch(
+  "/medications/:patientId",
+  authenticate,
+  isUserActive(patientAuthService, doctorAuthService),
+  authorize("patient"),
+  healthHistoryController.addMedication
 );
 
 router.get(
@@ -307,6 +320,30 @@ router.get(
   authenticate,
   authorize("doctor"),
   dashboardController.getDoctorDashboardData
+);
+
+router.get(
+  "/consultations/:consultationId",
+  authenticate,
+  authorize("patient", "doctor"),
+  isUserActive(patientAuthService, doctorAuthService),
+  consultationController.getConsultationById
+);
+
+router.post(
+  "/consultations/:consultationId",
+  authenticate,
+  authorize("doctor"),
+  isUserActive(patientAuthService, doctorAuthService),
+  consultationController.updateConsultation
+);
+
+router.get(
+  "/:appointmentId/consultations",
+  authenticate,
+  authorize("patient", "doctor"),
+  isUserActive(patientAuthService, doctorAuthService),
+  consultationController.getConsultationByAppointmentId
 );
 
 router.post("/ai", authenticate, aiChatController.handleAIChatInteraction);

@@ -11,7 +11,6 @@ import { IAppointmentPopulated } from "../../types/appointment/appointment.types
 import { RootState } from "../../redux/app/store";
 import { useSelector } from "react-redux";
 import Loading from "../../components/basics/ui/Loading";
-import Completed from "../../components/basics/appointments/Completed";
 import dayjs from "dayjs";
 
 const Appointments = () => {
@@ -69,7 +68,7 @@ const Appointments = () => {
     {
       title: "Completed",
       component: (
-        <Completed appointments={completed} onReschedule={fetchAppointments} />
+        <Upcoming appointments={completed} onReschedule={fetchAppointments} />
       ),
     },
   ];

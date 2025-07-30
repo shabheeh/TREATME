@@ -81,11 +81,7 @@ class ScheduleController implements IScheduleController {
         durationInMinutes,
       });
 
-      res.status(201).json({
-        success: true,
-        data: updatedSchedule,
-        message: "Time slot added successfully",
-      });
+      res.status(HttpStatusCode.OK).json(updatedSchedule);
     } catch (error) {
       logger.error("Failed to add time slot", error);
       next(error);

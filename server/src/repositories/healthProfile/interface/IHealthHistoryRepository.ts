@@ -1,4 +1,7 @@
-import { IHealthHistory } from "../../../interfaces/IHealthHistory";
+import {
+  IHealthHistory,
+  IMedication,
+} from "../../../interfaces/IHealthHistory";
 
 interface IHealthHistoryRepository {
   findHealthHistory(patientId: string): Promise<IHealthHistory | null>;
@@ -6,6 +9,10 @@ interface IHealthHistoryRepository {
     patientId: string,
     updateData: Partial<IHealthHistory>
   ): Promise<IHealthHistory>;
+  addOrUpdateMedication(
+    patientId: string,
+    medication: IMedication
+  ): Promise<IHealthHistory | null>;
 }
 
 export default IHealthHistoryRepository;

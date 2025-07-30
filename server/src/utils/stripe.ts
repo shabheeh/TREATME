@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import logger from "../configs/logger";
 import { AppError } from "./errors";
-import IAppointment from "src/interfaces/IAppointment";
+import { IAppointment } from "src/interfaces/IAppointment";
 import { ITransaction } from "src/interfaces/IWallet";
 import { HttpStatusCode } from "../constants/httpStatusCodes";
 

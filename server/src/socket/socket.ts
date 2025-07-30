@@ -260,7 +260,6 @@ export class SocketService implements ISocketService {
     userId: string;
     notification: INotification;
   }): void {
-    console.log("appointment notification  triggered");
     this.emitToUser(userId, "appointment-notification", notification);
   }
 

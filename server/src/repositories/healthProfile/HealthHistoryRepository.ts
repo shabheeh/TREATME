@@ -1,6 +1,6 @@
 import { Model } from "mongoose";
 import IHealthHistoryRepository from "./interface/IHealthHistoryRepository";
-import { IHealthHistory } from "../../interfaces/IHealthHistory";
+import { IHealthHistory, IMedication } from "../../interfaces/IHealthHistory";
 import { handleTryCatchError } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
@@ -35,6 +35,48 @@ class HealthHistoryRepository implements IHealthHistoryRepository {
       );
 
       return updatedHealthHistory;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+    }
+  }
+
+  async addOrUpdateMedication(
+    patientId: string,
+    medication: IMedication
+  ): Promise<IHealthHistory | null> {
+    try {
+      const healthHistory = await this.model.findOne({ patientId });
+
+      if (!healthHistory) {
+        const newHistory = await this.model.findOneAndUpdate(
+          { patientId },
+          {
+            $set: { patientId },
+            $push: { medications: medication },
+          },
+          { new: true, upsert: true }
+        );
+        return newHistory;
+      }
+
+      const updatedMedications = [...healthHistory.medications];
+      const index = updatedMedications.findIndex(
+        (m) => m.name.toLowerCase() === medication.name.toLowerCase()
+      );
+
+      if (index !== -1) {
+        updatedMedications[index] = medication;
+      } else {
+        updatedMedications.push(medication);
+      }
+
+      const updated = await this.model.findOneAndUpdate(
+        { patientId },
+        { $set: { medications: updatedMedications } },
+        { new: true }
+      );
+
+      return updated;
     } catch (error) {
       handleTryCatchError("Database", error);
     }

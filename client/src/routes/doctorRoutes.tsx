@@ -16,6 +16,7 @@ import LayoutAccount from "../Layouts/doctor/LayoutAccount";
 import WalletPatient from "../components/basics/wallet/Wallet";
 import Security from "../components/basics/Security";
 import NewSchedule from "../pages/doctor/NewSchedule";
+import Consultation from "../pages/shared/Consultation";
 
 export const doctorRoutes = [
   <Route path="/doctor-recruitement" element={<LandingPageDoctor />} />,
@@ -49,6 +50,7 @@ export const doctorRoutes = [
   >
     <Route path="dashboard" element={<Dashboard />} />
     <Route path="appointments" element={<Appointments />} />
+    <Route path="consultations" element={<Consultation />} />
     <Route path="messages" element={<Messages />} />
     <Route path="schedules" element={<NewSchedule />} />
     <Route path="notifications" element={<Notifications />} />

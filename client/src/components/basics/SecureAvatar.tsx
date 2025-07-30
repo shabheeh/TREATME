@@ -3,7 +3,7 @@ import { getMedia } from "../../services/media/mediaService";
 import { Avatar, Box, CircularProgress } from "@mui/material";
 
 interface SecureAvatarProps {
-  publicId: string;
+  publicId?: string;
   alt?: string;
   className?: string;
   onError?: () => void;
@@ -11,6 +11,7 @@ interface SecureAvatarProps {
   sx?: object;
   imgProps?: React.ImgHTMLAttributes<HTMLImageElement>;
   size?: number | string;
+  children?: React.ReactNode;
 }
 
 const SecureAvatar: React.FC<SecureAvatarProps> = ({
@@ -22,12 +23,17 @@ const SecureAvatar: React.FC<SecureAvatarProps> = ({
   sx = {},
   imgProps = {},
   size = 40,
+  children,
 }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    let revokeUrl: string | null = null;
+
     const fetchImage = async () => {
+      if (!publicId) return;
+
       try {
         const response = await getMedia("image", publicId);
 
@@ -37,6 +43,7 @@ const SecureAvatar: React.FC<SecureAvatarProps> = ({
 
         const url = URL.createObjectURL(response.data);
         setImageUrl(url);
+        revokeUrl = url;
       } catch (err) {
         console.error("Error fetching secure avatar:", err);
         setError(true);
@@ -47,31 +54,13 @@ const SecureAvatar: React.FC<SecureAvatarProps> = ({
     fetchImage();
 
     return () => {
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+      if (revokeUrl) {
+        URL.revokeObjectURL(revokeUrl);
       }
     };
   }, [publicId]);
 
-  if (error || !publicId) {
-    return (
-      fallback || (
-        <Avatar
-          sx={{
-            width: size,
-            height: size,
-            bgcolor: "grey.300",
-            ...sx,
-          }}
-          className={className}
-        >
-          {alt?.[0]?.toUpperCase()}
-        </Avatar>
-      )
-    );
-  }
-
-  if (!imageUrl) {
+  if (!imageUrl && publicId && !error) {
     return (
       <Box
         sx={{
@@ -80,6 +69,8 @@ const SecureAvatar: React.FC<SecureAvatarProps> = ({
           justifyContent: "center",
           width: size,
           height: size,
+          borderRadius: "50%",
+          bgcolor: "grey.300",
           ...sx,
         }}
         className={className}
@@ -91,7 +82,7 @@ const SecureAvatar: React.FC<SecureAvatarProps> = ({
 
   return (
     <Avatar
-      src={imageUrl}
+      src={!error && imageUrl ? imageUrl : undefined}
       alt={alt}
       className={className}
       sx={{
@@ -108,7 +99,9 @@ const SecureAvatar: React.FC<SecureAvatarProps> = ({
           if (onError) onError();
         },
       }}
-    />
+    >
+      {fallback ?? children ?? alt?.[0]?.toUpperCase()}
+    </Avatar>
   );
 };
 

@@ -3,6 +3,7 @@ import logger from "../../configs/logger";
 import {
   IHealthHistory,
   IHealthHistoryService,
+  IMedication,
 } from "../../interfaces/IHealthHistory";
 import IHealthHistoryRepository from "../../repositories/healthProfile/interface/IHealthHistoryRepository";
 import { AppError, handleTryCatchError } from "../../utils/errors";
@@ -56,6 +57,13 @@ class HealthHistoryService implements IHealthHistoryService {
       }
       handleTryCatchError("Service", error);
     }
+  }
+
+  async addOrUpdateMedication(
+    patientId: string,
+    medication: IMedication
+  ): Promise<void> {
+    await this.healthHistoryRepo.addOrUpdateMedication(patientId, medication);
   }
 }
 

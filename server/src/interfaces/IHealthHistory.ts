@@ -47,6 +47,10 @@ export interface IHealthHistoryService {
     patientId: string,
     updateData: Partial<IHealthHistory>
   ): Promise<IHealthHistory>;
+  addOrUpdateMedication(
+    patientId: string,
+    medication: IMedication
+  ): Promise<void>;
 }
 
 export interface IHealthHistoryController {
@@ -60,4 +64,5 @@ export interface IHealthHistoryController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
+  addMedication(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

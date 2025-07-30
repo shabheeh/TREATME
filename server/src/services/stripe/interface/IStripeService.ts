@@ -1,4 +1,4 @@
-import IAppointment from "src/interfaces/IAppointment";
+import { IAppointment } from "src/interfaces/IAppointment";
 import { ITransaction } from "src/interfaces/IWallet";
 
 export interface IStripeService {

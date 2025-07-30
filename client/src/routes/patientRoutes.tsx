@@ -17,7 +17,7 @@ import ListDoctors from "../pages/patient/appointment/ListDoctors";
 import BookingConfirmation from "../pages/patient/appointment/BookingConfirmation";
 import Appointments from "../pages/patient/appointment/Appointments";
 import DoctorView from "../components/basics/DoctorView";
-import Consultations from "../pages/patient/appointment/Consultations";
+import Consultation from "../pages/shared/Consultation";
 import PaymentWrapper from "../pages/patient/payment/PaymentWrapper";
 import Doctors from "../pages/patient/Doctors";
 import Messages from "../components/basics/messages/Messages";
@@ -90,7 +90,7 @@ export const patientRoutes = [
     <Route path="visitnow" element={<VisiitNow />} />
     <Route path="health-profile" element={<HealthProfile />} />
     <Route path="appointments" element={<Appointments />} />
-    <Route path="consultations" element={<Consultations />} />
+    <Route path="consultations" element={<Consultation />} />
     <Route path="doctors" element={<Doctors />} />,
     <Route path="messages" element={<Messages />} />,
     <Route path="help" element={<HelpAndSupportPage />} />,

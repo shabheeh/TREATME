@@ -21,8 +21,6 @@ export interface IAppointment extends Document {
   paymentIntentId: string;
 }
 
-export default IAppointment;
-
 export interface IAppointmentPopulated extends Document {
   patient: IPatient | IDependent;
   patientType: "Patient" | "Dependent";

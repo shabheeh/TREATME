@@ -133,7 +133,7 @@ class ScheduleRepository implements IScheduleRepository {
         const existingDay = updatedAvailability[dayIndex];
 
         const isDuplicateStartTime = existingDay.slots.some((slot) =>
-          dayjs(slot.startTime).isSame(slotStartTime)
+          dayjs.utc(slot.startTime).isSame(slotStartTime)
         );
 
         if (isDuplicateStartTime) {
@@ -168,9 +168,17 @@ class ScheduleRepository implements IScheduleRepository {
         };
       }
 
-      return await this.updateSchedule(doctorId, {
-        availability: updatedAvailability,
-      });
+      const scheduleDoc = await this.model.findOne({ doctorId });
+
+      if (!scheduleDoc) {
+        throw new AppError("Schedule not found");
+      }
+
+      scheduleDoc.availability = updatedAvailability;
+      scheduleDoc.markModified("availability");
+      await scheduleDoc.save();
+
+      return scheduleDoc;
     } catch (error) {
       if (error instanceof AppError) throw error;
       handleTryCatchError("Database", error);

@@ -1,4 +1,5 @@
-import IAppointment, {
+import {
+  IAppointment,
   IAppointmentPopulated,
 } from "src/interfaces/IAppointment";
 import { IBaseRepository } from "src/repositories/base/interfaces/IBaseRepository";

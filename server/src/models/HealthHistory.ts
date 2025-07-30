@@ -8,7 +8,7 @@ import {
   ISurgery,
 } from "../interfaces/IHealthHistory";
 
-const MedicationSchema = new Schema<IMedication>({
+export const MedicationSchema = new Schema<IMedication>({
   name: { type: String, required: true },
   frequency: { type: String, required: true },
   reportedBy: { type: String, required: true },

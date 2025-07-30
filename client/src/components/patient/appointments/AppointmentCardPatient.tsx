@@ -30,6 +30,7 @@ import {
 } from "../../../utils/dateUtils";
 import RescheduleModal from "../../basics/appointments/RescheduleModal";
 import CancelAppointmentModal from "../../basics/appointments/CancelAppointmentModal ";
+import { useNavigate } from "react-router-dom";
 
 interface AppointmentCardProps {
   id: string;
@@ -42,7 +43,6 @@ interface AppointmentCardProps {
   status: string;
   duration: number;
   onReschedule: () => void;
-  onViewDetails?: () => void;
 }
 
 const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
@@ -56,10 +56,11 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
   status,
   duration,
   onReschedule,
-  onViewDetails,
 }) => {
   const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const doctorName = doctor.firstName + " " + doctor.lastName;
   const patientName = patient.firstName + " " + patient.lastName;
@@ -109,6 +110,10 @@ const AppointmentCardPatient: React.FC<AppointmentCardProps> = ({
         />
       );
     }
+  };
+
+  const onViewDetails = () => {
+    navigate("/consultations", { state: { appointmentId: id } });
   };
 
   return (

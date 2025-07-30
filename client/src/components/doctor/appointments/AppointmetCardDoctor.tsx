@@ -45,7 +45,6 @@ interface AppointmentCardProps {
   status: string;
   duration: number;
   onReschedule: () => void;
-  onViewDetails?: () => void;
 }
 
 const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
@@ -58,7 +57,6 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
   status,
   duration,
   onReschedule,
-  onViewDetails,
 }) => {
   const [isRescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
@@ -115,6 +113,10 @@ const AppointmentCardDoctor: React.FC<AppointmentCardProps> = ({
   };
   const viewHealthProfile = () => {
     navigate("/doctor/patients/health", { state: { patient } });
+  };
+
+  const onViewDetails = () => {
+    navigate("/doctor/consultations", { state: { appointmentId: id } });
   };
 
   return (

@@ -12,7 +12,6 @@ import { RootState } from "../../../redux/app/store";
 import { useSelector } from "react-redux";
 import Loading from "../../../components/basics/ui/Loading";
 import dayjs from "dayjs";
-// import Completed from "../../../components/basics/appointments/Completed";
 
 const Appointments = () => {
   const [value, setValue] = useState(0);

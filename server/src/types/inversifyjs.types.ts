@@ -17,6 +17,7 @@ export const TYPES = {
   WalletModel: Symbol.for("WalletModel"),
   TransactionModel: Symbol.for("TransactionModel"),
   ReviewModel: Symbol.for("ReviewModel"),
+  ConsultationModel: Symbol.for("ConsultationModel"),
 
   // repos
   IPatientRepository: Symbol.for("IPatientRepository"),
@@ -36,6 +37,7 @@ export const TYPES = {
   IWalletRepository: Symbol.for("IWalletRepository"),
   IReviewRepository: Symbol.for("IReviewRepository"),
   IAIChatRepository: Symbol.for("IAIChatRepository"),
+  IConsultationRepository: Symbol.for("IConsultationRepository"),
 
   // services
   IPatientAuthService: Symbol.for("IPatientAuthService"),
@@ -63,6 +65,7 @@ export const TYPES = {
   IOtpService: Symbol.for("IOtpService"),
   ISocketService: Symbol.for("ISocketService"),
   IAIChatService: Symbol.for("IAIChatService"),
+  IConsultationService: Symbol.for("IConsultationService"),
 
   // controllers
   IPatientAuthController: Symbol.for("IPatientAuthController"),
@@ -87,4 +90,5 @@ export const TYPES = {
   IReviewController: Symbol.for("IReviewController"),
   IDashboardController: Symbol.for("IDashboardController"),
   IAIChatController: Symbol.for("IAIChatController"),
+  IConsultationController: Symbol.for("IConsultationController"),
 };

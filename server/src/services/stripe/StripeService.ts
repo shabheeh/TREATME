@@ -1,6 +1,6 @@
 import { IStripeService } from "./interface/IStripeService";
 import { IWalletService } from "../wallet/interface/IWalletService";
-import IAppointment, { IAppointmentService } from "src/interfaces/IAppointment";
+import { IAppointment, IAppointmentService } from "src/interfaces/IAppointment";
 import { ITransaction, TransactionData } from "src/interfaces/IWallet";
 import { constructWebhookEvent, createPaymentIntent } from "../../utils/stripe";
 import { AppError, handleTryCatchError } from "../../utils/errors";
@@ -129,8 +129,6 @@ class StripeService implements IStripeService {
       paymentStatus: "completed",
       paymentIntentId: paymentIntent.id,
     } as unknown as IAppointment;
-
-    console.log(paymentIntent.metadata.timeZone, "timeZone");
 
     await this.appointmentService.createAppointment(
       appointment,

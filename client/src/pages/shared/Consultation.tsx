@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   Grid,
   Paper,
-  Divider,
   Chip,
-  Avatar,
   Table,
   TableBody,
   TableCell,
@@ -14,16 +12,11 @@ import {
   TableHead,
   TableRow,
   Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   TextField,
   IconButton,
   Switch,
   FormControlLabel,
-  Card,
-  CardContent,
+  MenuItem,
 } from "@mui/material";
 import {
   AccessTime as AccessTimeIcon,
@@ -32,12 +25,10 @@ import {
   LocalHospital as HospitalIcon,
   Assignment as AssignmentIcon,
   Medication as MedicationIcon,
-  LocationOn as LocationIcon,
   CheckCircleOutline as CheckIcon,
   Notes as NotesIcon,
-  KeyboardArrowRight as ArrowIcon,
-  Print as PrintIcon,
-  Share as ShareIcon,
+  // Print as PrintIcon,
+  // Share as ShareIcon,
   ArrowBack as BackIcon,
   Edit as EditIcon,
   Save as SaveIcon,
@@ -45,121 +36,254 @@ import {
   Add as AddIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/app/store";
+import {
+  IConsultation,
+  IConsultationPopulated,
+  IPrescription,
+} from "../../types/consultations/consultation.types";
+import { calculateAge } from "../../helpers/ageCalculator";
+import { useLocation, useNavigate } from "react-router-dom";
+import consultationService from "../../services/consultations/consultationService";
+import { toast } from "sonner";
+import { formatMonthDay, formatTime, getDayName } from "../../utils/dateUtils";
+import SecureAvatar from "../../components/basics/SecureAvatar";
+import healthProfileService from "../../services/healthProfile/healthProfileServices";
 
-const ConsultationDetailsPage = () => {
-  // Mock user role - change this to test different views
-  const [userRole, setUserRole] = useState("doctor"); // 'doctor' or 'patient'
-  const [isEditing, setIsEditing] = useState(false);
+type EditableConsultationFields = {
+  symptoms: string[];
+  prescriptions: IPrescription[];
+  diagnosis: string;
+  notes: string;
+  followUp: {
+    required: boolean;
+    timeFrame?: string;
+  };
+};
 
-  // Sample consultation data based on your schema
-  const [consultationData, setConsultationData] = useState({
-    _id: "64f8a9b12345678901234567",
-    AppoinmentId: "64f8a9b12345678901234568",
-    PatientId: "64f8a9b12345678901234569",
-    DoctorId: "64f8a9b1234567890123456a",
-    Symptoms: ["Severe headache", "Dizziness", "Nausea", "Visual disturbances"],
-    Prescriptions: [
-      {
-        Name: "Sumatriptan",
-        Dosage: "50mg",
-        Frequency: "As needed for migraine, max 2 tablets/24hrs",
-        ReportedBy: "Dr. Sarah Johnson",
-      },
-      {
-        Name: "Propranolol",
-        Dosage: "40mg",
-        Frequency: "Once daily in the morning",
-        ReportedBy: "Dr. Sarah Johnson",
-      },
-    ],
-    FollowUp: {
-      Required: true,
-      TimeFrame: "4 weeks",
-    },
-    Diagnosed: "Migraine with aura (G43.1), Mild dehydration (E86.0)",
-    Notes:
-      "Patient reports migraine frequency decreased since last visit. Current episode began yesterday evening, preceded by visual aura. Patient believes trigger may be work-related stress and skipped meals. Recommended maintaining migraine diary to identify patterns.",
+const frequencyOptions = ["Once a day", "Twice a day", "Three times a day"];
+
+const Consultation: React.FC = () => {
+  const userRole = useSelector((state: RootState) => state.auth.role);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [consultation, setConsultation] =
+    useState<IConsultationPopulated | null>(null);
+
+  const [editData, setEditData] = useState<EditableConsultationFields>({
+    symptoms: consultation?.symptoms || [""],
+    prescriptions: consultation?.prescriptions || [],
+    diagnosis: consultation?.diagnosis || "",
+    notes: consultation?.notes || "",
+    followUp: consultation?.followUp || { required: false },
   });
 
-  // Mock patient and doctor data
-  const patientInfo = {
-    name: "Jacob Elordi",
-    id: "PT-78965",
-    age: 42,
-    gender: "Male",
-    avatar: "/patient-avatar.jpg",
+  const location = useLocation();
+  const navigate = useNavigate();
+  const appointmentId = location.state.appointmentId;
+  const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    if (!appointmentId) {
+      return;
+    }
+    const fetchConsultation = async () => {
+      try {
+        const consultation =
+          await consultationService.getConsultationByAppointmentId(
+            appointmentId
+          );
+        setConsultation(consultation);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Something went wrong"
+        );
+      }
+    };
+    fetchConsultation();
+  }, [appointmentId]);
+
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: boolean } = {};
+
+    const hasValidSymptom = editData.symptoms.some(
+      (symptom) => symptom.trim() !== ""
+    );
+    if (!hasValidSymptom) {
+      newErrors.symptoms = true;
+    }
+
+    if (!editData.diagnosis.trim()) {
+      newErrors.diagnosis = true;
+    }
+
+    editData.prescriptions.forEach((prescription, index) => {
+      if (prescription.name.trim() || prescription.frequency.trim()) {
+        if (!prescription.name.trim()) {
+          newErrors[`prescription_name_${index}`] = true;
+        }
+      }
+    });
+
+    // Check follow-up timeframe if required
+    // if (
+    //   consultationData.followUp.required &&
+    //   !consultationData.followUp.timeFrame.trim()
+    // ) {
+    //   newErrors.followUpTimeFrame = true;
+    // }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const doctorInfo = {
-    name: "Dr. Sarah Johnson",
-    specialty: "Neurologist",
-    avatar: "/doctor-avatar.jpg",
-  };
+  const handleEdit = (): void => {
+    if (!consultation) return;
 
-  const appointmentInfo = {
-    date: "February 15, 2025",
-    time: "10:30 AM - 11:15 AM",
-    status: "Completed",
-    location: "Memorial Health Center, Room 305",
-    visitType: "Follow-up",
-  };
+    const editableFields: EditableConsultationFields = {
+      symptoms: consultation.symptoms || [],
+      prescriptions: consultation.prescriptions || [],
+      diagnosis: consultation.diagnosis || "",
+      followUp: consultation.followUp || { required: false },
+      notes: consultation.notes || "",
+    };
 
-  const [editData, setEditData] = useState({ ...consultationData });
-
-  const handleEdit = () => {
+    setEditData(editableFields);
     setIsEditing(true);
-    setEditData({ ...consultationData });
   };
 
-  const handleSave = () => {
-    setConsultationData({ ...editData });
+  const handleSave = async (): Promise<void> => {
+    try {
+      if (!consultation || !editData) return;
+
+      let payload: Partial<IConsultation> = {
+        ...editData,
+      };
+
+      if (validateForm()) {
+        payload = {
+          ...editData,
+          symptoms: editData.symptoms.filter(
+            (symptom) => symptom.trim() !== ""
+          ),
+          prescriptions: editData.prescriptions.filter(
+            (prescription) =>
+              prescription.name.trim() && prescription.frequency.trim()
+          ),
+        };
+      }
+
+      const updated = await consultationService.updateConsultation(
+        consultation.id,
+        payload
+      );
+
+      setConsultation(updated);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = (): void => {
+    if (!consultation) return;
+
+    const editableFields: EditableConsultationFields = {
+      symptoms: consultation.symptoms || [],
+      prescriptions: consultation.prescriptions || [],
+      diagnosis: consultation.diagnosis || "",
+      followUp: consultation.followUp || { required: false },
+      notes: consultation.notes || "",
+    };
+
+    setEditData(editableFields);
+    setIsEditing(true);
     setIsEditing(false);
   };
 
-  const handleCancel = () => {
-    setEditData({ ...consultationData });
-    setIsEditing(false);
-  };
-
-  const addPrescription = () => {
+  const addPrescription = (): void => {
+    if (!editData || !consultation) return;
     setEditData({
       ...editData,
-      Prescriptions: [
-        ...editData.Prescriptions,
-        { Name: "", Dosage: "", Frequency: "", ReportedBy: doctorInfo.name },
+      prescriptions: [
+        ...(editData.prescriptions ?? []),
+        {
+          name: "",
+          frequency: "",
+          reportedBy: `Dr. ${consultation.doctor.firstName} ${consultation.doctor.lastName}`,
+        },
       ],
     });
   };
 
-  const removePrescription = (index) => {
-    const newPrescriptions = editData.Prescriptions.filter(
+  const removePrescription = (index: number): void => {
+    if (!editData?.prescriptions) return;
+    const newPrescriptions = editData.prescriptions.filter(
       (_, i) => i !== index
     );
-    setEditData({ ...editData, Prescriptions: newPrescriptions });
+    setEditData({ ...editData, prescriptions: newPrescriptions });
   };
 
-  const updatePrescription = (index, field, value) => {
-    const newPrescriptions = [...editData.Prescriptions];
+  const updatePrescription = (
+    index: number,
+    field: keyof IPrescription,
+    value: string
+  ): void => {
+    if (!editData?.prescriptions) return;
+    const newPrescriptions = [...editData.prescriptions];
     newPrescriptions[index][field] = value;
-    setEditData({ ...editData, Prescriptions: newPrescriptions });
+    setEditData({ ...editData, prescriptions: newPrescriptions });
   };
 
-  const addSymptom = () => {
+  const addSymptom = (): void => {
+    if (!editData) return;
     setEditData({
       ...editData,
-      Symptoms: [...editData.Symptoms, ""],
+      symptoms: [...(editData.symptoms ?? []), ""],
     });
   };
 
-  const removeSymptom = (index) => {
-    const newSymptoms = editData.Symptoms.filter((_, i) => i !== index);
-    setEditData({ ...editData, Symptoms: newSymptoms });
+  const removeSymptom = (index: number): void => {
+    if (!editData?.symptoms) return;
+    const newSymptoms = editData.symptoms.filter((_, i) => i !== index);
+    setEditData({
+      ...editData,
+      symptoms: newSymptoms,
+    });
   };
 
-  const updateSymptom = (index, value) => {
-    const newSymptoms = [...editData.Symptoms];
+  const updateSymptom = (index: number, value: string): void => {
+    if (!editData?.symptoms) return;
+    const newSymptoms = [...editData.symptoms];
     newSymptoms[index] = value;
-    setEditData({ ...editData, Symptoms: newSymptoms });
+    setEditData({
+      ...editData,
+      symptoms: newSymptoms,
+    });
+    if (errors.symptoms && value.trim()) {
+      const newErrors = { ...errors };
+      delete newErrors.symptoms;
+      setErrors(newErrors);
+    }
+  };
+
+  const handleAddMedication = async (data: IPrescription) => {
+    if (!consultation) return;
+    try {
+      await healthProfileService.addMedication(consultation.patient.id, data);
+      toast.success("Medication added to current medications");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    }
+  };
+
+  const handleBack = () => {
+    navigate(-1);
   };
 
   const sectionStyle = {
@@ -188,6 +312,7 @@ const ConsultationDetailsPage = () => {
       {/* Header with back button and role toggle */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <Button
+          onClick={handleBack}
           startIcon={<BackIcon />}
           variant="outlined"
           sx={{ mr: 2, borderColor: tealColor, color: tealColor }}
@@ -199,37 +324,40 @@ const ConsultationDetailsPage = () => {
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
 
-        {/* Role toggle for demo */}
-        <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-          <Typography variant="body2" sx={{ mr: 1 }}>
-            View as:
-          </Typography>
-          <Button
-            variant={userRole === "patient" ? "contained" : "outlined"}
-            size="small"
-            onClick={() => setUserRole("patient")}
-            sx={{
-              mr: 1,
-              bgcolor: userRole === "patient" ? tealColor : "transparent",
-              color: userRole === "patient" ? "white" : tealColor,
-            }}
-          >
-            Patient
-          </Button>
-          <Button
-            variant={userRole === "doctor" ? "contained" : "outlined"}
-            size="small"
-            onClick={() => setUserRole("doctor")}
-            sx={{
-              bgcolor: userRole === "doctor" ? tealColor : "transparent",
-              color: userRole === "doctor" ? "white" : tealColor,
-            }}
-          >
-            Doctor
-          </Button>
-        </Box>
+        {userRole === "doctor" && (
+          <Box sx={{ display: "flex", gap: 1, mr: 2 }}>
+            {!isEditing ? (
+              <Button
+                startIcon={<EditIcon />}
+                onClick={handleEdit}
+                variant="outlined"
+                sx={{ borderColor: tealColor, color: tealColor }}
+              >
+                Edit
+              </Button>
+            ) : (
+              <>
+                <Button
+                  startIcon={<SaveIcon />}
+                  onClick={handleSave}
+                  variant="contained"
+                  sx={{ bgcolor: tealColor }}
+                >
+                  Save
+                </Button>
+                <Button
+                  startIcon={<CancelIcon />}
+                  onClick={handleCancel}
+                  variant="outlined"
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </Box>
+        )}
 
-        <Button
+        {/* <Button
           startIcon={<PrintIcon />}
           variant="outlined"
           sx={{ mr: 1, borderColor: tealColor, color: tealColor }}
@@ -242,7 +370,7 @@ const ConsultationDetailsPage = () => {
           sx={{ borderColor: tealColor, color: tealColor }}
         >
           Share
-        </Button>
+        </Button> */}
       </Box>
 
       {/* Appointment Summary */}
@@ -263,7 +391,10 @@ const ConsultationDetailsPage = () => {
                 <Typography variant="body2" color="text.secondary">
                   Date
                 </Typography>
-                <Typography variant="body1">{appointmentInfo.date}</Typography>
+                <Typography variant="body1">
+                  {formatMonthDay(consultation?.appointment.date || new Date())}{" "}
+                  {getDayName(consultation?.appointment.date || new Date())}
+                </Typography>
               </Box>
             </Box>
           </Grid>
@@ -274,7 +405,9 @@ const ConsultationDetailsPage = () => {
                 <Typography variant="body2" color="text.secondary">
                   Time
                 </Typography>
-                <Typography variant="body1">{appointmentInfo.time}</Typography>
+                <Typography variant="body1">
+                  {formatTime(consultation?.appointment.date || new Date())}
+                </Typography>
               </Box>
             </Box>
           </Grid>
@@ -286,7 +419,7 @@ const ConsultationDetailsPage = () => {
                   Appointment ID
                 </Typography>
                 <Typography variant="body1">
-                  {consultationData.AppoinmentId}
+                  {consultation?.appointment.appointmentId}
                 </Typography>
               </Box>
             </Box>
@@ -294,7 +427,7 @@ const ConsultationDetailsPage = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Chip
-                label={appointmentInfo.status}
+                label={consultation?.appointment.status}
                 sx={{
                   bgcolor: `${tealColor}20`,
                   color: tealColor,
@@ -323,35 +456,46 @@ const ConsultationDetailsPage = () => {
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ display: "flex", mb: 2 }}>
-                    <Avatar
-                      src={patientInfo.avatar}
+                    <SecureAvatar
+                      publicId={consultation?.patient.imagePublicId}
                       sx={{ width: 56, height: 56, mr: 2, bgcolor: tealColor }}
                     >
-                      {patientInfo.name.charAt(0)}
-                    </Avatar>
+                      {consultation?.patient.firstName.charAt(0)}
+                    </SecureAvatar>
                     <Box>
-                      <Typography variant="h6">{patientInfo.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {patientInfo.gender}, {patientInfo.age} years
+                      <Typography variant="h6">
+                        {consultation?.patient.firstName}{" "}
+                        {consultation?.patient.lastName}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        ID: {patientInfo.id}
+                        {/* {consultation?.patient.gender},{" "} */}
+                        {calculateAge(
+                          consultation?.patient.dateOfBirth ||
+                            new Date().toString()
+                        )}{" "}
+                        years
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Gender: {consultation?.patient.gender}
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ display: "flex" }}>
-                    <Avatar
-                      src={doctorInfo.avatar}
+                    <SecureAvatar
+                      publicId={consultation?.doctor.imagePublicId}
                       sx={{ width: 56, height: 56, mr: 2, bgcolor: tealColor }}
                     >
-                      {doctorInfo.name.charAt(3)}
-                    </Avatar>
+                      {consultation?.doctor.firstName.charAt(0)}
+                    </SecureAvatar>
                     <Box>
-                      <Typography variant="h6">{doctorInfo.name}</Typography>
+                      <Typography variant="h6">
+                        {consultation?.doctor.firstName}{" "}
+                        {consultation?.doctor.lastName}
+                      </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {doctorInfo.specialty}
+                        {consultation?.doctor.specialization}
                       </Typography>
                     </Box>
                   </Box>
@@ -388,7 +532,7 @@ const ConsultationDetailsPage = () => {
             <Box sx={sectionContentStyle}>
               {isEditing && userRole === "doctor" ? (
                 <Box>
-                  {editData.Symptoms.map((symptom, index) => (
+                  {editData?.symptoms.map((symptom, index) => (
                     <Box
                       key={index}
                       sx={{ display: "flex", alignItems: "center", mb: 1 }}
@@ -412,7 +556,7 @@ const ConsultationDetailsPage = () => {
                 </Box>
               ) : (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  {consultationData.Symptoms.map((symptom, index) => (
+                  {consultation?.symptoms.map((symptom, index) => (
                     <Chip
                       key={index}
                       label={symptom}
@@ -447,15 +591,15 @@ const ConsultationDetailsPage = () => {
                   fullWidth
                   multiline
                   rows={2}
-                  value={editData.Diagnosed}
+                  value={editData?.diagnosis}
                   onChange={(e) =>
-                    setEditData({ ...editData, Diagnosed: e.target.value })
+                    setEditData({ ...editData, diagnosis: e.target.value })
                   }
                   placeholder="Enter diagnosis..."
                 />
               ) : (
                 <Typography variant="body1">
-                  {consultationData.Diagnosed || "No diagnosis recorded"}
+                  {consultation?.diagnosis || "No diagnosis recorded"}
                 </Typography>
               )}
             </Box>
@@ -473,43 +617,15 @@ const ConsultationDetailsPage = () => {
                 </Typography>
               </Box>
               <Box sx={{ display: "flex", gap: 1 }}>
-                {userRole === "doctor" && !isEditing && (
+                {userRole === "doctor" && isEditing && (
                   <Button
-                    startIcon={<EditIcon />}
-                    onClick={handleEdit}
+                    startIcon={<AddIcon />}
+                    onClick={addPrescription}
                     size="small"
                     sx={{ color: tealColor }}
                   >
-                    Edit
+                    Add
                   </Button>
-                )}
-                {userRole === "doctor" && isEditing && (
-                  <>
-                    <Button
-                      startIcon={<AddIcon />}
-                      onClick={addPrescription}
-                      size="small"
-                      sx={{ color: tealColor }}
-                    >
-                      Add
-                    </Button>
-                    <Button
-                      startIcon={<SaveIcon />}
-                      onClick={handleSave}
-                      size="small"
-                      variant="contained"
-                      sx={{ bgcolor: tealColor }}
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      startIcon={<CancelIcon />}
-                      onClick={handleCancel}
-                      size="small"
-                    >
-                      Cancel
-                    </Button>
-                  </>
                 )}
               </Box>
             </Box>
@@ -518,7 +634,7 @@ const ConsultationDetailsPage = () => {
                 <TableHead>
                   <TableRow sx={{ backgroundColor: `${tealColor}08` }}>
                     <TableCell sx={{ fontWeight: 600 }}>Medication</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Dosage</TableCell>
+                    {/* <TableCell sx={{ fontWeight: 600 }}>Dosage</TableCell> */}
                     <TableCell sx={{ fontWeight: 600 }}>Frequency</TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>Reported By</TableCell>
                     {userRole === "patient" && (
@@ -531,25 +647,25 @@ const ConsultationDetailsPage = () => {
                 </TableHead>
                 <TableBody>
                   {(isEditing
-                    ? editData.Prescriptions
-                    : consultationData.Prescriptions
+                    ? (editData?.prescriptions ?? [])
+                    : (consultation?.prescriptions ?? [])
                   ).map((prescription, index) => (
                     <TableRow key={index}>
                       <TableCell>
                         {isEditing && userRole === "doctor" ? (
                           <TextField
                             size="small"
-                            value={prescription.Name}
+                            value={prescription.name}
                             onChange={(e) =>
-                              updatePrescription(index, "Name", e.target.value)
+                              updatePrescription(index, "name", e.target.value)
                             }
                             placeholder="Medication name"
                           />
                         ) : (
-                          prescription.Name
+                          prescription.name
                         )}
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         {isEditing && userRole === "doctor" ? (
                           <TextField
                             size="small"
@@ -566,37 +682,41 @@ const ConsultationDetailsPage = () => {
                         ) : (
                           prescription.Dosage
                         )}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         {isEditing && userRole === "doctor" ? (
                           <TextField
-                            size="small"
-                            value={prescription.Frequency}
+                            select
+                            label="Frequency"
+                            sx={{ width: "100%" }}
+                            value={prescription.frequency}
                             onChange={(e) =>
                               updatePrescription(
                                 index,
-                                "Frequency",
+                                "frequency",
                                 e.target.value
                               )
                             }
                             placeholder="Frequency"
-                          />
+                          >
+                            {frequencyOptions.map((option, idx) => (
+                              <MenuItem key={idx} value={option}>
+                                {option}
+                              </MenuItem>
+                            ))}
+                          </TextField>
                         ) : (
-                          prescription.Frequency
+                          prescription.frequency
                         )}
                       </TableCell>
-                      <TableCell>{prescription.ReportedBy}</TableCell>
+                      <TableCell>{prescription.reportedBy}</TableCell>
                       {userRole === "patient" && (
                         <TableCell>
                           <Button
                             size="small"
                             variant="contained"
                             sx={{ bgcolor: tealColor }}
-                            onClick={() =>
-                              alert(
-                                `Added ${prescription.Name} to your medications`
-                              )
-                            }
+                            onClick={() => handleAddMedication(prescription)}
                           >
                             Add to My Medication
                           </Button>
@@ -639,13 +759,13 @@ const ConsultationDetailsPage = () => {
                     <FormControlLabel
                       control={
                         <Switch
-                          checked={editData.FollowUp.Required}
+                          checked={editData?.followUp.required}
                           onChange={(e) =>
                             setEditData({
                               ...editData,
-                              FollowUp: {
-                                ...editData.FollowUp,
-                                Required: e.target.checked,
+                              followUp: {
+                                ...editData.followUp,
+                                required: e.target.checked,
                               },
                             })
                           }
@@ -663,18 +783,18 @@ const ConsultationDetailsPage = () => {
                       label="Follow-up Required"
                     />
                   </Grid>
-                  {editData.FollowUp.Required && (
+                  {editData?.followUp.required && (
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
                         label="Timeframe"
-                        value={editData.FollowUp.TimeFrame}
+                        value={editData.followUp.timeFrame}
                         onChange={(e) =>
                           setEditData({
                             ...editData,
-                            FollowUp: {
-                              ...editData.FollowUp,
-                              TimeFrame: e.target.value,
+                            followUp: {
+                              ...editData.followUp,
+                              timeFrame: e.target.value,
                             },
                           })
                         }
@@ -690,26 +810,26 @@ const ConsultationDetailsPage = () => {
                       Required
                     </Typography>
                     <Typography variant="body1">
-                      {consultationData.FollowUp.Required ? "Yes" : "No"}
+                      {consultation?.followUp.required ? "Yes" : "No"}
                     </Typography>
                   </Grid>
-                  {consultationData.FollowUp.Required && (
+                  {consultation?.followUp.required && (
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body2" color="text.secondary">
                         Timeframe
                       </Typography>
                       <Typography variant="body1">
-                        {consultationData.FollowUp.TimeFrame}
+                        {consultation?.followUp.timeFrame}
                       </Typography>
                     </Grid>
                   )}
-                  {consultationData.FollowUp.Required && (
+                  {/* {consultation?.followUp.required && (
                     <Grid item xs={12} sx={{ mt: 1 }}>
                       <Button variant="contained" sx={{ bgcolor: tealColor }}>
                         Schedule Follow-up Appointment
                       </Button>
                     </Grid>
-                  )}
+                  )} */}
                 </Grid>
               )}
             </Box>
@@ -733,15 +853,15 @@ const ConsultationDetailsPage = () => {
                   fullWidth
                   multiline
                   rows={4}
-                  value={editData.Notes}
+                  value={editData?.notes}
                   onChange={(e) =>
-                    setEditData({ ...editData, Notes: e.target.value })
+                    setEditData({ ...editData, notes: e.target.value })
                   }
                   placeholder="Enter clinical notes..."
                 />
               ) : (
                 <Typography variant="body1" sx={{ whiteSpace: "pre-line" }}>
-                  {consultationData.Notes || "No notes recorded"}
+                  {consultation?.notes || "No notes recorded"}
                 </Typography>
               )}
             </Box>
@@ -752,4 +872,4 @@ const ConsultationDetailsPage = () => {
   );
 };
 
-export default ConsultationDetailsPage;
+export default Consultation;

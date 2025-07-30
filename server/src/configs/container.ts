@@ -44,7 +44,8 @@ import {
   IApplicantService,
 } from "../interfaces/IApplicant";
 import { ApplicantModel } from "../models/Applicant";
-import IAppointment, {
+import {
+  IAppointment,
   IAppointmentController,
   IAppointmentService,
 } from "../interfaces/IAppointment";
@@ -176,6 +177,14 @@ import AIChatService from "../services/aiChat/AIChatService";
 import IAIChatController from "../controllers/aiChat/interface/IAIChatController";
 import AIChatController from "../controllers/aiChat/AIChatController";
 import { ISocketService, SocketService } from "../socket/socket";
+import { IConsultation } from "../interfaces/IConsultation";
+import { ConsultationModel } from "../models/Consultation";
+import { IConsultationRepository } from "../repositories/consultations/interface/IConsultationRepository";
+import ConsultationRepository from "../repositories/consultations/ConsultationRepository";
+import { IConsultationService } from "../services/consultations/interface/IConsultationService";
+import ConsultationService from "../services/consultations/ConsultationService";
+import { IConsultationController } from "../controllers/consultation/interface/IConsultationController";
+import ConsultationController from "../controllers/consultation/ConsultationController";
 
 export const container = new Container();
 
@@ -221,6 +230,9 @@ container
   .bind<Model<INotification>>(TYPES.NotificationModel)
   .toConstantValue(NotificationModel);
 container.bind<Model<IReview>>(TYPES.ReviewModel).toConstantValue(ReviewModel);
+container
+  .bind<Model<IConsultation>>(TYPES.ConsultationModel)
+  .toConstantValue(ConsultationModel);
 
 // repositories
 container
@@ -262,6 +274,9 @@ container
 container.bind<IWalletRepository>(TYPES.IWalletRepository).to(WalletRepository);
 container.bind<IReviewRepository>(TYPES.IReviewRepository).to(ReviewRepository);
 container.bind<IAIChatRepository>(TYPES.IAIChatRepository).to(AIChatRepository);
+container
+  .bind<IConsultationRepository>(TYPES.IConsultationRepository)
+  .to(ConsultationRepository);
 
 // services
 container.bind<IAdminAuthService>(TYPES.IAdminAuthService).to(AdminAuthService);
@@ -309,6 +324,9 @@ container.bind<IOtpService>(TYPES.IOtpService).to(OtpService);
 container.bind<ICacheService>(TYPES.ICacheService).to(CacheService);
 container.bind<IAIChatService>(TYPES.IAIChatService).to(AIChatService);
 container.bind<ISocketService>(TYPES.ISocketService).to(SocketService);
+container
+  .bind<IConsultationService>(TYPES.IConsultationService)
+  .to(ConsultationService);
 
 // controllers
 container
@@ -365,3 +383,6 @@ container
   .bind<IDashboardController>(TYPES.IDashboardController)
   .to(DashboardController);
 container.bind<IAIChatController>(TYPES.IAIChatController).to(AIChatController);
+container
+  .bind<IConsultationController>(TYPES.IConsultationController)
+  .to(ConsultationController);

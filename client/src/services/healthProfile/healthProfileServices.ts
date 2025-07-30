@@ -1,3 +1,4 @@
+import { IPrescription } from "../../types/consultations/consultation.types";
 import {
   IBehaviouralHealth,
   IHealthHistory,
@@ -46,6 +47,23 @@ class HealthProfileService {
           `Failed to update health history: ${error.message}`,
           error
         );
+        throw new Error(error.message);
+      }
+
+      console.error(`Unknown error occurred`, error);
+      throw new Error("An unknown error occurred");
+    }
+  }
+
+  async addMedication(
+    patientId: string,
+    medication: IPrescription
+  ): Promise<void> {
+    try {
+      await api.patch(`/medications/${patientId}`, { medication });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Failed to add medication: ${error.message}`, error);
         throw new Error(error.message);
       }
 

@@ -26,6 +26,12 @@ import appointmentService from "../../../services/appointment/appointmentService
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/app/store";
 import dayjs from "dayjs";
+import ConsultationModal from "./ConsultationModal";
+import {
+  IConsultation,
+  IConsultationPopulated,
+} from "../../../types/consultations/consultation.types";
+import consultationService from "../../../services/consultations/consultationService";
 
 const VideoCall = () => {
   const localVideo = useRef<HTMLVideoElement>(null);
@@ -45,9 +51,13 @@ const VideoCall = () => {
   // const [showChat, setShowChat] = useState<boolean>(false);
 
   const [isReviewModalOpen, setReviewModalOpen] = useState<boolean>(false);
+  const [isConultationModalOpen, setConsultationModalOpen] =
+    useState<boolean>(false);
   const [appointment, setAppointment] = useState<IAppointmentPopulated | null>(
     null
   );
+  const [consultation, setConsultation] =
+    useState<IConsultationPopulated | null>(null);
 
   const navigate = useNavigate();
   const { socket } = useSocket();
@@ -83,6 +93,20 @@ const VideoCall = () => {
       }
     };
     fetchAppointment();
+  }, [roomId]);
+
+  useEffect(() => {
+    if (!roomId) return;
+    const fetchConsultation = async () => {
+      try {
+        const consultation =
+          await consultationService.getConsultationByAppointmentId(roomId);
+        setConsultation(consultation);
+      } catch (error) {
+        console.log("error fetching consultation", error);
+      }
+    };
+    fetchConsultation();
   }, [roomId]);
 
   const toggleMute = () => {
@@ -150,14 +174,10 @@ const VideoCall = () => {
       await appointmentService.updateAppointmentStatus(appointment?._id);
     }
 
-    console.log(timePassed, endTime);
-
     if (appointment && userRole && userRole === "patient") {
-      if (timePassed < 25 && timePassed > 0) {
-        setReviewModalOpen(true);
-      } else {
-        navigate(-1);
-      }
+      setReviewModalOpen(true);
+    } else if (appointment && userRole && userRole === "doctor") {
+      setConsultationModalOpen(true);
     } else {
       navigate(-1);
     }
@@ -440,9 +460,31 @@ const VideoCall = () => {
     }
   };
 
-  const handleModalClose = () => {
+  const handleReviewModalClose = () => {
     setReviewModalOpen(false);
     navigate(-1);
+  };
+
+  const handleConsultaionModalClose = () => {
+    setConsultationModalOpen(false);
+    navigate(-1);
+  };
+
+  const handleConsultationSubmit = async (consultationData: IConsultation) => {
+    if (!consultation) return;
+    try {
+      await consultationService.updateConsultation(
+        consultation.id,
+        consultationData
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
+    } finally {
+      setConsultationModalOpen(false);
+      navigate(-1);
+    }
   };
 
   return (
@@ -676,9 +718,18 @@ const VideoCall = () => {
       )} */}
       <FeedbackModal
         reviewModalOpen={isReviewModalOpen}
-        onclose={handleModalClose}
+        onclose={handleReviewModalClose}
         onSubmit={handleReviewSubmit}
       />
+
+      {consultation ? (
+        <ConsultationModal
+          consultation={consultation}
+          open={isConultationModalOpen}
+          onClose={handleConsultaionModalClose}
+          onSave={handleConsultationSubmit}
+        />
+      ) : null}
     </Box>
   );
 };

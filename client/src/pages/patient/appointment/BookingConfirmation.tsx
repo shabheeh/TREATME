@@ -68,7 +68,6 @@ const BookingConfirmation = () => {
 
   useEffect(() => {
     const handlePopState = () => {
-      console.log("Popstate triggered at:", new Date().toISOString());
       dispatch(resetAppointment());
       navigate("/visitnow");
     };
@@ -153,8 +152,11 @@ const BookingConfirmation = () => {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <TimeIcon sx={{ mr: 2, color: "primary.main" }} />
                 <Typography>
-                  {appointment?.date && formatTime(appointment?.date)} (
-                  {appointment.duration || "45 mins"})
+                  {appointment?.date && formatTime(appointment.date)} (
+                  {appointment?.duration
+                    ? `${appointment.duration} mins`
+                    : "45 mins"}
+                  )
                 </Typography>
               </Box>
             </Box>
