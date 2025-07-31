@@ -67,7 +67,7 @@ class NotificationService implements INotificationService {
     try {
       const result = await this.notificationRepo.markAllAsRead(userId);
       if (!result) {
-        throw new AppError("Failed to mark notification as read");
+        throw new AppError("All notifications are marked to read");
       }
       return result;
     } catch (error) {
