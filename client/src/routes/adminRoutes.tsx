@@ -15,6 +15,7 @@ import ApplicantDetails from "../components/admin/ApplicantDetails";
 import Messages from "../components/basics/messages/Messages";
 import DoctorProfile from "../components/basics/DoctorView";
 import EditDoctor from "../components/admin/EditDoctor";
+import RevenueReport from "../pages/admin/RevenueReport";
 
 export const adminRoutes = [
   <Route
@@ -44,6 +45,7 @@ export const adminRoutes = [
     <Route path="add-doctor" element={<AddDoctor />} />
     <Route path="specializations" element={<Specializations />} />
     <Route path="specializations/add" element={<AddSpecialization />} />
+    <Route path="revenue" element={<RevenueReport />} />
     <Route
       path="specializations/edit/:specializationId"
       element={<EditSpecialization />}

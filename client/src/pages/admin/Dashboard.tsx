@@ -160,7 +160,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboard();
-  }, []);
+  }, [filter]);
 
   const fetchDashboard = async () => {
     try {

@@ -13,7 +13,7 @@ interface IAppointmentRepository extends IBaseRepository<IAppointment> {
   getAppointmentsByPatientId(patientId: string): Promise<IAppointment[]>;
   getAppointmentsByDoctorId(doctorId: string): Promise<IAppointment[]>;
   getAppointments(): Promise<IAppointmentPopulated[]>;
-  getTodaysAppointments(): Promise<IAppointmentPopulated[]>;
+  getTodaysAppointments(doctorId?: string): Promise<IAppointmentPopulated[]>;
   getAppointmentByPaymentId(id: string): Promise<IAppointmentPopulated>;
   getAppointmentByPatientAndDoctorId(
     patientId: string,
@@ -25,18 +25,11 @@ interface IAppointmentRepository extends IBaseRepository<IAppointment> {
     limit: number,
     searchQuery: string
   ): Promise<{ patients: IPatientForDoctor[]; totalPatients: number }>;
-  getMonthlyRevenue(): Promise<RevenueData>;
-  getWeeklyRevenue(): Promise<RevenueData>;
-  getYearlyRevenue(): Promise<RevenueData>;
-  getWeeklyAppointments(): Promise<{ day: string; count: number }[]>;
-  getTodaysAppointmentByDoctor(
-    doctorId: string
-  ): Promise<IAppointmentPopulated[]>;
-  getMonthlyRevenueByDoctor(doctorId: string): Promise<RevenueData>;
-  getYearlyRevenueByDoctor(doctorId: string): Promise<RevenueData>;
-  getWeeklyRevenueByDoctor(doctorId: string): Promise<RevenueData>;
-  getWeeklyAppointmentsByDoctor(
-    doctorId: string
+  getMonthlyRevenue(doctorId?: string): Promise<RevenueData>;
+  getWeeklyRevenue(doctorId?: string): Promise<RevenueData>;
+  getYearlyRevenue(doctorId?: string): Promise<RevenueData>;
+  getWeeklyAppointments(
+    doctorId?: string
   ): Promise<{ day: string; count: number }[]>;
 }
 

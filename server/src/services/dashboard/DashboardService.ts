@@ -137,20 +137,16 @@ class DashboardService implements IDashboardService {
       let revenuePromise;
       switch (filter) {
         case "monthly":
-          revenuePromise =
-            this.appointmentRepo.getMonthlyRevenueByDoctor(doctorId);
+          revenuePromise = this.appointmentRepo.getMonthlyRevenue(doctorId);
           break;
         case "weekly":
-          revenuePromise =
-            this.appointmentRepo.getWeeklyRevenueByDoctor(doctorId);
+          revenuePromise = this.appointmentRepo.getWeeklyRevenue(doctorId);
           break;
         case "yearly":
-          revenuePromise =
-            this.appointmentRepo.getYearlyRevenueByDoctor(doctorId);
+          revenuePromise = this.appointmentRepo.getYearlyRevenue(doctorId);
           break;
         default:
-          revenuePromise =
-            this.appointmentRepo.getMonthlyRevenueByDoctor(doctorId);
+          revenuePromise = this.appointmentRepo.getMonthlyRevenue(doctorId);
       }
 
       const [
@@ -161,8 +157,8 @@ class DashboardService implements IDashboardService {
         { patients, totalPatients },
       ] = await Promise.all([
         revenuePromise,
-        this.appointmentRepo.getTodaysAppointmentByDoctor(doctorId),
-        this.appointmentRepo.getWeeklyAppointmentsByDoctor(doctorId),
+        this.appointmentRepo.getTodaysAppointments(doctorId),
+        this.appointmentRepo.getWeeklyAppointments(doctorId),
         this.reviewRepo.getAverageRatingByDoctorId(doctorId),
         this.appointmentRepo.getPatientsByDoctor(doctorId, 1, 5, ""),
       ]);
