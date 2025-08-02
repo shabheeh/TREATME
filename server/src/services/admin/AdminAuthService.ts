@@ -11,6 +11,7 @@ import {
 } from "../../utils/errors";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
+import { HttpStatusCode } from "../../constants/httpStatusCodes";
 
 @injectable()
 class AdminAuthService implements IAdminAuthService {
@@ -36,7 +37,11 @@ class AdminAuthService implements IAdminAuthService {
       const isPasswordMatch = await bcrpyt.compare(password, admin.password);
 
       if (!isPasswordMatch) {
-        throw new AuthError(AuthErrorCode.INVALID_CREDENTIALS);
+        throw new AuthError(
+          AuthErrorCode.INVALID_CREDENTIALS,
+          undefined,
+          HttpStatusCode.BAD_REQUEST
+        );
       }
 
       const payload: ITokenPayload = {

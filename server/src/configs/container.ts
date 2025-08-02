@@ -185,6 +185,12 @@ import { IConsultationService } from "../services/consultations/interface/IConsu
 import ConsultationService from "../services/consultations/ConsultationService";
 import { IConsultationController } from "../controllers/consultation/interface/IConsultationController";
 import ConsultationController from "../controllers/consultation/ConsultationController";
+import { IRevenueReportRepository } from "../repositories/revenueReport/interfaces/IRevenueReportRepository";
+import RevenueReportRepository from "../repositories/revenueReport/RevenueReportRepository";
+import { IRevenueReportService } from "../services/revenueReport/interfaces/IRevenueReportService ";
+import RevenueReportService from "../services/revenueReport/RevenueReportService";
+import { IRevenueReportController } from "../controllers/revenueController/interfaces/IRevenueReportController";
+import RevenueReportController from "../controllers/revenueController/RevenueReportController";
 
 export const container = new Container();
 
@@ -277,6 +283,9 @@ container.bind<IAIChatRepository>(TYPES.IAIChatRepository).to(AIChatRepository);
 container
   .bind<IConsultationRepository>(TYPES.IConsultationRepository)
   .to(ConsultationRepository);
+container
+  .bind<IRevenueReportRepository>(TYPES.IRevenueReportRepository)
+  .to(RevenueReportRepository);
 
 // services
 container.bind<IAdminAuthService>(TYPES.IAdminAuthService).to(AdminAuthService);
@@ -327,6 +336,9 @@ container.bind<ISocketService>(TYPES.ISocketService).to(SocketService);
 container
   .bind<IConsultationService>(TYPES.IConsultationService)
   .to(ConsultationService);
+container
+  .bind<IRevenueReportService>(TYPES.IRevenueReportService)
+  .to(RevenueReportService);
 
 // controllers
 container
@@ -386,3 +398,6 @@ container.bind<IAIChatController>(TYPES.IAIChatController).to(AIChatController);
 container
   .bind<IConsultationController>(TYPES.IConsultationController)
   .to(ConsultationController);
+container
+  .bind<IRevenueReportController>(TYPES.IRevenueReportController)
+  .to(RevenueReportController);

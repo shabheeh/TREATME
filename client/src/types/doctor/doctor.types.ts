@@ -102,9 +102,9 @@ export interface getDoctorsWithSchedulesResult {
 }
 
 export interface getDoctorsQuery {
-  specialization: string;
-  gender: "male" | "female" | "any" | "";
-  search: string;
+  specialization?: string;
+  gender?: "male" | "female" | "any" | "";
+  search?: string;
   page: number;
   limit: number;
 }

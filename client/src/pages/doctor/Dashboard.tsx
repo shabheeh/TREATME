@@ -27,7 +27,6 @@ import {
   Healing as ActivityIcon,
   AccessTime as ClockIcon,
   Money as MoneyIcon,
-  // TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
 import dayjs from "dayjs";
 import dashboardService from "../../services/dashboard/DashboardService";
