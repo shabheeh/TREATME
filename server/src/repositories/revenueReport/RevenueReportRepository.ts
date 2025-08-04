@@ -5,6 +5,7 @@ import {
   IRevenueReportRepository,
   RevenueReportData,
   RevenueSummary,
+  TimeFilter,
 } from "./interfaces/IRevenueReportRepository";
 import { Model, PipelineStage, Types } from "mongoose";
 import { IAppointment } from "src/interfaces/IAppointment";
@@ -23,7 +24,7 @@ class RevenueReportRepository implements IRevenueReportRepository {
   async getRevenueReport(
     startDate: Date,
     endDate: Date,
-    timeFilter: "weekly" | "monthly" | "yearly" | "custom",
+    timeFilter: TimeFilter,
     page: number = 1,
     doctorId?: string
   ): Promise<RevenueReportData> {
@@ -186,7 +187,7 @@ class RevenueReportRepository implements IRevenueReportRepository {
   async getAllDoctorsRevenueSummary(
     startDate: Date,
     endDate: Date,
-    timeFilter: "weekly" | "monthly" | "yearly" | "custom" = "monthly",
+    timeFilter: TimeFilter = "monthly",
     page = 1
   ): Promise<AllDoctorsRevenueResponse> {
     try {

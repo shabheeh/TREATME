@@ -32,6 +32,7 @@ import {
   getDoctorsResult,
 } from "../../types/doctor/doctor.types";
 import Loading from "../../components/basics/ui/Loading";
+import { useNavigate } from "react-router-dom";
 
 const Doctors: React.FC = () => {
   const [data, setData] = useState<getDoctorsResult | null>(null);
@@ -50,6 +51,7 @@ const Doctors: React.FC = () => {
     name: "",
   });
   const [specializations, setSpecializations] = useState<ISpecialization[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -169,11 +171,10 @@ const Doctors: React.FC = () => {
           </Typography>
 
           <Button
+            onClick={() => navigate("/admin/add-doctor")}
             variant="contained"
             color="primary"
             startIcon={<AddIcon />}
-            component="a"
-            href="/admin/add-doctor"
             sx={{
               textTransform: "none",
               textDecoration: "none",

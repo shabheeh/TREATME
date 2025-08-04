@@ -191,6 +191,10 @@ import { IRevenueReportService } from "../services/revenueReport/interfaces/IRev
 import RevenueReportService from "../services/revenueReport/RevenueReportService";
 import { IRevenueReportController } from "../controllers/revenueController/interfaces/IRevenueReportController";
 import RevenueReportController from "../controllers/revenueController/RevenueReportController";
+import { IHTMLTemplateService } from "../services/revenueReport/interfaces/IHTMLTemplateService";
+import HTMLTemplateService from "../services/revenueReport/HTMLTemplateService";
+import { IPDFReportService } from "../services/revenueReport/interfaces/IPDFReportService";
+import PDFReportService from "../services/revenueReport/PDFReportService ";
 
 export const container = new Container();
 
@@ -339,6 +343,10 @@ container
 container
   .bind<IRevenueReportService>(TYPES.IRevenueReportService)
   .to(RevenueReportService);
+container
+  .bind<IHTMLTemplateService>(TYPES.IHTMLTemplateService)
+  .to(HTMLTemplateService);
+container.bind<IPDFReportService>(TYPES.IPDFReportService).to(PDFReportService);
 
 // controllers
 container

@@ -36,6 +36,7 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16",
+    "puppeteer": "^24.15.0",
     "redis": "^5.5.6",
     "reflect-metadata": "^0.2.2",
     "socket.io": "^4.8.1",

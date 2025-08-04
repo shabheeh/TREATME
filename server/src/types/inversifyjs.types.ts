@@ -68,6 +68,8 @@ export const TYPES = {
   IAIChatService: Symbol.for("IAIChatService"),
   IConsultationService: Symbol.for("IConsultationService"),
   IRevenueReportService: Symbol.for("IRevenueReportService"),
+  IHTMLTemplateService: Symbol.for("IHTMLTemplateService"),
+  IPDFReportService: Symbol.for("IPDFReportService"),
 
   // controllers
   IPatientAuthController: Symbol.for("IPatientAuthController"),

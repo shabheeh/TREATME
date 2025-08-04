@@ -20,6 +20,12 @@ export interface RevenueSummary {
   averageFeePerConsultation: number;
 }
 
+export interface Pagination {
+  page: number;
+  count: number;
+  totalPages: number;
+}
+
 export interface RevenueReportData {
   summary: RevenueSummary;
   transactions: DetailedRevenueData[];
@@ -27,11 +33,7 @@ export interface RevenueReportData {
     startDate: Date;
     endDate: Date;
   };
-  pagination: {
-    page: number;
-    count: number;
-    totalPages: number;
-  };
+  pagination: Pagination;
 }
 
 export interface DoctorRevenueSummary {
@@ -46,11 +48,7 @@ export interface DoctorRevenueSummary {
 export interface AllDoctorsRevenueResponse {
   doctors: DoctorRevenueSummary[];
   totalSummary: RevenueSummary;
-  pagination: {
-    page: number;
-    count: number;
-    totalPages: number;
-  };
+  pagination: Pagination;
 }
 
 export interface DailyRevenueBreakdown {
@@ -76,11 +74,14 @@ export interface DoctorAggregationResult extends DoctorRevenueSummary {
   totalCommission: number;
 }
 
+export type ReportType = "admin" | "doctor";
+export type TimeFilter = "weekly" | "monthly" | "yearly" | "custom";
+
 export interface IRevenueReportRepository {
   getRevenueReport(
     startDate: Date,
     endDate: Date,
-    timeFilter: "weekly" | "monthly" | "yearly" | "custom",
+    timeFilter: TimeFilter,
     page: number,
     doctorId?: string
   ): Promise<RevenueReportData>;
@@ -88,7 +89,7 @@ export interface IRevenueReportRepository {
   getAllDoctorsRevenueSummary(
     startDate: Date,
     endDate: Date,
-    timeFilter: "weekly" | "monthly" | "yearly" | "custom",
+    timeFilter: TimeFilter,
     page: number
   ): Promise<AllDoctorsRevenueResponse>;
 

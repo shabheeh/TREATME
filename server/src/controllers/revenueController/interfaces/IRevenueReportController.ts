@@ -11,4 +11,14 @@ export interface IRevenueReportController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
+  generateRevenueReportPDF(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
+  generateDoctorsSummaryPDF(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
 }

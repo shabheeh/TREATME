@@ -172,12 +172,13 @@ const VideoCall = () => {
 
     if (timePassed < 25 && timePassed > -5) {
       await appointmentService.updateAppointmentStatus(appointment?._id);
-    }
-
-    if (appointment && userRole && userRole === "patient") {
-      setReviewModalOpen(true);
-    } else if (appointment && userRole && userRole === "doctor") {
-      setConsultationModalOpen(true);
+      if (appointment && userRole && userRole === "patient") {
+        setReviewModalOpen(true);
+      } else if (appointment && userRole && userRole === "doctor") {
+        setConsultationModalOpen(true);
+      } else {
+        navigate(-1);
+      }
     } else {
       navigate(-1);
     }

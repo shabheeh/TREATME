@@ -64,4 +64,10 @@ router.get(
   revenueReportController.getAllDoctorsRevenueSummary
 );
 
+router.get("/pdf/reports", revenueReportController.generateRevenueReportPDF);
+router.get(
+  "/pdf/reports/doctors",
+  revenueReportController.generateDoctorsSummaryPDF
+);
+
 export default router;

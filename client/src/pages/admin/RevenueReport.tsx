@@ -1,4 +1,4 @@
-import React, { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useRef, ChangeEvent, useEffect } from "react";
 import {
   Box,
   Paper,
@@ -37,6 +37,9 @@ import {
 } from "../../types/revenueReport/revenueReport.types";
 import { useGetDoctors } from "../../hooks/useGetDoctors";
 import { IDoctor } from "../../types/doctor/doctor.types";
+import { useRevenueReportPdf } from "../../hooks/useRevenueReportPdf ";
+import { useDoctorsSummaryPdf } from "../../hooks/useDoctorsSummaryPdf ";
+import { toast } from "sonner";
 
 const RevenueReport = () => {
   const printRef = useRef<HTMLDivElement>(null);
@@ -75,6 +78,46 @@ const RevenueReport = () => {
     endDate,
     page,
   });
+
+  const {
+    downloadPdf: downloadRevenuePdf,
+    error: revenuePDFError,
+    clearError: clearRevenueError,
+  } = useRevenueReportPdf();
+
+  const {
+    downloadPdf: downloadDoctorsPdf,
+    error: doctorsPDFError,
+    clearError: clearDoctorsError,
+  } = useDoctorsSummaryPdf();
+
+  useEffect(() => {
+    if (revenuePDFError) {
+      toast.error(doctorsError);
+    }
+    if (revenueError) {
+      toast.error(revenueError);
+    }
+  }, [revenuePDFError, doctorsPDFError]);
+
+  const handleExportPdf = async () => {
+    clearRevenueError();
+    clearDoctorsError();
+
+    const query = {
+      startDate: startDate ? startDate : undefined,
+      endDate: endDate ? endDate : undefined,
+      timeFilter,
+      page,
+      doctorId: doctorId ? doctorId : undefined,
+    };
+
+    if (reportType === "all") {
+      await downloadDoctorsPdf(query);
+    } else {
+      await downloadRevenuePdf(query);
+    }
+  };
 
   const { doctors } = useGetDoctors({ page: 1, limit: 20 });
 
@@ -218,7 +261,7 @@ const RevenueReport = () => {
             md={6}
             sx={{ textAlign: { xs: "left", md: "right" } }}
           >
-            <Button
+            {/* <Button
               variant="contained"
               startIcon={<PrintIcon />}
               onClick={handlePrint}
@@ -230,11 +273,12 @@ const RevenueReport = () => {
               }}
             >
               Print Report
-            </Button>
+            </Button> */}
             <Button
               variant="outlined"
               startIcon={<PdfIcon />}
               disabled={loading}
+              onClick={handleExportPdf}
               sx={{
                 borderColor: "#0f766e",
                 color: "#0f766e",
@@ -575,7 +619,7 @@ const RevenueReport = () => {
                             align="right"
                             sx={{ fontWeight: "medium" }}
                           >
-                            {appointment.consultationFee}
+                            ₹{appointment.consultationFee}
                           </TableCell>
                           <TableCell
                             align="right"
