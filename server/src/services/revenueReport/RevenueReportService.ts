@@ -35,6 +35,7 @@ class RevenueReportService implements IRevenueReportService {
       endDate,
       timeFilter,
       page,
+      false,
       doctorId
     );
   }
@@ -49,7 +50,8 @@ class RevenueReportService implements IRevenueReportService {
       startDate,
       endDate,
       timeFilter,
-      page
+      page,
+      false
     );
   }
 
@@ -60,11 +62,12 @@ class RevenueReportService implements IRevenueReportService {
     page: number,
     doctorId?: string
   ): Promise<Buffer> {
-    const revenueData = await this.getRevenueReport(
+    const revenueData = await this.revenueReportRepo.getRevenueReport(
       startDate,
       endDate,
       timeFilter,
       page,
+      true,
       doctorId
     );
     const reportType = doctorId ? "doctor" : "admin";
@@ -86,7 +89,8 @@ class RevenueReportService implements IRevenueReportService {
         startDate,
         endDate,
         timeFilter,
-        page
+        page,
+        true
       );
     return this.pdfReportService.generateDoctorsSummaryPDF(revenueSummary);
   }

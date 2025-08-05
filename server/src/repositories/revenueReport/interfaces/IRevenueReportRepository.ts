@@ -83,6 +83,7 @@ export interface IRevenueReportRepository {
     endDate: Date,
     timeFilter: TimeFilter,
     page: number,
+    getAllData: boolean,
     doctorId?: string
   ): Promise<RevenueReportData>;
 
@@ -90,7 +91,8 @@ export interface IRevenueReportRepository {
     startDate: Date,
     endDate: Date,
     timeFilter: TimeFilter,
-    page: number
+    page: number,
+    getAllData: boolean
   ): Promise<AllDoctorsRevenueResponse>;
 
   // getDailyRevenueBreakdown(

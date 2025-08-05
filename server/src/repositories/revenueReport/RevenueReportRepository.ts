@@ -26,12 +26,13 @@ class RevenueReportRepository implements IRevenueReportRepository {
     endDate: Date,
     timeFilter: TimeFilter,
     page: number = 1,
+    getAllData: boolean = false,
     doctorId?: string
   ): Promise<RevenueReportData> {
     try {
       const dateRange = getDateRange(timeFilter, startDate, endDate);
-      const limit = 5;
-      const skip = (page - 1) * limit;
+      const limit = getAllData ? 0 : 5;
+      const skip = getAllData ? 0 : (page - 1) * limit;
 
       const matchStage: Record<string, unknown> = {
         status: "completed",
@@ -136,13 +137,11 @@ class RevenueReportRepository implements IRevenueReportRepository {
         {
           $sort: { date: -1 },
         },
-        {
-          $skip: skip,
-        },
-        {
-          $limit: limit,
-        },
       ];
+
+      if (!getAllData) {
+        transactionsPipeline.push({ $skip: skip }, { $limit: limit });
+      }
 
       const totalCountPipeline = [
         {
@@ -153,12 +152,21 @@ class RevenueReportRepository implements IRevenueReportRepository {
         },
       ];
 
-      const [summaryResult, transactions, countResult] = await Promise.all([
-        this.model.aggregate(totalSummaryPipeline),
-        this.model.aggregate(transactionsPipeline),
-        this.model.aggregate(totalCountPipeline),
-      ]);
+      let summaryResult, transactions, countResult;
 
+      if (getAllData) {
+        [summaryResult, transactions] = await Promise.all([
+          this.model.aggregate(totalSummaryPipeline),
+          this.model.aggregate(transactionsPipeline),
+        ]);
+        countResult = [{ total: transactions.length }];
+      } else {
+        [summaryResult, transactions, countResult] = await Promise.all([
+          this.model.aggregate(totalSummaryPipeline),
+          this.model.aggregate(transactionsPipeline),
+          this.model.aggregate(totalCountPipeline),
+        ]);
+      }
       const summary: RevenueSummary = summaryResult[0] || {
         totalFees: 0,
         totalCommission: 0,
@@ -168,15 +176,16 @@ class RevenueReportRepository implements IRevenueReportRepository {
       };
 
       const totalCount = countResult[0]?.total || 0;
+      const finalLimit = getAllData ? totalCount : limit;
 
       return {
         summary,
         transactions,
         dateRange,
         pagination: {
-          page,
+          page: getAllData ? 1 : page,
           count: totalCount,
-          totalPages: Math.ceil(totalCount / limit),
+          totalPages: getAllData ? 1 : Math.ceil(totalCount / finalLimit),
         },
       };
     } catch (error) {
@@ -188,12 +197,13 @@ class RevenueReportRepository implements IRevenueReportRepository {
     startDate: Date,
     endDate: Date,
     timeFilter: TimeFilter = "monthly",
-    page = 1
+    page = 1,
+    getAllData: boolean = false
   ): Promise<AllDoctorsRevenueResponse> {
     try {
       const dateRange = getDateRange(timeFilter, startDate, endDate);
-      const limit = 10;
-      const skip = (page - 1) * limit;
+      const limit = getAllData ? 0 : 10;
+      const skip = getAllData ? 0 : (page - 1) * limit;
 
       const matchStage = {
         status: "completed",
@@ -291,9 +301,11 @@ class RevenueReportRepository implements IRevenueReportRepository {
           },
         },
         { $sort: { totalEarnings: -1 } },
-        { $skip: skip },
-        { $limit: limit },
       ];
+
+      if (!getAllData) {
+        doctorsPipeline.push({ $skip: skip }, { $limit: limit });
+      }
 
       const doctorCountPipeline: PipelineStage[] = [
         {
@@ -309,12 +321,22 @@ class RevenueReportRepository implements IRevenueReportRepository {
         },
       ];
 
-      const [totalSummaryResult, doctorSummaries, doctorCountResult] =
-        await Promise.all([
+      let totalSummaryResult, doctorSummaries, doctorCountResult;
+
+      if (getAllData) {
+        [totalSummaryResult, doctorSummaries] = await Promise.all([
           this.model.aggregate(totalSummaryPipeline),
           this.model.aggregate(doctorsPipeline),
-          this.model.aggregate(doctorCountPipeline),
         ]);
+        doctorCountResult = [{ total: doctorSummaries.length }];
+      } else {
+        [totalSummaryResult, doctorSummaries, doctorCountResult] =
+          await Promise.all([
+            this.model.aggregate(totalSummaryPipeline),
+            this.model.aggregate(doctorsPipeline),
+            this.model.aggregate(doctorCountPipeline),
+          ]);
+      }
 
       const totalSummary: RevenueSummary = totalSummaryResult[0] || {
         totalFees: 0,
@@ -325,6 +347,7 @@ class RevenueReportRepository implements IRevenueReportRepository {
       };
 
       const totalDoctorCount = doctorCountResult[0]?.total || 0;
+      const finalLimit = getAllData ? totalDoctorCount : limit;
 
       const doctors: DoctorRevenueSummary[] = doctorSummaries.map((doc) => ({
         doctorId: doc.doctorId,
@@ -339,9 +362,9 @@ class RevenueReportRepository implements IRevenueReportRepository {
         doctors,
         totalSummary,
         pagination: {
-          page,
+          page: getAllData ? 1 : page,
           count: totalDoctorCount,
-          totalPages: Math.ceil(totalDoctorCount / limit),
+          totalPages: getAllData ? 1 : Math.ceil(totalDoctorCount / finalLimit),
         },
       };
     } catch (error) {

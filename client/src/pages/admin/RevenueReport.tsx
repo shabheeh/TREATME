@@ -24,10 +24,7 @@ import {
   Alert,
   Pagination,
 } from "@mui/material";
-import {
-  Print as PrintIcon,
-  PictureAsPdf as PdfIcon,
-} from "@mui/icons-material";
+import { PictureAsPdf as PdfIcon } from "@mui/icons-material";
 
 import useRevenueReportData from "../../hooks/useRevenueReport";
 import useDoctorsRevenueSummary from "../../hooks/useDoctorsRevenueSummary";
@@ -163,9 +160,9 @@ const RevenueReport = () => {
     setPage(newPage);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  // const handlePrint = () => {
+  //   window.print();
+  // };
 
   const getReportTitle = () => {
     if (reportType === "admin") {

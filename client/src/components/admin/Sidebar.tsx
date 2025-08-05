@@ -17,6 +17,7 @@ import {
   MedicalServices,
   PersonSearch,
   Logout,
+  Assessment,
 } from "@mui/icons-material";
 
 import { FaUserDoctor } from "react-icons/fa6";
@@ -43,7 +44,7 @@ const menuItems = [
   },
   {
     text: "Revenue Report",
-    icon: <PersonSearch />,
+    icon: <Assessment />,
     path: "/admin/revenue",
   },
 ];
