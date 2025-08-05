@@ -66,20 +66,14 @@ class ScheduleService implements IScheduleService {
   }
 
   async addTimeSlot(request: AddTimeSlotRequest): Promise<ISchedule> {
-    const {
-      doctorId,
-      date,
-      startTime,
-      timeZone,
-      durationInMinutes = 30,
-    } = request;
+    const { doctorId, date, startTime, duration = 30 } = request;
 
     if (!doctorId || !date || !startTime) {
       throw new AppError("Doctor ID, date, and start time are required");
     }
 
-    if (durationInMinutes <= 0 || durationInMinutes > 480) {
-      throw new AppError("Duration must be between 1 and 480 minutes");
+    if (duration <= 0 || duration > 120) {
+      throw new AppError("Duration must be between 1 and 120 minutes");
     }
 
     if (!dayjs(date).isValid()) {
@@ -94,8 +88,7 @@ class ScheduleService implements IScheduleService {
       doctorId,
       date,
       startTime,
-      durationInMinutes,
-      timeZone
+      duration
     );
   }
 

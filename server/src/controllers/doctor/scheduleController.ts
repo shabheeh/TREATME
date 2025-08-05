@@ -71,14 +71,13 @@ class ScheduleController implements IScheduleController {
   ): Promise<void> => {
     try {
       const { doctorId } = req.params;
-      const { date, startTime, durationInMinutes, timeZone } = req.body;
+      const { date, startTime, duration } = req.body;
 
       const updatedSchedule = await this.scheduleService.addTimeSlot({
         doctorId,
         date,
         startTime,
-        timeZone,
-        durationInMinutes,
+        duration,
       });
 
       res.status(HttpStatusCode.OK).json(updatedSchedule);
@@ -96,8 +95,6 @@ class ScheduleController implements IScheduleController {
     try {
       const { doctorId } = req.params;
       const { date, slotId } = req.query as { date: string; slotId: string };
-
-      console.log(doctorId, date, slotId, "dfasd");
 
       const updatedSchedule = await this.scheduleService.removeTimeSlot({
         doctorId,
@@ -163,7 +160,7 @@ class ScheduleController implements IScheduleController {
         updates,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         success: true,
         data: updatedSchedule,
         message: "Bulk update completed successfully",
@@ -184,7 +181,7 @@ class ScheduleController implements IScheduleController {
 
       const summary = await this.scheduleService.getScheduleSummary(doctorId);
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         success: true,
         data: summary,
         message: "Schedule summary retrieved successfully",

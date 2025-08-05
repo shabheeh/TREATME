@@ -25,8 +25,7 @@ export interface AddTimeSlotRequest {
   doctorId: string;
   date: string;
   startTime: string;
-  timeZone: string;
-  durationInMinutes?: number;
+  duration: number;
 }
 
 export interface RemoveTimeSlotRequest {
