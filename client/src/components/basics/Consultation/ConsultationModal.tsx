@@ -102,7 +102,6 @@ const ConsultationModal: React.FC<CreateConsultationModalProps> = ({
       }
     });
 
-    // Check follow-up timeframe if required
     // if (
     //   consultationData.followUp.required &&
     //   !consultationData.followUp.timeFrame.trim()

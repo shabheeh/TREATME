@@ -1,3 +1,4 @@
+import { buildGetDoctorsQuery } from "../../helpers/buildGetDoctorsQuery.";
 import {
   getDoctorsQuery,
   getDoctorsResult,
@@ -65,17 +66,10 @@ class DoctorService {
     }
   }
 
-  async getDoctors({
-    specialization,
-    gender,
-    search,
-    page,
-    limit,
-  }: getDoctorsQuery): Promise<getDoctorsResult> {
+  async getDoctors(query: getDoctorsQuery): Promise<getDoctorsResult> {
     try {
-      const response = await api.doctor.get(
-        `/doctors?spec=${specialization}&gender=${gender}&page=${page}&limit=${limit}&search=${search}`
-      );
+      const queryString = buildGetDoctorsQuery(query);
+      const response = await api.doctor.get(`/doctors?${queryString}`);
 
       const { result } = response.data;
       return result;

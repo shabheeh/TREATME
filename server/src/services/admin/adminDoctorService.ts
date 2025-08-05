@@ -35,6 +35,14 @@ class AdminDoctorService implements IAdminDoctorService {
     imageFile: Express.Multer.File
   ): Promise<Partial<IDoctor>> {
     try {
+      const existingDoctor = await this.doctorRepository.findDoctorByEmail(
+        doctor.email
+      );
+
+      if (existingDoctor) {
+        throw new BadRequestError("Doctor with this email already exists");
+      }
+
       const cloudinaryResponse = await uploadToCloudinary(
         imageFile,
         "ProfilePictures/Doctors"

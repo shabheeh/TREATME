@@ -17,6 +17,7 @@ import {
   MedicalServices,
   PersonSearch,
   Logout,
+  Assessment,
 } from "@mui/icons-material";
 
 import { FaUserDoctor } from "react-icons/fa6";
@@ -24,7 +25,7 @@ import { useDispatch } from "react-redux";
 import { signOut } from "../../redux/features/auth/authSlice";
 import { clearUser } from "../../redux/features/user/userSlice";
 
-const drawerWidth = 240;
+const drawerWidth = 250;
 
 const menuItems = [
   { text: "Dashboard", icon: <Home />, path: "/admin/dashboard" },
@@ -40,6 +41,11 @@ const menuItems = [
     text: "Applications",
     icon: <PersonSearch />,
     path: "/admin/applications",
+  },
+  {
+    text: "Revenue Report",
+    icon: <Assessment />,
+    path: "/admin/revenue",
   },
 ];
 
@@ -103,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                width: "80%",
+                width: "95%",
               }}
             >
               <ListItemIcon
@@ -164,7 +170,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onClose }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "flex-start",
-              width: "80%",
+              width: "95%",
             }}
           >
             <ListItemIcon

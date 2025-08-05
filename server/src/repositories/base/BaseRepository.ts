@@ -8,7 +8,8 @@ class BaseRepository<T extends Document> implements IBaseRepository<T> {
   async create(data: Partial<T>): Promise<T> {
     try {
       const doc = new this.model(data);
-      return await doc.save();
+      const savedDoc = await doc.save();
+      return savedDoc.toObject();
     } catch (error) {
       handleTryCatchError("Database", error);
     }

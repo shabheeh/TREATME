@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { ISpecialization } from "../../types/specialization/specialization.types";
 import specializationService from "../../services/specialization/specializationService";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Specializations = () => {
   const [specializations, setSpecializations] = useState<
     ISpecialization[] | null
   >(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSpecializations = async () => {
@@ -44,10 +46,9 @@ const Specializations = () => {
 
         {specializations?.length !== 0 && (
           <Button
+            onClick={() => navigate("/admin/specializations/add")}
             variant="contained"
             color="primary"
-            component="a"
-            href="/admin/specializations/add"
             sx={{
               textTransform: "none",
               textDecoration: "none",

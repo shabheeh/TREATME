@@ -21,6 +21,7 @@ import { IStripeController } from "src/controllers/stripe/interface/IStripeContr
 import IDashboardController from "src/controllers/dashboard/interface/IDashboardController";
 import IAIChatController from "src/controllers/aiChat/interface/IAIChatController";
 import { IConsultationController } from "src/controllers/consultation/interface/IConsultationController";
+import { validateReview } from "../../validators/reviewValidator";
 
 const router = express.Router();
 
@@ -256,6 +257,7 @@ router.post(
   authenticate,
   isUserActive(patientAuthService, doctorAuthService),
   authorize("patient"),
+  validateReview,
   reviewController.addOrUpdateReview
 );
 

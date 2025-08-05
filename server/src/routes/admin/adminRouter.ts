@@ -10,6 +10,7 @@ import {
   IAdminDoctorController,
   IAdminPatientsController,
 } from "src/interfaces/IAdmin";
+import { IRevenueReportController } from "../../controllers/revenueController/interfaces/IRevenueReportController";
 
 const adminAuthController = container.get<IAdminAuthController>(
   TYPES.IAdminAuthController
@@ -21,6 +22,10 @@ const adminDoctorController = container.get<IAdminDoctorController>(
 
 const adminPatientsController = container.get<IAdminPatientsController>(
   TYPES.IAdminPatientsController
+);
+
+const revenueReportController = container.get<IRevenueReportController>(
+  TYPES.IRevenueReportController
 );
 
 const router = express.Router();
@@ -51,6 +56,18 @@ router.patch(
   "/patients/:patientId",
   authenticate,
   adminPatientsController.togglePatientActivityStatus
+);
+
+router.get("/reports", revenueReportController.getRevenueReport);
+router.get(
+  "/reports/doctors",
+  revenueReportController.getAllDoctorsRevenueSummary
+);
+
+router.get("/pdf/reports", revenueReportController.generateRevenueReportPDF);
+router.get(
+  "/pdf/reports/doctors",
+  revenueReportController.generateDoctorsSummaryPDF
 );
 
 export default router;

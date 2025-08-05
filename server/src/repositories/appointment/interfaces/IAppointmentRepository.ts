@@ -31,6 +31,10 @@ interface IAppointmentRepository extends IBaseRepository<IAppointment> {
   getWeeklyAppointments(
     doctorId?: string
   ): Promise<{ day: string; count: number }[]>;
+  getAppointmentsForNotification(
+    startDate: Date,
+    endDate: Date
+  ): Promise<IAppointmentPopulated[]>;
 }
 
 export default IAppointmentRepository;

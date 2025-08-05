@@ -142,6 +142,7 @@ class AppointmentRepository
         })
         .sort({ date: 1 })
         .lean();
+      console.log(appointments, "getAppintments");
       return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
       handleTryCatchError("Database", error);
@@ -703,12 +704,11 @@ class AppointmentRepository
     doctorId?: string
   ): Promise<{ day: string; count: number }[]> {
     try {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      const sixDaysAgo = dayjs().subtract(6, "day").startOf("day").toDate();
 
       const matchStage: Record<string, unknown> = {
         status: "completed",
-        date: { $gte: sevenDaysAgo },
+        date: { $gte: sixDaysAgo },
       };
 
       if (doctorId) {
@@ -732,10 +732,61 @@ class AppointmentRepository
 
       const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-      return result.map(({ _id, count }) => ({
-        day: dayNames[_id.dayOfWeek - 1],
-        count,
-      }));
+      const weeklyData: { day: string; count: number }[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = dayjs().subtract(i, "day");
+        const dayOfWeek = date.day();
+        weeklyData.push({
+          day: dayNames[dayOfWeek],
+          count: 0,
+        });
+      }
+
+      result.forEach(({ _id, count }) => {
+        const mongoDay = _id.dayOfWeek;
+
+        const matchingDayIndex = weeklyData.findIndex((_item, index) => {
+          const date = dayjs().subtract(6 - index, "day");
+          const dayOfWeek = date.day() + 1;
+          return dayOfWeek === mongoDay;
+        });
+
+        if (matchingDayIndex !== -1) {
+          weeklyData[matchingDayIndex].count = count;
+        }
+      });
+      console.log("weekdata", weeklyData);
+      return weeklyData;
+    } catch (error) {
+      handleTryCatchError("Database", error);
+    }
+  }
+
+  async getAppointmentsForNotification(
+    startDate: Date,
+    endDate: Date
+  ): Promise<IAppointmentPopulated[]> {
+    try {
+      const appointments = await this.model
+        .find({
+          date: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+          status: "confirmed",
+        })
+        .populate({
+          path: "patient",
+          select: "firstName lastName profilePicture _id",
+        })
+        .populate({
+          path: "doctor",
+          select: "firstName lastName profilePicture _id",
+        })
+        .lean()
+        .exec();
+
+      return appointments as unknown as IAppointmentPopulated[];
     } catch (error) {
       handleTryCatchError("Database", error);
     }

@@ -22,7 +22,8 @@ export interface ISocketService {
 @injectable()
 export class SocketService implements ISocketService {
   private io: SocketIOServer | null = null;
-  private connectedUsers: Map<string, string> = new Map();
+  private connectedUsers: Map<string, Set<string>> = new Map();
+  private socketToUser: Map<string, string> = new Map();
   private chatService: IChatService;
 
   constructor(@inject(TYPES.IChatService) chatService: IChatService) {
@@ -79,9 +80,23 @@ export class SocketService implements ISocketService {
 
     this.io.on("connection", (socket: Socket) => {
       const userId = socket.data.user.id;
+      const wasOffline =
+        !this.connectedUsers.has(userId) ||
+        this.connectedUsers.get(userId)!.size === 0;
 
-      this.connectedUsers.set(userId, socket.id);
-      logger.info(`user connected: ${userId} with socket id: ${socket.id}`);
+      if (!this.connectedUsers.has(userId)) {
+        this.connectedUsers.set(userId, new Set());
+      }
+      this.connectedUsers.get(userId)!.add(socket.id);
+      this.socketToUser.set(socket.id, userId);
+
+      logger.info(`User connected: ${userId} with socket id: ${socket.id}`);
+
+      if (wasOffline) {
+        this.emitUserOnline(userId);
+      }
+
+      this.joinUserToChats(socket, userId);
 
       socket.on("join-chat", (chatId: string) =>
         this.handleJoinChat(socket, chatId)
@@ -106,6 +121,7 @@ export class SocketService implements ISocketService {
         this.handleMessageSent(socket, data)
       );
 
+      // WebRTC events
       socket.on("offer", (data) => {
         socket.to(data.roomId).emit("offer", data);
       });
@@ -128,8 +144,29 @@ export class SocketService implements ISocketService {
         socket.to(roomId).emit("user-disconnected", socket.id);
       });
 
-      socket.on("disconnect", () => this.handleDisconnect(userId));
+      socket.on("going-offline", () => {
+        this.handleUserGoingOffline(socket);
+      });
+
+      socket.on("disconnect", (reason) => {
+        this.handleDisconnect(socket, reason);
+      });
     });
+  }
+
+  private async joinUserToChats(socket: Socket, userId: string): Promise<void> {
+    try {
+      const userChats = await this.chatService.getUserChats(userId);
+
+      userChats.forEach((chat) => {
+        socket.join(chat.id);
+        logger.info(`User ${userId} auto-joined chat room: ${chat.id}`);
+      });
+    } catch (error) {
+      logger.error(
+        `Error joining user ${userId} to chats: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    }
   }
 
   private handleJoinChat(socket: Socket, chatId: string): void {
@@ -247,10 +284,40 @@ export class SocketService implements ISocketService {
     }
   }
 
-  private handleDisconnect(userId: string): void {
-    this.connectedUsers.delete(userId);
-    this.emitUserOffline(userId);
-    logger.info(`User: ${userId} disconnected`);
+  private handleUserGoingOffline(socket: Socket): void {
+    const userId = socket.data.user.id;
+
+    if (this.connectedUsers.has(userId)) {
+      this.connectedUsers.get(userId)!.delete(socket.id);
+
+      if (this.connectedUsers.get(userId)!.size === 0) {
+        this.emitUserOffline(userId);
+        this.connectedUsers.delete(userId);
+      }
+    }
+
+    this.socketToUser.delete(socket.id);
+    logger.info(`User ${userId} went offline (socket: ${socket.id})`);
+  }
+
+  private handleDisconnect(socket: Socket, reason: string): void {
+    const userId = this.socketToUser.get(socket.id);
+
+    if (!userId) return;
+
+    if (this.connectedUsers.has(userId)) {
+      this.connectedUsers.get(userId)!.delete(socket.id);
+
+      if (this.connectedUsers.get(userId)!.size === 0) {
+        this.emitUserOffline(userId);
+        this.connectedUsers.delete(userId);
+      }
+    }
+
+    this.socketToUser.delete(socket.id);
+    logger.info(
+      `User ${userId} disconnected (socket: ${socket.id}, reason: ${reason})`
+    );
   }
 
   private handleAppointmentNotification({
@@ -264,11 +331,13 @@ export class SocketService implements ISocketService {
   }
 
   public emitToUser<T>(userId: string, eventName: string, data: T): void {
-    const socketId = this.connectedUsers.get(userId);
-    if (socketId && this.io) {
-      this.io.to(socketId).emit(eventName, data);
+    const socketIds = this.connectedUsers.get(userId);
+    if (socketIds && socketIds.size > 0 && this.io) {
+      socketIds.forEach((socketId) => {
+        this.io!.to(socketId).emit(eventName, data);
+      });
     } else {
-      logger.error(`User ${userId} is not connected.`);
+      logger.warn(`User ${userId} is not connected.`);
     }
   }
 
@@ -281,28 +350,69 @@ export class SocketService implements ISocketService {
   }
 
   public emitUserOnline(userId: string): void {
-    const chatIds = this.getUserChatRooms(userId);
+    logger.info(`Emitting user online: ${userId}`);
+
+    const chatIds = this.getAllUserChatRooms(userId);
+
     chatIds.forEach((chatId) => {
-      this.io?.to(chatId).emit("user-online", { userId });
+      this.io?.to(chatId).emit("user-online", {
+        userId,
+        timestamp: new Date().toISOString(),
+      });
+    });
+
+    this.io?.emit("user-status-changed", {
+      userId,
+      status: "online",
+      timestamp: new Date().toISOString(),
     });
   }
 
   public emitUserOffline(userId: string): void {
-    const chatIds = this.getUserChatRooms(userId);
+    logger.info(`Emitting user offline: ${userId}`);
+
+    const chatIds = this.getAllUserChatRooms(userId);
+
     chatIds.forEach((chatId) => {
-      this.io?.to(chatId).emit("user-offline", { userId });
+      this.io?.to(chatId).emit("user-offline", {
+        userId,
+        timestamp: new Date().toISOString(),
+      });
+    });
+
+    this.io?.emit("user-status-changed", {
+      userId,
+      status: "offline",
+      timestamp: new Date().toISOString(),
     });
   }
 
-  private getUserChatRooms(userId: string): string[] {
+  private getAllUserChatRooms(userId: string): string[] {
     if (!this.io) return [];
 
-    const socketId = this.connectedUsers.get(userId);
-    if (!socketId) return [];
+    const socketIds = this.connectedUsers.get(userId);
+    if (!socketIds || socketIds.size === 0) return [];
 
-    const socket = this.io.sockets.sockets.get(socketId);
+    const firstSocketId = Array.from(socketIds)[0];
+    const socket = this.io.sockets.sockets.get(firstSocketId);
     if (!socket) return [];
 
-    return Array.from(socket.rooms).filter((room) => room !== socketId);
+    return Array.from(socket.rooms).filter((room) => room !== firstSocketId);
+  }
+  public isUserOnline(userId: string): boolean {
+    return (
+      this.connectedUsers.has(userId) &&
+      this.connectedUsers.get(userId)!.size > 0
+    );
+  }
+
+  public getOnlineUsers(): string[] {
+    return Array.from(this.connectedUsers.keys()).filter(
+      (userId) => this.connectedUsers.get(userId)!.size > 0
+    );
+  }
+
+  public getUserConnectionCount(userId: string): number {
+    return this.connectedUsers.get(userId)?.size || 0;
   }
 }
