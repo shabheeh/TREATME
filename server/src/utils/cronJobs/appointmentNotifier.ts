@@ -171,7 +171,6 @@ export const clearNotificationCache = async (
   }
 };
 
-// Utility function to check notification status (useful for debugging)
 export const getNotificationStatus = async (appointmentId: string) => {
   try {
     const keys = [
