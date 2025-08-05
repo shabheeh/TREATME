@@ -740,6 +740,30 @@ class AppointmentRepository
       handleTryCatchError("Database", error);
     }
   }
+
+  async getAppointmentsForNotification(
+    startDate: Date,
+    endDate: Date
+  ): Promise<IAppointmentPopulated[]> {
+    try {
+      const appointments = await this.model
+        .find({
+          date: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+          status: "confirmed",
+        })
+        .populate("patient", "firstName lastName _id")
+        .populate("doctor", "firstName lastName _id")
+        .select("_id date patient doctor status")
+        .lean()
+        .exec();
+      return appointments as unknown as IAppointmentPopulated[];
+    } catch (error) {
+      handleTryCatchError("Database", error);
+    }
+  }
 }
 
 export default AppointmentRepository;
