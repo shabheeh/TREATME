@@ -28,7 +28,7 @@ export const generateWelcomeDoctorHtml = (
         }
         .header {
           text-align: center;
-          background-color: #007bff;
+          background-color: #008080;
           color: white;
           padding: 10px 0;
           border-radius: 5px 5px 0 0;

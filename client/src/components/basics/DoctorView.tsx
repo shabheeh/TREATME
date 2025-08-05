@@ -105,18 +105,28 @@ const DoctorProfile = () => {
   }, []);
 
   const handleReviewSubmit = async () => {
-    if (!doctor || !currentPatient || !reviewRating) return;
+    if (!doctor || !currentPatient) return;
+
+    if (!reviewRating || reviewRating < 1 || reviewRating > 5) {
+      toast.error("Please provide a valid rating between 1 and 5");
+      return;
+    }
+
+    if (!reviewComment || reviewComment.trim().length < 10) {
+      toast.error("Comment must be at least 10 characters long");
+      return;
+    }
 
     try {
       await reviewService.addOrUpdateReview({
         doctor: doctor._id,
         patient: currentPatient._id,
         rating: reviewRating,
-        comment: reviewComment,
+        comment: reviewComment.trim(),
       });
+
       toast.success("Review added successfully");
       fetchReviews();
-
       setReviewDialogOpen(false);
     } catch (error) {
       toast.error(
