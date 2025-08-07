@@ -3,6 +3,8 @@ import IDoctor, { IDoctorsFilter, IDoctorsFilterResult } from "./IDoctor";
 import { Request, Response, NextFunction } from "express";
 import { IPatientsFilter, IPatientsFilterResult } from "./IPatient";
 export default interface IAdmin extends Document {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 }

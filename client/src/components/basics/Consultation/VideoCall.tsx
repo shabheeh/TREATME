@@ -166,22 +166,22 @@ const VideoCall = () => {
 
     setIsConnected(false);
 
-    const now = dayjs();
-    const endTime = dayjs(appointment.date).add(appointment.duration, "minute");
-    const timePassed = endTime.diff(now, "minutes");
+    // const now = dayjs();
+    // const endTime = dayjs(appointment.date).add(appointment.duration, "minute");
+    // const timePassed = endTime.diff(now, "minutes");
 
-    if (timePassed < 25 && timePassed > -5) {
-      await appointmentService.updateAppointmentStatus(appointment?._id);
-      if (appointment && userRole && userRole === "patient") {
-        setReviewModalOpen(true);
-      } else if (appointment && userRole && userRole === "doctor") {
-        setConsultationModalOpen(true);
-      } else {
-        navigate(-1);
-      }
+    // if (timePassed < 25 && timePassed > -5) {
+    await appointmentService.updateAppointmentStatus(appointment?._id);
+    if (appointment && userRole && userRole === "patient") {
+      setReviewModalOpen(true);
+    } else if (appointment && userRole && userRole === "doctor") {
+      setConsultationModalOpen(true);
     } else {
       navigate(-1);
     }
+    // } else {
+    //   navigate(-1);
+    // }
   };
 
   const setupWebRTC = async () => {

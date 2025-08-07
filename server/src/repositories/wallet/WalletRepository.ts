@@ -5,7 +5,9 @@ import {
   BadRequestError,
   handleTryCatchError,
 } from "../../utils/errors";
-import IWalletRepository from "./interface/IWalletRepository";
+import IWalletRepository, {
+  TransactionsPagination,
+} from "./interface/IWalletRepository";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversifyjs.types";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
@@ -173,9 +175,35 @@ class WalletRepository implements IWalletRepository {
     }
   }
 
-  async getTransactionsByWalletId(walletId: string): Promise<ITransaction[]> {
+  async getTransactionsByWalletId(
+    walletId: string,
+    page: number = 1
+  ): Promise<{
+    transactions: ITransaction[];
+    pagination: TransactionsPagination;
+  }> {
     try {
-      return await this.transactionModel.find({ walletId }).sort({ date: -1 });
+      const limit = 10;
+      const skip = (page - 1) * limit;
+
+      const totalTransactions = await this.transactionModel.countDocuments({
+        walletId: new Types.ObjectId(walletId),
+      });
+
+      const transactions = await this.transactionModel
+        .find({ walletId: new Types.ObjectId(walletId) })
+        .sort({ date: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const totalPages = Math.ceil(totalTransactions / limit);
+      const pagination: TransactionsPagination = {
+        page,
+        totalTransactions,
+        totalPages,
+      };
+
+      return { transactions, pagination };
     } catch (error) {
       handleTryCatchError("Database", error);
     }

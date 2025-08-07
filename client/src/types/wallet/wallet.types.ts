@@ -16,3 +16,9 @@ export interface IWallet {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface TransactionsPagination {
+  page: number;
+  totalPages: number;
+  totalTransactions: number;
+}

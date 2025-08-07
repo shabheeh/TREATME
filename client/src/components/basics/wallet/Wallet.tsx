@@ -12,9 +12,15 @@ import {
   Button,
   IconButton,
   useTheme,
+  Pagination,
+  Stack,
 } from "@mui/material";
 import { Refresh, Add, Schedule } from "@mui/icons-material";
-import { ITransaction, IWallet } from "../../../types/wallet/wallet.types";
+import {
+  ITransaction,
+  IWallet,
+  TransactionsPagination,
+} from "../../../types/wallet/wallet.types";
 import walletService from "../../../services/wallet/walletService";
 import { toast } from "sonner";
 import AddFundsModal from "./AddFundsModal";
@@ -24,34 +30,60 @@ import { RootState } from "../../../redux/app/store";
 
 const WalletPatient: React.FC = () => {
   const theme = useTheme();
-  // const [tabValue, setTabValue] = useState(0);
-  const [isAddFundsModalOpen, setAddFundsModalOpen] = useState<boolean>(false);
 
+  const [isAddFundsModalOpen, setAddFundsModalOpen] = useState<boolean>(false);
   const [wallet, setWallet] = useState<IWallet | null>(null);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  // const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-  //   setTabValue(newValue);
-  // };
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pagination, setPagination] = useState<TransactionsPagination>({
+    page: 1,
+    totalPages: 0,
+    totalTransactions: 0,
+  });
 
   const userRole = useSelector((state: RootState) => state.auth.role);
 
   useEffect(() => {
     fetchWallet();
-  }, []);
+  }, [currentPage]);
 
   const fetchWallet = async () => {
     try {
-      const { wallet, transactions } = await walletService.accessWallet();
-      if (wallet) {
-        setWallet(wallet);
-        setTransactions(transactions);
-      }
+      setLoading(true);
+      const { wallet, transactions, pagination } =
+        await walletService.accessWallet(currentPage);
+
+      setWallet(wallet);
+      setTransactions(transactions);
+      setPagination(pagination);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Something went wrong"
       );
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
+    setCurrentPage(page);
+  };
+
+  const getDisplayRange = () => {
+    if (pagination.totalTransactions === 0) return { start: 0, end: 0 };
+
+    const start = (pagination.page - 1) * 10 + 1;
+    const end = Math.min(pagination.page * 10, pagination.totalTransactions);
+
+    return { start, end };
+  };
+
+  const { start, end } = getDisplayRange();
 
   return (
     <Box sx={{ maxWidth: 800, margin: "0 auto", p: 2 }}>
@@ -79,6 +111,7 @@ const WalletPatient: React.FC = () => {
                     size="small"
                     sx={{ color: "white" }}
                     onClick={fetchWallet}
+                    disabled={loading}
                   >
                     <Refresh />
                   </IconButton>
@@ -87,11 +120,13 @@ const WalletPatient: React.FC = () => {
 
               <Box mt={3} mb={2}>
                 <Typography variant="h3" fontWeight="bold">
-                  ₹{wallet?.balance.toFixed(2)}
+                  ₹{wallet?.balance.toFixed(2) || "0.00"}
                 </Typography>
                 <Typography variant="caption" sx={{ opacity: 0.8 }}>
                   Last updated:{" "}
-                  {wallet?.updatedAt && formatMonthDay(wallet?.updatedAt)}
+                  {wallet?.updatedAt
+                    ? formatMonthDay(wallet.updatedAt)
+                    : "Never"}
                 </Typography>
               </Box>
 
@@ -128,24 +163,13 @@ const WalletPatient: React.FC = () => {
             >
               <Typography variant="h6">Payment History</Typography>
               <Chip
-                label={`${transactions.length || 0} transactions`}
+                label={`${pagination.totalTransactions || 0} transactions`}
                 size="small"
                 sx={{ backgroundColor: theme.palette.grey[200] }}
               />
             </Box>
 
-            <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-              {/* <Tabs
-                value={tabValue}
-                onChange={handleTabChange}
-                indicatorColor="primary"
-                textColor="primary"
-              >
-                <Tab label="All" />
-                <Tab label="Consultations" />
-                <Tab label="Medications" />
-              </Tabs> */}
-            </Box>
+            <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}></Box>
 
             <List disablePadding>
               {transactions && transactions.length > 0 ? (
@@ -159,15 +183,6 @@ const WalletPatient: React.FC = () => {
                         borderBottom: `1px solid ${theme.palette.divider}`,
                       }}
                     >
-                      {/* <ListItemIcon>
-                        <Avatar
-                          sx={{
-                            bgcolor: theme.palette.primary.light,
-                          }}
-                        >
-                          {getServiceIcon(transaction.serviceType)}
-                        </Avatar>
-                      </ListItemIcon> */}
                       <ListItemText
                         primary={
                           <Box display="flex" justifyContent="space-between">
@@ -176,14 +191,14 @@ const WalletPatient: React.FC = () => {
                             </Typography>
                             {transaction.type === "debit" ? (
                               <Typography fontWeight="bold" color="error.main">
-                                -{transaction.amount.toFixed()}
+                                -₹{transaction.amount.toFixed(2)}
                               </Typography>
                             ) : (
                               <Typography
                                 fontWeight="bold"
                                 color="success.main"
                               >
-                                +{transaction.amount.toFixed()}
+                                +₹{transaction.amount.toFixed(2)}
                               </Typography>
                             )}
                           </Box>
@@ -235,11 +250,31 @@ const WalletPatient: React.FC = () => {
               )}
             </List>
 
-            {/* {wallet && wallet?.transactions.length > 0 && (
-              <Box display="flex" justifyContent="center" mt={2}>
-                <Button color="primary">View More</Button>
+            {/* Pagination */}
+            {pagination.totalTransactions > 0 && pagination.totalPages > 1 && (
+              <Box sx={{ mt: 3, mb: 2 }}>
+                <Stack spacing={2} alignItems="center">
+                  <Typography variant="body2" color="text.secondary">
+                    Showing {start} - {end} of {pagination.totalTransactions}{" "}
+                    transactions
+                  </Typography>
+                  <Pagination
+                    count={pagination.totalPages}
+                    page={pagination.page}
+                    onChange={handlePageChange}
+                    color="primary"
+                    shape="rounded"
+                    showFirstButton
+                    showLastButton
+                    sx={{
+                      "& .MuiPagination-ul": {
+                        justifyContent: "center",
+                      },
+                    }}
+                  />
+                </Stack>
               </Box>
-            )} */}
+            )}
           </Box>
         </Grid>
       </Grid>

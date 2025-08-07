@@ -14,7 +14,13 @@ interface IWalletRepository {
     transactionId: string,
     updatedData: Partial<TransactionData>
   ): Promise<ITransaction>;
-  getTransactionsByWalletId(walletId: string): Promise<ITransaction[]>;
+  getTransactionsByWalletId(
+    walletId: string,
+    page: number
+  ): Promise<{
+    transactions: ITransaction[];
+    pagination: TransactionsPagination;
+  }>;
   getTransactions(): Promise<ITransaction[]>;
   getWalletWithTransactions(
     userId: string
@@ -22,3 +28,9 @@ interface IWalletRepository {
 }
 
 export default IWalletRepository;
+
+export interface TransactionsPagination {
+  page: number;
+  totalPages: number;
+  totalTransactions: number;
+}
