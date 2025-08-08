@@ -41,7 +41,7 @@ class WalletController implements IWalletController {
       if (isNaN(parsedPage) || parsedPage < 1) {
         throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
       }
-      const { wallet, transactions, pagination } = 
+      const { wallet, transactions, pagination } =
         await this.walletService.accessOrCreateWallet(
           userId,
           userType,

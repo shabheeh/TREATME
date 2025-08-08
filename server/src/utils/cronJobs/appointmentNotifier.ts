@@ -78,9 +78,7 @@ export const startAppointmentNotifyJob = () => {
               `5-minute notification already sent for appointment ${appointment._id}`
             );
           }
-        }
-
-        else if (timeLeftMinutes === 30) {
+        } else if (timeLeftMinutes === 30) {
           const notificationKey30Min = `${NOTIFICATION_KEY_PREFIX}:${appointment._id}:30min`;
           const alreadySent = await cacheService.exists(notificationKey30Min);
 
