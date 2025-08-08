@@ -393,7 +393,8 @@ class AppointmentService implements IAppointmentService {
 
       await this.walletService.accessOrCreateWallet(
         patientId as string,
-        "Patient"
+        "Patient",
+        1
       );
 
       const now = new Date();

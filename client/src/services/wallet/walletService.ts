@@ -1,15 +1,20 @@
-import { ITransaction, IWallet } from "../../types/wallet/wallet.types";
+import {
+  ITransaction,
+  IWallet,
+  TransactionsPagination,
+} from "../../types/wallet/wallet.types";
 import { api } from "../../utils/axiosInterceptor";
 
 class WalletService {
-  async accessWallet(): Promise<{
+  async accessWallet(page: number = 1): Promise<{
     wallet: IWallet;
     transactions: ITransaction[];
+    pagination: TransactionsPagination;
   }> {
     try {
-      const response = await api.get("/wallet");
-      const { wallet, transactions } = response.data;
-      return { wallet, transactions };
+      const response = await api.get(`/wallet?page=${page}`);
+      const { wallet, transactions, pagination } = response.data;
+      return { wallet, transactions, pagination };
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`Error accessing wallet: ${error.message}`, error);

@@ -1,6 +1,7 @@
 import { api } from "../../utils/axiosInterceptor";
 import { store } from "../../redux/app/store";
 import { signIn } from "../../redux/features/auth/authSlice";
+import { setAdmin } from "../../redux/features/user/userSlice";
 
 class AuthServiceAdmin {
   async signIn(email: string, password: string): Promise<void> {
@@ -19,6 +20,7 @@ class AuthServiceAdmin {
           token: accessToken,
         })
       );
+      store.dispatch(setAdmin(admin));
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(`error admin signin: ${error.message}`);

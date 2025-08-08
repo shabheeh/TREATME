@@ -1,4 +1,6 @@
-import IWalletRepository from "src/repositories/wallet/interface/IWalletRepository";
+import IWalletRepository, {
+  TransactionsPagination,
+} from "src/repositories/wallet/interface/IWalletRepository";
 import { IWalletService } from "./interface/IWalletService";
 import { ITransaction, IWallet, TransactionData } from "src/interfaces/IWallet";
 import { handleTryCatchError } from "../../utils/errors";
@@ -17,20 +19,34 @@ class WalletService implements IWalletService {
 
   async accessOrCreateWallet(
     userId: string,
-    userType: "Patient" | "Doctor"
-  ): Promise<{ wallet: IWallet; transactions: ITransaction[] }> {
+    userType: "Patient" | "Doctor",
+    page: number = 1
+  ): Promise<{
+    wallet: IWallet;
+    transactions: ITransaction[];
+    pagination: TransactionsPagination;
+  }> {
     try {
       const wallet = await this.walletRepo.findWalletByUserId(userId);
 
       if (wallet) {
-        const transactions = await this.walletRepo.getTransactionsByWalletId(
-          wallet._id!.toString()
-        );
-        return { wallet, transactions };
+        const { transactions, pagination } =
+          await this.walletRepo.getTransactionsByWalletId(
+            wallet._id!.toString(),
+            page
+          );
+
+        return { wallet, transactions, pagination };
       }
 
+      const pagination: TransactionsPagination = {
+        page,
+        totalPages: 0,
+        totalTransactions: 0,
+      };
+
       const newWallet = await this.walletRepo.createWallet(userId, userType);
-      return { wallet: newWallet, transactions: [] };
+      return { wallet: newWallet, transactions: [], pagination };
     } catch (error) {
       handleTryCatchError("Service", error);
     }

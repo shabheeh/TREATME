@@ -1,4 +1,3 @@
-
 services:
   server:
     build:
@@ -15,12 +14,32 @@ services:
       - REDIS_PORT=6379
       - PORT=5000
       - NODE_ENV=production
+      # Puppeteer
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - CHROME_PATH=/usr/bin/google-chrome-stable
     depends_on:
       - redis
     volumes:
-      - ./server/node_modules:/app/node_modules  
+      - ./server/node_modules:/app/node_modules
+      - puppeteer_cache:/app/.cache
     networks:
       - treatme-network
+    shm_size: 1gb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    user: "1001:1001"
 
   redis:
     image: redis:alpine
@@ -32,10 +51,22 @@ services:
       - redis_data:/data
     networks:
       - treatme-network
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   redis_data:
+    driver: local
+  puppeteer_cache:
+    driver: local
 
 networks:
   treatme-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -24,66 +24,87 @@ const appointmentRepo = container.get<IAppointmentRepository>(
 const cacheService = container.get<ICacheService>(TYPES.ICacheService);
 
 const NOTIFICATION_KEY_PREFIX = "appointment_notification";
-const NOTIFICATION_TTL = 2 * 60 * 60;
+const NOTIFICATION_TTL = 24 * 60 * 60;
 
 export const startAppointmentNotifyJob = () => {
   cron.schedule("* * * * *", async () => {
     try {
       const now = dayjs.utc();
 
-      // const thirtyMinutesFromNow = now.add(30, "minute");
-      // const fiveMinutesFromNow = now.add(5, "minute");
-      const thirtyOneMinutesFromNow = now.add(31, "minute");
-      const fourMinutesFromNow = now.add(4, "minute");
-
+      const thirtyFiveMinutesFromNow = now.add(35, "minute");
       const upcomingAppointments =
         await appointmentRepo.getAppointmentsForNotification(
-          fourMinutesFromNow.toDate(),
-          thirtyOneMinutesFromNow.toDate()
+          now.toDate(),
+          thirtyFiveMinutesFromNow.toDate()
         );
 
       for (const appointment of upcomingAppointments) {
         const appointmentTime = dayjs.utc(appointment.date);
         const timeLeftMinutes = appointmentTime.diff(now, "minute");
 
-        const notificationKey5Min = `${NOTIFICATION_KEY_PREFIX}:${appointment._id}:5min`;
-        const notificationKey30Min = `${NOTIFICATION_KEY_PREFIX}:${appointment._id}:30min`;
+        logger.debug(
+          `Processing appointment ${appointment._id}: ${timeLeftMinutes} minutes left`
+        );
 
-        if (timeLeftMinutes >= 4 && timeLeftMinutes <= 6) {
+        if (timeLeftMinutes === 5) {
+          const notificationKey5Min = `${NOTIFICATION_KEY_PREFIX}:${appointment._id}:5min`;
           const alreadySent = await cacheService.exists(notificationKey5Min);
 
           if (!alreadySent) {
-            await sendNotifications(appointment, 5, true);
-
             await cacheService.store(
               notificationKey5Min,
-              "sent",
+              "processing",
               NOTIFICATION_TTL
             );
 
-            logger.info(
-              `5-minute notifications sent for appointment ${appointment._id}`
-            );
+            try {
+              await sendNotifications(appointment, 5, true);
+
+              await cacheService.store(
+                notificationKey5Min,
+                "sent",
+                NOTIFICATION_TTL
+              );
+
+              logger.info(
+                `5-minute notifications sent for appointment ${appointment._id}`
+              );
+            } catch (error) {
+              await cacheService.delete(notificationKey5Min);
+              throw error;
+            }
           } else {
             logger.debug(
               `5-minute notification already sent for appointment ${appointment._id}`
             );
           }
-        } else if (timeLeftMinutes >= 29 && timeLeftMinutes <= 31) {
+        } else if (timeLeftMinutes === 30) {
+          const notificationKey30Min = `${NOTIFICATION_KEY_PREFIX}:${appointment._id}:30min`;
           const alreadySent = await cacheService.exists(notificationKey30Min);
 
           if (!alreadySent) {
-            await sendNotifications(appointment, 30, false);
-
             await cacheService.store(
               notificationKey30Min,
-              "sent",
+              "processing",
               NOTIFICATION_TTL
             );
 
-            logger.info(
-              `30-minute notifications sent for appointment ${appointment._id}`
-            );
+            try {
+              await sendNotifications(appointment, 30, false);
+
+              await cacheService.store(
+                notificationKey30Min,
+                "sent",
+                NOTIFICATION_TTL
+              );
+
+              logger.info(
+                `30-minute notifications sent for appointment ${appointment._id}`
+              );
+            } catch (error) {
+              await cacheService.delete(notificationKey30Min);
+              throw error;
+            }
           } else {
             logger.debug(
               `30-minute notification already sent for appointment ${appointment._id}`

@@ -1,0 +1,45 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+      args:
+        - NODE_ENV=development
+    container_name: mern-backend-dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+      - "9229:9229"
+    env_file:
+      - ./server/.env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=5000
+      - NODE_ENV=development
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    depends_on:
+      - redis
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - treatme-network
+    shm_size: 1gb
+    command: npm run dev
+
+  redis:
+    image: redis:alpine
+    container_name: redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - treatme-network
+
+volumes:
+  puppeteer_cache:
+
+networks:
+  treatme-network:
+    driver: bridge

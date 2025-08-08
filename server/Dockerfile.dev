@@ -1,44 +1,45 @@
 FROM node:20-slim
 
-# Install Puppeteer dependencies for Ubuntu/Debian
+# Install Puppeteer dependencies for Ubuntu/Debian (same as production)
 RUN apt-get update \
-    && apt-get install -y wget gnupg \
+    && apt-get install -y wget gnupg curl \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
     && apt-get update \
     && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
-      --no-install-recommends \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to skip downloading Chromium (we installed Chrome)
+# Tell Puppeteer to skip downloading Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Set working directory
 WORKDIR /app
 
-# Create a non-root user for security
+# Create non-root user for security
 RUN groupadd -r nodejs && useradd -r -g nodejs -G audio,video appuser \
     && mkdir -p /home/appuser/Downloads \
     && chown -R appuser:nodejs /home/appuser
 
-# Install dependencies
+# Install dependencies first (for better caching)
 COPY package*.json ./
 RUN npm install
 
-# Copy the full app
+# Install development dependencies and useful tools
+RUN npm install -g nodemon ts-node typescript \
+    && npm install --save-dev @types/node
+
+# Copy source code
 COPY . .
 
-# Build TypeScript
-RUN npm run build
-
-# Change ownership of the app directory to the non-root user
+# Change ownership to non-root user
 RUN chown -R appuser:nodejs /app
 
 # Switch to non-root user
 USER appuser
 
-# Expose the app port
-EXPOSE 5000
+# Expose the app port and debug port
+EXPOSE 5000 9229
 
-# Start the app 
-CMD ["node", "dist/server.js"]
+# Development command with hot reloading and debugging
+CMD ["npm", "run", "dev"]

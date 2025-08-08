@@ -27,6 +27,7 @@ class WalletController implements IWalletController {
     try {
       const userId = (req.user as ITokenPayload).id;
       const role = (req.user as ITokenPayload).role;
+      const { page = 1 } = req.query;
       let userType: "Patient" | "Doctor";
 
       if (role === "patient") {
@@ -34,9 +35,19 @@ class WalletController implements IWalletController {
       } else {
         userType = "Doctor";
       }
-      const { wallet, transactions } =
-        await this.walletService.accessOrCreateWallet(userId, userType);
-      res.status(HttpStatusCode.OK).json({ wallet, transactions });
+
+      const parsedPage = parseInt(page as string, 10);
+
+      if (isNaN(parsedPage) || parsedPage < 1) {
+        throw new BadRequestError(ResponseMessage.ERROR.INVALID_REQUEST);
+      }
+      const { wallet, transactions, pagination } =
+        await this.walletService.accessOrCreateWallet(
+          userId,
+          userType,
+          parsedPage
+        );
+      res.status(HttpStatusCode.OK).json({ wallet, transactions, pagination });
     } catch (error) {
       logger.error(
         error instanceof Error

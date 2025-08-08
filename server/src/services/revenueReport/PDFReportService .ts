@@ -38,6 +38,7 @@ class PDFReportService implements IPDFReportService {
   private async generatePDFFromHTML(html: string): Promise<Buffer> {
     const browser = await puppeteer.launch({
       headless: true,
+      executablePath: "/usr/bin/google-chrome-stable",
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -46,11 +47,18 @@ class PDFReportService implements IPDFReportService {
         "--no-first-run",
         "--no-zygote",
         "--disable-gpu",
+        "--disable-extensions",
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding",
+        "--disable-features=TranslateUI",
+        "--disable-ipc-flooding-protection",
       ],
     });
 
     try {
       const page = await browser.newPage();
+      await page.setViewport({ width: 1200, height: 800 });
       await page.setContent(html, { waitUntil: "networkidle0" });
 
       const pdfBuffer = await page.pdf({
