@@ -32,21 +32,49 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/treatme-server ./server
-          docker push ${{ secrets.DOCKER_USERNAME }}/treatme-server
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/treatme-server:latest ./server
+          docker push ${{ secrets.DOCKER_USERNAME }}/treatme-server:latest
 
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/treatme-server
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-            # Clean up old containers, images, volumes, build cache
-            docker system prune -af --volumes
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v1
 
-            cd /home/ubuntu   # directory where your docker-compose.yml lives
-            docker compose down
-            docker compose up -d
+      - name: Deploy to GCP VM via SSH
+        run: |
+          # Copy updated docker-compose.yml to VM
+          gcloud compute scp docker-compose.yml treatme-vm:~/ --zone=asia-south1-a --quiet
+
+          # SSH into VM and deploy using compose commands
+          gcloud compute ssh treatme-vm --zone=asia-south1-a --quiet --command="
+            # Navigate to the directory with docker-compose.yml
+            cd /home/\$(whoami)
+            
+            # Stop containers
+            docker-compose down
+            
+            # Pull latest images (this will pull the updated image from Docker Hub)
+            docker-compose pull
+            
+            # Start containers with the latest images
+            docker-compose up -d
+            
+            # Clean up old images and containers after successful deployment
+            docker system prune -f
+            
+            # Verify deployment
+            docker-compose ps
+          "
+
+      - name: Verify Deployment
+        run: |
+          # Wait a moment for services to start
+          sleep 30
+
+          # Test the health endpoint
+          curl -f https://api.treatme.site/health || exit 1
+
+          echo "Deployment successful!"
