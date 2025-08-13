@@ -36,9 +36,15 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
+        continue-on-error: false
 
       - name: Set up Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v2
+
+      - name: Test Google Cloud connectivity
+        run: |
+          gcloud config list
+          gcloud auth list
 
       - name: Deploy to GCP VM via SSH
         run: |
