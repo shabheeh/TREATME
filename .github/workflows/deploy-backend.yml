@@ -13,6 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -20,9 +23,13 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/treatme-server:latest ./server
-          docker push ${{ secrets.DOCKER_USERNAME }}/treatme-server:latest
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/treatme-server:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
@@ -39,7 +46,7 @@ jobs:
 
           # SSH into VM and deploy
           gcloud compute ssh treatme-vm --zone=asia-south1-a --quiet --command="
-            # Navigate to home directory (where docker-compose.yml was copied)
+            # Navigate to home directory
             cd \$HOME
             
             # Debug: Show current location and verify files exist
@@ -49,7 +56,7 @@ jobs:
             # Stop current containers
             docker-compose down
             
-            # Pull latest images using compose (handles all services)
+            # Pull latest images using compose
             docker-compose pull
             
             # Start containers with latest images
