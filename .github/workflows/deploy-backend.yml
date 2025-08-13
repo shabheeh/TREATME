@@ -13,17 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Install dependencies and build
-        run: |
-          cd server
-          npm ci
-          npm run build
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -45,33 +34,38 @@ jobs:
 
       - name: Deploy to GCP VM via SSH
         run: |
-          # Copy updated docker-compose.yml to VM
-          gcloud compute scp docker-compose.yml treatme-vm:~/ --zone=asia-south1-a --quiet
+          # Copy docker-compose.yml to VM
+          gcloud compute scp docker-compose.yml treatme-vm:~/docker-compose.yml --zone=asia-south1-a --quiet
 
-          # SSH into VM and deploy using compose commands
+          # SSH into VM and deploy
           gcloud compute ssh treatme-vm --zone=asia-south1-a --quiet --command="
-            # Navigate to the directory with docker-compose.yml
-            cd /home/\$(whoami)
+            # Navigate to home directory (where docker-compose.yml was copied)
+            cd \$HOME
             
-            # Stop containers
+            # Debug: Show current location and verify files exist
+            echo 'Current directory:' && pwd
+            echo 'Files present:' && ls -la docker-compose.yml server/.env
+            
+            # Stop current containers
             docker-compose down
             
-            # Pull latest images (this will pull the updated image from Docker Hub)
+            # Pull latest images using compose (handles all services)
             docker-compose pull
             
-            # Start containers with the latest images
+            # Start containers with latest images
             docker-compose up -d
             
-            # Clean up old images and containers after successful deployment
+            # Clean up old images after successful deployment
             docker system prune -f
             
             # Verify deployment
             docker-compose ps
+            echo 'Deployment completed successfully'
           "
 
       - name: Verify Deployment
         run: |
-          # Wait a moment for services to start
+          # Wait for services to start
           sleep 30
 
           # Test the health endpoint
